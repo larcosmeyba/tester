@@ -250,6 +250,50 @@ export function AlertBanner({
   );
 }
 
+/**
+ * Compact "More Coming Soon" row, from `ResourcesTabView.comingSoonFeaturesSection`.
+ * Smaller than ComingSoonCard — these stack as a list of upcoming features.
+ */
+export function ComingSoonRow({
+  icon,
+  title,
+  subtitle,
+  onPress,
+  style,
+}: {
+  icon: HiveIconName;
+  title: string;
+  subtitle: string;
+  onPress?: PressHandler;
+  style?: StyleProp<ViewStyle>;
+}) {
+  const content = (
+    <View style={[styles.comingSoonRow, style]}>
+      <View style={styles.smallCircle}>
+        <HiveIcon name={icon} size={16} color={HiveColors.green} />
+      </View>
+      <View style={styles.rowText}>
+        <Text style={styles.smallTitle}>{title}</Text>
+        <Text style={styles.smallSubtitle}>{subtitle}</Text>
+      </View>
+      <View style={styles.smallBadge}>
+        <Text style={styles.smallBadgeText}>Coming Soon</Text>
+      </View>
+    </View>
+  );
+
+  if (!onPress) return content;
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={`${title}. ${subtitle}. Coming soon.`}
+      onPress={onPress}
+      style={({ pressed }) => [pressed && styles.pressed]}>
+      {content}
+    </Pressable>
+  );
+}
+
 const styles = StyleSheet.create({
   pressed: { opacity: 0.85 },
   rowText: { flex: 1, gap: 2 },
@@ -349,6 +393,34 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(27,94,32,0.12)',
   },
   badgeText: { color: HiveColors.green, fontSize: 11, fontWeight: '600' },
+
+  comingSoonRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+    padding: 14,
+    borderRadius: 14,
+    backgroundColor: HiveColors.card,
+    borderWidth: 1,
+    borderColor: HiveColors.border,
+  },
+  smallCircle: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: HiveColors.greenLight,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  smallTitle: { color: HiveColors.text, fontSize: 14, fontWeight: '600' },
+  smallSubtitle: { color: HiveColors.textSecondary, fontSize: 12, lineHeight: 16 },
+  smallBadge: {
+    paddingHorizontal: 7,
+    paddingVertical: 3,
+    borderRadius: 6,
+    backgroundColor: 'rgba(27,94,32,0.10)',
+  },
+  smallBadgeText: { color: HiveColors.green, fontSize: 10, fontWeight: '600' },
 
   // --- Alert banner ---
   alert: {

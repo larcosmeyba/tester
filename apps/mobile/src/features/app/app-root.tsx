@@ -35,6 +35,7 @@ import { HiveColors, Radii } from '@/constants/theme';
 import {
   AlertBanner,
   ComingSoonCard,
+  ComingSoonRow,
   GradientActionCard,
   GradientActionRow,
   SoftGreenPanel,
@@ -1121,59 +1122,88 @@ function ResourcesScreen({ nav }: { nav: Navigation }) {
   const app = useAppState();
   const [selectedCategory, setSelectedCategory] = useState('All');
   const categories = ['All', 'Food', 'Housing', 'Healthcare', 'Utility', 'Job'];
-  const filteredVideos = selectedCategory === 'All' ? allVideos.filter((video) => video.category === 'resources') : allVideos.filter((video) => video.title.toLowerCase().includes(selectedCategory.toLowerCase()) || video.tags.join(' ').toLowerCase().includes(selectedCategory.toLowerCase()));
-  const filteredResources = selectedCategory === 'All' ? nearbyResources : nearbyResources.filter((resource) => resource.tag.toLowerCase().includes(selectedCategory.toLowerCase()));
+  const filteredResources =
+    selectedCategory === 'All'
+      ? nearbyResources
+      : nearbyResources.filter((resource) =>
+          resource.tag.toLowerCase().includes(selectedCategory.toLowerCase())
+        );
 
   return (
     <View style={styles.tabScreen}>
-      <AppHeader title="Resources" onAvatar={() => nav.push('account')} profileImageUri={app.profile.profileImageUri} />
-      <ScrollView contentContainerStyle={styles.resourceContent}>
+      <View style={styles.centeredHeader}>
+        <View style={styles.headerSpacer} />
+        <Text style={styles.centeredHeaderTitle}>Resources</Text>
+        <AvatarButton imageUri={app.profile.profileImageUri} onPress={() => nav.push('account')} />
+      </View>
+
+      <ScrollView contentContainerStyle={styles.resourceContent} showsVerticalScrollIndicator={false}>
+        <Text style={styles.pageSectionTitle}>Government Assistance</Text>
+        <View style={styles.sectionInset}>
+          <GradientActionRow
+            icon="doc"
+            gradient="benefits"
+            title="Start Your Benefits Application"
+            subtitle="Penny pre-fills SNAP, Medicaid, WIC & more — you review before submitting"
+            onPress={() => nav.push('government')}
+          />
+        </View>
+
+        <View style={styles.pennyNote}>
+          <Text style={styles.pennyNoteEmoji}>🐝</Text>
+          <Text style={styles.pennyNoteText}>
+            We&apos;ll guide you through your application step by step. Before anything is printed or
+            sent, you&apos;ll have the chance to review every detail and make sure it&apos;s ready to go
+            to the right government office.
+          </Text>
+        </View>
+
+        {/* Category filtering is newer than the reference build; kept, restyled. */}
         <HorizontalScroller>
           {categories.map((category) => (
-            <Chip key={category} label={category} selected={selectedCategory === category} onPress={() => setSelectedCategory(category)} />
+            <Chip
+              key={category}
+              label={category}
+              selected={selectedCategory === category}
+              onPress={() => setSelectedCategory(category)}
+            />
           ))}
         </HorizontalScroller>
-        <Card style={styles.benefitsBanner}>
-          <View style={rowStyles.row}>
-            <View style={styles.infoIconLarge}>
-              <HiveIcon name="doc" size={18} color={HiveColors.green} />
-            </View>
-            <View style={styles.flexOne}>
-              <Text style={styles.infoTitleStrong}>Start Your Benefits Application Today</Text>
-              <Text style={styles.infoSubtitleText}>Programs available based on your location</Text>
-            </View>
-            <AppButton title="Start" onPress={() => nav.push('government')} style={styles.shortButton} />
-          </View>
-        </Card>
-        <SectionHeader title="How-To Videos" onPress={() => nav.push('resourcesHub')} />
-        <HorizontalScroller>
-          {filteredVideos.length > 0 ? (
-            filteredVideos.map((video) => <VideoCard key={video.id} video={video} onPress={() => nav.push('video', { video })} />)
-          ) : (
-            <EmptyState title="No videos in this category yet." />
-          )}
-        </HorizontalScroller>
-        {selectedCategory === 'All' || ['Food', 'Housing', 'Healthcare'].includes(selectedCategory) ? (
-          <>
-            <SectionHeader title="Sponsored/Ad placement" />
-            <View style={styles.twoColumn}>
-              <SponsoredCard name="Non Profit" price="$3.80 / month" retail="Retail: $45" savings="Save 92%" />
-              <SponsoredCard name="Cost Plus Drugs" price="$3.90 / month" retail="Retail: $30" savings="Save 87%" />
-            </View>
-            <SectionHeader title="Emergency Help Section" />
-            <View style={styles.twoColumn}>
-              {nearbyResources.slice(0, 2).map((resource) => (
-                <EmergencyCard key={resource.id} resource={resource} onPress={() => nav.push('resourceDetails', { resource })} />
-              ))}
-            </View>
-          </>
-        ) : null}
+
         <SectionHeader title="Resources Near You" onPress={() => nav.push('resourceSearch')} />
         {filteredResources.length > 0 ? (
-          filteredResources.map((resource) => <ResourceRow key={resource.id} resource={resource} onPress={() => nav.push('resourceDetails', { resource })} />)
+          filteredResources.map((resource) => (
+            <ResourceRow
+              key={resource.id}
+              resource={resource}
+              onPress={() => nav.push('resourceDetails', { resource })}
+            />
+          ))
         ) : (
           <EmptyState title="No resources match this filter." icon="map" />
         )}
+
+        <Text style={styles.homeSectionTitle}>More Coming Soon</Text>
+        <View style={styles.comingSoonList}>
+          <ComingSoonRow
+            icon="play"
+            title="How-To Video Guides"
+            subtitle="Step-by-step guides for SNAP, housing & more"
+            onPress={() => nav.push('resourcesHub')}
+          />
+          <ComingSoonRow
+            icon="cart"
+            title="Deals & Discounts"
+            subtitle="Curated EBT-friendly deals near you"
+            onPress={() => nav.push('deals')}
+          />
+          <ComingSoonRow
+            icon="shield"
+            title="Emergency Help"
+            subtitle="Urgent housing, food, and crisis resources"
+            onPress={() => nav.push('resourceSearch')}
+          />
+        </View>
       </ScrollView>
     </View>
   );
@@ -2141,36 +2171,26 @@ function VideoCard({ video, onPress, wide = false }: { video: VideoItem; onPress
 
 function ResourceRow({ resource, onPress }: { resource: ResourceItem; onPress: () => void }) {
   return (
-    <Pressable onPress={onPress} style={({ pressed }) => [styles.resourceRow, pressed && styles.pressed]}>
-      <View style={styles.flexOne}>
-        <Chip label={resource.tag} tone="green" />
-        <Text style={styles.resourceName}>{resource.name}</Text>
-        <Text style={styles.miniMuted}>{resource.distance} - {resource.hours}</Text>
-        <Text style={styles.cardBody}>{resource.description}</Text>
+    <View style={styles.resourceCard}>
+      <View style={styles.resourceTag}>
+        <Text style={styles.resourceTagText}>{resource.tag}</Text>
       </View>
-      <HiveIcon name="next" size={14} color={HiveColors.textSecondary} />
-    </Pressable>
-  );
-}
-
-function SponsoredCard({ name, price, retail, savings }: { name: string; price: string; retail: string; savings: string }) {
-  return (
-    <Card style={styles.columnCard}>
-      <Text style={styles.cardTitle}>{name}</Text>
-      <Text style={styles.cardBody}>{price}</Text>
-      <Text style={styles.miniMuted}>{retail}</Text>
-      <Text style={styles.greenLink}>{savings}</Text>
-    </Card>
-  );
-}
-
-function EmergencyCard({ resource, onPress }: { resource: ResourceItem; onPress: () => void }) {
-  return (
-    <Card style={styles.columnCard} onPress={onPress}>
-      <Chip label={resource.tag} tone="warning" />
-      <Text style={styles.cardTitle}>{resource.name}</Text>
-      <Text style={styles.miniMuted}>{resource.distance} - Mon-Fri</Text>
-    </Card>
+      <Text style={styles.resourceName}>{resource.name}</Text>
+      <View style={styles.resourceMetaRow}>
+        <HiveIcon name="map" size={12} color={HiveColors.textSecondary} />
+        <Text style={styles.miniMuted}>
+          {resource.distance} · {resource.hours}
+        </Text>
+      </View>
+      <Text style={styles.cardBody}>{resource.description}</Text>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={`How to apply at ${resource.name}`}
+        onPress={onPress}
+        style={({ pressed }) => [styles.applyButton, pressed && styles.pressed]}>
+        <Text style={styles.applyButtonText}>How to Apply</Text>
+      </Pressable>
+    </View>
   );
 }
 
@@ -2528,6 +2548,67 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     marginBottom: 18,
   },
+  // Centred screen title with the avatar trailing, as the reference tabs use.
+  centeredHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingTop: 8,
+    paddingBottom: 8,
+  },
+  headerSpacer: { width: 38 },
+  centeredHeaderTitle: {
+    flex: 1,
+    textAlign: 'center',
+    color: HiveColors.text,
+    fontSize: 20,
+    fontWeight: '700',
+  },
+  pageSectionTitle: {
+    color: HiveColors.text,
+    fontSize: 24,
+    fontWeight: '700',
+    paddingHorizontal: 20,
+    paddingTop: 10,
+    marginBottom: 12,
+  },
+  sectionInset: { marginHorizontal: 20, marginBottom: 16 },
+  comingSoonList: { gap: 8, marginHorizontal: 20, marginBottom: 20 },
+  pennyNote: {
+    flexDirection: 'row',
+    gap: 10,
+    paddingHorizontal: 20,
+    marginBottom: 20,
+  },
+  pennyNoteEmoji: { fontSize: 20 },
+  pennyNoteText: { flex: 1, color: HiveColors.textSecondary, fontSize: 14, lineHeight: 20 },
+  resourceCard: {
+    marginHorizontal: 20,
+    marginBottom: 14,
+    padding: 16,
+    borderRadius: Radii.lg,
+    borderWidth: 1,
+    borderColor: HiveColors.border,
+    backgroundColor: HiveColors.white,
+    gap: 8,
+    alignItems: 'flex-start',
+  },
+  resourceTag: {
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: Radii.sm,
+    backgroundColor: HiveColors.greenLight,
+  },
+  resourceTagText: { color: HiveColors.green, fontSize: 13, fontWeight: '700' },
+  resourceMetaRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  applyButton: {
+    marginTop: 4,
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 10,
+    backgroundColor: HiveColors.green,
+  },
+  applyButtonText: { color: HiveColors.white, fontSize: 15, fontWeight: '600' },
   homeSectionTitle: {
     color: HiveColors.text,
     fontSize: 17,
