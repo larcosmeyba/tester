@@ -264,7 +264,8 @@ export function AppButton({
           variant === 'secondary' && styles.buttonTextSecondary,
           variant === 'plain' && styles.buttonTextPlain,
           (variant === 'danger' || variant === 'dark') && styles.buttonTextPrimary,
-        ]}>
+        ]}
+        numberOfLines={2}>
         {title}
       </Text>
     </Pressable>
@@ -725,6 +726,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
     letterSpacing: 0,
+    flexShrink: 1,
+    textAlign: 'center',
   },
   buttonTextPrimary: {
     color: HiveColors.white,

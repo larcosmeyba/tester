@@ -26,6 +26,11 @@ type MealPlanContextValue = {
   resetRequest: () => void;
 
   plan: MealPlan | null;
+  /**
+   * Calendar date that plan day 1 falls on, so the week strip and the plan's
+   * day indices line up. Set when a plan is generated or loaded.
+   */
+  planStartDate: Date;
   isGenerating: boolean;
   error: unknown;
 
@@ -44,9 +49,16 @@ type MealPlanContextValue = {
 
 const MealPlanContext = createContext<MealPlanContextValue | null>(null);
 
+function startOfToday(): Date {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return today;
+}
+
 export function MealPlanProvider({ children }: { children: ReactNode }) {
   const [request, setRequest] = useState<PlanRequest>(createEmptyPlanRequest);
   const [plan, setPlan] = useState<MealPlan | null>(null);
+  const [planStartDate, setPlanStartDate] = useState<Date>(() => startOfToday());
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<unknown>(null);
   const [selectedRecipeIds, setSelectedRecipeIds] = useState<string[]>([]);
@@ -72,6 +84,7 @@ export function MealPlanProvider({ children }: { children: ReactNode }) {
       try {
         const generated = await mealPlanService.generate(request, { userId, signal });
         setPlan(generated);
+        setPlanStartDate(startOfToday());
         return generated;
       } catch (caught) {
         setError(caught);
@@ -137,6 +150,7 @@ export function MealPlanProvider({ children }: { children: ReactNode }) {
       updateRequest,
       resetRequest,
       plan,
+      planStartDate,
       isGenerating,
       error,
       selectedRecipeIds,
@@ -153,6 +167,7 @@ export function MealPlanProvider({ children }: { children: ReactNode }) {
       updateRequest,
       resetRequest,
       plan,
+      planStartDate,
       isGenerating,
       error,
       selectedRecipeIds,

@@ -106,15 +106,26 @@ export function FloatingPill({
 
 /** Row that holds floating pills above the tab bar without blocking scroll. */
 export function FloatingPillRow({ children }: { children: React.ReactNode }) {
+  const barSpace = useFloatingTabBarSpace();
   return (
-    <View pointerEvents="box-none" style={styles.pillRow}>
+    <View pointerEvents="box-none" style={[styles.pillRow, { bottom: barSpace + 16 }]}>
       {children}
     </View>
   );
 }
 
-/** Height the tab bar occupies, so scroll views can pad their content past it. */
+/** Height of the bar itself, excluding the safe-area inset beneath it. */
 export const FLOATING_TAB_BAR_HEIGHT = 68;
+
+/**
+ * Total space the tab bar occupies, inset included. Anything pinned above the
+ * bar must offset by this, or it ends up hidden behind it on devices with a
+ * home indicator.
+ */
+export function useFloatingTabBarSpace(): number {
+  const insets = useSafeAreaInsets();
+  return FLOATING_TAB_BAR_HEIGHT + Math.max(insets.bottom, 12);
+}
 
 const styles = StyleSheet.create({
   tabBarWrap: {
@@ -160,7 +171,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 16,
     right: 16,
-    bottom: FLOATING_TAB_BAR_HEIGHT + 24,
     flexDirection: 'row',
     alignItems: 'flex-end',
   },
