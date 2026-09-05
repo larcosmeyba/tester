@@ -1,0 +1,15 @@
+mutation RegisterPushToken($input: RegisterPushTokenInput!) {
+  registerPushToken(input: $input) {
+    id
+    token
+    platform
+    deviceId
+    createdAt
+    updatedAt
+    lastSeenAt
+  }
+}
+
+mutation DeletePushToken($token: String!) {
+  deletePushToken(token: $token)
+}

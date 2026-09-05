@@ -1,0 +1,4 @@
+project_id = "your-gcp-project-id"
+
+auth_cors_allowed_origins = "https://app.example.com"
+auth_email_from           = "Help The Hive <auth@example.com>"

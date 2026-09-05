@@ -1,0 +1,317 @@
+[
+  {
+    "ingredient_id": "chicken",
+    "unit_price": 3.79,
+    "package_size": 1.5,
+    "divisible": false,
+    "tier": 4,
+    "source": "hth_curated",
+    "geographic_scope": "us"
+  },
+  {
+    "ingredient_id": "chicken_breast",
+    "unit_price": 3.99,
+    "package_size": 1.5,
+    "divisible": false,
+    "tier": 3,
+    "source": "bls_ap:APU0000706111",
+    "geographic_scope": "us"
+  },
+  {
+    "ingredient_id": "chicken_thigh_bs",
+    "unit_price": 3.49,
+    "package_size": 1.5,
+    "divisible": false,
+    "tier": 3,
+    "source": "bls_ap:est",
+    "geographic_scope": "us"
+  },
+  {
+    "ingredient_id": "ground_turkey",
+    "unit_price": 5.49,
+    "package_size": 1.0,
+    "divisible": false,
+    "tier": 4,
+    "source": "hth_curated",
+    "geographic_scope": "us"
+  },
+  {
+    "ingredient_id": "ground_beef_85",
+    "unit_price": 5.99,
+    "package_size": 1.0,
+    "divisible": false,
+    "tier": 3,
+    "source": "bls_ap:APU0000703112",
+    "geographic_scope": "us"
+  },
+  {
+    "ingredient_id": "eggs",
+    "unit_price": 0.274167,
+    "package_size": 12,
+    "divisible": false,
+    "tier": 3,
+    "source": "bls_ap:APU0000708111",
+    "geographic_scope": "us"
+  },
+  {
+    "ingredient_id": "tuna_canned",
+    "unit_price": 1.29,
+    "package_size": 1,
+    "divisible": false,
+    "tier": 4,
+    "source": "hth_curated",
+    "geographic_scope": "us"
+  },
+  {
+    "ingredient_id": "peanut_butter",
+    "unit_price": 0.186875,
+    "package_size": 16,
+    "divisible": false,
+    "tier": 3,
+    "source": "bls_ap:APU0000716141",
+    "geographic_scope": "us"
+  },
+  {
+    "ingredient_id": "lentils_dry",
+    "unit_price": 0.111875,
+    "package_size": 16,
+    "divisible": false,
+    "tier": 4,
+    "source": "hth_curated",
+    "geographic_scope": "us"
+  },
+  {
+    "ingredient_id": "black_beans_canned",
+    "unit_price": 0.99,
+    "package_size": 1,
+    "divisible": false,
+    "tier": 4,
+    "source": "hth_curated",
+    "geographic_scope": "us"
+  },
+  {
+    "ingredient_id": "rice_white",
+    "unit_price": 1.29,
+    "package_size": 2,
+    "divisible": false,
+    "tier": 3,
+    "source": "bls_ap:APU0000701312",
+    "geographic_scope": "us"
+  },
+  {
+    "ingredient_id": "pasta",
+    "unit_price": 1.29,
+    "package_size": 1,
+    "divisible": false,
+    "tier": 3,
+    "source": "ers_est",
+    "geographic_scope": "us"
+  },
+  {
+    "ingredient_id": "oats",
+    "unit_price": 0.149444,
+    "package_size": 18,
+    "divisible": false,
+    "tier": 4,
+    "source": "hth_curated",
+    "geographic_scope": "us"
+  },
+  {
+    "ingredient_id": "corn_tortillas",
+    "unit_price": 2.49,
+    "package_size": 1,
+    "divisible": false,
+    "tier": 4,
+    "source": "hth_curated",
+    "geographic_scope": "us"
+  },
+  {
+    "ingredient_id": "diced_tomatoes_can",
+    "unit_price": 1.19,
+    "package_size": 1,
+    "divisible": false,
+    "tier": 4,
+    "source": "hth_curated",
+    "geographic_scope": "us"
+  },
+  {
+    "ingredient_id": "bell_pepper",
+    "unit_price": 1.19,
+    "package_size": 1,
+    "divisible": false,
+    "tier": 3,
+    "source": "ers_fv_2023:peppers_bell",
+    "geographic_scope": "us"
+  },
+  {
+    "ingredient_id": "frozen_mixed_veg",
+    "unit_price": 0.124167,
+    "package_size": 12,
+    "divisible": false,
+    "tier": 4,
+    "source": "hth_curated",
+    "geographic_scope": "us"
+  },
+  {
+    "ingredient_id": "spinach_fresh",
+    "unit_price": 2.99,
+    "package_size": 1,
+    "divisible": false,
+    "tier": 4,
+    "source": "hth_curated",
+    "geographic_scope": "us"
+  },
+  {
+    "ingredient_id": "carrots",
+    "unit_price": 1.09,
+    "package_size": 1,
+    "divisible": false,
+    "tier": 3,
+    "source": "ers_fv_2023:carrots",
+    "geographic_scope": "us"
+  },
+  {
+    "ingredient_id": "potatoes",
+    "unit_price": 0.8,
+    "package_size": 5,
+    "divisible": false,
+    "tier": 3,
+    "source": "bls_ap:APU0000712112",
+    "geographic_scope": "us"
+  },
+  {
+    "ingredient_id": "sweet_potato",
+    "unit_price": 1.29,
+    "package_size": 1,
+    "divisible": true,
+    "tier": 3,
+    "source": "ers_fv_2023:sweet_potatoes",
+    "geographic_scope": "us"
+  },
+  {
+    "ingredient_id": "cabbage",
+    "unit_price": 0.89,
+    "package_size": 2,
+    "divisible": false,
+    "tier": 3,
+    "source": "ers_fv_2023:cabbage",
+    "geographic_scope": "us"
+  },
+  {
+    "ingredient_id": "onion",
+    "unit_price": 1.19,
+    "package_size": 3,
+    "divisible": false,
+    "tier": 3,
+    "source": "ers_fv_2023:onions",
+    "geographic_scope": "us"
+  },
+  {
+    "ingredient_id": "garlic",
+    "unit_price": 0.69,
+    "package_size": 1,
+    "divisible": false,
+    "tier": 4,
+    "source": "hth_curated",
+    "geographic_scope": "us"
+  },
+  {
+    "ingredient_id": "lime",
+    "unit_price": 0.33,
+    "package_size": 1,
+    "divisible": false,
+    "tier": 3,
+    "source": "ers_fv_2023:limes",
+    "geographic_scope": "us"
+  },
+  {
+    "ingredient_id": "banana",
+    "unit_price": 0.59,
+    "package_size": 1,
+    "divisible": true,
+    "tier": 3,
+    "source": "bls_ap:APU0000711211",
+    "geographic_scope": "us"
+  },
+  {
+    "ingredient_id": "cilantro",
+    "unit_price": 0.89,
+    "package_size": 1,
+    "divisible": false,
+    "tier": 4,
+    "source": "hth_curated",
+    "geographic_scope": "us"
+  },
+  {
+    "ingredient_id": "salsa",
+    "unit_price": 0.174375,
+    "package_size": 16,
+    "divisible": false,
+    "tier": 4,
+    "source": "hth_curated",
+    "geographic_scope": "us"
+  },
+  {
+    "ingredient_id": "soy_sauce",
+    "unit_price": 0.229,
+    "package_size": 10,
+    "divisible": false,
+    "tier": 4,
+    "source": "hth_curated",
+    "geographic_scope": "us"
+  },
+  {
+    "ingredient_id": "coconut_milk",
+    "unit_price": 1.99,
+    "package_size": 1,
+    "divisible": false,
+    "tier": 4,
+    "source": "hth_curated",
+    "geographic_scope": "us"
+  },
+  {
+    "ingredient_id": "olive_oil",
+    "unit_price": 0.47,
+    "package_size": 17,
+    "divisible": false,
+    "tier": 4,
+    "source": "hth_curated",
+    "geographic_scope": "us"
+  },
+  {
+    "ingredient_id": "milk",
+    "unit_price": 2.19,
+    "package_size": 1,
+    "divisible": false,
+    "tier": 3,
+    "source": "bls_ap:APU0000709112",
+    "geographic_scope": "us"
+  },
+  {
+    "ingredient_id": "spices_common",
+    "unit_price": 0.1,
+    "package_size": 30,
+    "divisible": false,
+    "tier": 4,
+    "source": "hth_curated",
+    "geographic_scope": "us"
+  },
+  {
+    "ingredient_id": "salt",
+    "unit_price": 0.01,
+    "package_size": 100,
+    "divisible": false,
+    "tier": 4,
+    "source": "hth_curated",
+    "geographic_scope": "us"
+  },
+  {
+    "ingredient_id": "black_pepper",
+    "unit_price": 0.03,
+    "package_size": 50,
+    "divisible": false,
+    "tier": 4,
+    "source": "hth_curated",
+    "geographic_scope": "us"
+  }
+]

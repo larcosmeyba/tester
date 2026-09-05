@@ -1,0 +1,19 @@
+services:
+  postgres:
+    image: pgvector/pgvector:0.8.6-pg18-trixie
+    ports:
+      - "54328:5432"
+    environment:
+      POSTGRES_USER: helpthehive
+      POSTGRES_PASSWORD: helpthehive
+      POSTGRES_DB: helpthehive
+    volumes:
+      - hth_server_postgres_18:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U helpthehive -d helpthehive"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  hth_server_postgres_18:

@@ -1,0 +1,116 @@
+steps:
+  - id: test
+    name: node:22-bookworm-slim
+    entrypoint: bash
+    waitFor: ['-']
+    args:
+      - -ceu
+      - |
+        corepack enable
+        pnpm install --filter @helpthehive/auth --frozen-lockfile
+        pnpm --filter @helpthehive/auth typecheck
+        pnpm --filter @helpthehive/auth test
+
+  - id: cache-pull
+    name: gcr.io/cloud-builders/docker
+    entrypoint: bash
+    waitFor: ['-']
+    args:
+      - -ceu
+      - |
+        docker pull '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/auth:buildcache' || true
+
+  - id: build
+    name: gcr.io/cloud-builders/docker
+    env: [DOCKER_BUILDKIT=1]
+    waitFor: [cache-pull]
+    args:
+      - build
+      - --file=Dockerfile.auth
+      - --cache-from=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/auth:buildcache
+      - --build-arg=BUILDKIT_INLINE_CACHE=1
+      - --tag=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/auth:$BUILD_ID
+      - --tag=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/auth:buildcache
+      - .
+
+  - id: push
+    name: gcr.io/cloud-builders/docker
+    entrypoint: bash
+    waitFor: [test, build]
+    args:
+      - -ceu
+      - |
+        docker push '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/auth:$BUILD_ID'
+        docker push '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/auth:buildcache'
+
+  - id: migrate-if-needed
+    name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    entrypoint: bash
+    args:
+      - -ceu
+      - |
+        CURRENT_SHA="$$(gcloud run services describe '${_SERVICE}' --project='$PROJECT_ID' --region='${_REGION}' --format='value(metadata.labels.hth-migrations-sha)' 2>/dev/null || true)"
+        if [[ "$${CURRENT_SHA}" == "${_MIGRATIONS_SHA}" ]]; then
+          echo 'Auth migrations unchanged; skipping migration job.'
+          exit 0
+        fi
+        gcloud run jobs update '${_MIGRATION_JOB}' \
+          --project='$PROJECT_ID' \
+          --region='${_REGION}' \
+          --image='${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/auth:$BUILD_ID' \
+          --service-account='${_MIGRATION_SERVICE_ACCOUNT}' \
+          --set-cloudsql-instances='${_INSTANCE_CONNECTION_NAME}' \
+          --set-secrets='DATABASE_URL=${_DATABASE_SECRET}:latest' \
+          --command=node \
+          --args=dist/migrate.js \
+          --tasks=1 \
+          --max-retries=0 \
+          --task-timeout=10m \
+          --quiet
+        gcloud run jobs execute '${_MIGRATION_JOB}' \
+          --project='$PROJECT_ID' \
+          --region='${_REGION}' \
+          --wait
+
+  - id: deploy
+    name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    entrypoint: bash
+    args:
+      - -ceu
+      - |
+        AUTH_URL="$$(gcloud run services describe '${_SERVICE}' --project='$PROJECT_ID' --region='${_REGION}' --format='value(status.url)')"
+        gcloud run deploy '${_SERVICE}' \
+          --project='$PROJECT_ID' \
+          --region='${_REGION}' \
+          --image='${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/auth:$BUILD_ID' \
+          --service-account='${_RUNTIME_SERVICE_ACCOUNT}' \
+          --set-cloudsql-instances='${_INSTANCE_CONNECTION_NAME}' \
+          --set-secrets='DATABASE_URL=${_DATABASE_SECRET}:latest,BETTER_AUTH_SECRET=${_BETTER_AUTH_SECRET}:latest,BETTER_AUTH_API_KEY=${_BETTER_AUTH_API_KEY}:latest,RESEND_API_KEY=${_RESEND_API_KEY}:latest,APPLE_CLIENT_ID=${_APPLE_CLIENT_ID}:latest,APPLE_TEAM_ID=${_APPLE_TEAM_ID}:latest,APPLE_KEY_ID=${_APPLE_KEY_ID}:latest,APPLE_PRIVATE_KEY=${_APPLE_PRIVATE_KEY}:latest,APPLE_APP_BUNDLE_IDENTIFIER=${_APPLE_APP_BUNDLE_IDENTIFIER}:latest,GOOGLE_CLIENT_ID=${_GOOGLE_CLIENT_ID}:latest,GOOGLE_CLIENT_SECRET=${_GOOGLE_CLIENT_SECRET}:latest' \
+          --set-env-vars="NODE_ENV=production,BETTER_AUTH_URL=$${AUTH_URL},BETTER_AUTH_AUDIENCE=${_BETTER_AUTH_AUDIENCE},AUTH_CORS_ALLOWED_ORIGINS=${_AUTH_CORS_ALLOWED_ORIGINS},MOBILE_AUTH_CALLBACK_URL=${_MOBILE_AUTH_CALLBACK_URL},AUTH_EMAIL_FROM=${_AUTH_EMAIL_FROM}" \
+          --port=8080 \
+          --startup-probe='initialDelaySeconds=0,timeoutSeconds=3,periodSeconds=3,failureThreshold=10,httpGet.port=8080,httpGet.path=/healthz' \
+          --liveness-probe='initialDelaySeconds=10,timeoutSeconds=3,periodSeconds=10,failureThreshold=3,httpGet.port=8080,httpGet.path=/healthz' \
+          --min-instances='${_MIN_INSTANCES}' \
+          --max-instances='${_MAX_INSTANCES}' \
+          --update-labels='hth-migrations-sha=${_MIGRATIONS_SHA}' \
+          --allow-unauthenticated \
+          --quiet
+
+  - id: verify
+    name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    entrypoint: bash
+    args:
+      - -ceu
+      - |
+        URL="$$(gcloud run services describe '${_SERVICE}' --project='$PROJECT_ID' --region='${_REGION}' --format='value(status.url)')"
+        # Cloud Run validates /healthz through the configured internal probes;
+        # its public frontend reserves some paths ending in "z".
+        curl --fail --retry 8 --retry-all-errors --retry-delay 3 "$${URL}/readyz"
+        curl --fail --retry 8 --retry-all-errors --retry-delay 3 "$${URL}/api/auth/ok"
+        curl --fail --retry 8 --retry-all-errors --retry-delay 3 "$${URL}/api/auth/jwks"
+
+images:
+  - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/auth:$BUILD_ID
+
+options:
+  logging: CLOUD_LOGGING_ONLY

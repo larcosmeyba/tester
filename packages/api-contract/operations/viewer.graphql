@@ -1,0 +1,136 @@
+query Viewer {
+  viewer {
+    user {
+      id
+      authSubject
+      email
+      createdAt
+      updatedAt
+    }
+    profile {
+      handle
+      firstName
+      lastName
+      phone
+      zip
+      householdSize
+      profileImageUri
+      createdAt
+      updatedAt
+    }
+    preferences {
+      weeklyBudget
+      preferredFinanceTopics
+      preferredResources
+      wantsGovAssistance
+      lastMealPlanDate
+      notificationsEnabled
+      expiringPantryNotificationsEnabled
+      weeklyMealPlanNotificationsEnabled
+      resourceReminderNotificationsEnabled
+      createdAt
+      updatedAt
+    }
+    onboardingState {
+      hasCompletedOnboarding
+      completedAt
+      createdAt
+      updatedAt
+    }
+  }
+}
+
+mutation UpdateProfile($input: UpdateProfileInput!) {
+  updateProfile(input: $input) {
+    handle
+    firstName
+    lastName
+    phone
+    zip
+    householdSize
+    profileImageUri
+    createdAt
+    updatedAt
+  }
+}
+
+mutation UpdatePreferences($input: UpdatePreferencesInput!) {
+  updatePreferences(input: $input) {
+    weeklyBudget
+    preferredFinanceTopics
+    preferredResources
+    wantsGovAssistance
+    lastMealPlanDate
+    notificationsEnabled
+    expiringPantryNotificationsEnabled
+    weeklyMealPlanNotificationsEnabled
+    resourceReminderNotificationsEnabled
+    createdAt
+    updatedAt
+  }
+}
+
+mutation CompleteOnboarding($input: CompleteOnboardingInput!) {
+  completeOnboarding(input: $input) {
+    user {
+      id
+      authSubject
+      email
+      createdAt
+      updatedAt
+    }
+    profile {
+      handle
+      firstName
+      lastName
+      phone
+      zip
+      householdSize
+      profileImageUri
+      createdAt
+      updatedAt
+    }
+    preferences {
+      weeklyBudget
+      preferredFinanceTopics
+      preferredResources
+      wantsGovAssistance
+      lastMealPlanDate
+      notificationsEnabled
+      expiringPantryNotificationsEnabled
+      weeklyMealPlanNotificationsEnabled
+      resourceReminderNotificationsEnabled
+      createdAt
+      updatedAt
+    }
+    onboardingState {
+      hasCompletedOnboarding
+      completedAt
+      createdAt
+      updatedAt
+    }
+  }
+}
+
+query HandleAvailability($handle: String!) {
+  handleAvailability(handle: $handle) {
+    handle
+    available
+    reason
+    retryAfter
+  }
+}
+
+mutation UpdateHandle($handle: String!) {
+  updateHandle(handle: $handle) {
+    handle
+    firstName
+    lastName
+    phone
+    zip
+    householdSize
+    profileImageUri
+    createdAt
+    updatedAt
+  }
+}

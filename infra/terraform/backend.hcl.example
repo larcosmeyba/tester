@@ -1,0 +1,2 @@
+# Create this bucket once before terraform init. Keep object versioning enabled.
+bucket = "your-project-helpthehive-terraform-state"

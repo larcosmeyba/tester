@@ -1,0 +1,21 @@
+schema:
+  - ../../packages/api-contract/schema.graphql
+
+exec:
+  filename: internal/graphql/generated/generated.go
+  package: generated
+
+model:
+  filename: internal/graphql/model/models_gen.go
+  package: model
+
+resolver:
+  layout: follow-schema
+  dir: internal/graphql
+  package: graphql
+  filename_template: '{name}.resolvers.go'
+
+models:
+  ID:
+    model:
+      - github.com/99designs/gqlgen/graphql.ID

@@ -1,0 +1,23 @@
+{
+  "name": "@helpthehive/workspace",
+  "version": "1.0.0",
+  "private": true,
+  "packageManager": "pnpm@11.9.0",
+  "scripts": {
+    "mobile": "pnpm --filter @helpthehive/mobile",
+    "auth": "pnpm --filter @helpthehive/auth",
+    "auth:dev": "pnpm --filter @helpthehive/auth dev",
+    "auth:test": "pnpm --filter @helpthehive/auth test",
+    "auth:migrate": "pnpm --filter @helpthehive/auth migrate",
+    "start": "pnpm --filter @helpthehive/mobile start",
+    "android": "pnpm --filter @helpthehive/mobile android",
+    "ios": "pnpm --filter @helpthehive/mobile ios",
+    "web": "pnpm --filter @helpthehive/mobile web",
+    "api:generate": "pnpm --filter @helpthehive/api-contract generate",
+    "server": "cd apps/server && PATH=/usr/local/go/bin:$PATH go run ./cmd/server",
+    "server:generate": "cd apps/server && PATH=/usr/local/go/bin:$PATH make generate",
+    "server:test": "cd apps/server && GOCACHE=\"$PWD/.gocache\" PATH=/usr/local/go/bin:$PATH go test ./...",
+    "lint": "pnpm --filter @helpthehive/mobile lint",
+    "typecheck": "pnpm --filter @helpthehive/mobile typecheck && pnpm --filter @helpthehive/auth typecheck"
+  }
+}

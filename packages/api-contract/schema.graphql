@@ -1,0 +1,193 @@
+schema {
+  query: Query
+  mutation: Mutation
+}
+
+type Query {
+  viewer: Viewer!
+  handleAvailability(handle: String!): HandleAvailability!
+  pantryItems(filter: PantryItemFilterInput): [PantryItem!]!
+  pantryWasteStats: WasteStats!
+}
+
+type Mutation {
+  deleteViewerData: Boolean!
+  updateProfile(input: UpdateProfileInput!): Profile!
+  updateHandle(handle: String!): Profile!
+  updatePreferences(input: UpdatePreferencesInput!): AppPreferences!
+  completeOnboarding(input: CompleteOnboardingInput!): Viewer!
+  addPantryItem(input: AddPantryItemInput!): PantryItem!
+  updatePantryItem(id: ID!, input: UpdatePantryItemInput!): PantryItem!
+  markPantryItemUsed(id: ID!): PantryItem!
+  deletePantryItem(id: ID!): Boolean!
+  registerPushToken(input: RegisterPushTokenInput!): PushToken!
+  deletePushToken(token: String!): Boolean!
+}
+
+type Viewer {
+  user: User!
+  profile: Profile!
+  preferences: AppPreferences!
+  onboardingState: OnboardingState!
+}
+
+type User {
+  id: ID!
+  authSubject: String!
+  email: String
+  createdAt: String!
+  updatedAt: String!
+}
+
+type Profile {
+  handle: String
+  firstName: String!
+  lastName: String!
+  phone: String!
+  zip: String!
+  householdSize: Int!
+  profileImageUri: String
+  createdAt: String!
+  updatedAt: String!
+}
+
+type HandleAvailability {
+  handle: String!
+  available: Boolean!
+  reason: HandleAvailabilityReason!
+  retryAfter: String
+}
+
+enum HandleAvailabilityReason {
+  AVAILABLE
+  CURRENT
+  INVALID_FORMAT
+  RESERVED
+  UNAVAILABLE
+  COOLDOWN
+}
+
+type AppPreferences {
+  weeklyBudget: String!
+  preferredFinanceTopics: [String!]!
+  preferredResources: [String!]!
+  wantsGovAssistance: Boolean!
+  lastMealPlanDate: String
+  notificationsEnabled: Boolean!
+  expiringPantryNotificationsEnabled: Boolean!
+  weeklyMealPlanNotificationsEnabled: Boolean!
+  resourceReminderNotificationsEnabled: Boolean!
+  createdAt: String!
+  updatedAt: String!
+}
+
+type OnboardingState {
+  hasCompletedOnboarding: Boolean!
+  completedAt: String
+  createdAt: String!
+  updatedAt: String!
+}
+
+type PantryItem {
+  id: ID!
+  name: String!
+  quantity: String!
+  location: StorageLocation!
+  expirationDate: String!
+  category: String!
+  status: ItemStatus!
+  dateAdded: String!
+  dateUsed: String
+  createdAt: String!
+  updatedAt: String!
+}
+
+type WasteStats {
+  totalAdded: Int!
+  totalUsed: Int!
+  totalExpired: Int!
+  estimatedWasteValue: Float!
+  mostWastedCategories: [String!]!
+}
+
+type PushToken {
+  id: ID!
+  token: String!
+  platform: PushPlatform!
+  deviceId: String
+  createdAt: String!
+  updatedAt: String!
+  lastSeenAt: String!
+}
+
+enum StorageLocation {
+  PANTRY
+  REFRIGERATOR
+  FREEZER
+}
+
+enum ItemStatus {
+  ACTIVE
+  USED
+  EXPIRED
+}
+
+enum PushPlatform {
+  IOS
+  ANDROID
+  WEB
+}
+
+input PantryItemFilterInput {
+  status: ItemStatus
+  location: StorageLocation
+}
+
+input UpdateProfileInput {
+  firstName: String
+  lastName: String
+  phone: String
+  zip: String
+  householdSize: Int
+  profileImageUri: String
+}
+
+input UpdatePreferencesInput {
+  weeklyBudget: String
+  preferredFinanceTopics: [String!]
+  preferredResources: [String!]
+  wantsGovAssistance: Boolean
+  lastMealPlanDate: String
+  notificationsEnabled: Boolean
+  expiringPantryNotificationsEnabled: Boolean
+  weeklyMealPlanNotificationsEnabled: Boolean
+  resourceReminderNotificationsEnabled: Boolean
+}
+
+input CompleteOnboardingInput {
+  profile: UpdateProfileInput
+  preferences: UpdatePreferencesInput
+}
+
+input AddPantryItemInput {
+  name: String!
+  quantity: String!
+  location: StorageLocation!
+  expirationDate: String!
+  category: String!
+}
+
+input UpdatePantryItemInput {
+  name: String
+  quantity: String
+  location: StorageLocation
+  expirationDate: String
+  category: String
+  status: ItemStatus
+}
+
+input RegisterPushTokenInput {
+  token: String!
+  platform: PushPlatform!
+  deviceId: String
+}

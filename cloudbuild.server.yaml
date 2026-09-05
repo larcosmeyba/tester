@@ -1,0 +1,110 @@
+steps:
+  - id: test
+    name: golang:1.27
+    dir: apps/server
+    env: [CGO_ENABLED=0]
+    waitFor: ['-']
+    args: [go, test, ./...]
+
+  - id: cache-pull
+    name: gcr.io/cloud-builders/docker
+    entrypoint: bash
+    waitFor: ['-']
+    args:
+      - -ceu
+      - |
+        docker pull '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/api:buildcache' || true
+
+  - id: build
+    name: gcr.io/cloud-builders/docker
+    env: [DOCKER_BUILDKIT=1]
+    waitFor: [cache-pull]
+    args:
+      - build
+      - --file=Dockerfile.server
+      - --cache-from=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/api:buildcache
+      - --build-arg=BUILDKIT_INLINE_CACHE=1
+      - --tag=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/api:$BUILD_ID
+      - --tag=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/api:buildcache
+      - .
+
+  - id: push
+    name: gcr.io/cloud-builders/docker
+    entrypoint: bash
+    waitFor: [test, build]
+    args:
+      - -ceu
+      - |
+        docker push '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/api:$BUILD_ID'
+        docker push '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/api:buildcache'
+
+  - id: migrate-if-needed
+    name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    entrypoint: bash
+    args:
+      - -ceu
+      - |
+        CURRENT_SHA="$$(gcloud run services describe '${_SERVICE}' --project='$PROJECT_ID' --region='${_REGION}' --format='value(metadata.labels.hth-migrations-sha)' 2>/dev/null || true)"
+        if [[ "$${CURRENT_SHA}" == "${_MIGRATIONS_SHA}" ]]; then
+          echo 'Application migrations unchanged; skipping migration job.'
+          exit 0
+        fi
+        gcloud run jobs update '${_MIGRATION_JOB}' \
+          --project='$PROJECT_ID' \
+          --region='${_REGION}' \
+          --image='${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/api:$BUILD_ID' \
+          --service-account='${_MIGRATION_SERVICE_ACCOUNT}' \
+          --set-cloudsql-instances='${_INSTANCE_CONNECTION_NAME}' \
+          --set-secrets='DATABASE_URL=${_DATABASE_SECRET}:latest' \
+          --command=/app/migrate \
+          --args=up \
+          --tasks=1 \
+          --max-retries=0 \
+          --task-timeout=10m \
+          --quiet
+        gcloud run jobs execute '${_MIGRATION_JOB}' \
+          --project='$PROJECT_ID' \
+          --region='${_REGION}' \
+          --wait
+
+  - id: deploy
+    name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    entrypoint: bash
+    args:
+      - -ceu
+      - |
+        AUTH_URL="$$(gcloud run services describe '${_AUTH_SERVICE}' --project='$PROJECT_ID' --region='${_REGION}' --format='value(status.url)')"
+        gcloud run deploy '${_SERVICE}' \
+          --project='$PROJECT_ID' \
+          --region='${_REGION}' \
+          --image='${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/api:$BUILD_ID' \
+          --service-account='${_RUNTIME_SERVICE_ACCOUNT}' \
+          --set-cloudsql-instances='${_INSTANCE_CONNECTION_NAME}' \
+          --set-secrets='DATABASE_URL=${_DATABASE_SECRET}:latest' \
+          --set-env-vars="APP_ENV=production,HTTP_ADDR=:8080,CORS_ALLOWED_ORIGINS=${_CORS_ALLOWED_ORIGINS},BETTER_AUTH_ISSUER=$${AUTH_URL},BETTER_AUTH_AUDIENCE=${_BETTER_AUTH_AUDIENCE},BETTER_AUTH_JWKS_URL=$${AUTH_URL}/api/auth/jwks" \
+          --port=8080 \
+          --startup-probe='initialDelaySeconds=0,timeoutSeconds=3,periodSeconds=3,failureThreshold=10,httpGet.port=8080,httpGet.path=/healthz' \
+          --liveness-probe='initialDelaySeconds=10,timeoutSeconds=3,periodSeconds=10,failureThreshold=3,httpGet.port=8080,httpGet.path=/healthz' \
+          --min-instances='${_MIN_INSTANCES}' \
+          --max-instances='${_MAX_INSTANCES}' \
+          --update-labels='hth-migrations-sha=${_MIGRATIONS_SHA}' \
+          --allow-unauthenticated \
+          --quiet
+
+  - id: verify
+    name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    entrypoint: bash
+    args:
+      - -ceu
+      - |
+        URL="$$(gcloud run services describe '${_SERVICE}' --project='$PROJECT_ID' --region='${_REGION}' --format='value(status.url)')"
+        # Cloud Run validates /healthz through the configured internal probes;
+        # its public frontend reserves some paths ending in "z".
+        curl --fail --retry 8 --retry-all-errors --retry-delay 3 "$${URL}/readyz"
+        test "$$(curl --silent --output /dev/null --write-out '%{http_code}' --request POST --header 'Content-Type: application/json' --data '{"query":"{ viewer { user { id } } }"}' "$${URL}/graphql")" = 401
+
+images:
+  - ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/api:$BUILD_ID
+
+options:
+  logging: CLOUD_LOGGING_ONLY
