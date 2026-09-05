@@ -6,6 +6,7 @@ import {
   passwordResetCallbackURL,
   verificationCallbackURL,
 } from '@/auth/auth-client';
+import { DEV_PREVIEW_AUTH_ENABLED, DEV_PREVIEW_USER } from '@/auth/dev-preview';
 
 type SignUpInput = {
   name: string;
@@ -203,9 +204,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo<AuthContextValue>(
     () => ({
-      isReady: !session.isPending,
-      isAuthenticated: Boolean(session.data?.session),
-      user: session.data?.user ?? null,
+      // Developer preview stands in for a session so the app shell renders
+      // without a backend. It carries no token, so real requests still fail.
+      isReady: DEV_PREVIEW_AUTH_ENABLED ? true : !session.isPending,
+      isAuthenticated: DEV_PREVIEW_AUTH_ENABLED ? true : Boolean(session.data?.session),
+      user: DEV_PREVIEW_AUTH_ENABLED
+        ? (DEV_PREVIEW_USER as unknown as NonNullable<ReturnType<typeof authClient.useSession>['data']>['user'])
+        : session.data?.user ?? null,
       signUp,
       signIn,
       signInWithApple,

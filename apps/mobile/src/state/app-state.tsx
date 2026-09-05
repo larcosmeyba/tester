@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createContext, type ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { DEV_PREVIEW_AUTH_ENABLED } from '@/auth/dev-preview';
 
 import { useAuth } from '@/auth/auth-context';
 import {
@@ -371,6 +372,18 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       return () => clearTimeout(timer);
     }
     previousAuthenticatedSubject.current = auth.user.id;
+    if (DEV_PREVIEW_AUTH_ENABLED) {
+      // No backend to hydrate from. Treat onboarding as done so the tabs render;
+      // individual screens still show their own empty and error states. Deferred
+      // the same way the signed-out branch above is, to keep setState out of the
+      // effect body.
+      lastHydratedSubject.current = auth.user.id;
+      const timer = setTimeout(() => {
+        setProfileSyncState('ready');
+        setState((current) => ({ ...current, hasCompletedOnboarding: true }));
+      }, 0);
+      return () => clearTimeout(timer);
+    }
     if (lastHydratedSubject.current !== auth.user.id && profileSyncState !== 'loading') {
       void hydrateViewer();
     }

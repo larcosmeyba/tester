@@ -1,5 +1,6 @@
 import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
+import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { type ReactNode, useEffect, useMemo, useState } from 'react';
 import { Linking, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -31,6 +32,19 @@ import {
   uiText,
 } from '@/components/hive-ui';
 import { HiveColors, Radii } from '@/constants/theme';
+import {
+  AlertBanner,
+  ComingSoonCard,
+  GradientActionCard,
+  GradientActionRow,
+  SoftGreenPanel,
+} from '@/components/hive-cards';
+import {
+  FLOATING_TAB_BAR_HEIGHT,
+  FloatingPill,
+  FloatingPillRow,
+  FloatingTabBar,
+} from '@/components/hive-navigation';
 import {
   refreshPushTokenIfPermitted,
   requestAndRegisterPushToken,
@@ -852,19 +866,7 @@ function MainTabs({ nav }: { nav: Navigation }) {
           {app.selectedTab === 3 ? <ResourcesScreen nav={nav} /> : null}
           {app.selectedTab === 4 ? <FinanceScreen nav={nav} /> : null}
         </View>
-        <View style={styles.bottomTabs}>
-          {tabs.map((tab, index) => {
-            const selected = app.selectedTab === index;
-            return (
-              <Pressable key={tab.label} onPress={() => app.setSelectedTab(index)} style={styles.tabButton}>
-                <HiveIcon name={tab.icon} size={22} color={selected ? HiveColors.green : HiveColors.textSecondary} />
-                <Text style={[styles.tabLabel, selected && styles.tabLabelSelected]} numberOfLines={1}>
-                  {tab.label}
-                </Text>
-              </Pressable>
-            );
-          })}
-        </View>
+        <FloatingTabBar tabs={tabs} selectedIndex={app.selectedTab} onSelect={app.setSelectedTab} />
       </View>
       <ModalSheet visible={showTour} onClose={closeTour}>
         <View style={styles.tourContent}>
@@ -883,95 +885,121 @@ function MainTabs({ nav }: { nav: Navigation }) {
 function HomeScreen({ nav }: { nav: Navigation }) {
   const app = useAppState();
   const firstName = app.profile.firstName || 'there';
-  const sampleVideos = [allVideos[5], allVideos[0], allVideos[6]];
 
   return (
     <View style={styles.tabScreen}>
-      <ScrollView contentContainerStyle={styles.homeContent}>
+      <ScrollView contentContainerStyle={styles.homeContent} showsVerticalScrollIndicator={false}>
         <View style={styles.homeHeader}>
-          <View>
+          <View style={styles.flexOne}>
             <Text style={styles.homeGreeting}>Hi {firstName},</Text>
             <Text style={styles.homeSubGreeting}>Ready to save some money today?</Text>
           </View>
           <AvatarButton imageUri={app.profile.profileImageUri} onPress={() => nav.push('account')} />
         </View>
 
-        <Card style={[styles.ebtCard, app.ebtConnected && styles.ebtCardConnected]}>
-          {app.ebtConnected ? (
-            <>
-              <View style={rowStyles.spread}>
-                <Text style={styles.ebtLight}>EBT Balance</Text>
-                <HiveIcon name="card" size={20} color="rgba(255,255,255,0.7)" />
-              </View>
-              <Text style={styles.ebtBalance}>$234.00</Text>
-              <Text style={styles.ebtLight}>Updated today - Next deposit Aug 1</Text>
-              <Pressable onPress={() => app.setSelectedTab(4)} style={styles.ebtDetailsButton}>
-                <Text style={styles.ebtDetailsText}>See details</Text>
-              </Pressable>
-            </>
-          ) : (
-            <InfoRow
-              icon="card"
-              title="Connect your EBT card"
-              subtitle="See your balance and next deposit date"
-              badge="Connect"
-              onPress={() => nav.push('connectAccount')}
-            />
-          )}
-        </Card>
+        {app.ebtConnected ? (
+          <LinearGradient
+            colors={['#1F5220', '#2E6B2E']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.ebtConnected}>
+            <View style={rowStyles.spread}>
+              <Text style={styles.ebtLight}>EBT Balance</Text>
+              <HiveIcon name="card" size={20} color="rgba(255,255,255,0.6)" />
+            </View>
+            <Text style={styles.ebtBalance}>$234.00</Text>
+            <Text style={styles.ebtMeta}>Updated today · Next deposit Aug 1</Text>
+            <Pressable onPress={() => app.setSelectedTab(4)} style={styles.ebtDetailsButton}>
+              <Text style={styles.ebtDetailsText}>See details</Text>
+            </Pressable>
+          </LinearGradient>
+        ) : (
+          <SoftGreenPanel
+            icon="card"
+            title="EBT Card Balance"
+            subtitle="Coming soon — balance & deposit tracking"
+            badge="Coming Soon"
+            onPress={() => nav.push('connectAccount')}
+            style={styles.homeBlock}
+          />
+        )}
 
         {app.expiringItems.length > 0 ? (
-          <Card style={styles.warningCard} onPress={() => nav.push('pantry')}>
-            <View style={rowStyles.row}>
-              <View style={styles.warningIcon}>
-                <HiveIcon name="penny" size={20} color={HiveColors.warningText} />
-              </View>
-              <View style={styles.flexOne}>
-                <Text style={styles.warningTitle}>Use It Soon</Text>
-                <Text style={styles.warningText}>
-                  {app.expiringItems.length} pantry item{app.expiringItems.length === 1 ? '' : 's'} expiring in the next 5 days
-                </Text>
-              </View>
-              <HiveIcon name="next" size={13} color={HiveColors.orange} />
-            </View>
-          </Card>
+          <AlertBanner
+            emoji="🐝"
+            title="Use It Soon 🐝"
+            subtitle={`${app.expiringItems.length} pantry item${app.expiringItems.length === 1 ? '' : 's'} expiring in the next 5 days`}
+            onPress={() => nav.push('pantry')}
+            style={styles.homeBlock}
+          />
         ) : null}
 
         <Text style={styles.homeQuestion}>What would you like to do first?</Text>
+
         <View style={styles.actionStack}>
-          <QuickAction icon="doc" title="Start Government Assistance Applications" subtitle="Prepare applications for benefits you may qualify for." color={HiveColors.purple} onPress={() => nav.push('government')} />
-          <QuickAction icon="fork" title="Create this week's meal plan" color={HiveColors.orange} onPress={() => router.push('/meals/questionnaire')} />
-          <QuickAction icon="fridge" title="Cook what I have" color={HiveColors.blue} onPress={() => nav.push('pantry')} />
-          <QuickAction icon="map" title="Find resources near me" color={HiveColors.green} onPress={() => app.setSelectedTab(3)} />
+          <GradientActionRow
+            icon="doc"
+            gradient="benefits"
+            title="Start Government Assistance Applications"
+            subtitle="Get help preparing applications for benefits you may qualify for."
+            onPress={() => nav.push('government')}
+          />
+          <GradientActionRow
+            icon="fork"
+            gradient="meals"
+            title="Create this week's meal plan"
+            onPress={() => router.push('/meals/questionnaire')}
+          />
         </View>
 
-        <SectionHeader title="Weekly Deals" onPress={() => nav.push('deals')} />
-        <HorizontalScroller>
-          {sampleDeals.map((deal) => (
-            <DealCard key={deal.id} deal={deal} onAdd={() => app.addToCart(deal)} inCart={app.isInCart(deal.id)} />
-          ))}
-        </HorizontalScroller>
+        <View style={styles.actionPair}>
+          <GradientActionCard
+            icon="fridge"
+            gradient="pantry"
+            title="Cook what I have"
+            onPress={() => nav.push('pantry')}
+          />
+          <GradientActionCard
+            icon="map"
+            gradient="resources"
+            title="Find Resources near me"
+            onPress={() => app.setSelectedTab(3)}
+          />
+        </View>
+
+        <Text style={styles.homeSectionTitle}>Weekly Best Deals</Text>
+        <ComingSoonCard
+          icon="cart"
+          title="Coming Soon"
+          subtitle="Curated EBT-friendly deals near you — launching soon!"
+          onPress={() => nav.push('deals')}
+          showChevron
+          style={styles.homeBlock}
+        />
 
         <SectionHeader title="Education Hub" onPress={() => nav.push('educationHub')} />
-        <HorizontalScroller>
-          {sampleVideos.map((video) => (
-            <VideoCard key={video.id} video={video} onPress={() => nav.push('video', { video })} />
-          ))}
-        </HorizontalScroller>
-
-        <View style={styles.homePills}>
-          <Pressable onPress={() => nav.push('pantry')} style={styles.homePill}>
-            <HiveIcon name="box" size={16} color={HiveColors.green} />
-            <Text style={styles.homePillText}>{app.activePantryItems.length} pantry items</Text>
-          </Pressable>
-          {app.cart.length > 0 ? (
-            <Pressable onPress={app.clearCart} style={styles.homePill}>
-              <HiveIcon name="cart" size={16} color={HiveColors.green} />
-              <Text style={styles.homePillText}>{app.cart.length} in cart</Text>
-            </Pressable>
-          ) : null}
-        </View>
+        <ComingSoonCard
+          emoji="🎓"
+          title="Educational Video Content"
+          subtitle="Coming soon — money tips, cooking guides & more"
+          onPress={() => nav.push('educationHub')}
+          showChevron
+          style={styles.homeBlock}
+        />
       </ScrollView>
+
+      <FloatingPillRow>
+        {app.cart.length > 0 ? (
+          <FloatingPill
+            icon="cart"
+            tone="light"
+            align="left"
+            label={`${app.cart.length} item cart · Clear`}
+            onPress={app.clearCart}
+          />
+        ) : null}
+        <FloatingPill icon="plus" label="Add to Pantry" onPress={() => nav.push('pantry')} />
+      </FloatingPillRow>
     </View>
   );
 }
@@ -2068,33 +2096,6 @@ function HorizontalScroller({ children }: { children: ReactNode }) {
   );
 }
 
-function QuickAction({
-  icon,
-  title,
-  subtitle,
-  color,
-  onPress,
-}: {
-  icon: HiveIconName;
-  title: string;
-  subtitle?: string;
-  color: string;
-  onPress: () => void;
-}) {
-  return (
-    <Pressable onPress={onPress} style={({ pressed }) => [styles.quickAction, pressed && styles.pressed]}>
-      <View style={[styles.quickIcon, { backgroundColor: color }]}>
-        <HiveIcon name={icon} size={20} color={HiveColors.white} />
-      </View>
-      <View style={styles.flexOne}>
-        <Text style={styles.quickTitle}>{title}</Text>
-        {subtitle ? <Text style={styles.quickSubtitle}>{subtitle}</Text> : null}
-      </View>
-      <HiveIcon name="next" size={14} color={HiveColors.textSecondary} />
-    </Pressable>
-  );
-}
-
 function DealCard({
   deal,
   onAdd,
@@ -2520,7 +2521,26 @@ const styles = StyleSheet.create({
     gap: 14,
   },
   homeContent: {
-    paddingBottom: 116,
+    paddingBottom: FLOATING_TAB_BAR_HEIGHT + 110,
+  },
+  // Reference spacing: 20pt gutters, 16-22pt between blocks (HomeView.swift).
+  homeBlock: {
+    marginHorizontal: 20,
+    marginBottom: 18,
+  },
+  homeSectionTitle: {
+    color: HiveColors.text,
+    fontSize: 17,
+    fontWeight: '700',
+    paddingHorizontal: 20,
+    marginBottom: 10,
+  },
+  actionPair: {
+    flexDirection: 'row',
+    gap: 10,
+    paddingHorizontal: 20,
+    marginTop: 10,
+    marginBottom: 28,
   },
   homeHeader: {
     paddingHorizontal: 20,
@@ -2540,26 +2560,26 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginTop: 2,
   },
-  ebtCard: {
+  ebtConnected: {
     marginHorizontal: 20,
-    marginBottom: 18,
-    padding: 0,
-    overflow: 'hidden',
-  },
-  ebtCardConnected: {
+    marginBottom: 22,
     padding: 20,
-    backgroundColor: '#245E2A',
+    borderRadius: 18,
+    gap: 4,
+  },
+  ebtMeta: {
+    color: 'rgba(255,255,255,0.7)',
+    fontSize: 12,
   },
   ebtLight: {
-    color: 'rgba(255,255,255,0.78)',
+    color: 'rgba(255,255,255,0.85)',
     fontSize: 13,
-    fontWeight: '600',
+    fontWeight: '500',
   },
   ebtBalance: {
     color: HiveColors.white,
     fontSize: 38,
-    fontWeight: '800',
-    marginTop: 6,
+    fontWeight: '700',
   },
   ebtDetailsButton: {
     alignSelf: 'flex-end',

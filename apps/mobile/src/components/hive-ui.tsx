@@ -1,4 +1,5 @@
 import { SymbolView, type SymbolViewProps } from 'expo-symbols';
+import { LinearGradient } from 'expo-linear-gradient';
 import type { ReactNode } from 'react';
 import {
   Image,
@@ -240,6 +241,21 @@ export function AppButton({
         pressed && !disabled && styles.pressed,
         style,
       ]}>
+      {/* The Xcode app's primary button is a vertical green gradient, lighter at
+          the top. It reads as a single flat green without this. */}
+      {isPrimary ? (
+        <LinearGradient
+          colors={
+            disabled
+              ? ['rgba(46,139,58,0.4)', 'rgba(27,94,32,0.4)']
+              : [HiveColors.greenMid, HiveColors.green]
+          }
+          start={{ x: 0.5, y: 0 }}
+          end={{ x: 0.5, y: 1 }}
+          style={styles.buttonGradient}
+          pointerEvents="none"
+        />
+      ) : null}
       {icon ? <HiveIcon name={icon} size={18} color={isPrimary || variant === 'danger' || variant === 'dark' ? HiveColors.white : HiveColors.green} /> : null}
       <Text
         style={[
@@ -670,9 +686,17 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     lineHeight: 18,
   },
+  buttonGradient: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
   button: {
     minHeight: 56,
     borderRadius: Radii.lg,
+    overflow: 'hidden',
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'row',
