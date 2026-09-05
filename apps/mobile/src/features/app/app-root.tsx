@@ -3,7 +3,7 @@ import * as Location from 'expo-location';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { type ReactNode, useEffect, useMemo, useState } from 'react';
-import { Linking, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Linking, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { AuthFlowError, useAuth } from '@/auth/auth-context';
 import {
@@ -35,6 +35,7 @@ import { HiveColors, Radii } from '@/constants/theme';
 import {
   AlertBanner,
   ComingSoonCard,
+  ComingSoonHub,
   ComingSoonRow,
   GradientActionCard,
   GradientActionRow,
@@ -53,6 +54,8 @@ import {
   unregisterStoredPushToken,
 } from '@/features/notifications/notification-service';
 import { deleteViewerData, HandleUpdateError, type HandleAvailability } from '@/features/profile/profile-repository';
+import { PENNY_DISCLAIMER, PENNY_SUGGESTIONS, pennyService } from '@/features/penny/penny-service';
+import { describeError } from '@/services/api-error';
 import { MealPlanScreen as WeeklyMealPlanScreen } from '@/features/meals/meal-plan-screen';
 import {
   allVideos,
@@ -65,7 +68,6 @@ import {
   nearbyResources,
   type ResourceItem,
   type StorageLocation,
-  prescriptions,
   sampleDeals,
   spendingCategories,
   storageLocations,
@@ -1016,104 +1018,111 @@ function PennyScreen({ nav }: { nav: Navigation }) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [messageText, setMessageText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
-  const [showGate, setShowGate] = useState(false);
-  const [showFeedbackPrompt, setShowFeedbackPrompt] = useState(false);
+  const [sendError, setSendError] = useState('');
 
-  const suggestions = [
-    'I need to find the closest resources to me.',
-    'Create meals from what I have in my fridge and pantry.',
-    'I need to add items to my fridge and pantry.',
-    'How can I lower my gas bill?',
-  ];
-  const responses = [
-    'Great question. I can help you find relevant resources near you and sort them by urgency.',
-    'I found a few helpful options. Start with programs that match your household and income.',
-    'Based on what you shared, here are my top suggestions to save money this week.',
-    'I can help with that. Utility assistance programs and conservation steps may reduce the bill.',
-  ];
-
-  function sendMessage(text: string) {
+  async function sendMessage(text: string) {
     const trimmed = text.trim();
-    if (!trimmed) {
-      return;
-    }
-    const userCount = messages.filter((message) => message.isUser).length;
-    if (userCount >= 5) {
-      setShowGate(true);
-      return;
-    }
-    const nextUserMessage = { id: `u-${messages.length}`, text: trimmed, isUser: true };
-    setMessages((current) => [...current, nextUserMessage]);
+    if (!trimmed || isTyping) return;
+
+    setMessages((current) => [...current, { id: `u-${current.length}`, text: trimmed, isUser: true }]);
     setMessageText('');
+    setSendError('');
     setIsTyping(true);
-    setTimeout(() => {
-      setIsTyping(false);
+
+    try {
+      // Everything Penny says comes from the backend. The app holds no model,
+      // no prompt and no provider key.
+      const result = await pennyService.send({ conversationId: null, text: trimmed });
       setMessages((current) => [
         ...current,
-        { id: `p-${current.length}`, text: responses[current.length % responses.length], isUser: false },
+        { id: result.message.id, text: result.message.text, isUser: false },
       ]);
-      if (userCount === 2) {
-        setShowFeedbackPrompt(true);
-      }
-    }, 900);
+    } catch (error) {
+      setSendError(describeError(error).message);
+    } finally {
+      setIsTyping(false);
+    }
   }
+
+  const hasConversation = messages.length > 0;
 
   return (
     <View style={styles.tabScreen}>
-      <AppHeader title="Penny AI" onAvatar={() => nav.push('account')} profileImageUri={app.profile.profileImageUri} />
-      {messages.length === 0 ? (
-        <View style={styles.pennyWelcome}>
-          <View style={styles.pennyAvatarWrap}>
-            <PennyImage source={pennySource} />
-            <View style={styles.onlineDot} />
-          </View>
-          <Text style={styles.pennyTitle}>Hi, I am Penny</Text>
-          <Text style={styles.pennySubtitle}>How can I help you today?</Text>
-          <View style={styles.suggestionGrid}>
-            {suggestions.map((suggestion) => (
-              <Pressable key={suggestion} onPress={() => sendMessage(suggestion)} style={styles.suggestionCard}>
-                <Text style={styles.suggestionText}>{suggestion}</Text>
-              </Pressable>
+      <View style={styles.centeredHeader}>
+        <View style={styles.headerSpacer} />
+        <Text style={styles.centeredHeaderTitle}>Penny AI</Text>
+        <AvatarButton imageUri={app.profile.profileImageUri} onPress={() => nav.push('account')} />
+      </View>
+
+      <ScrollView
+        contentContainerStyle={hasConversation ? styles.pennyThread : styles.pennyIntro}
+        showsVerticalScrollIndicator={false}>
+        {hasConversation ? (
+          <>
+            {messages.map((message) => (
+              <View
+                key={message.id}
+                style={[styles.bubble, message.isUser ? styles.bubbleUser : styles.bubblePenny]}>
+                <Text style={message.isUser ? styles.bubbleUserText : styles.bubblePennyText}>
+                  {message.text}
+                </Text>
+              </View>
             ))}
-          </View>
-        </View>
-      ) : (
-        <ScrollView contentContainerStyle={styles.chatContent}>
-          {messages.map((message) => (
-            <View key={message.id} style={[styles.chatBubble, message.isUser ? styles.userBubble : styles.pennyBubble]}>
-              <Text style={[styles.chatText, message.isUser && styles.userChatText]}>{message.text}</Text>
+            {isTyping ? (
+              <View style={[styles.bubble, styles.bubblePenny]}>
+                <Text style={styles.bubblePennyText}>Penny is thinking…</Text>
+              </View>
+            ) : null}
+          </>
+        ) : (
+          <>
+            <View style={styles.pennyAvatarWrap}>
+              <PennyImage source={pennySource} size={132} />
+              <View style={styles.pennyOnlineDot} />
             </View>
-          ))}
-          {isTyping ? (
-            <View style={[styles.chatBubble, styles.pennyBubble]}>
-              <Text style={styles.chatText}>Penny is typing...</Text>
+            <Text style={styles.pennyGreeting}>Hi, I&apos;m Penny</Text>
+            <Text style={styles.pennyPrompt}>How can I help you today?</Text>
+
+            <View style={styles.pennySuggestions}>
+              {PENNY_SUGGESTIONS.map((suggestion) => (
+                <Pressable
+                  key={suggestion}
+                  accessibilityRole="button"
+                  accessibilityLabel={suggestion}
+                  onPress={() => void sendMessage(suggestion)}
+                  style={({ pressed }) => [styles.suggestionCard, pressed && styles.pressed]}>
+                  <Text style={styles.suggestionText}>{suggestion}</Text>
+                </Pressable>
+              ))}
             </View>
-          ) : null}
-        </ScrollView>
-      )}
-      <Text style={styles.disclaimer}>
-        Penny AI provides general information only. It is not medical, financial, or professional advice and may not always be accurate.
-      </Text>
-      <View style={styles.chatInputBar}>
-        <AppTextField label="Ask Penny" value={messageText} onChangeText={setMessageText} placeholder="Ask Penny" />
-        <Pressable onPress={() => sendMessage(messageText)} style={styles.sendButton}>
-          <HiveIcon name={messageText.trim() ? 'send' : 'mic'} size={28} color={HiveColors.green} />
+          </>
+        )}
+
+        {sendError ? <Text style={styles.pennyError}>{sendError}</Text> : null}
+      </ScrollView>
+
+      <Text style={styles.pennyDisclaimer}>{PENNY_DISCLAIMER}</Text>
+
+      <View style={styles.pennyComposer}>
+        <TextInput
+          value={messageText}
+          onChangeText={setMessageText}
+          placeholder="Ask Penny"
+          placeholderTextColor="#9AA0A6"
+          style={styles.pennyInput}
+          returnKeyType="send"
+          onSubmitEditing={() => void sendMessage(messageText)}
+          accessibilityLabel="Ask Penny"
+        />
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Send message"
+          onPress={() => void sendMessage(messageText)}
+          disabled={messageText.trim().length === 0 || isTyping}
+          style={({ pressed }) => [styles.pennySend, pressed && styles.pressed]}>
+          <HiveIcon name="next" size={18} color={HiveColors.green} />
         </Pressable>
       </View>
-      <ModalSheet visible={showGate} onClose={() => setShowGate(false)}>
-        <PaywallContent onClose={() => setShowGate(false)} />
-      </ModalSheet>
-      <ModalSheet visible={showFeedbackPrompt} onClose={() => setShowFeedbackPrompt(false)}>
-        <View style={styles.sheetStack}>
-          <Text style={uiText.subtitle}>What do you wish Penny did?</Text>
-          <Text style={uiText.muted}>Tell us what would make this more useful for your household.</Text>
-          <AppButton title="Send Feedback" onPress={() => {
-            setShowFeedbackPrompt(false);
-            nav.push('feedback');
-          }} />
-          <AppButton title="Maybe Later" variant="plain" onPress={() => setShowFeedbackPrompt(false)} />
-        </View>
-      </ModalSheet>
     </View>
   );
 }
@@ -1211,59 +1220,37 @@ function ResourcesScreen({ nav }: { nav: Navigation }) {
 
 function FinanceScreen({ nav }: { nav: Navigation }) {
   const app = useAppState();
-  const financeVideos = allVideos.filter((video) => video.category === 'finance').slice(0, 3);
 
   return (
     <View style={styles.tabScreen}>
-      <AppHeader
-        title="Finances"
-        onAvatar={() => nav.push('account')}
-        profileImageUri={app.profile.profileImageUri}
-        right={
-          <Pressable style={styles.iconButtonPlain}>
-            <HiveIcon name="bell" size={18} color={HiveColors.text} />
-          </Pressable>
-        }
-      />
-      <ScrollView contentContainerStyle={styles.financeContent}>
-        <Card style={styles.spendingCard}>
-          <View style={rowStyles.spread}>
-            <View>
-              <Text style={styles.cardTitle}>Spending Overview</Text>
-              <Text style={styles.miniMuted}>Apr 1 - Apr 30</Text>
-            </View>
-            <Chip label="This month" tone="green" />
-          </View>
-          <View style={styles.spendingBody}>
-            <DonutPlaceholder />
-            <View style={styles.spendingLegend}>
-              {spendingCategories.map((category) => (
-                <View key={category.name} style={rowStyles.row}>
-                  <View style={[styles.legendDot, { backgroundColor: category.color }]} />
-                  <Text style={styles.legendName}>{category.name}</Text>
-                  <Text style={styles.legendAmount}>{category.amount}</Text>
-                </View>
-              ))}
-            </View>
-          </View>
-          <Pressable onPress={() => nav.push('spendingReport')} style={styles.inlineAction}>
-            <Text style={styles.greenLink}>View full spending report</Text>
-            <HiveIcon name="next" size={12} color={HiveColors.green} />
-          </Pressable>
-        </Card>
-        <SectionHeader title="How-to Videos" onPress={() => nav.push('financeHub')} />
-        <HorizontalScroller>
-          {financeVideos.map((video) => <VideoCard key={video.id} video={video} onPress={() => nav.push('video', { video })} />)}
-        </HorizontalScroller>
-        <SectionHeader title="Save on your prescriptions" />
-        <HorizontalScroller>
-          {prescriptions.map((rx) => <PrescriptionCard key={rx.id} rx={rx} />)}
-        </HorizontalScroller>
-        <SectionHeader title="Offers That Help You Save" />
-        <View style={styles.twoColumn}>
-          <OfferCard name="Vanguard" description="Low-cost index funds to build long-term wealth." ctaLabel="Learn More" color={HiveColors.danger} />
-          <OfferCard name="Guardian" description="Family medical and life plan choices." ctaLabel="Explore Plans" color={HiveColors.purple} />
-        </View>
+      <View style={styles.centeredHeader}>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Notifications"
+          onPress={() => nav.push('notifications')}
+          style={styles.headerIconButton}>
+          <HiveIcon name="bell" size={20} color={HiveColors.text} />
+        </Pressable>
+        <Text style={styles.centeredHeaderTitle}>Finances</Text>
+        <AvatarButton imageUri={app.profile.profileImageUri} onPress={() => nav.push('account')} />
+      </View>
+
+      <ScrollView contentContainerStyle={styles.financeContent} showsVerticalScrollIndicator={false}>
+        <ComingSoonHub
+          image={pennySource}
+          title="Finance Hub"
+          subtitle="Coming Soon to Help The Hive"
+          body="We're building powerful money tools designed specifically for families like yours — EBT tracking, spending insights, bill reminders, and more."
+          features={[
+            { icon: 'card', label: 'EBT Balance Tracking' },
+            { icon: 'chart', label: 'Spending Reports' },
+            { icon: 'bell', label: 'Bill Reminders' },
+            { icon: 'finance', label: 'Budget Goals' },
+            { icon: 'heart', label: 'Rx Savings' },
+            { icon: 'shield', label: 'Insurance Offers' },
+          ]}
+          footnote="Penny will notify you the moment this launches"
+        />
       </ScrollView>
     </View>
   );
@@ -2194,35 +2181,6 @@ function ResourceRow({ resource, onPress }: { resource: ResourceItem; onPress: (
   );
 }
 
-function PrescriptionCard({ rx }: { rx: { name: string; price: string; retail: string; savings: string } }) {
-  return (
-    <Card style={styles.prescriptionCard}>
-      <Text style={styles.cardTitle} numberOfLines={2}>{rx.name}</Text>
-      <Text style={styles.cardBody}>{rx.price}</Text>
-      <Text style={styles.miniMuted}>{rx.retail}</Text>
-      <Text style={styles.greenLink}>{rx.savings}</Text>
-      <AppButton title="View Deal" onPress={() => undefined} style={styles.smallCardButton} />
-    </Card>
-  );
-}
-
-function OfferCard({ name, description, ctaLabel, color }: { name: string; description: string; ctaLabel: string; color: string }) {
-  return (
-    <Card style={styles.columnCard}>
-      <View style={rowStyles.row}>
-        <View style={[styles.offerLogo, { backgroundColor: color }]}>
-          <Text style={styles.offerInitial}>{name[0]}</Text>
-        </View>
-        <Text style={styles.cardTitle}>{name}</Text>
-      </View>
-      <Text style={styles.cardBody}>{description}</Text>
-      <Pressable style={[styles.offerButton, { backgroundColor: color }]}>
-        <Text style={styles.offerButtonText}>{ctaLabel}</Text>
-      </Pressable>
-    </Card>
-  );
-}
-
 function DonutPlaceholder({ large = false }: { large?: boolean }) {
   return (
     <View style={[styles.donut, large && styles.donutLarge]}>
@@ -2234,7 +2192,11 @@ function DonutPlaceholder({ large = false }: { large?: boolean }) {
   );
 }
 
-function PaywallContent({ onClose }: { onClose: () => void }) {
+/**
+ * Penny paywall sheet. Deferred by product decision — kept intact so it can be
+ * wired to a message limit once monetisation is agreed, rather than rebuilt.
+ */
+export function PaywallContent({ onClose }: { onClose: () => void }) {
   return (
     <View style={styles.sheetStack}>
       <PennyImage source={pennySource} size={78} />
@@ -2574,6 +2536,83 @@ const styles = StyleSheet.create({
   },
   sectionInset: { marginHorizontal: 20, marginBottom: 16 },
   comingSoonList: { gap: 8, marginHorizontal: 20, marginBottom: 20 },
+  headerIconButton: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: HiveColors.card,
+  },
+  financeContent: { paddingBottom: FLOATING_TAB_BAR_HEIGHT + 60 },
+  pennyIntro: { alignItems: 'center', paddingHorizontal: 20, paddingTop: 28 },
+  pennyThread: { paddingHorizontal: 20, paddingTop: 16, gap: 10 },
+  pennyAvatarWrap: { position: 'relative', marginBottom: 14 },
+  pennyOnlineDot: {
+    position: 'absolute',
+    right: 4,
+    bottom: 6,
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    backgroundColor: HiveColors.green,
+    borderWidth: 2,
+    borderColor: HiveColors.white,
+  },
+  pennyGreeting: { color: HiveColors.text, fontSize: 32, fontWeight: '700' },
+  pennyPrompt: { color: HiveColors.textSecondary, fontSize: 18, marginTop: 4 },
+  pennySuggestions: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+    marginTop: 28,
+    alignSelf: 'stretch',
+  },
+  // Dark cards, as the reference uses — high contrast against the white screen.
+  suggestionCard: {
+    flexBasis: '47%',
+    flexGrow: 1,
+    minHeight: 96,
+    padding: 16,
+    borderRadius: 16,
+    backgroundColor: '#232629',
+  },
+  suggestionText: { color: HiveColors.white, fontSize: 15, fontWeight: '500', lineHeight: 21 },
+  bubble: { maxWidth: '84%', paddingHorizontal: 14, paddingVertical: 10, borderRadius: 16 },
+  bubbleUser: { alignSelf: 'flex-end', backgroundColor: HiveColors.green },
+  bubblePenny: { alignSelf: 'flex-start', backgroundColor: HiveColors.card },
+  bubbleUserText: { color: HiveColors.white, fontSize: 15, lineHeight: 21 },
+  bubblePennyText: { color: HiveColors.text, fontSize: 15, lineHeight: 21 },
+  pennyError: { color: HiveColors.danger, fontSize: 13, textAlign: 'center', marginTop: 14 },
+  pennyDisclaimer: {
+    color: HiveColors.textSecondary,
+    fontSize: 13,
+    lineHeight: 18,
+    textAlign: 'center',
+    paddingHorizontal: 24,
+    paddingBottom: 10,
+  },
+  pennyComposer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginHorizontal: 16,
+    marginBottom: FLOATING_TAB_BAR_HEIGHT + 46,
+    paddingLeft: 18,
+    paddingRight: 8,
+    paddingVertical: 6,
+    borderRadius: 28,
+    backgroundColor: HiveColors.card,
+  },
+  pennyInput: { flex: 1, fontSize: 16, color: HiveColors.text, paddingVertical: 10 },
+  pennySend: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: HiveColors.greenLight,
+  },
   pennyNote: {
     flexDirection: 'row',
     gap: 10,
@@ -2953,10 +2992,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: 24,
   },
-  pennyAvatarWrap: {
-    position: 'relative',
-    marginBottom: 16,
-  },
   onlineDot: {
     position: 'absolute',
     right: 0,
@@ -2984,19 +3019,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 12,
-  },
-  suggestionCard: {
-    width: '48%',
-    minHeight: 84,
-    borderRadius: 16,
-    backgroundColor: '#212126',
-    padding: 14,
-  },
-  suggestionText: {
-    color: HiveColors.white,
-    fontSize: 14,
-    fontWeight: '700',
-    lineHeight: 19,
   },
   chatContent: {
     padding: 16,
@@ -3121,9 +3143,6 @@ const styles = StyleSheet.create({
     color: HiveColors.textSecondary,
     fontSize: 13,
     lineHeight: 18,
-  },
-  financeContent: {
-    paddingBottom: 100,
   },
   spendingCard: {
     margin: 20,

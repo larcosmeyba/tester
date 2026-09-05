@@ -10,7 +10,16 @@
  * (QuickActionRow, SmallActionCard) and `Theme.swift`.
  */
 import { LinearGradient } from 'expo-linear-gradient';
-import { Pressable, StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
+import {
+  Image,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+  type ImageSourcePropType,
+  type StyleProp,
+  type ViewStyle,
+} from 'react-native';
 
 import { HiveIcon, type HiveIconName } from '@/components/hive-ui';
 import { HiveColors, Radii } from '@/constants/theme';
@@ -294,6 +303,52 @@ export function ComingSoonRow({
   );
 }
 
+/**
+ * Full-screen "coming soon" hub, from `FinanceTabView`. A hero image, a
+ * headline, an explanation, and a two-column grid of the features being built.
+ *
+ * The reference app uses this rather than showing placeholder numbers, which
+ * matters for a product about people's benefits: a fake balance is worse than
+ * an honest "not yet".
+ */
+export function ComingSoonHub({
+  image,
+  title,
+  subtitle,
+  body,
+  features,
+  footnote,
+}: {
+  image: ImageSourcePropType;
+  title: string;
+  subtitle: string;
+  body: string;
+  features: { icon: HiveIconName; label: string }[];
+  footnote?: string;
+}) {
+  return (
+    <View style={styles.hub}>
+      <View style={styles.hubImageGlow}>
+        <Image source={image} style={styles.hubImage} resizeMode="contain" />
+      </View>
+      <Text style={styles.hubTitle}>{title}</Text>
+      <Text style={styles.hubSubtitle}>{subtitle}</Text>
+      <Text style={styles.hubBody}>{body}</Text>
+
+      <View style={styles.hubGrid}>
+        {features.map((feature) => (
+          <View key={feature.label} style={styles.hubFeature}>
+            <HiveIcon name={feature.icon} size={18} color={HiveColors.green} />
+            <Text style={styles.hubFeatureLabel}>{feature.label}</Text>
+          </View>
+        ))}
+      </View>
+
+      {footnote ? <Text style={styles.hubFootnote}>✦ {footnote}</Text> : null}
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   pressed: { opacity: 0.85 },
   rowText: { flex: 1, gap: 2 },
@@ -421,6 +476,49 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(27,94,32,0.10)',
   },
   smallBadgeText: { color: HiveColors.green, fontSize: 10, fontWeight: '600' },
+
+  // --- Coming soon hub ---
+  hub: { alignItems: 'center', paddingHorizontal: 24, paddingTop: 24, gap: 6 },
+  hubImageGlow: {
+    width: 168,
+    height: 168,
+    borderRadius: 84,
+    backgroundColor: HiveColors.greenLight,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 18,
+  },
+  hubImage: { width: 132, height: 132 },
+  hubTitle: { color: HiveColors.text, fontSize: 32, fontWeight: '700', textAlign: 'center' },
+  hubSubtitle: { color: HiveColors.green, fontSize: 19, fontWeight: '700', textAlign: 'center' },
+  hubBody: {
+    color: HiveColors.textSecondary,
+    fontSize: 16,
+    lineHeight: 23,
+    textAlign: 'center',
+    marginTop: 10,
+  },
+  hubGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
+    marginTop: 26,
+    alignSelf: 'stretch',
+  },
+  hubFeature: {
+    flexBasis: '47%',
+    flexGrow: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    minHeight: 56,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    borderRadius: 14,
+    backgroundColor: HiveColors.card,
+  },
+  hubFeatureLabel: { flex: 1, color: HiveColors.text, fontSize: 15, fontWeight: '500' },
+  hubFootnote: { color: HiveColors.textSecondary, fontSize: 14, textAlign: 'center', marginTop: 26 },
 
   // --- Alert banner ---
   alert: {
