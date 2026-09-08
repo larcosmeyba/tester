@@ -41,14 +41,14 @@ type FilledField struct {
 // fields can wait on the same answer, so they are aggregated: the applicant is
 // asked for their last name once, not once per box on the form.
 type MissingField struct {
-	FieldPath    FieldPath
-	Label        string
-	Question     string
-	Group        string
-	AnswerKind   ValueKind
-	Choices      []string
-	Strength     Strength
-	Sensitive    bool
+	FieldPath  FieldPath
+	Label      string
+	Question   string
+	Group      string
+	AnswerKind ValueKind
+	Choices    []string
+	Strength   Strength
+	Sensitive  bool
 	// Derived marks a value the profile computes rather than collects — a
 	// household's monthly income total, say. It is still reported when a form
 	// needs it and it cannot be worked out, because the box will be blank; but

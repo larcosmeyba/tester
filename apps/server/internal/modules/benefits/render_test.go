@@ -147,12 +147,12 @@ func TestTheSampleFormCarriesTheRightValuesOnThePage(t *testing.T) {
 
 	page1 := pageText(t, final.Bytes, 1)
 	for _, want := range []string{
-		"(RIVERA)",           // last name, upper-cased by the mapping
-		"(ANA)",              // first name
-		"(S)",                // middle initial, truncated to one character
-		"(03/07/1988)",       // date of birth in the form's own layout
-		"(123-45-6789)",      // SSN formatted for this form
-		"(555-123-4567)",     // phone
+		"(RIVERA)",       // last name, upper-cased by the mapping
+		"(ANA)",          // first name
+		"(S)",            // middle initial, truncated to one character
+		"(03/07/1988)",   // date of birth in the form's own layout
+		"(123-45-6789)",  // SSN formatted for this form
+		"(555-123-4567)", // phone
 		"(ana.rivera@example.com)",
 		"(140 Mission Street)",
 		"(Fresno)",
@@ -168,12 +168,12 @@ func TestTheSampleFormCarriesTheRightValuesOnThePage(t *testing.T) {
 
 	page2 := pageText(t, final.Bytes, 2)
 	for _, want := range []string{
-		"(3)",                  // household size
-		"(Rivera, Mateo)",      // member 1, joined from the same group row
+		"(3)",             // household size
+		"(Rivera, Mateo)", // member 1, joined from the same group row
 		"(09/01/2015)",
-		"(Rivera, Lucia)",      // member 2
+		"(Rivera, Lucia)", // member 2
 		"(04/22/2019)",
-		"(2,080.00)",           // $480.00 weekly normalised to a month
+		"(2,080.00)", // $480.00 weekly normalised to a month
 		"(Valley Grocery)",
 	} {
 		if !strings.Contains(page2, want) {

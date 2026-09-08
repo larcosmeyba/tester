@@ -407,12 +407,12 @@ func TestJoinTransformReadsTheSameGroupRow(t *testing.T) {
 
 	mapping := textMapping(
 		FieldMapping{ID: "m1", Target: Target{Type: TargetText, Name: "M1"},
-			Source: SourceRef{FieldPath: "household.members[].last_name"},
-			Repeat: &Repeat{Over: "household.members", Index: 0},
+			Source:     SourceRef{FieldPath: "household.members[].last_name"},
+			Repeat:     &Repeat{Over: "household.members", Index: 0},
 			Transforms: []Transform{{Op: OpJoin, With: "household.members[].first_name", Sep: ", "}}},
 		FieldMapping{ID: "m2", Target: Target{Type: TargetText, Name: "M2"},
-			Source: SourceRef{FieldPath: "household.members[].last_name"},
-			Repeat: &Repeat{Over: "household.members", Index: 1},
+			Source:     SourceRef{FieldPath: "household.members[].last_name"},
+			Repeat:     &Repeat{Over: "household.members", Index: 1},
 			Transforms: []Transform{{Op: OpJoin, With: "household.members[].first_name", Sep: ", "}}},
 	)
 

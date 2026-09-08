@@ -255,6 +255,16 @@ func verifyAgainstTemplate(form *Form) error {
 				add("field %q targets %q, which this template does not have", field.ID, field.Target.Name)
 				continue
 			}
+			if templateField.Type == pdf.FieldSignature {
+				// Belt and braces alongside fillPolicy "never": a signature is
+				// the applicant's, and no mapping may put anything in one.
+				add("field %q targets %q, which is a signature field; Help The Hive must not fill a signature", field.ID, field.Target.Name)
+				continue
+			}
+			if !templateField.Type.Fillable() {
+				add("field %q targets %q, which is a %s and cannot hold a value", field.ID, field.Target.Name, templateField.Type)
+				continue
+			}
 			if want := templateFieldType(field.Target.Type); want != templateField.Type {
 				add("field %q calls %q a %s, but the template has it as a %s", field.ID, field.Target.Name, want, templateField.Type)
 				continue

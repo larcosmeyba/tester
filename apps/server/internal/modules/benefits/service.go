@@ -98,15 +98,15 @@ func (s *Service) Form(formID string) (*Form, error) {
 // mis-declare one, and a value in the wrong field is rejected rather than
 // stored.
 type AnswerInput struct {
-	FieldPath string
-	RowID     string
-	Status    string
-	Text      *string
-	Number    *float64
+	FieldPath  string
+	RowID      string
+	Status     string
+	Text       *string
+	Number     *float64
 	MoneyCents *int64
-	Date      *string
-	Bool      *bool
-	List      []string
+	Date       *string
+	Bool       *bool
+	List       []string
 }
 
 // GroupRowInput is one entry of a repeating group. An empty RowID means a new
@@ -183,8 +183,8 @@ func (s *Service) SaveGroup(ctx context.Context, identity auth.Identity, groupPa
 	// of it is written.
 	validation := domain.NewProfile(userID)
 	var (
-		groupRows []db.BenefitsGroupRow
-		answers   []db.BenefitsAnswer
+		groupRows  []db.BenefitsGroupRow
+		answers    []db.BenefitsAnswer
 		domainRows []domain.GroupRow
 	)
 

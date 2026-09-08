@@ -24,8 +24,8 @@ const modulePath = "github.com/helpthehive/server"
 // model.
 func TestTheFillPathCannotReachTheAIAssistant(t *testing.T) {
 	forbidden := map[string]string{
-		modulePath + "/internal/modules/benefits/assist":         "the AI mapping assistant",
-		modulePath + "/internal/modules/mealgen/provider":        "an AI provider",
+		modulePath + "/internal/modules/benefits/assist":  "the AI mapping assistant",
+		modulePath + "/internal/modules/mealgen/provider": "an AI provider",
 	}
 
 	for _, entry := range []string{
@@ -53,11 +53,11 @@ func TestTheFillPathCannotReachTheAIAssistant(t *testing.T) {
 // applicant's answers anywhere.
 func TestHelpTheHivesOwnFillCodeMakesNoNetworkCall(t *testing.T) {
 	networkPackages := map[string]bool{
-		"net":       true,
-		"net/http":  true,
-		"net/url":   false, // parsing a URL is not a network call
-		"net/smtp":  true,
-		"os/exec":   true,
+		"net":      true,
+		"net/http": true,
+		"net/url":  false, // parsing a URL is not a network call
+		"net/smtp": true,
+		"os/exec":  true,
 	}
 
 	for _, entry := range []string{

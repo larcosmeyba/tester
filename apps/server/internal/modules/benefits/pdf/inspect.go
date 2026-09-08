@@ -21,8 +21,22 @@ const (
 	FieldRadio    FieldType = "radio"
 	FieldDropdown FieldType = "dropdown"
 	FieldListbox  FieldType = "listbox"
-	FieldUnknown  FieldType = "unknown"
+	// FieldSignature is a signature field. Every fillable state form in the
+	// collection has them — Alaska has ten — and they are named rather than
+	// lumped in with "unknown" because no mapping may ever target one: Help The
+	// Hive does not sign an application on anyone's behalf.
+	FieldSignature FieldType = "signature"
+	FieldUnknown   FieldType = "unknown"
 )
+
+// Fillable reports whether a field is one this engine may write a value into.
+func (t FieldType) Fillable() bool {
+	switch t {
+	case FieldText, FieldCheckbox, FieldRadio, FieldDropdown, FieldListbox:
+		return true
+	}
+	return false
+}
 
 // Rect is a rectangle in PDF user space, origin bottom-left.
 type Rect struct {
@@ -101,12 +115,73 @@ func configuration() *model.Configuration {
 // readContext parses a PDF into pdfcpu's object model. It validates and
 // optimises on the way in, which is what pdfcpu's own form operations expect;
 // skipping it leaves form edits working on an under-resolved object graph.
+//
+// Real government PDFs need the second attempt more often than they should.
+// Several states publish forms produced through Microsoft Office, which stamps
+// custom keys into the document information dictionary — SharePoint author
+// fields and the like — with escapes a strict reader rejects. That metadata has
+// nothing to do with the form: New York's 28-page SNAP application and North
+// Carolina's 575-field one both read perfectly once it is out of the way. So a
+// validation failure is retried with the document info dropped, and only a
+// document that fails even then is reported as unreadable.
 func readContext(rs io.ReadSeeker) (*model.Context, error) {
 	ctx, err := api.ReadValidateAndOptimize(rs, configuration())
-	if err != nil {
-		return nil, fmt.Errorf("read pdf: %w", err)
+	if err == nil {
+		return ctx, nil
+	}
+	validationErr := err
+
+	if _, seekErr := rs.Seek(0, io.SeekStart); seekErr != nil {
+		return nil, fmt.Errorf("read pdf: %w", validationErr)
+	}
+	ctx, retryErr := readWithoutDocumentInfo(rs)
+	if retryErr != nil {
+		// The first error is the useful one: the retry only exists to get past
+		// broken metadata, so its failure says less about the document.
+		return nil, fmt.Errorf("read pdf: %w", validationErr)
 	}
 	return ctx, nil
+}
+
+// readWithoutDocumentInfo reads a PDF, empties its document information
+// dictionary, and only then validates.
+//
+// Dropping it is safe for what this engine does: the dictionary holds a title,
+// an author and whatever a word processor decided to stamp in, and none of it
+// affects a single form field. It is not, however, something to do silently to
+// a document that reads fine — hence the fallback rather than always.
+func readWithoutDocumentInfo(rs io.ReadSeeker) (*model.Context, error) {
+	ctx, err := api.ReadContext(rs, configuration())
+	if err != nil {
+		return nil, err
+	}
+	dropDocumentInfo(ctx)
+	if err := api.ValidateContext(ctx); err != nil {
+		return nil, err
+	}
+	if err := api.OptimizeContext(ctx); err != nil {
+		return nil, err
+	}
+	return ctx, nil
+}
+
+// dropDocumentInfo empties a document's information dictionary, leaving only a
+// producer.
+func dropDocumentInfo(ctx *model.Context) int {
+	xRefTable := ctx.XRefTable
+	if xRefTable.Info == nil {
+		return 0
+	}
+	dict, err := xRefTable.DereferenceDict(*xRefTable.Info)
+	if err != nil || dict == nil {
+		return 0
+	}
+	dropped := len(dict)
+	for key := range dict {
+		delete(dict, key)
+	}
+	dict["Producer"] = types.StringLiteral("Help The Hive")
+	return dropped
 }
 
 // Inspect reads a template and reports its structure.
@@ -221,6 +296,8 @@ func fieldType(xRefTable *model.XRefTable, fieldDict types.Dict) FieldType {
 		return FieldUnknown
 	}
 	switch *name {
+	case "Sig":
+		return FieldSignature
 	case "Tx":
 		return FieldText
 	case "Btn":
