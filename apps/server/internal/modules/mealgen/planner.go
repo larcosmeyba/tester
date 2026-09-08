@@ -65,7 +65,19 @@ func (p *Planner) Build(request meals.PlanRequest, pool []meals.Recipe, planID s
 // cover is filled by the same deterministic pick as always, so the week is
 // always complete whether or not a provider answered, and a plan built with an
 // empty arrangement is byte-identical to one built without one.
+//
+// The assembled week is then fitted to the user's grocery budget. That runs
+// here rather than in either caller so a plan costs what it costs however its
+// recipes were chosen — a model cannot arrange its way past a budget, and the
+// deterministic planner does not get a different rule from the arranged one.
 func (p *Planner) BuildWith(request meals.PlanRequest, pool []meals.Recipe, planID string, arrangement map[meals.Slot]string) meals.Plan {
+	return p.fitToBudget(request, pool, planID, p.assemble(request, pool, planID, arrangement))
+}
+
+// assemble fills the slots and prices the week. It is the plan before the
+// budget has had its say, and it is what the budget pass re-runs as it tries
+// alternatives.
+func (p *Planner) assemble(request meals.PlanRequest, pool []meals.Recipe, planID string, arrangement map[meals.Slot]string) meals.Plan {
 	pantry := meals.Set(request.PantryItems...)
 	slots := RequestedSlots(request)
 
