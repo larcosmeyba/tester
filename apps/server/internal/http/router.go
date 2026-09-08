@@ -20,7 +20,7 @@ type readinessChecker interface {
 	Ping(ctx context.Context) error
 }
 
-func NewRouter(cfg config.Config, verifier *auth.Verifier, readiness readinessChecker, resolver *hthgraphql.Resolver) http.Handler {
+func NewRouter(cfg config.Config, verifier *auth.Verifier, readiness readinessChecker, resolver *hthgraphql.Resolver, pennyDeps PennyDeps) http.Handler {
 	router := chi.NewRouter()
 	router.Use(middleware.RequestID)
 	router.Use(middleware.RealIP)
@@ -56,6 +56,18 @@ func NewRouter(cfg config.Config, verifier *auth.Verifier, readiness readinessCh
 	// the service — never a public or signed link to somebody's application.
 	router.With(auth.Middleware(verifier)).
 		Get("/benefits/applications/{applicationID}/pdf", BenefitsDocuments(resolver.Benefits, nil))
+
+	// Penny. Two mounts, because the two callers are not the same kind of
+	// thing. /penny is a person holding a bearer token. /internal/penny/tools
+	// is the agent calling back with a token this server minted for one turn —
+	// outside the user auth middleware, because the agent has no user token and
+	// must never be given one. The path says "internal" so that anyone reading
+	// an access log, a proxy config or an ingress rule can see it is not a
+	// client route.
+	if pennyDeps.Service != nil {
+		router.With(auth.Middleware(verifier)).Route("/penny", PennyRoutes(pennyDeps))
+		router.Post("/internal/penny/tools", PennyToolGateway(pennyDeps))
+	}
 
 	return router
 }

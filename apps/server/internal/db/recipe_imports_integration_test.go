@@ -63,6 +63,9 @@ func TestRecipeImportsIntegration(t *testing.T) {
 	if created.CreatedAt.IsZero() || created.UpdatedAt.IsZero() {
 		t.Error("timestamps were not defaulted")
 	}
+	if created.Language != "english" {
+		t.Errorf("language = %q, want the english default", created.Language)
+	}
 
 	// --- one live import per video ----------------------------------------
 	if _, err := store.CreateRecipeImport(ctx, newImport(userA, sourceURL)); !errors.Is(err, ErrImportInProgress) {
@@ -244,6 +247,77 @@ func TestRecipeImportsIntegration(t *testing.T) {
 	}
 	if stillQueued.Status != meals.ImportStatusQueued {
 		t.Errorf("B's import status = %q, want queued", stillQueued.Status)
+	}
+
+	// --- rate limiting counts only this user, only in the window ----------
+	countA, err := store.CountRecipeImportsSince(ctx, userA, time.Now().Add(-time.Hour))
+	if err != nil {
+		t.Fatalf("CountRecipeImportsSince() error = %v", err)
+	}
+	if countA < 3 {
+		t.Errorf("A's recent imports = %d, want at least 3", countA)
+	}
+	future, err := store.CountRecipeImportsSince(ctx, userA, time.Now().Add(time.Hour))
+	if err != nil {
+		t.Fatalf("CountRecipeImportsSince(future) error = %v", err)
+	}
+	if future != 0 {
+		t.Errorf("imports after a future cutoff = %d, want 0", future)
+	}
+
+	// --- the worker claims quiet imports, and claims them once ------------
+	pending, err := store.CreateRecipeImport(ctx, newImport(userA, sourceURL+"-worker"))
+	if err != nil {
+		t.Fatalf("CreateRecipeImport(pending) error = %v", err)
+	}
+
+	claimed, err := store.ClaimStaleRecipeImports(ctx, time.Now().Add(time.Minute), 10)
+	if err != nil {
+		t.Fatalf("ClaimStaleRecipeImports() error = %v", err)
+	}
+	var found bool
+	for _, imp := range claimed {
+		if imp.ID == pending.ID {
+			found = true
+		}
+		if imp.Settled() {
+			t.Errorf("a settled import was claimed: %s (%s)", imp.ID, imp.Status)
+		}
+	}
+	if !found {
+		t.Error("a quiet queued import was not claimed")
+	}
+
+	// Claiming bumps updated_at, so an immediately following sweep for rows
+	// quiet since before that moment must not see it again.
+	secondSweep, err := store.ClaimStaleRecipeImports(ctx, time.Now().Add(-time.Minute), 10)
+	if err != nil {
+		t.Fatalf("second ClaimStaleRecipeImports() error = %v", err)
+	}
+	for _, imp := range secondSweep {
+		if imp.ID == pending.ID {
+			t.Error("a just-claimed import was claimed again by an overlapping sweep")
+		}
+	}
+
+	// --- retries spend the budget, and stop at it -------------------------
+	retried, err := store.RetryRecipeImport(ctx, pending.ID, 3)
+	if err != nil {
+		t.Fatalf("RetryRecipeImport() error = %v", err)
+	}
+	if retried.AttemptCount != 2 {
+		t.Errorf("attemptCount = %d, want 2", retried.AttemptCount)
+	}
+	if retried.Status != meals.ImportStatusQueued || retried.ProviderJobID != nil {
+		t.Errorf("retried import = %+v", retried)
+	}
+	if _, err := store.RetryRecipeImport(ctx, pending.ID, 2); !errors.Is(err, pgx.ErrNoRows) {
+		t.Errorf("retry past the budget: err = %v, want ErrNoRows", err)
+	}
+
+	// A settled import is never retried.
+	if _, err := store.RetryRecipeImport(ctx, created.ID, 5); !errors.Is(err, pgx.ErrNoRows) {
+		t.Errorf("retrying a settled import: err = %v, want ErrNoRows", err)
 	}
 }
 

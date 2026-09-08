@@ -2,8 +2,8 @@ package db
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
+	"strings"
 	"time"
 
 	"github.com/helpthehive/server/internal/domain/meals"
@@ -11,7 +11,7 @@ import (
 )
 
 const recipeImportColumns = `
-	id, user_id, source_url, source_platform, status, provider_job_id, recipe_id,
+	id, user_id, source_url, source_platform, language, status, provider_job_id, recipe_id,
 	recipe_draft, attempt_count, error_code, error_message, created_at, started_at,
 	completed_at, updated_at`
 
@@ -27,7 +27,7 @@ func scanRecipeImport(row scanner) (meals.RecipeImport, error) {
 		draft []byte
 	)
 	err := row.Scan(
-		&imp.ID, &imp.UserID, &imp.SourceURL, &imp.SourcePlatform, &imp.Status,
+		&imp.ID, &imp.UserID, &imp.SourceURL, &imp.SourcePlatform, &imp.Language, &imp.Status,
 		&imp.ProviderJobID, &imp.RecipeID, &draft, &imp.AttemptCount,
 		&imp.ErrorCode, &imp.ErrorMessage, &imp.CreatedAt, &imp.StartedAt,
 		&imp.CompletedAt, &imp.UpdatedAt,
@@ -36,8 +36,8 @@ func scanRecipeImport(row scanner) (meals.RecipeImport, error) {
 		return meals.RecipeImport{}, err
 	}
 	if len(draft) > 0 {
-		var recipe meals.Recipe
-		if err := json.Unmarshal(draft, &recipe); err != nil {
+		recipe, err := decodeRecipeDraft(draft)
+		if err != nil {
 			return meals.RecipeImport{}, err
 		}
 		imp.Draft = &recipe
@@ -52,10 +52,11 @@ func scanRecipeImport(row scanner) (meals.RecipeImport, error) {
 // predicate rather than trusting a field.
 func (s *Store) CreateRecipeImport(ctx context.Context, imp meals.RecipeImport) (meals.RecipeImport, error) {
 	row := s.pool.QueryRow(ctx, `
-		INSERT INTO recipe_imports (id, user_id, source_url, source_platform, status, attempt_count)
-		VALUES ($1, $2, $3, $4, $5, $6)
+		INSERT INTO recipe_imports (id, user_id, source_url, source_platform, language, status, attempt_count)
+		VALUES ($1, $2, $3, $4, $5, $6, $7)
 		RETURNING `+recipeImportColumns,
-		imp.ID, imp.UserID, imp.SourceURL, imp.SourcePlatform, meals.ImportStatusQueued, imp.AttemptCount,
+		imp.ID, imp.UserID, imp.SourceURL, imp.SourcePlatform, defaultLanguage(imp.Language),
+		meals.ImportStatusQueued, imp.AttemptCount,
 	)
 
 	created, err := scanRecipeImport(row)
@@ -129,7 +130,7 @@ func (s *Store) StartRecipeImport(ctx context.Context, importID string, provider
 // HTH Recipe Object happens once, before this — so accepting it later is a
 // write, not a second interpretation.
 func (s *Store) CompleteRecipeImport(ctx context.Context, importID string, draft meals.Recipe) (meals.RecipeImport, error) {
-	encoded, err := json.Marshal(draft)
+	encoded, err := encodeRecipeDraft(draft)
 	if err != nil {
 		return meals.RecipeImport{}, err
 	}
@@ -203,4 +204,90 @@ func (s *Store) TouchRecipeImport(ctx context.Context, importID string, at time.
 func isUniqueViolation(err error) bool {
 	var pgErr *pgconn.PgError
 	return errors.As(err, &pgErr) && pgErr.Code == "23505"
+}
+
+// CountRecipeImportsSince counts a user's imports started in a window. It is
+// the input to rate limiting: every import costs a transcription, so the limit
+// is on attempts made, not on imports that happened to succeed.
+func (s *Store) CountRecipeImportsSince(ctx context.Context, userID string, since time.Time) (int, error) {
+	var count int
+	err := s.pool.QueryRow(ctx, `
+		SELECT count(*) FROM recipe_imports
+		WHERE user_id = $1 AND created_at >= $2`,
+		userID, since,
+	).Scan(&count)
+	return count, err
+}
+
+// ClaimStaleRecipeImports takes ownership of imports that have gone quiet.
+//
+// Claiming is the UPDATE itself: bumping updated_at inside the same statement
+// that selects the rows means a second worker looking for rows "not touched
+// since" cannot also pick them up. FOR UPDATE SKIP LOCKED keeps two workers
+// running at the same instant from blocking on each other.
+//
+// This is what makes an import durable. Nothing here depends on the user
+// polling, and an import abandoned by a restart of the extraction service is
+// found by how long it has been silent.
+func (s *Store) ClaimStaleRecipeImports(ctx context.Context, quietSince time.Time, limit int) ([]meals.RecipeImport, error) {
+	if limit <= 0 || limit > 100 {
+		limit = 20
+	}
+	rows, err := s.pool.Query(ctx, `
+		UPDATE recipe_imports SET updated_at = now()
+		WHERE id IN (
+			SELECT id FROM recipe_imports
+			WHERE status IN ($1, $2) AND updated_at < $3
+			ORDER BY updated_at ASC
+			LIMIT $4
+			FOR UPDATE SKIP LOCKED
+		)
+		RETURNING `+recipeImportColumns,
+		meals.ImportStatusQueued, meals.ImportStatusRunning, quietSince, limit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	claimed := make([]meals.RecipeImport, 0)
+	for rows.Next() {
+		imp, err := scanRecipeImport(rows)
+		if err != nil {
+			return nil, err
+		}
+		claimed = append(claimed, imp)
+	}
+	return claimed, rows.Err()
+}
+
+// RetryRecipeImport puts an unfinished import back in the queue and counts the
+// attempt.
+//
+// The attempt guard is in the WHERE clause, so exhausting the budget is a row
+// that does not update rather than a decision made in Go — two workers cannot
+// both read "2 attempts used" and each spend a third.
+//
+// Returns pgx.ErrNoRows when the import has settled or has no attempts left;
+// the caller fails it.
+func (s *Store) RetryRecipeImport(ctx context.Context, importID string, maxAttempts int) (meals.RecipeImport, error) {
+	row := s.pool.QueryRow(ctx, `
+		UPDATE recipe_imports
+		SET status = $2, provider_job_id = NULL, attempt_count = attempt_count + 1,
+		    error_code = NULL, error_message = NULL, started_at = NULL, updated_at = now()
+		WHERE id = $1 AND status IN ($3, $4) AND attempt_count < $5
+		RETURNING `+recipeImportColumns,
+		importID, meals.ImportStatusQueued,
+		meals.ImportStatusQueued, meals.ImportStatusRunning, maxAttempts,
+	)
+	return scanRecipeImport(row)
+}
+
+// defaultLanguage keeps the column non-null when the caller did not ask for a
+// particular language.
+func defaultLanguage(language string) string {
+	if strings.TrimSpace(language) == "" {
+		return "english"
+	}
+	return language
 }

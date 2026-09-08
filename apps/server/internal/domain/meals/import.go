@@ -33,7 +33,10 @@ type RecipeImport struct {
 	UserID         string
 	SourceURL      string
 	SourcePlatform string
-	Status         string
+	// The language the recipe was asked for, kept so a retry reproduces the
+	// first attempt rather than reverting to the extractor's default.
+	Language string
+	Status   string
 	// The extraction service's own job id. Nil until it has accepted the job.
 	ProviderJobID *string
 	// Set only once the user accepts the draft and it becomes a real recipe.

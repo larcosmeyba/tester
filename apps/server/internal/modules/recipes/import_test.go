@@ -6,6 +6,7 @@ import (
 	"io"
 	"log/slog"
 	"testing"
+	"time"
 
 	"github.com/helpthehive/server/internal/auth"
 	"github.com/helpthehive/server/internal/db"
@@ -21,6 +22,14 @@ type fakeRepo struct {
 	recipes  map[string]meals.Recipe
 	upserts  int
 	liveURLs map[string]bool
+	now      func() time.Time
+}
+
+func (f *fakeRepo) clock() time.Time {
+	if f.now != nil {
+		return f.now()
+	}
+	return time.Now()
 }
 
 func newFakeRepo() *fakeRepo {
@@ -48,8 +57,55 @@ func (f *fakeRepo) CreateRecipeImport(_ context.Context, imp meals.RecipeImport)
 	}
 	f.liveURLs[key] = true
 	imp.Status = meals.ImportStatusQueued
+	if imp.CreatedAt.IsZero() {
+		imp.CreatedAt = f.clock()
+	}
+	imp.UpdatedAt = imp.CreatedAt
 	f.imports[imp.ID] = &imp
 	return imp, nil
+}
+
+func (f *fakeRepo) CountRecipeImportsSince(_ context.Context, userID string, since time.Time) (int, error) {
+	count := 0
+	for _, imp := range f.imports {
+		if imp.UserID == userID && !imp.CreatedAt.Before(since) {
+			count++
+		}
+	}
+	return count, nil
+}
+
+// ClaimStaleRecipeImports mirrors the SQL: it returns live imports that have
+// gone quiet and marks them touched in the same step, so a second caller
+// looking for quiet rows cannot also pick them up.
+func (f *fakeRepo) ClaimStaleRecipeImports(_ context.Context, quietSince time.Time, limit int) ([]meals.RecipeImport, error) {
+	claimed := []meals.RecipeImport{}
+	for _, imp := range f.imports {
+		if len(claimed) >= limit {
+			break
+		}
+		if imp.Live() && imp.UpdatedAt.Before(quietSince) {
+			imp.UpdatedAt = f.clock()
+			claimed = append(claimed, *imp)
+		}
+	}
+	return claimed, nil
+}
+
+// RetryRecipeImport mirrors the SQL guard: the attempt budget is checked in
+// the same statement that spends it.
+func (f *fakeRepo) RetryRecipeImport(_ context.Context, importID string, maxAttempts int) (meals.RecipeImport, error) {
+	imp, ok := f.imports[importID]
+	if !ok || !imp.Live() || imp.AttemptCount >= maxAttempts {
+		return meals.RecipeImport{}, pgx.ErrNoRows
+	}
+	imp.AttemptCount++
+	imp.Status = meals.ImportStatusQueued
+	imp.ProviderJobID = nil
+	imp.StartedAt = nil
+	imp.ErrorCode, imp.ErrorMessage = nil, nil
+	imp.UpdatedAt = f.clock()
+	return *imp, nil
 }
 
 func (f *fakeRepo) GetRecipeImport(_ context.Context, userID, importID string) (meals.RecipeImport, error) {
@@ -77,6 +133,9 @@ func (f *fakeRepo) StartRecipeImport(_ context.Context, importID, jobID string) 
 	}
 	imp.Status = meals.ImportStatusRunning
 	imp.ProviderJobID = &jobID
+	started := f.clock()
+	imp.StartedAt = &started
+	imp.UpdatedAt = started
 	return *imp, nil
 }
 
@@ -160,11 +219,40 @@ func (f *fakeExtractor) Job(context.Context, string) (transcriber.Job, error) {
 
 const viewer = "user_1"
 
+// testCatalog knows the two ingredients the fixtures use, so resolution has
+// something real to match against.
+type testCatalog struct {
+	catalog *meals.Catalog
+	err     error
+}
+
+func (c testCatalog) Load(context.Context, string) (*meals.Catalog, error) {
+	if c.err != nil {
+		return nil, c.err
+	}
+	return c.catalog, nil
+}
+
+func knownCatalog() testCatalog {
+	return testCatalog{catalog: meals.NewCatalog([]meals.Ingredient{
+		{ID: "ing_lentils", DisplayName: "red lentils", Aisle: "pantry", FoodGroup: "legume", PriceReferenceUnit: "lb"},
+		{ID: "ing_salt", DisplayName: "salt", Aisle: "pantry", FoodGroup: "seasoning", PriceReferenceUnit: "oz"},
+		{ID: "ing_oil", DisplayName: "olive oil", Aisle: "pantry", FoodGroup: "fat", PriceReferenceUnit: "fl oz"},
+	}, nil)}
+}
+
 func newTestService(repo ImportRepository, extractor Extractor) *ImportService {
+	return newTestServiceWith(repo, extractor, knownCatalog(), DefaultImportPolicy())
+}
+
+func newTestServiceWith(repo ImportRepository, extractor Extractor, catalog CatalogLoader, policy ImportPolicy) *ImportService {
 	ids := 0
 	return &ImportService{
 		repo:      repo,
 		extractor: extractor,
+		catalog:   catalog,
+		policy:    policy.withDefaults(),
+		now:       time.Now,
 		log:       slog.New(slog.NewTextHandler(io.Discard, nil)),
 		newID: func() string {
 			ids++
@@ -338,10 +426,13 @@ func TestASucceededDraftKeepsTheMissingInformationRules(t *testing.T) {
 	if stored.Ingredients[1].MissingInformation != nil {
 		t.Error("\"to taste\" was counted as missing information")
 	}
-	for _, line := range stored.Ingredients {
-		if line.IngredientID != nil || line.Grams != nil {
-			t.Error("ingredient identity or grams were set outside Help The Hive")
-		}
+	// Grams are arithmetic from a stated mass, so the 200g line has them and
+	// the two lines with no stated quantity do not. Nothing is estimated.
+	if stored.Ingredients[0].Grams == nil || *stored.Ingredients[0].Grams != 200 {
+		t.Errorf("grams for a stated mass = %v, want 200", stored.Ingredients[0].Grams)
+	}
+	if stored.Ingredients[1].Grams != nil || stored.Ingredients[2].Grams != nil {
+		t.Error("grams were computed for a line with no stated quantity")
 	}
 	if stored.CaloriesKcal != nil || stored.NutritionBasis != nil {
 		t.Error("nutrition was invented")

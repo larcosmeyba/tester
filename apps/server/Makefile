@@ -1,4 +1,6 @@
-GO ?= /usr/local/go/bin/go
+# Whatever go is on PATH. Override for a specific toolchain:
+#   make test GO=/usr/local/go/bin/go
+GO ?= go
 GOCACHE ?= $(CURDIR)/.gocache
 export GOCACHE
 

@@ -65,7 +65,7 @@ var professionalAdvice = []*regexp.Regexp{
 // imported recipes, knowledge chunks — and a model that announces it is
 // ignoring its rules usually is.
 var injectionCompliance = []*regexp.Regexp{
-	regexp.MustCompile(`(?i)\b(?:ignoring|disregarding|overriding) (?:my|the|all|previous|prior) (?:instructions|rules|guidelines|system prompt)\b`),
+	regexp.MustCompile(`(?i)\b(?:ignoring|disregarding|overriding) (?:my |the |all |your )?(?:previous |prior |earlier |above )?(?:instructions|rules|guidelines|system prompt)\b`),
 	regexp.MustCompile(`(?i)\bas (?:instructed|requested) (?:by|in) the (?:document|resource|listing|page|content)\b`),
 	regexp.MustCompile(`(?i)\bmy system prompt (?:says|is|reads)\b`),
 	regexp.MustCompile(`(?i)\bdeveloper mode\b`),
@@ -85,7 +85,7 @@ func Guard(text string, benefitsClaimed bool, citationsPresent bool) GuardVerdic
 	}
 
 	for _, pattern := range eligibilityClaims {
-		if pattern.MatchString(trimmed) {
+		if match := pattern.FindStringIndex(trimmed); match != nil && !hedged(trimmed, match[0]) {
 			return refuse("eligibility determination: " + pattern.String())
 		}
 	}
@@ -109,6 +109,48 @@ func Guard(text string, benefitsClaimed bool, citationsPresent bool) GuardVerdic
 	}
 
 	return GuardVerdict{Text: trimmed, Outcome: OutcomeOK}
+}
+
+// hedged reports whether a matched phrase sits inside a conditional clause.
+//
+// This is the difference between the two most important sentences Penny can
+// say about a benefits program. "You qualify for SNAP" is a determination she
+// has no business making. "Whether you qualify depends on your income, and only
+// the agency can tell you" is the correct answer to the question, and it
+// contains the same three words.
+//
+// RE2 has no lookbehind, so the check is done here: walk back to the start of
+// the clause the match sits in and look for a hedge. Bounded, because a hedge
+// two sentences earlier does not soften a flat assertion here.
+func hedged(text string, at int) bool {
+	const window = 80
+
+	start := at - window
+	if start < 0 {
+		start = 0
+	}
+	clause := text[start:at]
+
+	// A clause boundary resets the check: "You qualify. Whether you apply is up
+	// to you" must not be excused by the hedge that follows it.
+	if cut := strings.LastIndexAny(clause, ".!?;,—"); cut >= 0 {
+		clause = clause[cut+1:]
+	}
+
+	lowered := strings.ToLower(clause)
+	for _, marker := range hedgeMarkers {
+		if strings.Contains(lowered, marker) {
+			return true
+		}
+	}
+	return false
+}
+
+// Words that turn a claim into a question about a claim.
+var hedgeMarkers = []string{
+	"whether", "if ", "depends on", "may ", "might ", "could ", "cannot say",
+	"can't say", "do not know", "don't know", "not able to say", "decides",
+	"will decide", "determines", "up to",
 }
 
 func refuse(violation string) GuardVerdict {

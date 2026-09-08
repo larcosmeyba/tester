@@ -12,6 +12,7 @@ type Config struct {
 	DatabaseURL        string
 	CORSAllowedOrigins []string
 	Auth               AuthConfig
+	Penny              PennyConfig
 }
 
 type AuthConfig struct {
@@ -19,6 +20,26 @@ type AuthConfig struct {
 	Audience string
 	JWKSURL  string
 }
+
+// PennyConfig configures the assistant.
+//
+// Penny is off unless PENNY_AGENT_URL is set, and Help The Hive runs correctly
+// with her off — the chat reports itself unavailable and nothing else changes.
+// A partially configured Penny is a start-up failure rather than a surprise on
+// somebody's first message, which is the same rule the meal AI provider
+// follows.
+type PennyConfig struct {
+	// The agent service. Empty means Penny is disabled.
+	AgentURL string
+	// Proves a turn request came from this server. The agent answers nothing
+	// without it.
+	ServiceToken string
+	// Signs the per-turn tool tokens the agent calls back with. Never leaves
+	// this process except as a signature.
+	ToolTokenSecret string
+}
+
+func (p PennyConfig) Enabled() bool { return p.AgentURL != "" }
 
 func Load() (Config, error) {
 	cfg := Config{
@@ -30,6 +51,11 @@ func Load() (Config, error) {
 			Issuer:   strings.TrimSpace(os.Getenv("BETTER_AUTH_ISSUER")),
 			Audience: strings.TrimSpace(os.Getenv("BETTER_AUTH_AUDIENCE")),
 			JWKSURL:  strings.TrimSpace(os.Getenv("BETTER_AUTH_JWKS_URL")),
+		},
+		Penny: PennyConfig{
+			AgentURL:        strings.TrimSpace(os.Getenv("PENNY_AGENT_URL")),
+			ServiceToken:    strings.TrimSpace(os.Getenv("PENNY_SERVICE_TOKEN")),
+			ToolTokenSecret: strings.TrimSpace(os.Getenv("PENNY_TOOL_TOKEN_SECRET")),
 		},
 	}
 
@@ -44,6 +70,14 @@ func Load() (Config, error) {
 	}
 	if cfg.Auth.JWKSURL == "" {
 		return Config{}, fmt.Errorf("BETTER_AUTH_JWKS_URL is required")
+	}
+	if cfg.Penny.Enabled() {
+		if cfg.Penny.ServiceToken == "" {
+			return Config{}, fmt.Errorf("PENNY_SERVICE_TOKEN is required when PENNY_AGENT_URL is set")
+		}
+		if len(cfg.Penny.ToolTokenSecret) < 32 {
+			return Config{}, fmt.Errorf("PENNY_TOOL_TOKEN_SECRET must be at least 32 characters when PENNY_AGENT_URL is set")
+		}
 	}
 
 	return cfg, nil

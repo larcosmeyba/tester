@@ -17,6 +17,10 @@ CREATE TABLE recipe_imports (
   source_platform   TEXT NOT NULL,
   -- queued | running | succeeded | failed | cancelled
   status            TEXT NOT NULL DEFAULT 'queued',
+  -- The language the recipe was asked for. Stored so a retry produces the
+  -- same recipe as the first attempt rather than silently reverting to the
+  -- extraction service's default.
+  language          TEXT NOT NULL DEFAULT 'english',
   -- The extraction service's own job id, so a running import can be polled.
   -- Null until the service has accepted the job.
   provider_job_id   TEXT,

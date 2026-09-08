@@ -23,8 +23,12 @@ const (
 )
 
 // ResolveAgainstCatalog matches a recipe's ingredient lines to the canonical
-// catalogue and recomputes what is missing and whether the recipe may be
-// planned.
+// catalogue, converts stated masses to grams, and recomputes what is missing
+// and whether the recipe may be planned.
+//
+// This is the only place BaseMealPlanEligible is ever widened. An extractor
+// may say a recipe is complete; only the catalogue can confirm that every line
+// it needs to buy and scale is one the system actually knows.
 //
 // Matching is exact-after-normalization and never guesses — see
 // Catalog.FindByName. A line the catalogue does not know keeps its raw text,
@@ -56,6 +60,15 @@ func ResolveAgainstCatalog(recipe Recipe, catalog *Catalog) Recipe {
 					name := ingredient.DisplayName
 					line.DisplayName = &name
 				}
+			}
+		}
+
+		// Grams are arithmetic when the source stated a mass, and a guess
+		// otherwise — see units.go. An unconvertible unit leaves Grams nil and
+		// is not a defect in the line: the quantity stands as stated.
+		if line.Grams == nil && line.Quantity != nil && line.Unit != nil {
+			if grams, ok := GramsFor(*line.Quantity, *line.Unit); ok {
+				line.Grams = &grams
 			}
 		}
 

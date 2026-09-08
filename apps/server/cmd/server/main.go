@@ -24,6 +24,8 @@ import (
 	"github.com/helpthehive/server/internal/modules/mealprep"
 	"github.com/helpthehive/server/internal/modules/mealprofile"
 	"github.com/helpthehive/server/internal/modules/pantry"
+	pennymod "github.com/helpthehive/server/internal/modules/penny"
+	pennytools "github.com/helpthehive/server/internal/modules/penny/tools"
 	"github.com/helpthehive/server/internal/modules/recipes"
 	"github.com/helpthehive/server/internal/modules/users"
 	"github.com/helpthehive/server/internal/transcriber"
@@ -84,7 +86,9 @@ func run(logger *slog.Logger) error {
 	} else {
 		logger.Info("recipe import disabled", "reason", "RECIPE_IMPORT_URL not set")
 	}
-	recipeImportService := recipes.NewImportService(store, userService, extractor, logger)
+	recipeImportService := recipes.NewImportService(
+		store, userService, extractor, catalogService, recipes.ImportPolicyFromEnv(), logger,
+	)
 
 	// No retailer handoff is configured. The grocery list is built entirely on
 	// Help The Hive's own terms first, and a retailer — when there is one — is
@@ -111,6 +115,16 @@ func run(logger *slog.Logger) error {
 		return err
 	}
 
+	// Penny is off unless an agent is configured, and Help The Hive runs
+	// correctly with her off: the chat reports itself unavailable and nothing
+	// else changes. A half-configured Penny is a start-up failure rather than a
+	// surprise on somebody's first message.
+	pennyDeps, err := buildPenny(cfg.Penny, store, userService, pantryService,
+		mealPlansService, groceryService, benefitsService, logger)
+	if err != nil {
+		return err
+	}
+
 	resolver := hthgraphql.NewResolver(
 		userService,
 		pantryService,
@@ -130,9 +144,26 @@ func run(logger *slog.Logger) error {
 
 	server := &http.Server{
 		Addr:              cfg.HTTPAddr,
-		Handler:           serverhttp.NewRouter(cfg, verifier, serverhttp.StoreReadiness{Store: store}, resolver),
+		Handler:           serverhttp.NewRouter(cfg, verifier, serverhttp.StoreReadiness{Store: store}, resolver, pennyDeps),
 		ReadHeaderTimeout: 5 * time.Second,
 	}
+
+	// Probe the extraction service once at start-up so a misconfigured URL or
+	// a bad secret is visible in the logs immediately, rather than on somebody's
+	// first import. It is deliberately not fatal and deliberately not part of
+	// /readyz: import is optional, and the rest of the API works without it.
+	if recipeImportService.Enabled() {
+		if err := recipeImportService.Ready(ctx); err != nil {
+			logger.Warn("recipe import service is not ready", "error", err)
+		} else {
+			logger.Info("recipe import service is ready")
+		}
+	}
+
+	// Imports must finish whether or not anybody is watching them. Without
+	// this, closing the app mid-import leaves a row running forever, and an
+	// extraction service restart strands every job it was holding.
+	go recipes.NewImportWorker(recipeImportService, logger).Run(ctx)
 
 	errCh := make(chan error, 1)
 	go func() {
@@ -151,4 +182,61 @@ func run(logger *slog.Logger) error {
 		}
 		return err
 	}
+}
+
+// buildPenny wires the assistant, or reports that she is switched off.
+//
+// The list of services passed to the tool gateway is the list of things Penny
+// can reach. It is written out here, one by one, rather than handed a shared
+// container, so that widening what she can do is a visible line in this
+// function instead of a side effect of adding a field somewhere else.
+func buildPenny(
+	cfg config.PennyConfig,
+	store *db.Store,
+	userService *users.Service,
+	pantryService *pantry.Service,
+	mealPlansService *mealplans.Service,
+	groceryService *grocery.Service,
+	benefitsService *benefits.Service,
+	logger *slog.Logger,
+) (serverhttp.PennyDeps, error) {
+	if !cfg.Enabled() {
+		logger.Info("penny disabled", "reason", "PENNY_AGENT_URL not set")
+		return serverhttp.PennyDeps{}, nil
+	}
+
+	signer, err := pennymod.NewSigner(cfg.ToolTokenSecret)
+	if err != nil {
+		return serverhttp.PennyDeps{}, err
+	}
+	agent, err := pennymod.NewHTTPAgent(pennymod.AgentConfig{
+		BaseURL:      cfg.AgentURL,
+		ServiceToken: cfg.ServiceToken,
+	})
+	if err != nil {
+		return serverhttp.PennyDeps{}, err
+	}
+
+	gateway := pennytools.NewGateway(pennytools.Services{
+		Users:     userService,
+		Pantry:    pantryService,
+		MealPlans: mealPlansService,
+		Grocery:   groceryService,
+		Benefits:  benefitsService,
+		Store:     store,
+	}, logger)
+
+	service := pennymod.NewService(
+		store, userService, agent, signer,
+		pennymod.NewLimiter(pennymod.DefaultLimits(), store),
+		gateway, logger,
+	)
+
+	logger.Info("penny enabled", "agent", cfg.AgentURL)
+	return serverhttp.PennyDeps{
+		Service:      service,
+		Store:        store,
+		ServiceToken: cfg.ServiceToken,
+		Logger:       logger,
+	}, nil
 }

@@ -245,6 +245,12 @@ export type BenefitsMissingField = {
   /** Which boxes on the form are waiting on this one answer. */
   formFieldIds: Array<Scalars['String']['output']>;
   group: Scalars['String']['output'];
+  /**
+   * True for a value the profile computes rather than collects — a household's
+   * monthly income total, say. The app must not put it to the user as a question:
+   * there is no answer they could give, and answering its inputs is what fills it.
+   */
+  isDerived: Scalars['Boolean']['output'];
   isSensitive: Scalars['Boolean']['output'];
   label: Scalars['String']['output'];
   /** The wording the app should put to the user. */
