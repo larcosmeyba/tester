@@ -66,3 +66,8 @@ apps/mobile/ios/.xcode.env.local
 
 # Go build cache
 apps/server/.gocache/
+
+# Generated benefits application PDFs. These carry a household's full
+# application — name, address, income, and on many forms a Social Security
+# number — and must never reach version control.
+apps/server/data/benefits-documents/

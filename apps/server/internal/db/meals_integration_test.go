@@ -9,6 +9,8 @@ import (
 	"time"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
+
+	"github.com/helpthehive/server/internal/domain/meals"
 )
 
 // These tests exist for one reason: to prove that the meal tables cannot be
@@ -42,7 +44,7 @@ func TestMealDataIsScopedToItsOwner(t *testing.T) {
 	userA, userB := viewerA.User.ID, viewerB.User.ID
 
 	ingredientID := fmt.Sprintf("test-rice-%d", stamp)
-	if err := store.UpsertIngredient(ctx, Ingredient{
+	if err := store.UpsertIngredient(ctx, meals.Ingredient{
 		ID: ingredientID, DisplayName: "Rice", Aisle: "pantry",
 		FoodGroup: "grain", PriceReferenceUnit: "lb",
 	}); err != nil {
@@ -103,10 +105,10 @@ func TestMealDataIsScopedToItsOwner(t *testing.T) {
 	})
 
 	t.Run("a grocery list cannot be read or ticked by another user", func(t *testing.T) {
-		if _, err := store.SaveGroceryList(ctx, GroceryList{
+		if _, err := store.SaveGroceryList(ctx, meals.GroceryList{
 			MealPlanID: plan.ID,
 			UserID:     userA,
-			Items: []GroceryListItem{{
+			Items: []meals.GroceryListItem{{
 				IngredientID: ingredientID, DisplayName: "Rice",
 				NeededQty: 2, Unit: "lb", EstimatedPrice: 2.00,
 			}},
@@ -133,7 +135,7 @@ func TestMealDataIsScopedToItsOwner(t *testing.T) {
 
 	t.Run("a user cannot write a list against another user's plan", func(t *testing.T) {
 		// The insert selects the plan by (id, user_id), so it matches no row.
-		_, err := store.SaveGroceryList(ctx, GroceryList{MealPlanID: plan.ID, UserID: userB})
+		_, err := store.SaveGroceryList(ctx, meals.GroceryList{MealPlanID: plan.ID, UserID: userB})
 		if err == nil {
 			t.Fatal("a grocery list was written against a plan the user does not own")
 		}
@@ -165,7 +167,7 @@ func TestMealDataIsScopedToItsOwner(t *testing.T) {
 		if _, err := store.SaveRecipeForUser(ctx, userA, libraryRecipeID); err != nil {
 			t.Fatalf("SaveRecipeForUser() error = %v", err)
 		}
-		saved, err := store.ListRecipes(ctx, userB, RecipeFilter{SavedOnly: true})
+		saved, err := store.ListRecipes(ctx, userB, meals.RecipeFilter{SavedOnly: true})
 		if err != nil {
 			t.Fatalf("ListRecipes(saved, B) error = %v", err)
 		}
@@ -186,14 +188,14 @@ func TestMealDataIsScopedToItsOwner(t *testing.T) {
 	})
 }
 
-func testRecipe(id string, owner *string, visibility string, reviewStatus string, ingredientID string) Recipe {
+func testRecipe(id string, owner *string, visibility string, reviewStatus string, ingredientID string) meals.Recipe {
 	servings := 4.0
 	quantity := 2.0
 	unit := "lb"
-	return Recipe{
+	return meals.Recipe{
 		ID:                   id,
 		OwnerUserID:          owner,
-		Title:                "Test Recipe " + id,
+		Title:                "Test meals.Recipe " + id,
 		SourceType:           "hth_library",
 		Visibility:           visibility,
 		ReviewStatus:         reviewStatus,
@@ -206,17 +208,17 @@ func testRecipe(id string, owner *string, visibility string, reviewStatus string
 		Tags:                 []string{},
 		MissingInformation:   []string{},
 		BaseMealPlanEligible: true,
-		Ingredients: []RecipeIngredient{{
+		Ingredients: []meals.RecipeIngredient{{
 			Position: 1, RawText: "2 lb rice", IngredientID: &ingredientID,
 			Quantity: &quantity, Unit: &unit,
 		}},
-		Instructions: []RecipeInstruction{{Step: 1, Text: "Cook the rice."}},
+		Instructions: []meals.RecipeInstruction{{Step: 1, Text: "Cook the rice."}},
 	}
 }
 
-func testPlan(userID string, recipeID string) MealPlan {
+func testPlan(userID string, recipeID string) meals.MealPlan {
 	request, _ := json.Marshal(map[string]any{"days": 2, "household": map[string]any{"size": 4}})
-	return MealPlan{
+	return meals.MealPlan{
 		UserID:            userID,
 		StartDate:         time.Now().UTC(),
 		Days:              2,
@@ -225,7 +227,7 @@ func testPlan(userID string, recipeID string) MealPlan {
 		Assumptions:       []string{},
 		GenerationSource:  "deterministic",
 		GenerationVersion: "v1",
-		Meals: []MealPlanMeal{{
+		Meals: []meals.MealPlanMeal{{
 			Day: 1, MealType: "dinner", RecipeID: recipeID,
 			ScaleFactor: 1, ServingsPlanned: 4, PantryIngredientIDs: []string{},
 		}},

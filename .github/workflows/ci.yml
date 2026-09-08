@@ -1,0 +1,167 @@
+name: CI
+
+# Runs the checks that cannot be run on a developer laptop here.
+#
+# The important one is `server`: it starts a real Postgres, applies every
+# migration, and runs the suites that are gated on TEST_DATABASE_URL and
+# therefore skip locally. Those are the tests that prove a user cannot reach
+# another user's plan, and until they run against real SQL nothing has actually
+# been checked.
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  server:
+    name: Go server
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        # pgvector, not stock postgres: migration 00003 enables the extension,
+        # so a plain image fails on the third migration.
+        image: pgvector/pgvector:0.8.6-pg18-trixie
+        env:
+          POSTGRES_USER: helpthehive
+          POSTGRES_PASSWORD: helpthehive
+          POSTGRES_DB: helpthehive
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U helpthehive -d helpthehive"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+
+    env:
+      DATABASE_URL: postgres://helpthehive:helpthehive@localhost:5432/helpthehive?sslmode=disable
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: apps/server/go.mod
+          cache-dependency-path: apps/server/go.sum
+
+      - name: Formatting
+        working-directory: apps/server
+        run: |
+          unformatted=$(gofmt -l cmd internal)
+          if [ -n "$unformatted" ]; then
+            echo "These files are not gofmt'd:"
+            echo "$unformatted"
+            exit 1
+          fi
+
+      - name: Build
+        working-directory: apps/server
+        run: go build ./...
+
+      - name: Vet
+        working-directory: apps/server
+        run: go vet ./...
+
+      # The first time migrations 00007-00009 have ever been applied. A
+      # migration that only compiles has not been tested.
+      - name: Apply migrations
+        working-directory: apps/server
+        run: go run ./cmd/migrate up
+
+      - name: Migration status
+        working-directory: apps/server
+        run: go run ./cmd/migrate status
+
+      # Down and up again, so a migration that cannot be rolled back is caught
+      # here rather than during an incident.
+      - name: Roll the last migration back and forward
+        working-directory: apps/server
+        run: |
+          go run ./cmd/migrate down
+          go run ./cmd/migrate up
+
+      - name: Seed the meal library
+        working-directory: apps/server
+        run: go run ./cmd/seed-meals
+
+      # Seeding is documented as idempotent. This is where that is checked.
+      - name: Seed again to prove it is idempotent
+        working-directory: apps/server
+        run: go run ./cmd/seed-meals
+
+      - name: Test
+        working-directory: apps/server
+        # Setting TEST_DATABASE_URL is what un-skips the ownership and
+        # end-to-end suites.
+        env:
+          TEST_DATABASE_URL: postgres://helpthehive:helpthehive@localhost:5432/helpthehive?sslmode=disable
+        run: go test -count=1 ./...
+
+  contract:
+    name: API contract
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: apps/server/go.mod
+          cache-dependency-path: apps/server/go.sum
+
+      # The schema is the single source of truth for both sides. Regenerating
+      # and finding a diff means someone changed a .graphql file without
+      # regenerating, and the two sides have started to drift.
+      - name: Regenerate from the schema
+        run: |
+          pnpm api:generate
+          cd apps/server && go run github.com/99designs/gqlgen generate
+
+      - name: Fail if the generated code is out of date
+        run: |
+          if ! git diff --quiet; then
+            echo "Generated code is out of date. Run 'pnpm api:generate' and 'make -C apps/server generate'."
+            git diff --stat
+            exit 1
+          fi
+
+  mobile:
+    name: Mobile
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Test
+        run: pnpm --filter @helpthehive/mobile test

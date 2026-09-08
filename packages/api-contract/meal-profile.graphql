@@ -1,0 +1,117 @@
+# ---------------------------------------------------------------------------
+# Meal profile
+#
+# The user's standing answers to the meal questionnaire: household, dietary
+# requirements, allergies, dislikes, budget, meals needed, cooking time,
+# leftovers and nutrition goals.
+#
+# These used to live only inside each plan's request snapshot, so a returning
+# user was asked everything again every week and the budget collected at
+# onboarding never reached the planner.
+#
+# The profile *fills in* a plan request; it never overrides one. A client that
+# states an answer keeps it — including "no allergies" — and the server
+# validates the result either way, so nothing here can weaken a safety filter.
+# ---------------------------------------------------------------------------
+
+extend type Query {
+  "The viewer's saved answers, or null when they have not answered yet."
+  mealProfile: MealProfile
+}
+
+extend type Mutation {
+  """
+  Replaces the viewer's answers. A questionnaire is a current answer, not an
+  accumulation: saving without a dislike removes it.
+  """
+  saveMealProfile(input: MealProfileInput!): MealProfile!
+}
+
+type MealProfile {
+  household: Household!
+  "Null when the user has not set a grocery budget."
+  budget: Budget
+  "Meals needed per week, per category."
+  meals: MealCounts!
+  "Days a generated plan should cover."
+  days: Int!
+  dietaryRequirements: [DietRequirement!]!
+  "Always required. The server rejects any other strength rather than downgrading it."
+  allergies: [AllergyRequirement!]!
+  "Other allergies the user named, as canonical ingredient ids."
+  allergyIngredients: [ID!]!
+  nutritionGoals: [NutritionPreference!]!
+  likes: FoodPreferences!
+  dislikes: FoodPreferences!
+  cookingTime: CookingTime!
+  equipment: [Equipment!]!
+  cookingStyle: [CookingStyle!]!
+  leftovers: LeftoversPreference!
+  dietaryOtherText: String
+  updatedAt: String!
+}
+
+type Household {
+  size: Int!
+  adults: Int
+  children: Int
+  "True when the user picked 8+; size is stored as 8."
+  sizeIsPlus: Boolean!
+}
+
+type Budget {
+  amount: Float!
+  currency: String!
+  mode: BudgetMode!
+}
+
+type MealCounts {
+  breakfast: Int!
+  lunch: Int!
+  dinner: Int!
+  snack: Int!
+}
+
+type DietRequirement {
+  diet: Diet!
+  strength: Strength!
+}
+
+type AllergyRequirement {
+  allergen: Allergen!
+  strength: Strength!
+}
+
+type NutritionPreference {
+  goal: NutritionGoal!
+  strength: Strength!
+}
+
+type FoodPreferences {
+  ingredients: [String!]!
+  cuisines: [String!]!
+  freeText: String
+}
+
+type CookingTime {
+  maxMinutes: Int
+  strength: Strength!
+}
+
+input MealProfileInput {
+  household: HouseholdInput!
+  budget: BudgetInput
+  meals: MealCountsInput!
+  days: Int!
+  dietaryRequirements: [DietRequirementInput!]!
+  allergies: [AllergyRequirementInput!]!
+  allergyIngredients: [ID!]!
+  nutritionPreferences: [NutritionPreferenceInput!]!
+  likes: FoodPreferencesInput!
+  dislikes: FoodPreferencesInput!
+  cookingTime: CookingTimeInput!
+  equipment: [Equipment!]!
+  cookingStyle: [CookingStyle!]!
+  leftovers: LeftoversPreference!
+  dietaryOtherText: String
+}

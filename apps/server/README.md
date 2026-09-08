@@ -2,6 +2,34 @@
 
 Go GraphQL API for Help The Hive app-owned data. Auth flows are owned by Better Auth outside this service; this server only verifies Better Auth JWTs locally with JWKS.
 
+## Layout
+
+```txt
+internal/
+  domain/            types only; imports nothing outside the standard library
+    meals/           ingredients, recipes, plans, baskets, costs, request bounds
+  db/                the repository layer — every SQL statement, one file per domain
+  modules/           one package per product domain
+    users/  pantry/  catalog/  recipes/  mealgen/  mealplans/  grocery/  nutrition/
+  graphql/           gqlgen resolvers and the mapping to domain types
+  auth/  config/  http/
+```
+
+The dependency rule, enforced by the compiler:
+
+```txt
+graphql ──▶ modules/* ──▶ db ──▶ domain
+                └──────────────▶ domain
+```
+
+`domain` imports nothing. Each module declares its own `Repository` interface
+for what it needs from the database, satisfied by `*db.Store`, and services are
+wired together once in `cmd/server/main.go`. A module never reaches another
+module's store.
+
+See [meal-architecture-audit.md](../../docs/meal-architecture-audit.md) for why
+it is shaped this way.
+
 ## Requirements
 
 - Go 1.23 at `/usr/local/go/bin/go` or on `PATH`.
@@ -65,5 +93,8 @@ The server validates signature, issuer, audience, expiration, not-before, and su
 make generate
 make test
 ```
+
+`make generate` runs gqlgen only. The repository layer is hand-written pgx, so
+there is no SQL codegen step.
 
 DB integration tests are skipped unless `TEST_DATABASE_URL` is set.

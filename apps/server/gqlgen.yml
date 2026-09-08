@@ -1,6 +1,10 @@
 schema:
   - ../../packages/api-contract/schema.graphql
   - ../../packages/api-contract/meals.graphql
+  - ../../packages/api-contract/benefits.graphql
+  - ../../packages/api-contract/meal-profile.graphql
+  - ../../packages/api-contract/meal-actions.graphql
+  - ../../packages/api-contract/meal-prep.graphql
 
 exec:
   filename: internal/graphql/generated/generated.go

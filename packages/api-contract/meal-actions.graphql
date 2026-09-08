@@ -1,0 +1,82 @@
+# ---------------------------------------------------------------------------
+# Meal plan actions, pantry linkage and the purchase-only grocery list.
+#
+# Everything here edits a plan that already exists, or exposes something the
+# server already computed. None of it can introduce a recipe the viewer's
+# allergies or diet excluded: every candidate comes from the same eligible pool
+# generation draws from, whether the viewer chose it themselves or not.
+# ---------------------------------------------------------------------------
+
+extend type Query {
+  """
+  Canonical ingredient ids for everything the viewer currently has on hand.
+
+  This is what the meal generator matches against. Pantry items whose name has
+  not been resolved to the catalogue are absent — they are never guessed at —
+  so this can be shorter than the pantry itself.
+  """
+  pantryIngredientIds: [ID!]!
+}
+
+extend type Mutation {
+  "Puts a specific recipe in a slot. The recipe is still checked against the viewer's filters."
+  replaceMeal(planId: ID!, input: ReplaceMealInput!): MealPlan!
+  "Rebuilds one day from the stored questionnaire, leaving the rest of the week alone."
+  regenerateDay(planId: ID!, day: Int!): MealPlan!
+  "Changes how much food one slot is cooked for. The week is re-priced."
+  updateServings(planId: ID!, input: UpdateServingsInput!): MealPlan!
+  "Makes a plan the viewer's active one, archiving whichever plan held that place."
+  saveMealPlan(planId: ID!): MealPlan!
+}
+
+input ReplaceMealInput {
+  slot: MealSlotInput!
+  recipeId: ID!
+}
+
+input UpdateServingsInput {
+  slot: MealSlotInput!
+  servings: Float!
+}
+
+extend type PantryItem {
+  """
+  Canonical catalogue id. Null when the item's name could not be resolved —
+  the item is still in the pantry, it simply does not take part in planning.
+  """
+  ingredientId: ID
+  quantityAmount: Float
+  quantityUnit: String
+  "Ranked above other pantry items when a plan is generated."
+  useFirst: Boolean!
+}
+
+extend input AddPantryItemInput {
+  ingredientId: ID
+  quantityAmount: Float
+  quantityUnit: String
+  useFirst: Boolean
+}
+
+extend input UpdatePantryItemInput {
+  ingredientId: ID
+  quantityAmount: Float
+  quantityUnit: String
+  useFirst: Boolean
+}
+
+extend type GroceryListPayload {
+  """
+  The list with everything the viewer already owns removed: only what has to be
+  bought.
+
+  It sits alongside `sections`, which keeps pantry items visible at a zero
+  estimate. Both are computed from the same basket, so they can never disagree;
+  which one a screen shows is a presentation decision. A shopper who cannot see
+  that the rice is already at home has no way to tell whether it was considered
+  or forgotten, which is why the full list is still the default.
+  """
+  purchaseSections: [GrocerySection!]!
+  "What the items still to buy add up to."
+  purchaseCost: Float!
+}

@@ -4,20 +4,18 @@ export GOCACHE
 
 GOOSE ?= $(GO) run github.com/pressly/goose/v3/cmd/goose
 GQLGEN ?= $(GO) run github.com/99designs/gqlgen
-SQLC ?= CGO_ENABLED=0 $(GO) run github.com/sqlc-dev/sqlc/cmd/sqlc
 
-.PHONY: db-up generate gqlgen sqlc migrate-up migrate-down seed-meals run test
+.PHONY: db-up generate gqlgen migrate-up migrate-down seed-meals run test
 
 db-up:
 	docker compose up -d postgres
 
-generate: sqlc gqlgen
+# The repository layer is hand-written pgx (internal/db), so there is no SQL
+# codegen step: generate is gqlgen alone.
+generate: gqlgen
 
 gqlgen:
 	$(GQLGEN) generate
-
-sqlc:
-	$(SQLC) generate
 
 migrate-up:
 	$(GOOSE) -dir migrations postgres "$$DATABASE_URL" up

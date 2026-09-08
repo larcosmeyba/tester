@@ -3,6 +3,8 @@ package db
 import (
 	"context"
 	"errors"
+
+	"github.com/helpthehive/server/internal/domain/meals"
 )
 
 // ErrMealNotFound is returned when a slot does not exist in the caller's plan.
@@ -11,7 +13,7 @@ var ErrMealNotFound = errors.New("meal not found")
 
 // GetGroceryList reads the saved list for a plan. The user id is part of the
 // predicate on both tables, so another user's list reads as not found.
-func (s *Store) GetGroceryList(ctx context.Context, userID string, planID string) (GroceryList, error) {
+func (s *Store) GetGroceryList(ctx context.Context, userID string, planID string) (meals.GroceryList, error) {
 	row := s.pool.QueryRow(ctx, `
 		SELECT id, meal_plan_id, user_id, estimated_cost_point::float8, estimated_cost_low::float8,
 		       estimated_cost_high::float8, cost_confidence
@@ -19,10 +21,10 @@ func (s *Store) GetGroceryList(ctx context.Context, userID string, planID string
 		WHERE meal_plan_id = $1 AND user_id = $2
 	`, planID, userID)
 
-	var list GroceryList
+	var list meals.GroceryList
 	if err := row.Scan(&list.ID, &list.MealPlanID, &list.UserID, &list.EstimatedCostPoint,
 		&list.EstimatedCostLow, &list.EstimatedCostHigh, &list.CostConfidence); err != nil {
-		return GroceryList{}, err
+		return meals.GroceryList{}, err
 	}
 
 	rows, err := s.pool.Query(ctx, `
@@ -33,15 +35,15 @@ func (s *Store) GetGroceryList(ctx context.Context, userID string, planID string
 		ORDER BY display_name
 	`, list.ID)
 	if err != nil {
-		return GroceryList{}, err
+		return meals.GroceryList{}, err
 	}
 	defer rows.Close()
 	for rows.Next() {
-		var item GroceryListItem
+		var item meals.GroceryListItem
 		if err := rows.Scan(&item.ID, &item.GroceryListID, &item.IngredientID, &item.DisplayName,
 			&item.NeededQty, &item.Unit, &item.Packages, &item.PackageLabel, &item.EstimatedPrice,
 			&item.PriceTier, &item.InPantry, &item.IsChecked, &item.UsedBy); err != nil {
-			return GroceryList{}, err
+			return meals.GroceryList{}, err
 		}
 		list.Items = append(list.Items, item)
 	}
@@ -51,10 +53,10 @@ func (s *Store) GetGroceryList(ctx context.Context, userID string, planID string
 // SaveGroceryList replaces the list for a plan. The plan ownership check is
 // inside the insert, so a list can only ever be written against a plan the
 // caller owns.
-func (s *Store) SaveGroceryList(ctx context.Context, list GroceryList) (GroceryList, error) {
+func (s *Store) SaveGroceryList(ctx context.Context, list meals.GroceryList) (meals.GroceryList, error) {
 	tx, err := s.pool.Begin(ctx)
 	if err != nil {
-		return GroceryList{}, err
+		return meals.GroceryList{}, err
 	}
 	defer func() { _ = tx.Rollback(ctx) }()
 
@@ -78,12 +80,12 @@ func (s *Store) SaveGroceryList(ctx context.Context, list GroceryList) (GroceryL
 		list.EstimatedCostHigh, list.CostConfidence)
 	var listID string
 	if err := row.Scan(&listID); err != nil {
-		return GroceryList{}, err
+		return meals.GroceryList{}, err
 	}
 	list.ID = listID
 
 	if _, err := tx.Exec(ctx, `DELETE FROM grocery_list_items WHERE grocery_list_id = $1`, listID); err != nil {
-		return GroceryList{}, err
+		return meals.GroceryList{}, err
 	}
 	for i := range list.Items {
 		item := &list.Items[i]
@@ -99,12 +101,12 @@ func (s *Store) SaveGroceryList(ctx context.Context, list GroceryList) (GroceryL
 		`, item.ID, listID, item.IngredientID, item.DisplayName, item.NeededQty, item.Unit,
 			item.Packages, item.PackageLabel, item.EstimatedPrice, item.PriceTier, item.InPantry,
 			item.IsChecked, textArray(item.UsedBy)); err != nil {
-			return GroceryList{}, err
+			return meals.GroceryList{}, err
 		}
 	}
 
 	if err := tx.Commit(ctx); err != nil {
-		return GroceryList{}, err
+		return meals.GroceryList{}, err
 	}
 	return list, nil
 }

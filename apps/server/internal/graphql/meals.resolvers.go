@@ -9,10 +9,9 @@ import (
 	"errors"
 
 	"github.com/helpthehive/server/internal/auth"
-	"github.com/helpthehive/server/internal/db"
+	"github.com/helpthehive/server/internal/domain/meals"
 	"github.com/helpthehive/server/internal/graphql/generated"
 	"github.com/helpthehive/server/internal/graphql/model"
-	"github.com/helpthehive/server/internal/modules/meals"
 )
 
 // GenerateMealPlan is the resolver for the generateMealPlan field.
@@ -21,7 +20,7 @@ func (r *mutationResolver) GenerateMealPlan(ctx context.Context, input model.Pla
 	if err != nil {
 		return nil, err
 	}
-	plan, err := r.Meals.Generate(ctx, identity, planRequestFromInput(input))
+	plan, err := r.MealPlans.Generate(ctx, identity, planRequestFromInput(input))
 	if err != nil {
 		return nil, mealError(err)
 	}
@@ -35,7 +34,7 @@ func (r *mutationResolver) SwapPlannedMeal(ctx context.Context, planID string, i
 		return nil, err
 	}
 	keepBasket := input.KeepBasket != nil && *input.KeepBasket
-	plan, err := r.Meals.Swap(ctx, identity, planID, slotFromInput(input.Slot), string(input.Action), keepBasket)
+	plan, err := r.MealPlans.Swap(ctx, identity, planID, slotFromInput(input.Slot), string(input.Action), keepBasket)
 	if err != nil {
 		return nil, mealError(err)
 	}
@@ -48,7 +47,7 @@ func (r *mutationResolver) MovePlannedMeal(ctx context.Context, planID string, i
 	if err != nil {
 		return nil, err
 	}
-	plan, err := r.Meals.Move(ctx, identity, planID, slotFromInput(input.From), slotFromInput(input.To))
+	plan, err := r.MealPlans.Move(ctx, identity, planID, slotFromInput(input.From), slotFromInput(input.To))
 	if err != nil {
 		return nil, mealError(err)
 	}
@@ -61,7 +60,7 @@ func (r *mutationResolver) AcceptMealPlan(ctx context.Context, planID string) (*
 	if err != nil {
 		return nil, err
 	}
-	result, err := r.Meals.Accept(ctx, identity, planID)
+	result, err := r.Grocery.Accept(ctx, identity, planID)
 	if err != nil {
 		return nil, mealError(err)
 	}
@@ -74,7 +73,7 @@ func (r *mutationResolver) DeleteMealPlan(ctx context.Context, planID string) (b
 	if err != nil {
 		return false, err
 	}
-	deleted, err := r.Meals.Delete(ctx, identity, planID)
+	deleted, err := r.MealPlans.Delete(ctx, identity, planID)
 	if err != nil {
 		return false, mealError(err)
 	}
@@ -87,7 +86,7 @@ func (r *mutationResolver) SetGroceryItemChecked(ctx context.Context, planID str
 	if err != nil {
 		return false, err
 	}
-	updated, err := r.Meals.SetGroceryItemChecked(ctx, identity, planID, ingredientID, checked)
+	updated, err := r.Grocery.SetItemChecked(ctx, identity, planID, ingredientID, checked)
 	if err != nil {
 		return false, mealError(err)
 	}
@@ -100,7 +99,7 @@ func (r *mutationResolver) GroceryListFromRecipes(ctx context.Context, input mod
 	if err != nil {
 		return nil, err
 	}
-	result, err := r.Meals.GroceryListFromRecipes(ctx, identity, input.RecipeIds, input.HouseholdSize, input.PantryItems)
+	result, err := r.Grocery.FromRecipes(ctx, identity, input.RecipeIds, input.HouseholdSize, input.PantryItems)
 	if err != nil {
 		return nil, mealError(err)
 	}
@@ -113,7 +112,7 @@ func (r *mutationResolver) SaveRecipe(ctx context.Context, recipeID string) (boo
 	if err != nil {
 		return false, err
 	}
-	saved, err := r.Meals.SaveRecipe(ctx, identity, recipeID)
+	saved, err := r.RecipeLibrary.Save(ctx, identity, recipeID)
 	if err != nil {
 		return false, mealError(err)
 	}
@@ -126,11 +125,54 @@ func (r *mutationResolver) UnsaveRecipe(ctx context.Context, recipeID string) (b
 	if err != nil {
 		return false, err
 	}
-	removed, err := r.Meals.UnsaveRecipe(ctx, identity, recipeID)
+	removed, err := r.RecipeLibrary.Unsave(ctx, identity, recipeID)
 	if err != nil {
 		return false, mealError(err)
 	}
 	return removed, nil
+}
+
+// ImportRecipeFromVideo is the resolver for the importRecipeFromVideo field.
+func (r *mutationResolver) ImportRecipeFromVideo(ctx context.Context, input model.ImportRecipeFromVideoInput) (*model.RecipeImport, error) {
+	identity, err := auth.RequireIdentity(ctx)
+	if err != nil {
+		return nil, err
+	}
+	language := ""
+	if input.Language != nil {
+		language = *input.Language
+	}
+	imp, err := r.RecipeImporter.Start(ctx, identity, input.URL, language)
+	if err != nil {
+		return nil, importError(err)
+	}
+	return recipeImportModel(imp), nil
+}
+
+// CancelRecipeImport is the resolver for the cancelRecipeImport field.
+func (r *mutationResolver) CancelRecipeImport(ctx context.Context, importID string) (*model.RecipeImport, error) {
+	identity, err := auth.RequireIdentity(ctx)
+	if err != nil {
+		return nil, err
+	}
+	imp, err := r.RecipeImporter.Cancel(ctx, identity, importID)
+	if err != nil {
+		return nil, importError(err)
+	}
+	return recipeImportModel(imp), nil
+}
+
+// AcceptRecipeImport is the resolver for the acceptRecipeImport field.
+func (r *mutationResolver) AcceptRecipeImport(ctx context.Context, importID string) (*model.Recipe, error) {
+	identity, err := auth.RequireIdentity(ctx)
+	if err != nil {
+		return nil, err
+	}
+	recipe, err := r.RecipeImporter.Accept(ctx, identity, importID)
+	if err != nil {
+		return nil, importError(err)
+	}
+	return recipeModel(recipe), nil
 }
 
 // Recipes is the resolver for the recipes field.
@@ -139,7 +181,7 @@ func (r *queryResolver) Recipes(ctx context.Context, query *model.RecipeQueryInp
 	if err != nil {
 		return nil, err
 	}
-	recipes, err := r.Meals.ListRecipes(ctx, identity, recipeFilterFromInput(query))
+	recipes, err := r.RecipeLibrary.List(ctx, identity, recipeFilterFromInput(query))
 	if err != nil {
 		return nil, mealError(err)
 	}
@@ -156,7 +198,7 @@ func (r *queryResolver) Recipe(ctx context.Context, recipeID string) (*model.Rec
 	if err != nil {
 		return nil, err
 	}
-	recipe, err := r.Meals.GetRecipe(ctx, identity, recipeID)
+	recipe, err := r.RecipeLibrary.Get(ctx, identity, recipeID)
 	if errors.Is(err, meals.ErrNotFound) {
 		// A recipe the viewer may not see is absent, not forbidden.
 		return nil, nil
@@ -173,7 +215,7 @@ func (r *queryResolver) SavedRecipes(ctx context.Context) ([]*model.Recipe, erro
 	if err != nil {
 		return nil, err
 	}
-	recipes, err := r.Meals.ListRecipes(ctx, identity, db.RecipeFilter{SavedOnly: true})
+	recipes, err := r.RecipeLibrary.List(ctx, identity, meals.RecipeFilter{SavedOnly: true})
 	if err != nil {
 		return nil, mealError(err)
 	}
@@ -197,7 +239,7 @@ func (r *queryResolver) Ingredients(ctx context.Context, search *string, limit *
 	if limit != nil {
 		limitValue = *limit
 	}
-	ingredients, err := r.Meals.Ingredients(ctx, searchValue, limitValue)
+	ingredients, err := r.Catalog.Search(ctx, searchValue, limitValue)
 	if err != nil {
 		return nil, mealError(err)
 	}
@@ -214,7 +256,7 @@ func (r *queryResolver) CurrentMealPlan(ctx context.Context) (*model.MealPlan, e
 	if err != nil {
 		return nil, err
 	}
-	plan, err := r.Meals.Current(ctx, identity)
+	plan, err := r.MealPlans.Current(ctx, identity)
 	if err != nil {
 		return nil, mealError(err)
 	}
@@ -231,7 +273,7 @@ func (r *queryResolver) MealPlan(ctx context.Context, planID string) (*model.Mea
 	if err != nil {
 		return nil, err
 	}
-	plan, err := r.Meals.Get(ctx, identity, planID)
+	plan, err := r.MealPlans.Get(ctx, identity, planID)
 	if errors.Is(err, meals.ErrNotFound) {
 		return nil, nil
 	}
@@ -247,7 +289,7 @@ func (r *queryResolver) GroceryList(ctx context.Context, planID string) (*model.
 	if err != nil {
 		return nil, err
 	}
-	result, err := r.Meals.GroceryList(ctx, identity, planID)
+	result, err := r.Grocery.List(ctx, identity, planID)
 	if err != nil {
 		return nil, mealError(err)
 	}
@@ -257,5 +299,45 @@ func (r *queryResolver) GroceryList(ctx context.Context, planID string) (*model.
 	return groceryListPayloadModel(*result), nil
 }
 
-// Mutation returns generated.MutationResolver implementation.
+// RecipeImport is the resolver for the recipeImport field.
+func (r *queryResolver) RecipeImport(ctx context.Context, importID string) (*model.RecipeImport, error) {
+	identity, err := auth.RequireIdentity(ctx)
+	if err != nil {
+		return nil, err
+	}
+	imp, err := r.RecipeImporter.Status(ctx, identity, importID)
+	if errors.Is(err, meals.ErrNotFound) {
+		// An import that is not the viewer's is reported as absent, exactly as
+		// a plan that is not theirs is.
+		return nil, nil
+	}
+	if err != nil {
+		return nil, importError(err)
+	}
+	return recipeImportModel(imp), nil
+}
+
+// RecipeImports is the resolver for the recipeImports field.
+func (r *queryResolver) RecipeImports(ctx context.Context, limit *int) ([]*model.RecipeImport, error) {
+	identity, err := auth.RequireIdentity(ctx)
+	if err != nil {
+		return nil, err
+	}
+	max := 0
+	if limit != nil {
+		max = *limit
+	}
+	imports, err := r.RecipeImporter.List(ctx, identity, max)
+	if err != nil {
+		return nil, importError(err)
+	}
+	return recipeImportModels(imports), nil
+}
+
+// !!! WARNING !!!
+// The code below was going to be deleted when updating resolvers. It has been copied here so you have
+// one last chance to move it out of harms way if you want. There are two reasons this happens:
+//   - When renaming or deleting a resolver the old code will be put in here. You can safely delete
+//     it when you're done.
+//   - You have helper methods in this file. Move them out to keep these resolver files clean.
 var _ generated.MutationResolver = (*mutationResolver)(nil)

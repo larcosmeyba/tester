@@ -4,9 +4,8 @@ package graphql
 // models. It lives outside *.resolvers.go so gqlgen never rewrites it.
 
 import (
-	"github.com/helpthehive/server/internal/db"
+	"github.com/helpthehive/server/internal/domain/meals"
 	"github.com/helpthehive/server/internal/graphql/model"
-	"github.com/helpthehive/server/internal/modules/meals"
 )
 
 // ---------------------------------------------------------------------------
@@ -114,11 +113,11 @@ func slotFromInput(input *model.MealSlotInput) meals.Slot {
 	return meals.Slot{Day: input.Day, MealType: string(input.MealType)}
 }
 
-func recipeFilterFromInput(input *model.RecipeQueryInput) db.RecipeFilter {
+func recipeFilterFromInput(input *model.RecipeQueryInput) meals.RecipeFilter {
 	if input == nil {
-		return db.RecipeFilter{}
+		return meals.RecipeFilter{}
 	}
-	filter := db.RecipeFilter{TagIDs: input.TagIds}
+	filter := meals.RecipeFilter{TagIDs: input.TagIds}
 	if input.MealType != nil {
 		filter.MealType = string(*input.MealType)
 	}
@@ -135,7 +134,7 @@ func recipeFilterFromInput(input *model.RecipeQueryInput) db.RecipeFilter {
 // Outputs
 // ---------------------------------------------------------------------------
 
-func recipeModel(recipe db.Recipe) *model.Recipe {
+func recipeModel(recipe meals.Recipe) *model.Recipe {
 	out := &model.Recipe{
 		RecipeID:             recipe.ID,
 		OwnerUserID:          recipe.OwnerUserID,
@@ -197,7 +196,7 @@ func recipeModel(recipe db.Recipe) *model.Recipe {
 
 // nutritionModel returns nil when the recipe carries no nutrition at all, so a
 // missing value is never rendered as zero.
-func nutritionModel(recipe db.Recipe) *model.NutritionInfo {
+func nutritionModel(recipe meals.Recipe) *model.NutritionInfo {
 	if recipe.CaloriesKcal == nil && recipe.ProteinG == nil && recipe.CarbsG == nil &&
 		recipe.FatG == nil && recipe.FiberG == nil && recipe.SodiumMg == nil {
 		return nil
@@ -222,7 +221,7 @@ func nutritionModel(recipe db.Recipe) *model.NutritionInfo {
 	return info
 }
 
-func ingredientModel(ingredient db.Ingredient) *model.Ingredient {
+func ingredientModel(ingredient meals.Ingredient) *model.Ingredient {
 	out := &model.Ingredient{
 		IngredientID:       ingredient.ID,
 		DisplayName:        ingredient.DisplayName,

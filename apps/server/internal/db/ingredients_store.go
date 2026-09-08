@@ -3,6 +3,8 @@ package db
 import (
 	"context"
 	"strings"
+
+	"github.com/helpthehive/server/internal/domain/meals"
 )
 
 const ingredientColumns = `
@@ -12,8 +14,8 @@ const ingredientColumns = `
 	contains_soy, contains_peanut, contains_tree_nut, contains_sesame, contains_coconut,
 	is_animal_derived`
 
-func scanIngredient(row scanner) (Ingredient, error) {
-	var item Ingredient
+func scanIngredient(row scanner) (meals.Ingredient, error) {
+	var item meals.Ingredient
 	err := row.Scan(
 		&item.ID, &item.DisplayName, &item.Aisle, &item.FoodGroup, &item.ParentIngredientID,
 		&item.PriceReferenceUnit, &item.IsPantryStaple, &item.AssumedOnHand, &item.ContainsMeat,
@@ -28,14 +30,14 @@ func scanIngredient(row scanner) (Ingredient, error) {
 // ListIngredients returns the whole catalogue. It is small, shared by every
 // user and safe to load in one go — the planner needs allergen flags for every
 // ingredient a candidate recipe might reference.
-func (s *Store) ListIngredients(ctx context.Context) ([]Ingredient, error) {
+func (s *Store) ListIngredients(ctx context.Context) ([]meals.Ingredient, error) {
 	rows, err := s.pool.Query(ctx, `SELECT`+ingredientColumns+` FROM ingredients ORDER BY display_name`)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
-	var items []Ingredient
+	var items []meals.Ingredient
 	for rows.Next() {
 		item, err := scanIngredient(rows)
 		if err != nil {
@@ -48,7 +50,7 @@ func (s *Store) ListIngredients(ctx context.Context) ([]Ingredient, error) {
 
 // SearchIngredients backs the pantry and allergy pickers. An empty search
 // returns the head of the catalogue rather than everything.
-func (s *Store) SearchIngredients(ctx context.Context, search string, limit int) ([]Ingredient, error) {
+func (s *Store) SearchIngredients(ctx context.Context, search string, limit int) ([]meals.Ingredient, error) {
 	search = strings.TrimSpace(search)
 	if limit <= 0 || limit > 200 {
 		limit = 50
@@ -65,7 +67,7 @@ func (s *Store) SearchIngredients(ctx context.Context, search string, limit int)
 	}
 	defer rows.Close()
 
-	var items []Ingredient
+	var items []meals.Ingredient
 	for rows.Next() {
 		item, err := scanIngredient(rows)
 		if err != nil {
@@ -78,7 +80,7 @@ func (s *Store) SearchIngredients(ctx context.Context, search string, limit int)
 
 // ListPricesForIngredients returns one price per ingredient: the lowest tier
 // available, which is the most trustworthy estimate we hold.
-func (s *Store) ListPricesForIngredients(ctx context.Context, ingredientIDs []string, scope string) ([]IngredientPrice, error) {
+func (s *Store) ListPricesForIngredients(ctx context.Context, ingredientIDs []string, scope string) ([]meals.IngredientPrice, error) {
 	if len(ingredientIDs) == 0 {
 		return nil, nil
 	}
@@ -97,9 +99,9 @@ func (s *Store) ListPricesForIngredients(ctx context.Context, ingredientIDs []st
 	}
 	defer rows.Close()
 
-	var prices []IngredientPrice
+	var prices []meals.IngredientPrice
 	for rows.Next() {
-		var price IngredientPrice
+		var price meals.IngredientPrice
 		if err := rows.Scan(
 			&price.ID, &price.IngredientID, &price.UnitPrice, &price.PackageSize,
 			&price.Divisible, &price.Tier, &price.Source, &price.GeographicScope,
@@ -113,7 +115,7 @@ func (s *Store) ListPricesForIngredients(ctx context.Context, ingredientIDs []st
 
 // UpsertIngredient is used by seeding and by admin tooling. It is not reachable
 // from the mobile app.
-func (s *Store) UpsertIngredient(ctx context.Context, item Ingredient) error {
+func (s *Store) UpsertIngredient(ctx context.Context, item meals.Ingredient) error {
 	if item.ID == "" {
 		item.ID = NewID()
 	}
@@ -154,7 +156,7 @@ func (s *Store) UpsertIngredient(ctx context.Context, item Ingredient) error {
 	return err
 }
 
-func (s *Store) UpsertIngredientPrice(ctx context.Context, price IngredientPrice) error {
+func (s *Store) UpsertIngredientPrice(ctx context.Context, price meals.IngredientPrice) error {
 	if price.ID == "" {
 		price.ID = NewID()
 	}
