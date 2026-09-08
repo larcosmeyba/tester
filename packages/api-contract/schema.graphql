@@ -20,6 +20,11 @@ type Mutation {
   updatePantryItem(id: ID!, input: UpdatePantryItemInput!): PantryItem!
   markPantryItemUsed(id: ID!): PantryItem!
   deletePantryItem(id: ID!): Boolean!
+  """
+  Links a pantry item to the ingredient catalogue, so the meal generator can
+  credit it. Pass a null ingredientId to unlink.
+  """
+  linkPantryItemIngredient(id: ID!, ingredientId: ID): Boolean!
   registerPushToken(input: RegisterPushTokenInput!): PushToken!
   deletePushToken(token: String!): Boolean!
 }
@@ -91,6 +96,14 @@ type OnboardingState {
 type PantryItem {
   id: ID!
   name: String!
+  """
+  The canonical catalogue row this item was matched to, or null when the
+  catalogue could not resolve it. Only a resolved item is credited against a
+  meal plan; an unresolved one stays in the pantry as text and is still bought,
+  because a wrong match drops something from a grocery list and the user finds
+  out at the shop.
+  """
+  ingredientId: ID
   quantity: String!
   location: StorageLocation!
   expirationDate: String!

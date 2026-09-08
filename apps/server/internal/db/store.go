@@ -86,9 +86,12 @@ type OnboardingState struct {
 }
 
 type PantryItem struct {
-	ID             string
-	UserID         string
-	Name           string
+	ID     string
+	UserID string
+	Name   string
+	// The catalogue row this item was matched to, or nil when the catalogue
+	// could not resolve it. Only a resolved item is credited against a plan.
+	IngredientID   *string
 	Quantity       string
 	Location       string
 	ExpirationDate time.Time
@@ -420,7 +423,7 @@ func (s *Store) CompleteOnboarding(ctx context.Context, userID string) (Onboardi
 
 func (s *Store) ListPantryItems(ctx context.Context, userID string, filter PantryFilter) ([]PantryItem, error) {
 	rows, err := s.pool.Query(ctx, `
-		SELECT id, user_id, name, quantity, location, expiration_date, category, status, date_added, date_used, created_at, updated_at
+		SELECT id, user_id, name, quantity, location, expiration_date, category, status, date_added, date_used, created_at, updated_at, ingredient_id
 		FROM pantry_items
 		WHERE user_id = $1
 		  AND ($2::text IS NULL OR status = $2)
@@ -447,7 +450,7 @@ func (s *Store) CreatePantryItem(ctx context.Context, params CreatePantryItemPar
 	row := s.pool.QueryRow(ctx, `
 		INSERT INTO pantry_items (id, user_id, name, quantity, location, expiration_date, category, status, date_added)
 		VALUES ($1, $2, $3, $4, $5, $6, $7, 'ACTIVE', $8)
-		RETURNING id, user_id, name, quantity, location, expiration_date, category, status, date_added, date_used, created_at, updated_at
+		RETURNING id, user_id, name, quantity, location, expiration_date, category, status, date_added, date_used, created_at, updated_at, ingredient_id
 	`, NewID(), params.UserID, params.Name, params.Quantity, params.Location, params.ExpirationDate, params.Category, s.now().UTC())
 	return scanPantryItem(row)
 }
@@ -468,7 +471,7 @@ func (s *Store) UpdatePantryItem(ctx context.Context, userID string, id string, 
 		    END,
 		    updated_at = now()
 		WHERE user_id = $1 AND id = $2
-		RETURNING id, user_id, name, quantity, location, expiration_date, category, status, date_added, date_used, created_at, updated_at
+		RETURNING id, user_id, name, quantity, location, expiration_date, category, status, date_added, date_used, created_at, updated_at, ingredient_id
 	`, userID, id, patch.Name, patch.Quantity, patch.Location, patch.ExpirationDate, patch.Category, patch.Status)
 	return scanPantryItem(row)
 }
@@ -480,7 +483,7 @@ func (s *Store) MarkPantryItemUsed(ctx context.Context, userID string, id string
 		    date_used = COALESCE(date_used, CURRENT_DATE),
 		    updated_at = now()
 		WHERE user_id = $1 AND id = $2
-		RETURNING id, user_id, name, quantity, location, expiration_date, category, status, date_added, date_used, created_at, updated_at
+		RETURNING id, user_id, name, quantity, location, expiration_date, category, status, date_added, date_used, created_at, updated_at, ingredient_id
 	`, userID, id)
 	return scanPantryItem(row)
 }
@@ -773,6 +776,7 @@ func scanPantryItem(row scanner) (PantryItem, error) {
 		&dateUsed,
 		&item.CreatedAt,
 		&item.UpdatedAt,
+		&item.IngredientID,
 	); err != nil {
 		return PantryItem{}, err
 	}

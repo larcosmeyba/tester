@@ -15,7 +15,13 @@ import (
 
 // planRequestFromInput converts the questionnaire. It deliberately does not
 // read a user id from anywhere: the viewer comes from the verified token.
-func planRequestFromInput(input model.PlanRequestInput) meals.PlanRequest {
+//
+// A nil input is not an error: it means "plan from what I saved last time", and
+// the service resolves it against the viewer's stored preferences.
+func planRequestFromInput(input *model.PlanRequestInput) *meals.PlanRequest {
+	if input == nil {
+		return nil
+	}
 	request := meals.PlanRequest{
 		QuestionnaireVersion: input.QuestionnaireVersion,
 		Days:                 input.Days,
@@ -93,7 +99,7 @@ func planRequestFromInput(input model.PlanRequestInput) meals.PlanRequest {
 	for _, style := range input.CookingStyle {
 		request.CookingStyle = append(request.CookingStyle, string(style))
 	}
-	return request
+	return &request
 }
 
 func foodPreferencesFromInput(input *model.FoodPreferencesInput) meals.FoodPreferences {

@@ -22,10 +22,27 @@ extend type Query {
   mealPlan(planId: ID!): MealPlan
   "The saved grocery list for a plan, or null before the plan is accepted."
   groceryList(planId: ID!): GroceryListPayload
+  """
+  The viewer's saved questionnaire, or null when they have never answered it.
+  Never answering it is a normal state, not an error.
+  """
+  mealPreferences: MealPreferences
 }
 
 extend type Mutation {
-  generateMealPlan(input: PlanRequestInput!): MealPlan!
+  """
+  Generates and saves a week.
+
+  `input` is the questionnaire. Omit it to plan from the preferences the viewer
+  saved last time; supply it to plan from a fresh answer set, which is also
+  saved. Either way the viewer's pantry is read on the server and credited
+  before anything reaches the grocery list — it is never sent by the client.
+  """
+  generateMealPlan(input: PlanRequestInput): MealPlan!
+  "Saves the questionnaire without generating a plan."
+  saveMealPreferences(input: PlanRequestInput!): MealPreferences!
+  "Forgets the saved questionnaire. Plans already generated are unaffected."
+  deleteMealPreferences: Boolean!
   "Replaces one slot's recipe. keepBasket avoids re-pricing the whole week."
   swapPlannedMeal(planId: ID!, input: SwapMealInput!): MealPlan!
   "Moves a meal between slots. Never regenerates the week and never re-prices."
@@ -441,4 +458,90 @@ input GroceryListFromRecipesInput {
   recipeIds: [ID!]!
   householdSize: Int!
   pantryItems: [ID!]!
+}
+
+# ---------------------------------------------------------------------------
+# Saved meal preferences
+#
+# The questionnaire, kept between plans, so a household answers it once rather
+# than on every generation. These are the output shapes of the same values
+# `PlanRequestInput` collects.
+#
+# `pantryItems` is deliberately absent. What the household has is read from the
+# pantry itself on every generation, so a saved copy can never tell the planner
+# somebody owns something they have since used.
+# ---------------------------------------------------------------------------
+
+type Household {
+  size: Int!
+  adults: Int
+  children: Int
+  "True when the user picked 8+; size is stored as 8."
+  sizeIsPlus: Boolean!
+}
+
+"How many of each category to plan across the whole week, not per day."
+type MealCounts {
+  breakfast: Int!
+  lunch: Int!
+  dinner: Int!
+  snack: Int!
+}
+
+type GroceryBudget {
+  "0 means no budget was set. It is never a claim that a household has nothing."
+  amount: Float!
+  currency: String!
+  mode: BudgetMode!
+}
+
+type DietRequirement {
+  diet: Diet!
+  strength: Strength!
+}
+
+"Allergies are always required; the server rejects any other strength."
+type AllergyRequirement {
+  allergen: Allergen!
+  strength: Strength!
+}
+
+type NutritionPreference {
+  goal: NutritionGoal!
+  strength: Strength!
+}
+
+type FoodPreferences {
+  ingredients: [String!]!
+  cuisines: [String!]!
+  freeText: String
+}
+
+"A required limit excludes a recipe; a preferred one only ranks it."
+type CookingTimeLimit {
+  maxMinutes: Int
+  strength: Strength!
+}
+
+type MealPreferences {
+  questionnaireVersion: String!
+  planScope: String!
+  household: Household!
+  meals: MealCounts!
+  days: Int!
+  budget: GroceryBudget!
+  dietaryRequirements: [DietRequirement!]!
+  dietaryOtherText: String
+  allergies: [AllergyRequirement!]!
+  "Other allergies, as canonical ingredient ids."
+  allergyIngredientIds: [ID!]!
+  nutritionPreferences: [NutritionPreference!]!
+  likes: FoodPreferences!
+  dislikes: FoodPreferences!
+  cookingTime: CookingTimeLimit!
+  equipment: [Equipment!]!
+  cookingStyle: [CookingStyle!]!
+  leftovers: LeftoversPreference!
+  "Recipes the viewer has rejected, so a regeneration does not bring them back."
+  excludeRecipeIds: [ID!]!
 }

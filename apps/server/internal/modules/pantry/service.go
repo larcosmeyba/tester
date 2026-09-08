@@ -176,3 +176,30 @@ func trimStringPtr(value **string) {
 	trimmed := strings.TrimSpace(**value)
 	*value = &trimmed
 }
+
+// LinkIngredient connects a pantry item to the ingredient catalogue, which is
+// what lets the meal generator credit it against a plan.
+//
+// The link is explicit. The generator also resolves items by an exact,
+// case-insensitive name match, but nothing fuzzier: a wrong match takes an
+// ingredient off a grocery list the household actually needed, and they find
+// out at the shop. Passing a nil ingredientID unlinks the item and returns it
+// to being display text.
+func (s *Service) LinkIngredient(ctx context.Context, identity auth.Identity, id string, ingredientID *string) (bool, error) {
+	viewer, err := s.users.Viewer(ctx, identity)
+	if err != nil {
+		return false, err
+	}
+	id = strings.TrimSpace(id)
+	if id == "" {
+		return false, errors.New("pantry item id is required")
+	}
+	if ingredientID != nil {
+		trimmed := strings.TrimSpace(*ingredientID)
+		if trimmed == "" {
+			return false, errors.New("ingredient id cannot be empty")
+		}
+		ingredientID = &trimmed
+	}
+	return s.store.LinkPantryItemIngredient(ctx, viewer.User.ID, id, ingredientID)
+}

@@ -52,6 +52,10 @@ func mealTypeOrder(mealType string) int {
 // A slot with no eligible recipe is left empty. The plan reports fewer meals
 // than were asked for rather than inventing one or reusing a recipe the filters
 // rejected.
+//
+// Picking is all this does. Scaling, pantry credit, pricing and consolidation
+// happen in assemble, which the AI generator shares, so a week costs the same
+// whether the deterministic planner or a provider chose it.
 func (p *Planner) Build(request PlanRequest, pool []db.Recipe, planID string) Plan {
 	pantry := set(request.PantryItems...)
 	slots := RequestedSlots(request)
@@ -62,51 +66,17 @@ func (p *Planner) Build(request PlanRequest, pool []db.Recipe, planID string) Pl
 	}
 
 	used := map[string]int{}
-	var meals []PlannedMeal
-	var chosen []PlannedRecipe
-
+	assignments := make([]assignment, 0, len(slots))
 	for _, slot := range slots {
 		recipe, ok := p.pick(pool, slot, request, scores, used)
 		if !ok {
 			continue
 		}
 		used[recipe.ID]++
-
-		scale := ScaleFactor(recipe, request.Household.Size)
-		chosen = append(chosen, PlannedRecipe{Recipe: recipe, Scale: scale})
-
-		meals = append(meals, PlannedMeal{
-			Slot:                  slot,
-			RecipeID:              recipe.ID,
-			Title:                 recipe.Title,
-			TotalTimeMinutes:      recipe.TotalTimeMinutes,
-			ScaleFactor:           scale,
-			ServingsPlanned:       ServingsPlanned(recipe, request.Household.Size, scale),
-			ProteinGPerServing:    recipe.ProteinG,
-			GoalIndicator:         primaryGoal(request),
-			PantryIngredientsUsed: pantryUsed(recipe, pantry, p.Catalog),
-			ConsumedCost:          consumedCost(recipe, scale, pantry, p.Catalog),
-		})
+		assignments = append(assignments, assignment{Slot: slot, Recipe: recipe})
 	}
 
-	basket := BuildBasket(chosen, pantry, p.Catalog)
-	summary := p.summarize(request, meals, basket)
-
-	plan := Plan{
-		PlanID:      planID,
-		Status:      "ok",
-		Summary:     summary,
-		Meals:       meals,
-		GroceryList: GroupByAisle(basket.Items, p.Catalog),
-		SwapOptions: []string{"swap_slot", "cheaper", "higher_protein", "faster", "dislike", "regenerate_week"},
-		Assumptions: basket.Assumptions,
-	}
-	if len(meals) < len(slots) {
-		plan.Status = "partial"
-		plan.Assumptions = append(plan.Assumptions,
-			"Some slots could not be filled from the recipes that match your requirements.")
-	}
-	return plan
+	return enforceBudget(request, assignments, pool, p.Catalog, planID, len(slots))
 }
 
 // pick chooses the best-scoring recipe for a slot, penalising anything already

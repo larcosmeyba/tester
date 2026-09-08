@@ -36,6 +36,13 @@ export type Allergen =
   | 'wheat';
 
 /** Allergies are always required; the server rejects any other strength. */
+export type AllergyRequirement = {
+  __typename?: 'AllergyRequirement';
+  allergen: Allergen;
+  strength: Strength;
+};
+
+/** Allergies are always required; the server rejects any other strength. */
 export type AllergyRequirementInput = {
   allergen: Allergen;
   strength: Strength;
@@ -95,6 +102,13 @@ export type CookingTimeInput = {
   strength: Strength;
 };
 
+/** A required limit excludes a recipe; a preferred one only ranks it. */
+export type CookingTimeLimit = {
+  __typename?: 'CookingTimeLimit';
+  maxMinutes?: Maybe<Scalars['Int']['output']>;
+  strength: Strength;
+};
+
 /**
  * An estimated cost is always a range with a confidence, never fake precision.
  * Budget compliance is checked against `high`.
@@ -124,6 +138,12 @@ export type Diet =
   | 'vegan'
   | 'vegetarian';
 
+export type DietRequirement = {
+  __typename?: 'DietRequirement';
+  diet: Diet;
+  strength: Strength;
+};
+
 export type DietRequirementInput = {
   diet: Diet;
   strength: Strength;
@@ -139,10 +159,25 @@ export type Equipment =
   | 'slow_cooker'
   | 'stovetop';
 
+export type FoodPreferences = {
+  __typename?: 'FoodPreferences';
+  cuisines: Array<Scalars['String']['output']>;
+  freeText?: Maybe<Scalars['String']['output']>;
+  ingredients: Array<Scalars['String']['output']>;
+};
+
 export type FoodPreferencesInput = {
   cuisines: Array<Scalars['String']['input']>;
   freeText?: InputMaybe<Scalars['String']['input']>;
   ingredients: Array<Scalars['String']['input']>;
+};
+
+export type GroceryBudget = {
+  __typename?: 'GroceryBudget';
+  /** 0 means no budget was set. It is never a claim that a household has nothing. */
+  amount: Scalars['Float']['output'];
+  currency: Scalars['String']['output'];
+  mode: BudgetMode;
 };
 
 /**
@@ -201,6 +236,15 @@ export type HandleAvailabilityReason =
   | 'RESERVED'
   | 'UNAVAILABLE';
 
+export type Household = {
+  __typename?: 'Household';
+  adults?: Maybe<Scalars['Int']['output']>;
+  children?: Maybe<Scalars['Int']['output']>;
+  size: Scalars['Int']['output'];
+  /** True when the user picked 8+; size is stored as 8. */
+  sizeIsPlus: Scalars['Boolean']['output'];
+};
+
 export type HouseholdInput = {
   adults?: InputMaybe<Scalars['Int']['input']>;
   children?: InputMaybe<Scalars['Int']['input']>;
@@ -258,6 +302,15 @@ export type LeftoversPreference =
   | 'sometimes'
   | 'yes';
 
+/** How many of each category to plan across the whole week, not per day. */
+export type MealCounts = {
+  __typename?: 'MealCounts';
+  breakfast: Scalars['Int']['output'];
+  dinner: Scalars['Int']['output'];
+  lunch: Scalars['Int']['output'];
+  snack: Scalars['Int']['output'];
+};
+
 export type MealCountsInput = {
   breakfast: Scalars['Int']['input'];
   dinner: Scalars['Int']['input'];
@@ -276,6 +329,30 @@ export type MealPlan = {
   status: Scalars['String']['output'];
   summary: PlanSummary;
   swapOptions: Array<SwapAction>;
+};
+
+export type MealPreferences = {
+  __typename?: 'MealPreferences';
+  allergies: Array<AllergyRequirement>;
+  /** Other allergies, as canonical ingredient ids. */
+  allergyIngredientIds: Array<Scalars['ID']['output']>;
+  budget: GroceryBudget;
+  cookingStyle: Array<CookingStyle>;
+  cookingTime: CookingTimeLimit;
+  days: Scalars['Int']['output'];
+  dietaryOtherText?: Maybe<Scalars['String']['output']>;
+  dietaryRequirements: Array<DietRequirement>;
+  dislikes: FoodPreferences;
+  equipment: Array<Equipment>;
+  /** Recipes the viewer has rejected, so a regeneration does not bring them back. */
+  excludeRecipeIds: Array<Scalars['ID']['output']>;
+  household: Household;
+  leftovers: LeftoversPreference;
+  likes: FoodPreferences;
+  meals: MealCounts;
+  nutritionPreferences: Array<NutritionPreference>;
+  planScope: Scalars['String']['output'];
+  questionnaireVersion: Scalars['String']['output'];
 };
 
 export type MealSlot = {
@@ -309,16 +386,33 @@ export type Mutation = {
   addPantryItem: PantryItem;
   completeOnboarding: Viewer;
   deleteMealPlan: Scalars['Boolean']['output'];
+  /** Forgets the saved questionnaire. Plans already generated are unaffected. */
+  deleteMealPreferences: Scalars['Boolean']['output'];
   deletePantryItem: Scalars['Boolean']['output'];
   deletePushToken: Scalars['Boolean']['output'];
   deleteViewerData: Scalars['Boolean']['output'];
+  /**
+   * Generates and saves a week.
+   *
+   * `input` is the questionnaire. Omit it to plan from the preferences the viewer
+   * saved last time; supply it to plan from a fresh answer set, which is also
+   * saved. Either way the viewer's pantry is read on the server and credited
+   * before anything reaches the grocery list — it is never sent by the client.
+   */
   generateMealPlan: MealPlan;
   /** Choose My Recipes: selected recipes to a consolidated list, nothing saved. */
   groceryListFromRecipes: GroceryListPayload;
+  /**
+   * Links a pantry item to the ingredient catalogue, so the meal generator can
+   * credit it. Pass a null ingredientId to unlink.
+   */
+  linkPantryItemIngredient: Scalars['Boolean']['output'];
   markPantryItemUsed: PantryItem;
   /** Moves a meal between slots. Never regenerates the week and never re-prices. */
   movePlannedMeal: MealPlan;
   registerPushToken: PushToken;
+  /** Saves the questionnaire without generating a plan. */
+  saveMealPreferences: MealPreferences;
   saveRecipe: Scalars['Boolean']['output'];
   setGroceryItemChecked: Scalars['Boolean']['output'];
   /** Replaces one slot's recipe. keepBasket avoids re-pricing the whole week. */
@@ -362,12 +456,18 @@ export type MutationDeletePushTokenArgs = {
 
 
 export type MutationGenerateMealPlanArgs = {
-  input: PlanRequestInput;
+  input?: InputMaybe<PlanRequestInput>;
 };
 
 
 export type MutationGroceryListFromRecipesArgs = {
   input: GroceryListFromRecipesInput;
+};
+
+
+export type MutationLinkPantryItemIngredientArgs = {
+  id: Scalars['ID']['input'];
+  ingredientId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 
@@ -384,6 +484,11 @@ export type MutationMovePlannedMealArgs = {
 
 export type MutationRegisterPushTokenArgs = {
   input: RegisterPushTokenInput;
+};
+
+
+export type MutationSaveMealPreferencesArgs = {
+  input: PlanRequestInput;
 };
 
 
@@ -461,6 +566,12 @@ export type NutritionInfo = {
   sodiumMg?: Maybe<Scalars['Float']['output']>;
 };
 
+export type NutritionPreference = {
+  __typename?: 'NutritionPreference';
+  goal: NutritionGoal;
+  strength: Strength;
+};
+
 export type NutritionPreferenceInput = {
   goal: NutritionGoal;
   strength: Strength;
@@ -482,6 +593,14 @@ export type PantryItem = {
   dateUsed?: Maybe<Scalars['String']['output']>;
   expirationDate: Scalars['String']['output'];
   id: Scalars['ID']['output'];
+  /**
+   * The canonical catalogue row this item was matched to, or null when the
+   * catalogue could not resolve it. Only a resolved item is credited against a
+   * meal plan; an unresolved one stays in the pantry as text and is still bought,
+   * because a wrong match drops something from a grocery list and the user finds
+   * out at the shop.
+   */
+  ingredientId?: Maybe<Scalars['ID']['output']>;
   location: StorageLocation;
   name: Scalars['String']['output'];
   quantity: Scalars['String']['output'];
@@ -590,6 +709,11 @@ export type Query = {
   /** Canonical ingredient catalogue, used by the pantry and allergy pickers. */
   ingredients: Array<Ingredient>;
   mealPlan?: Maybe<MealPlan>;
+  /**
+   * The viewer's saved questionnaire, or null when they have never answered it.
+   * Never answering it is a normal state, not an error.
+   */
+  mealPreferences?: Maybe<MealPreferences>;
   pantryItems: Array<PantryItem>;
   pantryWasteStats: WasteStats;
   recipe?: Maybe<Recipe>;

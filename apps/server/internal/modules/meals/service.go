@@ -23,8 +23,13 @@ var ErrNotFound = errors.New("not found")
 // the viewer from the verified token and scopes its queries to that user; no
 // method accepts a user id from the caller.
 type Service struct {
-	store    *db.Store
-	users    *users.Service
+	store *db.Store
+	users *users.Service
+	// The same provider serves both AI paths: choosing the week, and writing
+	// the sentence that describes it. Each validates its own reply, and each
+	// falls back independently, so a provider failure degrades one without
+	// taking out the other.
+	provider generator.Provider
 	narrator *Narrator
 	logger   *slog.Logger
 	now      func() time.Time
@@ -34,9 +39,13 @@ func NewService(store *db.Store, usersService *users.Service, provider generator
 	if logger == nil {
 		logger = slog.Default()
 	}
+	if provider == nil {
+		provider = generator.Disabled{}
+	}
 	return &Service{
 		store:    store,
 		users:    usersService,
+		provider: provider,
 		narrator: NewNarrator(provider, logger),
 		logger:   logger,
 		now:      time.Now,
@@ -101,17 +110,34 @@ func (s *Service) Ingredients(ctx context.Context, search string, limit int) ([]
 // Plans
 // ---------------------------------------------------------------------------
 
-// Generate builds a week from a questionnaire, saves it as the user's active
-// plan, and returns it. Any previous active plan is archived in the same
-// transaction.
-func (s *Service) Generate(ctx context.Context, identity auth.Identity, request PlanRequest) (Plan, error) {
+// Generate builds a week and saves it as the user's active plan. Any previous
+// active plan is archived in the same transaction.
+//
+// It runs the product's chain in order, and each step is a link that cannot be
+// skipped:
+//
+//	Questionnaire → Saved Meal Preferences → Existing Pantry → Budget
+//	  → Hard Filters → AI Meal Plan → Validation → Grocery List
+//
+// `submitted` is the questionnaire. Passing nil means "use what I saved last
+// time", which is the ordinary case once a user has answered it once; passing
+// an answer set both plans from it and saves it.
+func (s *Service) Generate(ctx context.Context, identity auth.Identity, submitted *PlanRequest) (Plan, error) {
 	userID, err := s.userID(ctx, identity)
 	if err != nil {
 		return Plan{}, err
 	}
 
-	request.Normalize()
-	if err := request.Validate(); err != nil {
+	// Questionnaire → saved meal preferences.
+	request, err := s.resolveRequest(ctx, userID, submitted)
+	if err != nil {
+		return Plan{}, err
+	}
+
+	// Existing pantry. What the household already has is pulled from their own
+	// pantry rather than re-asked, and is credited before anything is bought.
+	request, pantryNotes, err := s.withPantry(ctx, userID, request)
+	if err != nil {
 		return Plan{}, err
 	}
 
@@ -124,12 +150,26 @@ func (s *Service) Generate(ctx context.Context, identity auth.Identity, request 
 		return Plan{}, err
 	}
 
+	// Hard filters. Everything the user's allergies, required diets, dislikes,
+	// equipment and time limit exclude is gone before a provider sees anything.
 	pool := EligibleRecipes(library, request, catalog)
-	plan := NewPlanner(catalog).Build(request, pool, db.NewID())
 
-	message, source := s.narrator.Describe(ctx, plan)
+	// AI meal plan → validation → budget. All three are inside the generator:
+	// it asks a provider to choose from the safe pool, rejects a reply that
+	// names anything it was not offered, re-checks what survives, and prices
+	// the result under the user's budget.
+	plan, source := NewAIPlanner(s.provider, catalog, s.logger).Build(ctx, request, pool, db.NewID())
+
+	// The pantry notes come first: what the user already owns is the thing they
+	// most need to know before they shop.
+	plan.Assumptions = append(pantryNotes, plan.Assumptions...)
+
+	message, _ := s.narrator.Describe(ctx, plan)
 	plan.PennyMessage = message
 
+	// generation_source records how the *plan* was chosen. Whether the sentence
+	// under it was written by a provider or by the server is a separate
+	// question, and not one a stored plan needs to answer.
 	saved, err := s.persist(ctx, userID, request, plan, source)
 	if err != nil {
 		return Plan{}, err
@@ -255,7 +295,7 @@ func (s *Service) Swap(ctx context.Context, identity auth.Identity, planID strin
 	}
 
 	if action == "regenerate_week" {
-		return s.Generate(ctx, identity, request)
+		return s.Generate(ctx, identity, &request)
 	}
 
 	// "I don't like this" is remembered, so a regeneration will not bring the

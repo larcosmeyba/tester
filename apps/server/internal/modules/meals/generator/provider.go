@@ -26,12 +26,25 @@ import (
 )
 
 // Request is what a provider is asked for. It carries no user identity: see
-// prompt.go for what a fact sheet is allowed to contain.
+// prompt.go and plan_prompt.go for what a fact sheet and a plan brief are
+// allowed to contain.
 type Request struct {
 	System string
 	User   string
 	// Hard cap on the reply, enforced again on the response.
 	MaxTokens int
+	// When set, the provider is asked to constrain its output to this JSON
+	// Schema. It is a request, not a guarantee: a provider that ignores it, or
+	// one that does not support schema-constrained decoding at all, returns
+	// something the caller's validator rejects in the ordinary way. Nothing
+	// downstream relies on the provider having honoured it.
+	Schema *ResponseSchema
+}
+
+// ResponseSchema names a JSON Schema the reply should satisfy.
+type ResponseSchema struct {
+	Name   string
+	Schema map[string]any
 }
 
 type Response struct {
@@ -114,7 +127,7 @@ type httpProvider struct {
 func (p *httpProvider) Name() string { return "openai_compatible" }
 
 func (p *httpProvider) Complete(ctx context.Context, request Request) (Response, error) {
-	body, err := json.Marshal(map[string]any{
+	payload := map[string]any{
 		"model": p.cfg.Model,
 		"messages": []map[string]string{
 			{"role": "system", "content": request.System},
@@ -122,7 +135,22 @@ func (p *httpProvider) Complete(ctx context.Context, request Request) (Response,
 		},
 		"max_tokens":  request.MaxTokens,
 		"temperature": 0.2,
-	})
+	}
+	// Structured output where the provider offers it. The widely implemented
+	// json_schema response format is used when a schema is supplied and plain
+	// json_object otherwise, so a reply is at least always parseable JSON.
+	if request.Schema != nil {
+		payload["response_format"] = map[string]any{
+			"type": "json_schema",
+			"json_schema": map[string]any{
+				"name":   request.Schema.Name,
+				"strict": true,
+				"schema": request.Schema.Schema,
+			},
+		}
+	}
+
+	body, err := json.Marshal(payload)
 	if err != nil {
 		return Response{}, err
 	}

@@ -17,6 +17,12 @@ type AddPantryItemInput struct {
 }
 
 // Allergies are always required; the server rejects any other strength.
+type AllergyRequirement struct {
+	Allergen Allergen `json:"allergen"`
+	Strength Strength `json:"strength"`
+}
+
+// Allergies are always required; the server rejects any other strength.
 type AllergyRequirementInput struct {
 	Allergen Allergen `json:"allergen"`
 	Strength Strength `json:"strength"`
@@ -57,6 +63,12 @@ type CookingTimeInput struct {
 	Strength   Strength `json:"strength"`
 }
 
+// A required limit excludes a recipe; a preferred one only ranks it.
+type CookingTimeLimit struct {
+	MaxMinutes *int     `json:"maxMinutes,omitempty"`
+	Strength   Strength `json:"strength"`
+}
+
 // An estimated cost is always a range with a confidence, never fake precision.
 // Budget compliance is checked against `high`.
 type CostRange struct {
@@ -69,15 +81,33 @@ type CostRange struct {
 	Basis   *string                `json:"basis,omitempty"`
 }
 
+type DietRequirement struct {
+	Diet     Diet     `json:"diet"`
+	Strength Strength `json:"strength"`
+}
+
 type DietRequirementInput struct {
 	Diet     Diet     `json:"diet"`
 	Strength Strength `json:"strength"`
+}
+
+type FoodPreferences struct {
+	Ingredients []string `json:"ingredients"`
+	Cuisines    []string `json:"cuisines"`
+	FreeText    *string  `json:"freeText,omitempty"`
 }
 
 type FoodPreferencesInput struct {
 	Ingredients []string `json:"ingredients"`
 	Cuisines    []string `json:"cuisines"`
 	FreeText    *string  `json:"freeText,omitempty"`
+}
+
+type GroceryBudget struct {
+	// 0 means no budget was set. It is never a claim that a household has nothing.
+	Amount   float64    `json:"amount"`
+	Currency string     `json:"currency"`
+	Mode     BudgetMode `json:"mode"`
 }
 
 // A consolidated grocery line. Items already in the pantry are kept with
@@ -122,6 +152,14 @@ type HandleAvailability struct {
 	RetryAfter *string                  `json:"retryAfter,omitempty"`
 }
 
+type Household struct {
+	Size     int  `json:"size"`
+	Adults   *int `json:"adults,omitempty"`
+	Children *int `json:"children,omitempty"`
+	// True when the user picked 8+; size is stored as 8.
+	SizeIsPlus bool `json:"sizeIsPlus"`
+}
+
 type HouseholdInput struct {
 	Size     int  `json:"size"`
 	Adults   *int `json:"adults,omitempty"`
@@ -164,6 +202,14 @@ type InstructionStep struct {
 	Minutes *int   `json:"minutes,omitempty"`
 }
 
+// How many of each category to plan across the whole week, not per day.
+type MealCounts struct {
+	Breakfast int `json:"breakfast"`
+	Lunch     int `json:"lunch"`
+	Dinner    int `json:"dinner"`
+	Snack     int `json:"snack"`
+}
+
 type MealCountsInput struct {
 	Breakfast int `json:"breakfast"`
 	Lunch     int `json:"lunch"`
@@ -181,6 +227,29 @@ type MealPlan struct {
 	PennyMessage string       `json:"pennyMessage"`
 	SwapOptions  []SwapAction `json:"swapOptions"`
 	Assumptions  []string     `json:"assumptions"`
+}
+
+type MealPreferences struct {
+	QuestionnaireVersion string                `json:"questionnaireVersion"`
+	PlanScope            string                `json:"planScope"`
+	Household            *Household            `json:"household"`
+	Meals                *MealCounts           `json:"meals"`
+	Days                 int                   `json:"days"`
+	Budget               *GroceryBudget        `json:"budget"`
+	DietaryRequirements  []*DietRequirement    `json:"dietaryRequirements"`
+	DietaryOtherText     *string               `json:"dietaryOtherText,omitempty"`
+	Allergies            []*AllergyRequirement `json:"allergies"`
+	// Other allergies, as canonical ingredient ids.
+	AllergyIngredientIds []string               `json:"allergyIngredientIds"`
+	NutritionPreferences []*NutritionPreference `json:"nutritionPreferences"`
+	Likes                *FoodPreferences       `json:"likes"`
+	Dislikes             *FoodPreferences       `json:"dislikes"`
+	CookingTime          *CookingTimeLimit      `json:"cookingTime"`
+	Equipment            []Equipment            `json:"equipment"`
+	CookingStyle         []CookingStyle         `json:"cookingStyle"`
+	Leftovers            LeftoversPreference    `json:"leftovers"`
+	// Recipes the viewer has rejected, so a regeneration does not bring them back.
+	ExcludeRecipeIds []string `json:"excludeRecipeIds"`
 }
 
 type MealSlot struct {
@@ -222,6 +291,11 @@ type NutritionInfo struct {
 	Confidence   *DataConfidence `json:"confidence,omitempty"`
 }
 
+type NutritionPreference struct {
+	Goal     NutritionGoal `json:"goal"`
+	Strength Strength      `json:"strength"`
+}
+
 type NutritionPreferenceInput struct {
 	Goal     NutritionGoal `json:"goal"`
 	Strength Strength      `json:"strength"`
@@ -235,8 +309,14 @@ type OnboardingState struct {
 }
 
 type PantryItem struct {
-	ID             string          `json:"id"`
-	Name           string          `json:"name"`
+	ID   string `json:"id"`
+	Name string `json:"name"`
+	// The canonical catalogue row this item was matched to, or null when the
+	// catalogue could not resolve it. Only a resolved item is credited against a
+	// meal plan; an unresolved one stays in the pantry as text and is still bought,
+	// because a wrong match drops something from a grocery list and the user finds
+	// out at the shop.
+	IngredientID   *string         `json:"ingredientId,omitempty"`
 	Quantity       string          `json:"quantity"`
 	Location       StorageLocation `json:"location"`
 	ExpirationDate string          `json:"expirationDate"`

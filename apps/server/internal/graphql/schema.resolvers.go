@@ -168,6 +168,15 @@ func (r *mutationResolver) DeletePantryItem(ctx context.Context, id string) (boo
 	return r.Pantry.Delete(ctx, identity, id)
 }
 
+// LinkPantryItemIngredient is the resolver for the linkPantryItemIngredient field.
+func (r *mutationResolver) LinkPantryItemIngredient(ctx context.Context, id string, ingredientID *string) (bool, error) {
+	identity, err := auth.RequireIdentity(ctx)
+	if err != nil {
+		return false, err
+	}
+	return r.Pantry.LinkIngredient(ctx, identity, id, ingredientID)
+}
+
 // RegisterPushToken is the resolver for the registerPushToken field.
 func (r *mutationResolver) RegisterPushToken(ctx context.Context, input model.RegisterPushTokenInput) (*model.PushToken, error) {
 	identity, err := auth.RequireIdentity(ctx)
@@ -407,6 +416,7 @@ func (r *Resolver) pantryItemModel(item db.PantryItem) *model.PantryItem {
 	return &model.PantryItem{
 		ID:             item.ID,
 		Name:           item.Name,
+		IngredientID:   item.IngredientID,
 		Quantity:       item.Quantity,
 		Location:       model.StorageLocation(item.Location),
 		ExpirationDate: db.FormatDate(item.ExpirationDate),

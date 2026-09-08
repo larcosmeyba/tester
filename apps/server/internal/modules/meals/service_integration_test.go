@@ -50,7 +50,7 @@ func TestMealServiceEndToEnd(t *testing.T) {
 	// One dinner across two days, so there is a free slot to move a meal into.
 	request.Meals = MealCounts{Dinner: 1}
 
-	plan, err := service.Generate(ctx, owner, request)
+	plan, err := service.Generate(ctx, owner, &request)
 	if err != nil {
 		t.Fatalf("Generate() error = %v", err)
 	}
@@ -169,7 +169,7 @@ func TestMealServiceEndToEnd(t *testing.T) {
 	t.Run("an invalid request is rejected before anything is written", func(t *testing.T) {
 		bad := baseRequest()
 		bad.Allergies = []AllergyRequirement{{Allergen: "peanut", Strength: StrengthPreferred}}
-		if _, err := service.Generate(ctx, owner, bad); err == nil {
+		if _, err := service.Generate(ctx, owner, &bad); err == nil {
 			t.Fatal("an allergy that is not required must be rejected")
 		}
 

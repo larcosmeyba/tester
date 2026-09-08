@@ -16,7 +16,7 @@ import (
 )
 
 // GenerateMealPlan is the resolver for the generateMealPlan field.
-func (r *mutationResolver) GenerateMealPlan(ctx context.Context, input model.PlanRequestInput) (*model.MealPlan, error) {
+func (r *mutationResolver) GenerateMealPlan(ctx context.Context, input *model.PlanRequestInput) (*model.MealPlan, error) {
 	identity, err := auth.RequireIdentity(ctx)
 	if err != nil {
 		return nil, err
@@ -26,6 +26,32 @@ func (r *mutationResolver) GenerateMealPlan(ctx context.Context, input model.Pla
 		return nil, mealError(err)
 	}
 	return planModel(plan), nil
+}
+
+// SaveMealPreferences is the resolver for the saveMealPreferences field.
+func (r *mutationResolver) SaveMealPreferences(ctx context.Context, input model.PlanRequestInput) (*model.MealPreferences, error) {
+	identity, err := auth.RequireIdentity(ctx)
+	if err != nil {
+		return nil, err
+	}
+	saved, err := r.Meals.SavePreferences(ctx, identity, *planRequestFromInput(&input))
+	if err != nil {
+		return nil, mealError(err)
+	}
+	return mealPreferencesModel(saved), nil
+}
+
+// DeleteMealPreferences is the resolver for the deleteMealPreferences field.
+func (r *mutationResolver) DeleteMealPreferences(ctx context.Context) (bool, error) {
+	identity, err := auth.RequireIdentity(ctx)
+	if err != nil {
+		return false, err
+	}
+	deleted, err := r.Meals.DeletePreferences(ctx, identity)
+	if err != nil {
+		return false, mealError(err)
+	}
+	return deleted, nil
 }
 
 // SwapPlannedMeal is the resolver for the swapPlannedMeal field.
@@ -257,5 +283,26 @@ func (r *queryResolver) GroceryList(ctx context.Context, planID string) (*model.
 	return groceryListPayloadModel(*result), nil
 }
 
-// Mutation returns generated.MutationResolver implementation.
+// MealPreferences is the resolver for the mealPreferences field. Null is the honest answer for a user who has never answered the questionnaire: it is not an error, and not an empty object dressed up as an answer set nobody gave.
+func (r *queryResolver) MealPreferences(ctx context.Context) (*model.MealPreferences, error) {
+	identity, err := auth.RequireIdentity(ctx)
+	if err != nil {
+		return nil, err
+	}
+	saved, err := r.Meals.Preferences(ctx, identity)
+	if err != nil {
+		return nil, mealError(err)
+	}
+	if saved == nil {
+		return nil, nil
+	}
+	return mealPreferencesModel(*saved), nil
+}
+
+// !!! WARNING !!!
+// The code below was going to be deleted when updating resolvers. It has been copied here so you have
+// one last chance to move it out of harms way if you want. There are two reasons this happens:
+//   - When renaming or deleting a resolver the old code will be put in here. You can safely delete
+//     it when you're done.
+//   - You have helper methods in this file. Move them out to keep these resolver files clean.
 var _ generated.MutationResolver = (*mutationResolver)(nil)
