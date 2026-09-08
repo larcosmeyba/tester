@@ -5,6 +5,7 @@ import (
 	"errors"
 	"io"
 	"log/slog"
+	"sync"
 	"testing"
 	"time"
 
@@ -18,11 +19,26 @@ import (
 // --- fakes -----------------------------------------------------------------
 
 type fakeRepo struct {
+	// The real store is Postgres and is safe under concurrent callers; the
+	// worker runs in its own goroutine, so the fake has to be too.
+	mu       sync.Mutex
 	imports  map[string]*meals.RecipeImport
 	recipes  map[string]meals.Recipe
 	upserts  int
 	liveURLs map[string]bool
 	now      func() time.Time
+}
+
+// snapshot returns a copy of an import, for tests to assert on without racing
+// the worker that may still be writing to it.
+func (f *fakeRepo) snapshot(importID string) meals.RecipeImport {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	imp, ok := f.imports[importID]
+	if !ok {
+		return meals.RecipeImport{}
+	}
+	return *imp
 }
 
 func (f *fakeRepo) clock() time.Time {
@@ -42,6 +58,7 @@ func newFakeRepo() *fakeRepo {
 
 // owned mimics the SQL predicate: a row belonging to another user is never
 // read, so it is indistinguishable from one that does not exist.
+// owned is called with the lock already held.
 func (f *fakeRepo) owned(userID, importID string) (*meals.RecipeImport, bool) {
 	imp, ok := f.imports[importID]
 	if !ok || imp.UserID != userID {
@@ -51,6 +68,8 @@ func (f *fakeRepo) owned(userID, importID string) (*meals.RecipeImport, bool) {
 }
 
 func (f *fakeRepo) CreateRecipeImport(_ context.Context, imp meals.RecipeImport) (meals.RecipeImport, error) {
+	f.mu.Lock()
+	defer f.mu.Unlock()
 	key := imp.UserID + "\x00" + imp.SourceURL
 	if f.liveURLs[key] {
 		return meals.RecipeImport{}, db.ErrImportInProgress
@@ -66,6 +85,8 @@ func (f *fakeRepo) CreateRecipeImport(_ context.Context, imp meals.RecipeImport)
 }
 
 func (f *fakeRepo) CountRecipeImportsSince(_ context.Context, userID string, since time.Time) (int, error) {
+	f.mu.Lock()
+	defer f.mu.Unlock()
 	count := 0
 	for _, imp := range f.imports {
 		if imp.UserID == userID && !imp.CreatedAt.Before(since) {
@@ -79,6 +100,8 @@ func (f *fakeRepo) CountRecipeImportsSince(_ context.Context, userID string, sin
 // gone quiet and marks them touched in the same step, so a second caller
 // looking for quiet rows cannot also pick them up.
 func (f *fakeRepo) ClaimStaleRecipeImports(_ context.Context, quietSince time.Time, limit int) ([]meals.RecipeImport, error) {
+	f.mu.Lock()
+	defer f.mu.Unlock()
 	claimed := []meals.RecipeImport{}
 	for _, imp := range f.imports {
 		if len(claimed) >= limit {
@@ -95,6 +118,8 @@ func (f *fakeRepo) ClaimStaleRecipeImports(_ context.Context, quietSince time.Ti
 // RetryRecipeImport mirrors the SQL guard: the attempt budget is checked in
 // the same statement that spends it.
 func (f *fakeRepo) RetryRecipeImport(_ context.Context, importID string, maxAttempts int) (meals.RecipeImport, error) {
+	f.mu.Lock()
+	defer f.mu.Unlock()
 	imp, ok := f.imports[importID]
 	if !ok || !imp.Live() || imp.AttemptCount >= maxAttempts {
 		return meals.RecipeImport{}, pgx.ErrNoRows
@@ -109,6 +134,8 @@ func (f *fakeRepo) RetryRecipeImport(_ context.Context, importID string, maxAtte
 }
 
 func (f *fakeRepo) GetRecipeImport(_ context.Context, userID, importID string) (meals.RecipeImport, error) {
+	f.mu.Lock()
+	defer f.mu.Unlock()
 	imp, ok := f.owned(userID, importID)
 	if !ok {
 		return meals.RecipeImport{}, pgx.ErrNoRows
@@ -117,6 +144,8 @@ func (f *fakeRepo) GetRecipeImport(_ context.Context, userID, importID string) (
 }
 
 func (f *fakeRepo) ListRecipeImports(_ context.Context, userID string, _ int) ([]meals.RecipeImport, error) {
+	f.mu.Lock()
+	defer f.mu.Unlock()
 	out := []meals.RecipeImport{}
 	for _, imp := range f.imports {
 		if imp.UserID == userID {
@@ -127,6 +156,8 @@ func (f *fakeRepo) ListRecipeImports(_ context.Context, userID string, _ int) ([
 }
 
 func (f *fakeRepo) StartRecipeImport(_ context.Context, importID, jobID string) (meals.RecipeImport, error) {
+	f.mu.Lock()
+	defer f.mu.Unlock()
 	imp, ok := f.imports[importID]
 	if !ok || imp.Status != meals.ImportStatusQueued {
 		return meals.RecipeImport{}, pgx.ErrNoRows
@@ -140,6 +171,8 @@ func (f *fakeRepo) StartRecipeImport(_ context.Context, importID, jobID string) 
 }
 
 func (f *fakeRepo) CompleteRecipeImport(_ context.Context, importID string, draft meals.Recipe) (meals.RecipeImport, error) {
+	f.mu.Lock()
+	defer f.mu.Unlock()
 	imp, ok := f.imports[importID]
 	if !ok || imp.Settled() {
 		return meals.RecipeImport{}, pgx.ErrNoRows
@@ -151,6 +184,8 @@ func (f *fakeRepo) CompleteRecipeImport(_ context.Context, importID string, draf
 }
 
 func (f *fakeRepo) FailRecipeImport(_ context.Context, importID, code, message string) (meals.RecipeImport, error) {
+	f.mu.Lock()
+	defer f.mu.Unlock()
 	imp, ok := f.imports[importID]
 	if !ok || imp.Settled() {
 		return meals.RecipeImport{}, pgx.ErrNoRows
@@ -162,6 +197,8 @@ func (f *fakeRepo) FailRecipeImport(_ context.Context, importID, code, message s
 }
 
 func (f *fakeRepo) CancelRecipeImport(_ context.Context, userID, importID string) (meals.RecipeImport, error) {
+	f.mu.Lock()
+	defer f.mu.Unlock()
 	imp, ok := f.owned(userID, importID)
 	if !ok || imp.Settled() {
 		return meals.RecipeImport{}, pgx.ErrNoRows
@@ -172,6 +209,8 @@ func (f *fakeRepo) CancelRecipeImport(_ context.Context, userID, importID string
 }
 
 func (f *fakeRepo) LinkRecipeImportRecipe(_ context.Context, userID, importID, recipeID string) (meals.RecipeImport, error) {
+	f.mu.Lock()
+	defer f.mu.Unlock()
 	imp, ok := f.owned(userID, importID)
 	if !ok || imp.Status != meals.ImportStatusSucceeded {
 		return meals.RecipeImport{}, pgx.ErrNoRows
@@ -181,12 +220,16 @@ func (f *fakeRepo) LinkRecipeImportRecipe(_ context.Context, userID, importID, r
 }
 
 func (f *fakeRepo) UpsertRecipe(_ context.Context, recipe meals.Recipe) error {
+	f.mu.Lock()
+	defer f.mu.Unlock()
 	f.upserts++
 	f.recipes[recipe.ID] = recipe
 	return nil
 }
 
 func (f *fakeRepo) GetRecipe(_ context.Context, userID, recipeID string) (meals.Recipe, error) {
+	f.mu.Lock()
+	defer f.mu.Unlock()
 	recipe, ok := f.recipes[recipeID]
 	if !ok || recipe.OwnerUserID == nil || *recipe.OwnerUserID != userID {
 		return meals.Recipe{}, pgx.ErrNoRows
@@ -195,22 +238,41 @@ func (f *fakeRepo) GetRecipe(_ context.Context, userID, recipeID string) (meals.
 }
 
 type fakeExtractor struct {
+	mu       sync.Mutex
 	start    func() (transcriber.Job, error)
 	job      func() (transcriber.Job, error)
 	startHit int
 }
 
 func (f *fakeExtractor) Start(context.Context, transcriber.StartRequest) (transcriber.Job, error) {
+	f.mu.Lock()
 	f.startHit++
-	if f.start != nil {
-		return f.start()
+	start := f.start
+	f.mu.Unlock()
+	if start != nil {
+		return start()
 	}
 	return transcriber.Job{ID: "job_1", Status: transcriber.StatusQueued}, nil
 }
 
+func (f *fakeExtractor) starts() int {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	return f.startHit
+}
+
+func (f *fakeExtractor) setJob(fn func() (transcriber.Job, error)) {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	f.job = fn
+}
+
 func (f *fakeExtractor) Job(context.Context, string) (transcriber.Job, error) {
-	if f.job != nil {
-		return f.job()
+	f.mu.Lock()
+	job := f.job
+	f.mu.Unlock()
+	if job != nil {
+		return job()
 	}
 	return transcriber.Job{ID: "job_1", Status: transcriber.StatusRunning}, nil
 }
@@ -246,6 +308,7 @@ func newTestService(repo ImportRepository, extractor Extractor) *ImportService {
 }
 
 func newTestServiceWith(repo ImportRepository, extractor Extractor, catalog CatalogLoader, policy ImportPolicy) *ImportService {
+	var idMu sync.Mutex
 	ids := 0
 	return &ImportService{
 		repo:      repo,
@@ -255,6 +318,8 @@ func newTestServiceWith(repo ImportRepository, extractor Extractor, catalog Cata
 		now:       time.Now,
 		log:       slog.New(slog.NewTextHandler(io.Discard, nil)),
 		newID: func() string {
+			idMu.Lock()
+			defer idMu.Unlock()
 			ids++
 			return "id_" + string(rune('a'+ids-1))
 		},
@@ -521,7 +586,7 @@ func TestAnotherUsersImportIsNotFound(t *testing.T) {
 	if _, err := svc.Cancel(context.Background(), intruder, mine.ID); !errors.Is(err, meals.ErrNotFound) {
 		t.Errorf("Cancel err = %v, want ErrNotFound", err)
 	}
-	if _, err := svc.Accept(context.Background(), intruder, mine.ID); !errors.Is(err, meals.ErrNotFound) {
+	if _, err := svc.Accept(context.Background(), intruder, mine.ID, AcceptPatch{}); !errors.Is(err, meals.ErrNotFound) {
 		t.Errorf("Accept err = %v, want ErrNotFound", err)
 	}
 }
@@ -597,7 +662,7 @@ func acceptedImport(t *testing.T) (*fakeRepo, *ImportService, meals.RecipeImport
 func TestAcceptSavesTheDraftThroughTheOrdinaryRecipePath(t *testing.T) {
 	repo, svc, imp := acceptedImport(t)
 
-	recipe, err := svc.Accept(context.Background(), identityFor(viewer), imp.ID)
+	recipe, err := svc.Accept(context.Background(), identityFor(viewer), imp.ID, AcceptPatch{})
 	if err != nil {
 		t.Fatalf("Accept: %v", err)
 	}
@@ -622,11 +687,11 @@ func TestAcceptSavesTheDraftThroughTheOrdinaryRecipePath(t *testing.T) {
 func TestAcceptIsIdempotent(t *testing.T) {
 	repo, svc, imp := acceptedImport(t)
 
-	first, err := svc.Accept(context.Background(), identityFor(viewer), imp.ID)
+	first, err := svc.Accept(context.Background(), identityFor(viewer), imp.ID, AcceptPatch{})
 	if err != nil {
 		t.Fatalf("first Accept: %v", err)
 	}
-	second, err := svc.Accept(context.Background(), identityFor(viewer), imp.ID)
+	second, err := svc.Accept(context.Background(), identityFor(viewer), imp.ID, AcceptPatch{})
 	if err != nil {
 		t.Fatalf("second Accept: %v", err)
 	}
@@ -642,7 +707,7 @@ func TestAcceptIsIdempotent(t *testing.T) {
 func TestAcceptLinksTheRecipeBackToTheImport(t *testing.T) {
 	repo, svc, imp := acceptedImport(t)
 
-	recipe, _ := svc.Accept(context.Background(), identityFor(viewer), imp.ID)
+	recipe, _ := svc.Accept(context.Background(), identityFor(viewer), imp.ID, AcceptPatch{})
 
 	stored := repo.imports[imp.ID]
 	if stored.RecipeID == nil || *stored.RecipeID != recipe.ID {
@@ -656,7 +721,7 @@ func TestAcceptRefusesAnImportThatHasNoDraft(t *testing.T) {
 
 	started, _ := svc.Start(context.Background(), identityFor(viewer), "https://youtu.be/abc", "")
 
-	if _, err := svc.Accept(context.Background(), identityFor(viewer), started.ID); !errors.Is(err, ErrImportNotSucceeded) {
+	if _, err := svc.Accept(context.Background(), identityFor(viewer), started.ID, AcceptPatch{}); !errors.Is(err, ErrImportNotSucceeded) {
 		t.Errorf("err = %v, want ErrImportNotSucceeded", err)
 	}
 	if repo.upserts != 0 {

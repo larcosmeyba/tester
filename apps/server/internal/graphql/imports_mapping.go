@@ -77,6 +77,37 @@ func importError(err error) error {
 			Message:    "That import has no recipe to accept yet.",
 			Extensions: map[string]any{"code": "IMPORT_NOT_READY"},
 		}
+	case errors.Is(err, recipes.ErrUnknownIngredient):
+		return &gqlerror.Error{
+			Message:    "That ingredient is not in the catalogue.",
+			Extensions: map[string]any{"code": "UNKNOWN_INGREDIENT"},
+		}
+	case errors.Is(err, recipes.ErrInvalidPatch):
+		return &gqlerror.Error{
+			Message:    "Those corrections do not fit this draft.",
+			Extensions: map[string]any{"code": "INVALID_PATCH"},
+		}
 	}
 	return mealError(err)
+}
+
+// acceptPatchFromInput turns the reviewer's corrections into the module's
+// input. A nil input is an acceptance with no changes.
+func acceptPatchFromInput(input *model.AcceptRecipeImportInput) recipes.AcceptPatch {
+	if input == nil {
+		return recipes.AcceptPatch{}
+	}
+	patch := recipes.AcceptPatch{Servings: input.Servings}
+	for _, line := range input.Ingredients {
+		if line == nil {
+			continue
+		}
+		patch.Ingredients = append(patch.Ingredients, recipes.IngredientPatch{
+			Position:     line.Position,
+			Quantity:     line.Quantity,
+			Unit:         line.Unit,
+			IngredientID: line.IngredientID,
+		})
+	}
+	return patch
 }

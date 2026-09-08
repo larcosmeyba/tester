@@ -349,3 +349,97 @@ Evals in `apps/penny/evals/`, scenario fixtures with assertions:
 
 Run against `fake` in CI on every change; against the real provider on a
 schedule, because that run costs money and is non-deterministic.
+
+---
+
+# Delivered
+
+What follows is what was built against the design above, and where it differs.
+
+## Transport: REST, not GraphQL
+
+The design implied GraphQL for history. It is REST, under `/penny/*`, for two
+reasons: the mobile app's Penny seam already declared those paths, and a turn
+streams — which a GraphQL query cannot do without subscriptions and a transport
+the app does not have. The benefits PDF route already set the precedent for a
+non-GraphQL endpoint on this server.
+
+| Route | Auth | Purpose |
+|---|---|---|
+| `GET /penny/conversations` | user bearer | list |
+| `GET /penny/conversations/{id}/messages` | user bearer | history |
+| `DELETE /penny/conversations/{id}` | user bearer | delete |
+| `POST /penny/messages` | user bearer | one turn |
+| `POST /penny/messages/stream` | user bearer | one turn, SSE |
+| `POST /penny/actions/{id}/confirm` | user bearer | perform a proposed write |
+| `POST /internal/penny/tools` | **service token + per-turn tool token** | the gateway |
+
+The last row is the boundary. It sits outside the user auth middleware because
+its caller is a service rather than a person, and the path says `internal` so
+that anyone reading an access log or an ingress rule can see it is not a client
+route.
+
+## The per-turn tool token
+
+Not in the original sketch, and the most important thing added to it.
+
+The agent could have been given the user's bearer token. That would have let it
+do anything the user can do, for as long as the token lasts, from anywhere — and
+the agent is the process that hands text to a third-party model, so it is the
+one least entitled to that.
+
+Instead the server mints an HMAC-signed token per turn carrying the user id, the
+conversation, the router's scope grant and a 90-second expiry. Tool calls run as
+that identity and no other; nothing in a model's tool arguments can change it.
+Revocation is by expiry, because a finished turn has no use for its token.
+
+## Tool status
+
+Twenty-two of twenty-five tools are implemented. `resources.search`,
+`resources.get` and `resources.save` are registered with a stated reason —
+Help The Hive has no resources service yet — so Penny says "I can't look up
+local resources yet" instead of failing in a way that reads like a bug. A test
+asserts every registry entry has either a handler or a reason, and that nothing
+implemented is missing from the registry.
+
+`benefits.programs` and `benefits.profile_status` are wired to the real benefits
+service. The interface they are given has no `StartApplication`, no `Approve` and
+no `Document`: Penny cannot fill in, approve or submit a government form, because
+the methods are not reachable from her side of the boundary.
+
+## Ranking is lexical, not semantic
+
+Memory recall and knowledge retrieval use Postgres full-text search. The
+`embedding` columns exist and are null.
+
+This is a deliberate first step rather than a shortcut. What makes memory safe is
+its scoping, its four kinds and its supersession rule; what makes retrieval safe
+is that jurisdiction is a `WHERE` clause rather than a scoring term. None of that
+changes when the ranking does — swapping in pgvector changes one `ORDER BY` and
+adds an embed call to the ingest path.
+
+## Two bugs the tests found
+
+Worth recording, because both were in the safety layer.
+
+The guard's eligibility patterns rejected *"Whether you qualify depends on your
+income, and only the agency can tell you"* — which is the correct answer to the
+question, and contains the same three words as the sentence Penny must never say.
+RE2 has no lookbehind, so `hedged()` now walks back to the start of the clause
+and looks for a conditional marker. A hedge in a *following* sentence does not
+excuse a flat assertion; there is a test for that too.
+
+The injection pattern missed *"Ignoring my previous instructions"* because it
+allowed only one determiner between the verb and the noun.
+
+Neither would have been found by reading the regex.
+
+## Not yet built
+
+- Conversation summarisation. The column, the contract and the resume point
+  (`summarized_through`) exist; the window is currently a fixed twelve turns.
+- Semantic recall, as above.
+- The resources module, which is backend work rather than Penny work.
+- Knowledge ingest. The schema, the store and the retrieval query are done;
+  authoring the SNAP/WIC/Medicaid/LIHEAP corpus and the ingest command are not.
+- Prometheus metrics. Structured logging and the audit table are in.

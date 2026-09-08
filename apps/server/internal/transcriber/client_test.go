@@ -264,3 +264,23 @@ func TestAGiantResponseIsNotReadIntoMemory(t *testing.T) {
 		t.Error("an oversized response was accepted")
 	}
 }
+
+func TestReadyReportsTheServiceState(t *testing.T) {
+	ok, _ := testClient(t, func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/readyz" {
+			t.Errorf("probed %s, want /readyz", r.URL.Path)
+		}
+		io.WriteString(w, `{"status":"ready"}`)
+	})
+	if err := ok.Ready(context.Background()); err != nil {
+		t.Errorf("Ready() = %v, want nil", err)
+	}
+
+	notReady, _ := testClient(t, func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusServiceUnavailable)
+		io.WriteString(w, `{"status":"not_ready"}`)
+	})
+	if err := notReady.Ready(context.Background()); !errors.Is(err, ErrUnavailable) {
+		t.Errorf("Ready() = %v, want ErrUnavailable", err)
+	}
+}

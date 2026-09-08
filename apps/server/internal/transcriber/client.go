@@ -315,3 +315,32 @@ func intEnv(key string, fallback int) int {
 	}
 	return parsed
 }
+
+// Ready reports whether the extraction service can currently do work.
+//
+// It is a probe, not a gate on this server's own readiness: recipe import is
+// optional, and the API degrades to "import unavailable" rather than failing.
+// Taking the whole server out of rotation because an optional dependency is
+// down would turn a small outage into a total one.
+func (c *Client) Ready(ctx context.Context) error {
+	ctx, cancel := context.WithTimeout(ctx, c.cfg.PollTimeout)
+	defer cancel()
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, strings.TrimRight(c.cfg.BaseURL, "/")+"/readyz", nil)
+	if err != nil {
+		return err
+	}
+	req.Header.Set("Accept", "application/json")
+
+	resp, err := c.http.Do(req)
+	if err != nil {
+		return fmt.Errorf("%w: %s", ErrUnavailable, err)
+	}
+	defer resp.Body.Close()
+	_, _ = io.Copy(io.Discard, io.LimitReader(resp.Body, 1<<16))
+
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("%w: transcriber readiness returned %d", ErrUnavailable, resp.StatusCode)
+	}
+	return nil
+}

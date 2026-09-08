@@ -348,7 +348,7 @@ func (s *ImportService) Cancel(ctx context.Context, identity auth.Identity, impo
 //
 // Idempotent: the draft carries the id the recipe will have, so accepting
 // twice updates one recipe rather than creating two.
-func (s *ImportService) Accept(ctx context.Context, identity auth.Identity, importID string) (meals.Recipe, error) {
+func (s *ImportService) Accept(ctx context.Context, identity auth.Identity, importID string, patch AcceptPatch) (meals.Recipe, error) {
 	userID, err := s.userID(ctx, identity)
 	if err != nil {
 		return meals.Recipe{}, err
@@ -363,6 +363,21 @@ func (s *ImportService) Accept(ctx context.Context, identity auth.Identity, impo
 	}
 
 	draft := *imp.Draft
+
+	// The reviewer's corrections, then a fresh resolution against the
+	// catalogue. Eligibility is never taken from the client and never carried
+	// over from extraction: it is recomputed from what is now known.
+	if !patch.Empty() {
+		catalog, err := s.loadCatalog(ctx)
+		if err != nil {
+			return meals.Recipe{}, err
+		}
+		patched, err := applyPatch(draft, patch, catalog)
+		if err != nil {
+			return meals.Recipe{}, err
+		}
+		draft = meals.ResolveAgainstCatalog(patched, catalog)
+	}
 	// The draft was converted once, when it was stored. Ownership is
 	// re-asserted here rather than trusted, because this is the moment it
 	// becomes a real recipe.
@@ -460,16 +475,23 @@ func (s *ImportService) settleFromJob(ctx context.Context, imp meals.RecipeImpor
 // system actually knows. Quantities, times and nutrition are untouched here:
 // resolution records what is known, it does not supply what is missing.
 func (s *ImportService) resolve(ctx context.Context, recipe meals.Recipe) (meals.Recipe, error) {
-	if s.catalog == nil {
+	catalog, err := s.loadCatalog(ctx)
+	if err != nil {
+		return meals.Recipe{}, err
+	}
+	if catalog == nil {
 		// No catalogue configured: leave the draft exactly as extracted, which
 		// keeps it unplannable rather than falsely complete.
 		return recipe, nil
 	}
-	catalog, err := s.catalog.Load(ctx, defaultPriceScope)
-	if err != nil {
-		return meals.Recipe{}, err
-	}
 	return meals.ResolveAgainstCatalog(recipe, catalog), nil
+}
+
+func (s *ImportService) loadCatalog(ctx context.Context) (*meals.Catalog, error) {
+	if s.catalog == nil {
+		return nil, nil
+	}
+	return s.catalog.Load(ctx, defaultPriceScope)
 }
 
 // retryOrFail spends another attempt on a transient failure, and settles

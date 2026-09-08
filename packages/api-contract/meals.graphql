@@ -54,7 +54,7 @@ extend type Mutation {
   recipes. Idempotent: accepting twice updates the same recipe rather than
   creating a second one.
   """
-  acceptRecipeImport(importId: ID!): Recipe!
+  acceptRecipeImport(importId: ID!, input: AcceptRecipeImportInput): Recipe!
 }
 
 "An arbitrary JSON object. Used only for the cost tier mix."
@@ -516,4 +516,32 @@ type RecipeImport {
   errorMessage: String
   createdAt: String!
   completedAt: String
+}
+
+"""
+What the reviewer fills in before accepting a draft.
+
+It is a patch, not a recipe: only the values a video commonly fails to state,
+supplied by the person who chose the video. Everything else comes from the
+draft, and the server re-resolves the result against the ingredient catalogue
+rather than trusting anything here.
+
+A value supplied this way is recorded with `human` confidence — it was stated
+by a person, not by the source and not inferred.
+"""
+input AcceptRecipeImportInput {
+  "A serving count the video never gave."
+  servings: Float
+  "Corrections to individual ingredient lines, addressed by position."
+  ingredients: [ImportIngredientPatchInput!]
+}
+
+input ImportIngredientPatchInput {
+  "The line's position in the draft, as returned by `recipeImport`."
+  position: Int!
+  "An amount the video never stated. Null leaves the line as it is."
+  quantity: Float
+  unit: String
+  "Resolve a line the catalogue could not match, by choosing an ingredient."
+  ingredientId: ID
 }

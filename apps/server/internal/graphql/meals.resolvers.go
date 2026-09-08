@@ -163,12 +163,12 @@ func (r *mutationResolver) CancelRecipeImport(ctx context.Context, importID stri
 }
 
 // AcceptRecipeImport is the resolver for the acceptRecipeImport field.
-func (r *mutationResolver) AcceptRecipeImport(ctx context.Context, importID string) (*model.Recipe, error) {
+func (r *mutationResolver) AcceptRecipeImport(ctx context.Context, importID string, input *model.AcceptRecipeImportInput) (*model.Recipe, error) {
 	identity, err := auth.RequireIdentity(ctx)
 	if err != nil {
 		return nil, err
 	}
-	recipe, err := r.RecipeImporter.Accept(ctx, identity, importID)
+	recipe, err := r.RecipeImporter.Accept(ctx, identity, importID, acceptPatchFromInput(input))
 	if err != nil {
 		return nil, importError(err)
 	}

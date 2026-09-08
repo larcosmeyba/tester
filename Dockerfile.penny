@@ -1,0 +1,29 @@
+# The Penny agent service.
+#
+# Note what this image does not install: no database driver, no migration tool,
+# no client for any store. That is not an oversight to be corrected later — it
+# is the architecture. This process talks to a model provider and to the Help
+# The Hive backend, and nothing else.
+
+FROM python:3.12-slim AS base
+
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PIP_NO_CACHE_DIR=1
+
+WORKDIR /app
+
+COPY apps/penny/pyproject.toml ./
+COPY apps/penny/penny ./penny
+
+RUN pip install --no-cache-dir '.[anthropic]'
+
+# Not root. A process that talks to a third-party model on behalf of a user is
+# the last one that should own its own filesystem.
+RUN useradd --create-home --uid 10001 penny
+USER penny
+
+EXPOSE 8081
+
+# Cloud Run supplies PORT; PENNY_PORT is the local default.
+CMD ["sh", "-c", "uvicorn penny.main:app --host 0.0.0.0 --port ${PORT:-8081}"]

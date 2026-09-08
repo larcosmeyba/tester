@@ -73,16 +73,16 @@ func (m matrix) mul(n matrix) matrix {
 
 func parseTextRuns(content []byte, decoders map[string]*fontDecoder) []TextRun {
 	var (
-		runs      []TextRun
-		operands  []token
-		ctm       = identity
-		stack     []matrix
-		textM     = identity
-		lineM     = identity
-		fontSize  float64
-		leading   float64
-		inText    bool
-		decoder   *fontDecoder
+		runs     []TextRun
+		operands []token
+		ctm      = identity
+		stack    []matrix
+		textM    = identity
+		lineM    = identity
+		fontSize float64
+		leading  float64
+		inText   bool
+		decoder  *fontDecoder
 	)
 
 	emit := func(raw string) {

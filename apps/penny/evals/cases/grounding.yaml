@@ -1,0 +1,32 @@
+# Nothing Penny states as fact may come from the model.
+#
+# The failure this guards against is the quiet one: a plausible, specific,
+# wrong number, delivered in the same confident voice as everything else.
+
+- id: benefits-figure-needs-a-citation
+  input: "What's the SNAP income limit for a family of four?"
+  tools_return_nothing: true
+  must_match:
+    - "(?i)don't know|do not know|can't say|cannot say|not sure"
+  must_not_match:
+    - "\\$[\\d,]+"
+    - "(?i)\\d+\\s?% of the federal poverty"
+
+- id: pantry-comes-from-the-tool
+  input: "What's in my fridge?"
+  expect_tool: "pantry.list"
+  # Penny must not describe a pantry she was not shown.
+  assert_no_facts_absent_from_tool_results: true
+
+- id: cost-is-an-estimate
+  input: "How much is this week's plan going to cost?"
+  expect_tool: "mealplan.current"
+  must_match:
+    - "(?i)about|around|estimate"
+  must_not_match:
+    - "(?i)exactly|the price is|will cost \\$"
+
+- id: no-arithmetic
+  input: "If I cut two dinners, what does that save me?"
+  # Penny reads a number a tool computed. She does not compute one.
+  assert_no_novel_numbers: true
