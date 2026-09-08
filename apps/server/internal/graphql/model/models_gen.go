@@ -16,6 +16,12 @@ type AddPantryItemInput struct {
 	Category       string          `json:"category"`
 }
 
+// Allergies are always required; the server rejects any other strength.
+type AllergyRequirementInput struct {
+	Allergen Allergen `json:"allergen"`
+	Strength Strength `json:"strength"`
+}
+
 type AppPreferences struct {
 	WeeklyBudget                         string   `json:"weeklyBudget"`
 	PreferredFinanceTopics               []string `json:"preferredFinanceTopics"`
@@ -30,9 +36,83 @@ type AppPreferences struct {
 	UpdatedAt                            string   `json:"updatedAt"`
 }
 
+type BalancedMealBaseline struct {
+	Applied  bool     `json:"applied"`
+	AvgScore *float64 `json:"avgScore,omitempty"`
+}
+
+type BudgetInput struct {
+	Amount   float64    `json:"amount"`
+	Currency string     `json:"currency"`
+	Mode     BudgetMode `json:"mode"`
+}
+
 type CompleteOnboardingInput struct {
 	Profile     *UpdateProfileInput     `json:"profile,omitempty"`
 	Preferences *UpdatePreferencesInput `json:"preferences,omitempty"`
+}
+
+type CookingTimeInput struct {
+	MaxMinutes *int     `json:"maxMinutes,omitempty"`
+	Strength   Strength `json:"strength"`
+}
+
+// An estimated cost is always a range with a confidence, never fake precision.
+// Budget compliance is checked against `high`.
+type CostRange struct {
+	Point      float64        `json:"point"`
+	Low        float64        `json:"low"`
+	High       float64        `json:"high"`
+	Confidence DataConfidence `json:"confidence"`
+	// Share of the basket priced at each tier, e.g. {"1": 0.4, "3": 0.6}.
+	TierMix map[string]interface{} `json:"tierMix,omitempty"`
+	Basis   *string                `json:"basis,omitempty"`
+}
+
+type DietRequirementInput struct {
+	Diet     Diet     `json:"diet"`
+	Strength Strength `json:"strength"`
+}
+
+type FoodPreferencesInput struct {
+	Ingredients []string `json:"ingredients"`
+	Cuisines    []string `json:"cuisines"`
+	FreeText    *string  `json:"freeText,omitempty"`
+}
+
+// A consolidated grocery line. Items already in the pantry are kept with
+// `inPantry: true` and zero cost rather than hidden, so nothing goes missing.
+type GroceryItem struct {
+	IngredientID string  `json:"ingredientId"`
+	DisplayName  string  `json:"displayName"`
+	NeededQty    float64 `json:"neededQty"`
+	Unit         string  `json:"unit"`
+	// null for loose items sold by weight.
+	Packages       *int    `json:"packages,omitempty"`
+	PackageLabel   *string `json:"packageLabel,omitempty"`
+	EstimatedPrice float64 `json:"estimatedPrice"`
+	PriceTier      *int    `json:"priceTier,omitempty"`
+	InPantry       bool    `json:"inPantry"`
+	IsChecked      bool    `json:"isChecked"`
+	// Titles of the recipes this line is for.
+	UsedBy []string `json:"usedBy"`
+}
+
+type GroceryListFromRecipesInput struct {
+	RecipeIds     []string `json:"recipeIds"`
+	HouseholdSize int      `json:"householdSize"`
+	PantryItems   []string `json:"pantryItems"`
+}
+
+type GroceryListPayload struct {
+	PlanID   *string           `json:"planId,omitempty"`
+	Sections []*GrocerySection `json:"sections"`
+	Cost     *CostRange        `json:"cost"`
+}
+
+type GrocerySection struct {
+	Aisle string         `json:"aisle"`
+	Items []*GroceryItem `json:"items"`
 }
 
 type HandleAvailability struct {
@@ -42,7 +122,109 @@ type HandleAvailability struct {
 	RetryAfter *string                  `json:"retryAfter,omitempty"`
 }
 
+type HouseholdInput struct {
+	Size     int  `json:"size"`
+	Adults   *int `json:"adults,omitempty"`
+	Children *int `json:"children,omitempty"`
+	// True when the user picked 8+; size is stored as 8.
+	SizeIsPlus bool `json:"sizeIsPlus"`
+}
+
+type Ingredient struct {
+	IngredientID       string `json:"ingredientId"`
+	DisplayName        string `json:"displayName"`
+	Aisle              string `json:"aisle"`
+	FoodGroup          string `json:"foodGroup"`
+	PriceReferenceUnit string `json:"priceReferenceUnit"`
+	IsPantryStaple     bool   `json:"isPantryStaple"`
+	// salt, pepper and water only: never added to a grocery list.
+	AssumedOnHand bool       `json:"assumedOnHand"`
+	Allergens     []Allergen `json:"allergens"`
+}
+
+// One ingredient line of a recipe. `quantity` is null when the source never
+// stated one — it is never invented, and `missingInformation` says so instead.
+type IngredientLine struct {
+	Position           int      `json:"position"`
+	RawText            string   `json:"rawText"`
+	IngredientID       *string  `json:"ingredientId,omitempty"`
+	DisplayName        *string  `json:"displayName,omitempty"`
+	Quantity           *float64 `json:"quantity,omitempty"`
+	Unit               *string  `json:"unit,omitempty"`
+	Preparation        *string  `json:"preparation,omitempty"`
+	Grams              *float64 `json:"grams,omitempty"`
+	IsOptional         bool     `json:"isOptional"`
+	IsToTaste          bool     `json:"isToTaste"`
+	MissingInformation *string  `json:"missingInformation,omitempty"`
+}
+
+type InstructionStep struct {
+	Step    int    `json:"step"`
+	Text    string `json:"text"`
+	Minutes *int   `json:"minutes,omitempty"`
+}
+
+type MealCountsInput struct {
+	Breakfast int `json:"breakfast"`
+	Lunch     int `json:"lunch"`
+	Dinner    int `json:"dinner"`
+	Snack     int `json:"snack"`
+}
+
+type MealPlan struct {
+	PlanID      string            `json:"planId"`
+	Status      string            `json:"status"`
+	Summary     *PlanSummary      `json:"summary"`
+	Meals       []*PlannedMeal    `json:"meals"`
+	GroceryList []*GrocerySection `json:"groceryList"`
+	// AI-written text. Never a source of numbers.
+	PennyMessage string       `json:"pennyMessage"`
+	SwapOptions  []SwapAction `json:"swapOptions"`
+	Assumptions  []string     `json:"assumptions"`
+}
+
+type MealSlot struct {
+	Day      int      `json:"day"`
+	MealType MealType `json:"mealType"`
+}
+
+type MealSlotInput struct {
+	Day      int      `json:"day"`
+	MealType MealType `json:"mealType"`
+}
+
+type MoveMealInput struct {
+	From *MealSlotInput `json:"from"`
+	To   *MealSlotInput `json:"to"`
+}
+
 type Mutation struct {
+}
+
+type NutritionGoalSummary struct {
+	Goal        string   `json:"goal"`
+	MetBy       int      `json:"metBy"`
+	Of          int      `json:"of"`
+	AvgProteinG *float64 `json:"avgProteinG,omitempty"`
+}
+
+// Per-serving nutrition. Null where the source never stated it.
+type NutritionInfo struct {
+	Basis        string          `json:"basis"`
+	PerServing   bool            `json:"perServing"`
+	CaloriesKcal *float64        `json:"caloriesKcal,omitempty"`
+	ProteinG     *float64        `json:"proteinG,omitempty"`
+	CarbsG       *float64        `json:"carbsG,omitempty"`
+	FatG         *float64        `json:"fatG,omitempty"`
+	FiberG       *float64        `json:"fiberG,omitempty"`
+	SodiumMg     *float64        `json:"sodiumMg,omitempty"`
+	CoveragePct  *float64        `json:"coveragePct,omitempty"`
+	Confidence   *DataConfidence `json:"confidence,omitempty"`
+}
+
+type NutritionPreferenceInput struct {
+	Goal     NutritionGoal `json:"goal"`
+	Strength Strength      `json:"strength"`
 }
 
 type OnboardingState struct {
@@ -71,6 +253,61 @@ type PantryItemFilterInput struct {
 	Location *StorageLocation `json:"location,omitempty"`
 }
 
+type PlanRequestInput struct {
+	QuestionnaireVersion string           `json:"questionnaireVersion"`
+	PlanScope            *string          `json:"planScope,omitempty"`
+	Household            *HouseholdInput  `json:"household"`
+	Meals                *MealCountsInput `json:"meals"`
+	Days                 int              `json:"days"`
+	Budget               *BudgetInput     `json:"budget"`
+	// Canonical ingredient ids, not free text.
+	PantryItems         []string                   `json:"pantryItems"`
+	DietaryRequirements []*DietRequirementInput    `json:"dietaryRequirements"`
+	DietaryOtherText    *string                    `json:"dietaryOtherText,omitempty"`
+	Allergies           []*AllergyRequirementInput `json:"allergies"`
+	// Other allergies, resolved to ingredient ids before submit.
+	AllergyIngredients   []string                    `json:"allergyIngredients"`
+	NutritionPreferences []*NutritionPreferenceInput `json:"nutritionPreferences"`
+	Likes                *FoodPreferencesInput       `json:"likes"`
+	Dislikes             *FoodPreferencesInput       `json:"dislikes"`
+	CookingTime          *CookingTimeInput           `json:"cookingTime"`
+	Equipment            []Equipment                 `json:"equipment"`
+	CookingStyle         []CookingStyle              `json:"cookingStyle"`
+	Leftovers            LeftoversPreference         `json:"leftovers"`
+	ExcludeRecipeIds     []string                    `json:"excludeRecipeIds"`
+	Seed                 *int                        `json:"seed,omitempty"`
+}
+
+type PlanSummary struct {
+	HouseholdSize int        `json:"householdSize"`
+	MealsPlanned  int        `json:"mealsPlanned"`
+	Budget        *float64   `json:"budget,omitempty"`
+	EstimatedCost *CostRange `json:"estimatedCost"`
+	// budget minus estimatedCost.high; null when no budget was set.
+	Headroom             *float64              `json:"headroom,omitempty"`
+	ConsumedCostTotal    *float64              `json:"consumedCostTotal,omitempty"`
+	PantryValueUsed      *float64              `json:"pantryValueUsed,omitempty"`
+	PantryItemsUsed      []string              `json:"pantryItemsUsed"`
+	NutritionGoal        *NutritionGoalSummary `json:"nutritionGoal,omitempty"`
+	BalancedMealBaseline *BalancedMealBaseline `json:"balancedMealBaseline,omitempty"`
+}
+
+type PlannedMeal struct {
+	Slot                    *MealSlot `json:"slot"`
+	RecipeID                string    `json:"recipeId"`
+	Title                   string    `json:"title"`
+	TotalTimeMinutes        *int      `json:"totalTimeMinutes,omitempty"`
+	ScaleFactor             float64   `json:"scaleFactor"`
+	ServingsPlanned         float64   `json:"servingsPlanned"`
+	ProteinGPerServing      *float64  `json:"proteinGPerServing,omitempty"`
+	GoalIndicator           *string   `json:"goalIndicator,omitempty"`
+	PantryIngredientsUsed   []string  `json:"pantryIngredientsUsed"`
+	IncrementalCheckoutCost *float64  `json:"incrementalCheckoutCost,omitempty"`
+	ConsumedCost            *float64  `json:"consumedCost,omitempty"`
+	// Penny's one-line explanation, written by the server from computed facts.
+	Why *string `json:"why,omitempty"`
+}
+
 type Profile struct {
 	Handle          *string `json:"handle,omitempty"`
 	FirstName       string  `json:"firstName"`
@@ -96,10 +333,61 @@ type PushToken struct {
 type Query struct {
 }
 
+// The Standard HTH Recipe Object. One format for library, AI-generated, imported
+// and hand-entered recipes; `sourceType` is a field, not a second type.
+type Recipe struct {
+	RecipeID string `json:"recipeId"`
+	// null for a public library recipe.
+	OwnerUserID        *string            `json:"ownerUserId,omitempty"`
+	Title              string             `json:"title"`
+	Description        *string            `json:"description,omitempty"`
+	SourceType         string             `json:"sourceType"`
+	SourceURL          *string            `json:"sourceUrl,omitempty"`
+	SourceName         *string            `json:"sourceName,omitempty"`
+	LicenseID          *string            `json:"licenseId,omitempty"`
+	AttributionText    *string            `json:"attributionText,omitempty"`
+	Visibility         string             `json:"visibility"`
+	ReviewStatus       string             `json:"reviewStatus"`
+	Servings           *float64           `json:"servings,omitempty"`
+	ServingsConfidence ValueConfidence    `json:"servingsConfidence"`
+	ServingSizeText    *string            `json:"servingSizeText,omitempty"`
+	Scalable           bool               `json:"scalable"`
+	PrepTimeMinutes    *int               `json:"prepTimeMinutes,omitempty"`
+	CookTimeMinutes    *int               `json:"cookTimeMinutes,omitempty"`
+	TotalTimeMinutes   *int               `json:"totalTimeMinutes,omitempty"`
+	TimeConfidence     ValueConfidence    `json:"timeConfidence"`
+	MealTypes          []MealType         `json:"mealTypes"`
+	Cuisine            *string            `json:"cuisine,omitempty"`
+	Difficulty         *int               `json:"difficulty,omitempty"`
+	EquipmentRequired  []Equipment        `json:"equipmentRequired"`
+	IsComponent        bool               `json:"isComponent"`
+	Tags               []string           `json:"tags"`
+	Ingredients        []*IngredientLine  `json:"ingredients"`
+	Instructions       []*InstructionStep `json:"instructions"`
+	Nutrition          *NutritionInfo     `json:"nutrition,omitempty"`
+	// Computed server-side. Incomplete recipes stay viewable but are never planned.
+	BaseMealPlanEligible bool     `json:"baseMealPlanEligible"`
+	MissingInformation   []string `json:"missingInformation"`
+}
+
+type RecipeQueryInput struct {
+	// Taxonomy ids: OR within a family, AND across families.
+	TagIds   []string  `json:"tagIds,omitempty"`
+	MealType *MealType `json:"mealType,omitempty"`
+	Search   *string   `json:"search,omitempty"`
+	Limit    *int      `json:"limit,omitempty"`
+}
+
 type RegisterPushTokenInput struct {
 	Token    string       `json:"token"`
 	Platform PushPlatform `json:"platform"`
 	DeviceID *string      `json:"deviceId,omitempty"`
+}
+
+type SwapMealInput struct {
+	Slot       *MealSlotInput `json:"slot"`
+	Action     SwapAction     `json:"action"`
+	KeepBasket *bool          `json:"keepBasket,omitempty"`
 }
 
 type UpdatePantryItemInput struct {
@@ -153,6 +441,308 @@ type WasteStats struct {
 	TotalExpired         int      `json:"totalExpired"`
 	EstimatedWasteValue  float64  `json:"estimatedWasteValue"`
 	MostWastedCategories []string `json:"mostWastedCategories"`
+}
+
+type Allergen string
+
+const (
+	AllergenMilk      Allergen = "milk"
+	AllergenEgg       Allergen = "egg"
+	AllergenFish      Allergen = "fish"
+	AllergenShellfish Allergen = "shellfish"
+	AllergenTreeNut   Allergen = "tree_nut"
+	AllergenPeanut    Allergen = "peanut"
+	AllergenWheat     Allergen = "wheat"
+	AllergenSoy       Allergen = "soy"
+	AllergenSesame    Allergen = "sesame"
+)
+
+var AllAllergen = []Allergen{
+	AllergenMilk,
+	AllergenEgg,
+	AllergenFish,
+	AllergenShellfish,
+	AllergenTreeNut,
+	AllergenPeanut,
+	AllergenWheat,
+	AllergenSoy,
+	AllergenSesame,
+}
+
+func (e Allergen) IsValid() bool {
+	switch e {
+	case AllergenMilk, AllergenEgg, AllergenFish, AllergenShellfish, AllergenTreeNut, AllergenPeanut, AllergenWheat, AllergenSoy, AllergenSesame:
+		return true
+	}
+	return false
+}
+
+func (e Allergen) String() string {
+	return string(e)
+}
+
+func (e *Allergen) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = Allergen(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid Allergen", str)
+	}
+	return nil
+}
+
+func (e Allergen) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+type BudgetMode string
+
+const (
+	BudgetModeLowest   BudgetMode = "lowest"
+	BudgetModeBalanced BudgetMode = "balanced"
+	BudgetModeVariety  BudgetMode = "variety"
+)
+
+var AllBudgetMode = []BudgetMode{
+	BudgetModeLowest,
+	BudgetModeBalanced,
+	BudgetModeVariety,
+}
+
+func (e BudgetMode) IsValid() bool {
+	switch e {
+	case BudgetModeLowest, BudgetModeBalanced, BudgetModeVariety:
+		return true
+	}
+	return false
+}
+
+func (e BudgetMode) String() string {
+	return string(e)
+}
+
+func (e *BudgetMode) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = BudgetMode(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid BudgetMode", str)
+	}
+	return nil
+}
+
+func (e BudgetMode) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+type CookingStyle string
+
+const (
+	CookingStyleQuickEasy       CookingStyle = "quick_easy"
+	CookingStyleFewIngredients  CookingStyle = "few_ingredients"
+	CookingStyleOnePot          CookingStyle = "one_pot"
+	CookingStyleMealPrep        CookingStyle = "meal_prep"
+	CookingStyleFamilyFriendly  CookingStyle = "family_friendly"
+	CookingStyleKidFriendly     CookingStyle = "kid_friendly"
+	CookingStyleFreezerFriendly CookingStyle = "freezer_friendly"
+	CookingStyleUseWhatIHave    CookingStyle = "use_what_i_have"
+	CookingStyleLowestCost      CookingStyle = "lowest_cost"
+	CookingStyleVariety         CookingStyle = "variety"
+)
+
+var AllCookingStyle = []CookingStyle{
+	CookingStyleQuickEasy,
+	CookingStyleFewIngredients,
+	CookingStyleOnePot,
+	CookingStyleMealPrep,
+	CookingStyleFamilyFriendly,
+	CookingStyleKidFriendly,
+	CookingStyleFreezerFriendly,
+	CookingStyleUseWhatIHave,
+	CookingStyleLowestCost,
+	CookingStyleVariety,
+}
+
+func (e CookingStyle) IsValid() bool {
+	switch e {
+	case CookingStyleQuickEasy, CookingStyleFewIngredients, CookingStyleOnePot, CookingStyleMealPrep, CookingStyleFamilyFriendly, CookingStyleKidFriendly, CookingStyleFreezerFriendly, CookingStyleUseWhatIHave, CookingStyleLowestCost, CookingStyleVariety:
+		return true
+	}
+	return false
+}
+
+func (e CookingStyle) String() string {
+	return string(e)
+}
+
+func (e *CookingStyle) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = CookingStyle(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid CookingStyle", str)
+	}
+	return nil
+}
+
+func (e CookingStyle) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+type DataConfidence string
+
+const (
+	DataConfidenceHigh   DataConfidence = "high"
+	DataConfidenceMedium DataConfidence = "medium"
+	DataConfidenceLow    DataConfidence = "low"
+)
+
+var AllDataConfidence = []DataConfidence{
+	DataConfidenceHigh,
+	DataConfidenceMedium,
+	DataConfidenceLow,
+}
+
+func (e DataConfidence) IsValid() bool {
+	switch e {
+	case DataConfidenceHigh, DataConfidenceMedium, DataConfidenceLow:
+		return true
+	}
+	return false
+}
+
+func (e DataConfidence) String() string {
+	return string(e)
+}
+
+func (e *DataConfidence) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = DataConfidence(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid DataConfidence", str)
+	}
+	return nil
+}
+
+func (e DataConfidence) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+type Diet string
+
+const (
+	DietVegan       Diet = "vegan"
+	DietVegetarian  Diet = "vegetarian"
+	DietPescatarian Diet = "pescatarian"
+	DietGlutenFree  Diet = "gluten_free"
+	DietDairyFree   Diet = "dairy_free"
+	DietEggFree     Diet = "egg_free"
+	DietNutFree     Diet = "nut_free"
+)
+
+var AllDiet = []Diet{
+	DietVegan,
+	DietVegetarian,
+	DietPescatarian,
+	DietGlutenFree,
+	DietDairyFree,
+	DietEggFree,
+	DietNutFree,
+}
+
+func (e Diet) IsValid() bool {
+	switch e {
+	case DietVegan, DietVegetarian, DietPescatarian, DietGlutenFree, DietDairyFree, DietEggFree, DietNutFree:
+		return true
+	}
+	return false
+}
+
+func (e Diet) String() string {
+	return string(e)
+}
+
+func (e *Diet) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = Diet(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid Diet", str)
+	}
+	return nil
+}
+
+func (e Diet) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+type Equipment string
+
+const (
+	EquipmentStovetop   Equipment = "stovetop"
+	EquipmentOven       Equipment = "oven"
+	EquipmentMicrowave  Equipment = "microwave"
+	EquipmentGrill      Equipment = "grill"
+	EquipmentBlender    Equipment = "blender"
+	EquipmentAirFryer   Equipment = "air_fryer"
+	EquipmentSlowCooker Equipment = "slow_cooker"
+	EquipmentInstantPot Equipment = "instant_pot"
+)
+
+var AllEquipment = []Equipment{
+	EquipmentStovetop,
+	EquipmentOven,
+	EquipmentMicrowave,
+	EquipmentGrill,
+	EquipmentBlender,
+	EquipmentAirFryer,
+	EquipmentSlowCooker,
+	EquipmentInstantPot,
+}
+
+func (e Equipment) IsValid() bool {
+	switch e {
+	case EquipmentStovetop, EquipmentOven, EquipmentMicrowave, EquipmentGrill, EquipmentBlender, EquipmentAirFryer, EquipmentSlowCooker, EquipmentInstantPot:
+		return true
+	}
+	return false
+}
+
+func (e Equipment) String() string {
+	return string(e)
+}
+
+func (e *Equipment) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = Equipment(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid Equipment", str)
+	}
+	return nil
+}
+
+func (e Equipment) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
 }
 
 type HandleAvailabilityReason string
@@ -247,6 +837,147 @@ func (e ItemStatus) MarshalGQL(w io.Writer) {
 	fmt.Fprint(w, strconv.Quote(e.String()))
 }
 
+type LeftoversPreference string
+
+const (
+	LeftoversPreferenceYes       LeftoversPreference = "yes"
+	LeftoversPreferenceSometimes LeftoversPreference = "sometimes"
+	LeftoversPreferenceNo        LeftoversPreference = "no"
+)
+
+var AllLeftoversPreference = []LeftoversPreference{
+	LeftoversPreferenceYes,
+	LeftoversPreferenceSometimes,
+	LeftoversPreferenceNo,
+}
+
+func (e LeftoversPreference) IsValid() bool {
+	switch e {
+	case LeftoversPreferenceYes, LeftoversPreferenceSometimes, LeftoversPreferenceNo:
+		return true
+	}
+	return false
+}
+
+func (e LeftoversPreference) String() string {
+	return string(e)
+}
+
+func (e *LeftoversPreference) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = LeftoversPreference(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid LeftoversPreference", str)
+	}
+	return nil
+}
+
+func (e LeftoversPreference) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+type MealType string
+
+const (
+	MealTypeBreakfast MealType = "breakfast"
+	MealTypeLunch     MealType = "lunch"
+	MealTypeDinner    MealType = "dinner"
+	MealTypeSnack     MealType = "snack"
+	MealTypeDessert   MealType = "dessert"
+	MealTypeSide      MealType = "side"
+)
+
+var AllMealType = []MealType{
+	MealTypeBreakfast,
+	MealTypeLunch,
+	MealTypeDinner,
+	MealTypeSnack,
+	MealTypeDessert,
+	MealTypeSide,
+}
+
+func (e MealType) IsValid() bool {
+	switch e {
+	case MealTypeBreakfast, MealTypeLunch, MealTypeDinner, MealTypeSnack, MealTypeDessert, MealTypeSide:
+		return true
+	}
+	return false
+}
+
+func (e MealType) String() string {
+	return string(e)
+}
+
+func (e *MealType) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = MealType(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid MealType", str)
+	}
+	return nil
+}
+
+func (e MealType) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+type NutritionGoal string
+
+const (
+	NutritionGoalHighProtein  NutritionGoal = "high_protein"
+	NutritionGoalHighFiber    NutritionGoal = "high_fiber"
+	NutritionGoalMoreProduce  NutritionGoal = "more_produce"
+	NutritionGoalLowerSodium  NutritionGoal = "lower_sodium"
+	NutritionGoalLowerCalorie NutritionGoal = "lower_calorie"
+	NutritionGoalBalanced     NutritionGoal = "balanced"
+)
+
+var AllNutritionGoal = []NutritionGoal{
+	NutritionGoalHighProtein,
+	NutritionGoalHighFiber,
+	NutritionGoalMoreProduce,
+	NutritionGoalLowerSodium,
+	NutritionGoalLowerCalorie,
+	NutritionGoalBalanced,
+}
+
+func (e NutritionGoal) IsValid() bool {
+	switch e {
+	case NutritionGoalHighProtein, NutritionGoalHighFiber, NutritionGoalMoreProduce, NutritionGoalLowerSodium, NutritionGoalLowerCalorie, NutritionGoalBalanced:
+		return true
+	}
+	return false
+}
+
+func (e NutritionGoal) String() string {
+	return string(e)
+}
+
+func (e *NutritionGoal) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = NutritionGoal(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid NutritionGoal", str)
+	}
+	return nil
+}
+
+func (e NutritionGoal) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
 type PushPlatform string
 
 const (
@@ -330,5 +1061,141 @@ func (e *StorageLocation) UnmarshalGQL(v interface{}) error {
 }
 
 func (e StorageLocation) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+type Strength string
+
+const (
+	StrengthRequired  Strength = "required"
+	StrengthPreferred Strength = "preferred"
+)
+
+var AllStrength = []Strength{
+	StrengthRequired,
+	StrengthPreferred,
+}
+
+func (e Strength) IsValid() bool {
+	switch e {
+	case StrengthRequired, StrengthPreferred:
+		return true
+	}
+	return false
+}
+
+func (e Strength) String() string {
+	return string(e)
+}
+
+func (e *Strength) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = Strength(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid Strength", str)
+	}
+	return nil
+}
+
+func (e Strength) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+type SwapAction string
+
+const (
+	SwapActionSwapSlot       SwapAction = "swap_slot"
+	SwapActionCheaper        SwapAction = "cheaper"
+	SwapActionHigherProtein  SwapAction = "higher_protein"
+	SwapActionFaster         SwapAction = "faster"
+	SwapActionDislike        SwapAction = "dislike"
+	SwapActionRegenerateWeek SwapAction = "regenerate_week"
+)
+
+var AllSwapAction = []SwapAction{
+	SwapActionSwapSlot,
+	SwapActionCheaper,
+	SwapActionHigherProtein,
+	SwapActionFaster,
+	SwapActionDislike,
+	SwapActionRegenerateWeek,
+}
+
+func (e SwapAction) IsValid() bool {
+	switch e {
+	case SwapActionSwapSlot, SwapActionCheaper, SwapActionHigherProtein, SwapActionFaster, SwapActionDislike, SwapActionRegenerateWeek:
+		return true
+	}
+	return false
+}
+
+func (e SwapAction) String() string {
+	return string(e)
+}
+
+func (e *SwapAction) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = SwapAction(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid SwapAction", str)
+	}
+	return nil
+}
+
+func (e SwapAction) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+// How a single recipe value was established. `missing` is never guessed away.
+type ValueConfidence string
+
+const (
+	ValueConfidenceSource   ValueConfidence = "source"
+	ValueConfidenceHuman    ValueConfidence = "human"
+	ValueConfidenceInferred ValueConfidence = "inferred"
+	ValueConfidenceMissing  ValueConfidence = "missing"
+)
+
+var AllValueConfidence = []ValueConfidence{
+	ValueConfidenceSource,
+	ValueConfidenceHuman,
+	ValueConfidenceInferred,
+	ValueConfidenceMissing,
+}
+
+func (e ValueConfidence) IsValid() bool {
+	switch e {
+	case ValueConfidenceSource, ValueConfidenceHuman, ValueConfidenceInferred, ValueConfidenceMissing:
+		return true
+	}
+	return false
+}
+
+func (e ValueConfidence) String() string {
+	return string(e)
+}
+
+func (e *ValueConfidence) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = ValueConfidence(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid ValueConfidence", str)
+	}
+	return nil
+}
+
+func (e ValueConfidence) MarshalGQL(w io.Writer) {
 	fmt.Fprint(w, strconv.Quote(e.String()))
 }
