@@ -24,7 +24,12 @@ function matchesTags(recipe: Recipe, tagIds: string[]): boolean {
   return [...families.values()].every((tagsInFamily) => tagsInFamily.some((tag) => hasTag(recipe, tag)));
 }
 
-export const mockRecipeService: RecipeService = {
+/**
+ * The mock predates saved recipes, so it implements everything except those
+ * three calls; `recipe-service.ts` fills them in with a clear "needs the
+ * server" response rather than pretending they worked.
+ */
+export const mockRecipeService: Omit<RecipeService, 'listSaved' | 'save' | 'unsave'> = {
   async list(query: RecipeQuery = {}) {
     await delay(LATENCY_MS);
     const search = query.search?.trim().toLowerCase();

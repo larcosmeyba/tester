@@ -10,6 +10,8 @@
  * behind the Help The Hive backend.
  */
 
+import { DEV_PREVIEW_AUTH_ENABLED } from '@/auth/dev-preview';
+
 export type AppEnvironment = 'development' | 'staging' | 'production';
 
 function resolveEnvironment(): AppEnvironment {
@@ -28,12 +30,20 @@ export const isProduction = environment === 'production';
 export const apiBaseUrl = (process.env.EXPO_PUBLIC_API_BASE_URL ?? 'http://localhost:8080').replace(/\/+$/, '');
 
 /**
- * Whether services with no backend behind them yet fall back to the local
- * development mock. Never true in a production build, whatever the env var says.
+ * Whether the meal services fall back to the local development mock instead of
+ * the Help The Hive GraphQL server.
  *
- * The meal-plan system is the current case: the GraphQL server has no meal
- * schema, so the mock lets the questionnaire, plan and grocery screens be built
- * and tested against the real contract while the backend work is pending.
+ * The server now implements the meal schema, so the real backend is the
+ * default. The mock stays available for two cases:
+ *
+ *  - `EXPO_PUBLIC_USE_MOCK_SERVICES=true`, for working on the meal screens with
+ *    no server running.
+ *  - Developer preview sign-in, which grants no token at all. Every real call
+ *    would fail as unauthorized, so the mock is used rather than showing an
+ *    error state that says nothing about the screen being worked on.
+ *
+ * Never true in a production build, whatever the variables say.
  */
 export const useMockServices =
-  !isProduction && process.env.EXPO_PUBLIC_USE_MOCK_SERVICES !== 'false';
+  !isProduction &&
+  (process.env.EXPO_PUBLIC_USE_MOCK_SERVICES === 'true' || DEV_PREVIEW_AUTH_ENABLED);

@@ -12,6 +12,8 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
+  /** An arbitrary JSON object. Used only for the cost tier mix. */
+  Map: { input: any; output: any; }
 };
 
 export type AddPantryItemInput = {
@@ -20,6 +22,23 @@ export type AddPantryItemInput = {
   location: StorageLocation;
   name: Scalars['String']['input'];
   quantity: Scalars['String']['input'];
+};
+
+export type Allergen =
+  | 'egg'
+  | 'fish'
+  | 'milk'
+  | 'peanut'
+  | 'sesame'
+  | 'shellfish'
+  | 'soy'
+  | 'tree_nut'
+  | 'wheat';
+
+/** Allergies are always required; the server rejects any other strength. */
+export type AllergyRequirementInput = {
+  allergen: Allergen;
+  strength: Strength;
 };
 
 export type AppPreferences = {
@@ -37,9 +56,133 @@ export type AppPreferences = {
   weeklyMealPlanNotificationsEnabled: Scalars['Boolean']['output'];
 };
 
+export type BalancedMealBaseline = {
+  __typename?: 'BalancedMealBaseline';
+  applied: Scalars['Boolean']['output'];
+  avgScore?: Maybe<Scalars['Float']['output']>;
+};
+
+export type BudgetInput = {
+  amount: Scalars['Float']['input'];
+  currency: Scalars['String']['input'];
+  mode: BudgetMode;
+};
+
+export type BudgetMode =
+  | 'balanced'
+  | 'lowest'
+  | 'variety';
+
 export type CompleteOnboardingInput = {
   preferences?: InputMaybe<UpdatePreferencesInput>;
   profile?: InputMaybe<UpdateProfileInput>;
+};
+
+export type CookingStyle =
+  | 'family_friendly'
+  | 'few_ingredients'
+  | 'freezer_friendly'
+  | 'kid_friendly'
+  | 'lowest_cost'
+  | 'meal_prep'
+  | 'one_pot'
+  | 'quick_easy'
+  | 'use_what_i_have'
+  | 'variety';
+
+export type CookingTimeInput = {
+  maxMinutes?: InputMaybe<Scalars['Int']['input']>;
+  strength: Strength;
+};
+
+/**
+ * An estimated cost is always a range with a confidence, never fake precision.
+ * Budget compliance is checked against `high`.
+ */
+export type CostRange = {
+  __typename?: 'CostRange';
+  basis?: Maybe<Scalars['String']['output']>;
+  confidence: DataConfidence;
+  high: Scalars['Float']['output'];
+  low: Scalars['Float']['output'];
+  point: Scalars['Float']['output'];
+  /** Share of the basket priced at each tier, e.g. {"1": 0.4, "3": 0.6}. */
+  tierMix?: Maybe<Scalars['Map']['output']>;
+};
+
+export type DataConfidence =
+  | 'high'
+  | 'low'
+  | 'medium';
+
+export type Diet =
+  | 'dairy_free'
+  | 'egg_free'
+  | 'gluten_free'
+  | 'nut_free'
+  | 'pescatarian'
+  | 'vegan'
+  | 'vegetarian';
+
+export type DietRequirementInput = {
+  diet: Diet;
+  strength: Strength;
+};
+
+export type Equipment =
+  | 'air_fryer'
+  | 'blender'
+  | 'grill'
+  | 'instant_pot'
+  | 'microwave'
+  | 'oven'
+  | 'slow_cooker'
+  | 'stovetop';
+
+export type FoodPreferencesInput = {
+  cuisines: Array<Scalars['String']['input']>;
+  freeText?: InputMaybe<Scalars['String']['input']>;
+  ingredients: Array<Scalars['String']['input']>;
+};
+
+/**
+ * A consolidated grocery line. Items already in the pantry are kept with
+ * `inPantry: true` and zero cost rather than hidden, so nothing goes missing.
+ */
+export type GroceryItem = {
+  __typename?: 'GroceryItem';
+  displayName: Scalars['String']['output'];
+  estimatedPrice: Scalars['Float']['output'];
+  inPantry: Scalars['Boolean']['output'];
+  ingredientId: Scalars['ID']['output'];
+  isChecked: Scalars['Boolean']['output'];
+  neededQty: Scalars['Float']['output'];
+  packageLabel?: Maybe<Scalars['String']['output']>;
+  /** null for loose items sold by weight. */
+  packages?: Maybe<Scalars['Int']['output']>;
+  priceTier?: Maybe<Scalars['Int']['output']>;
+  unit: Scalars['String']['output'];
+  /** Titles of the recipes this line is for. */
+  usedBy: Array<Scalars['String']['output']>;
+};
+
+export type GroceryListFromRecipesInput = {
+  householdSize: Scalars['Int']['input'];
+  pantryItems: Array<Scalars['ID']['input']>;
+  recipeIds: Array<Scalars['ID']['input']>;
+};
+
+export type GroceryListPayload = {
+  __typename?: 'GroceryListPayload';
+  cost: CostRange;
+  planId?: Maybe<Scalars['ID']['output']>;
+  sections: Array<GrocerySection>;
+};
+
+export type GrocerySection = {
+  __typename?: 'GrocerySection';
+  aisle: Scalars['String']['output'];
+  items: Array<GroceryItem>;
 };
 
 export type HandleAvailability = {
@@ -58,24 +201,138 @@ export type HandleAvailabilityReason =
   | 'RESERVED'
   | 'UNAVAILABLE';
 
+export type HouseholdInput = {
+  adults?: InputMaybe<Scalars['Int']['input']>;
+  children?: InputMaybe<Scalars['Int']['input']>;
+  size: Scalars['Int']['input'];
+  /** True when the user picked 8+; size is stored as 8. */
+  sizeIsPlus: Scalars['Boolean']['input'];
+};
+
+export type Ingredient = {
+  __typename?: 'Ingredient';
+  aisle: Scalars['String']['output'];
+  allergens: Array<Allergen>;
+  /** salt, pepper and water only: never added to a grocery list. */
+  assumedOnHand: Scalars['Boolean']['output'];
+  displayName: Scalars['String']['output'];
+  foodGroup: Scalars['String']['output'];
+  ingredientId: Scalars['ID']['output'];
+  isPantryStaple: Scalars['Boolean']['output'];
+  priceReferenceUnit: Scalars['String']['output'];
+};
+
+/**
+ * One ingredient line of a recipe. `quantity` is null when the source never
+ * stated one — it is never invented, and `missingInformation` says so instead.
+ */
+export type IngredientLine = {
+  __typename?: 'IngredientLine';
+  displayName?: Maybe<Scalars['String']['output']>;
+  grams?: Maybe<Scalars['Float']['output']>;
+  ingredientId?: Maybe<Scalars['ID']['output']>;
+  isOptional: Scalars['Boolean']['output'];
+  isToTaste: Scalars['Boolean']['output'];
+  missingInformation?: Maybe<Scalars['String']['output']>;
+  position: Scalars['Int']['output'];
+  preparation?: Maybe<Scalars['String']['output']>;
+  quantity?: Maybe<Scalars['Float']['output']>;
+  rawText: Scalars['String']['output'];
+  unit?: Maybe<Scalars['String']['output']>;
+};
+
+export type InstructionStep = {
+  __typename?: 'InstructionStep';
+  minutes?: Maybe<Scalars['Int']['output']>;
+  step: Scalars['Int']['output'];
+  text: Scalars['String']['output'];
+};
+
 export type ItemStatus =
   | 'ACTIVE'
   | 'EXPIRED'
   | 'USED';
 
+export type LeftoversPreference =
+  | 'no'
+  | 'sometimes'
+  | 'yes';
+
+export type MealCountsInput = {
+  breakfast: Scalars['Int']['input'];
+  dinner: Scalars['Int']['input'];
+  lunch: Scalars['Int']['input'];
+  snack: Scalars['Int']['input'];
+};
+
+export type MealPlan = {
+  __typename?: 'MealPlan';
+  assumptions: Array<Scalars['String']['output']>;
+  groceryList: Array<GrocerySection>;
+  meals: Array<PlannedMeal>;
+  /** AI-written text. Never a source of numbers. */
+  pennyMessage: Scalars['String']['output'];
+  planId: Scalars['ID']['output'];
+  status: Scalars['String']['output'];
+  summary: PlanSummary;
+  swapOptions: Array<SwapAction>;
+};
+
+export type MealSlot = {
+  __typename?: 'MealSlot';
+  day: Scalars['Int']['output'];
+  mealType: MealType;
+};
+
+export type MealSlotInput = {
+  day: Scalars['Int']['input'];
+  mealType: MealType;
+};
+
+export type MealType =
+  | 'breakfast'
+  | 'dessert'
+  | 'dinner'
+  | 'lunch'
+  | 'side'
+  | 'snack';
+
+export type MoveMealInput = {
+  from: MealSlotInput;
+  to: MealSlotInput;
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
+  /** Turns the plan into a saved, consolidated, pantry-aware grocery list. */
+  acceptMealPlan: GroceryListPayload;
   addPantryItem: PantryItem;
   completeOnboarding: Viewer;
+  deleteMealPlan: Scalars['Boolean']['output'];
   deletePantryItem: Scalars['Boolean']['output'];
   deletePushToken: Scalars['Boolean']['output'];
   deleteViewerData: Scalars['Boolean']['output'];
+  generateMealPlan: MealPlan;
+  /** Choose My Recipes: selected recipes to a consolidated list, nothing saved. */
+  groceryListFromRecipes: GroceryListPayload;
   markPantryItemUsed: PantryItem;
+  /** Moves a meal between slots. Never regenerates the week and never re-prices. */
+  movePlannedMeal: MealPlan;
   registerPushToken: PushToken;
+  saveRecipe: Scalars['Boolean']['output'];
+  setGroceryItemChecked: Scalars['Boolean']['output'];
+  /** Replaces one slot's recipe. keepBasket avoids re-pricing the whole week. */
+  swapPlannedMeal: MealPlan;
+  unsaveRecipe: Scalars['Boolean']['output'];
   updateHandle: Profile;
   updatePantryItem: PantryItem;
   updatePreferences: AppPreferences;
   updateProfile: Profile;
+};
+
+
+export type MutationAcceptMealPlanArgs = {
+  planId: Scalars['ID']['input'];
 };
 
 
@@ -89,6 +346,11 @@ export type MutationCompleteOnboardingArgs = {
 };
 
 
+export type MutationDeleteMealPlanArgs = {
+  planId: Scalars['ID']['input'];
+};
+
+
 export type MutationDeletePantryItemArgs = {
   id: Scalars['ID']['input'];
 };
@@ -99,13 +361,52 @@ export type MutationDeletePushTokenArgs = {
 };
 
 
+export type MutationGenerateMealPlanArgs = {
+  input: PlanRequestInput;
+};
+
+
+export type MutationGroceryListFromRecipesArgs = {
+  input: GroceryListFromRecipesInput;
+};
+
+
 export type MutationMarkPantryItemUsedArgs = {
   id: Scalars['ID']['input'];
 };
 
 
+export type MutationMovePlannedMealArgs = {
+  input: MoveMealInput;
+  planId: Scalars['ID']['input'];
+};
+
+
 export type MutationRegisterPushTokenArgs = {
   input: RegisterPushTokenInput;
+};
+
+
+export type MutationSaveRecipeArgs = {
+  recipeId: Scalars['ID']['input'];
+};
+
+
+export type MutationSetGroceryItemCheckedArgs = {
+  checked: Scalars['Boolean']['input'];
+  ingredientId: Scalars['ID']['input'];
+  planId: Scalars['ID']['input'];
+};
+
+
+export type MutationSwapPlannedMealArgs = {
+  input: SwapMealInput;
+  planId: Scalars['ID']['input'];
+};
+
+
+export type MutationUnsaveRecipeArgs = {
+  recipeId: Scalars['ID']['input'];
 };
 
 
@@ -127,6 +428,42 @@ export type MutationUpdatePreferencesArgs = {
 
 export type MutationUpdateProfileArgs = {
   input: UpdateProfileInput;
+};
+
+export type NutritionGoal =
+  | 'balanced'
+  | 'high_fiber'
+  | 'high_protein'
+  | 'lower_calorie'
+  | 'lower_sodium'
+  | 'more_produce';
+
+export type NutritionGoalSummary = {
+  __typename?: 'NutritionGoalSummary';
+  avgProteinG?: Maybe<Scalars['Float']['output']>;
+  goal: Scalars['String']['output'];
+  metBy: Scalars['Int']['output'];
+  of: Scalars['Int']['output'];
+};
+
+/** Per-serving nutrition. Null where the source never stated it. */
+export type NutritionInfo = {
+  __typename?: 'NutritionInfo';
+  basis: Scalars['String']['output'];
+  caloriesKcal?: Maybe<Scalars['Float']['output']>;
+  carbsG?: Maybe<Scalars['Float']['output']>;
+  confidence?: Maybe<DataConfidence>;
+  coveragePct?: Maybe<Scalars['Float']['output']>;
+  fatG?: Maybe<Scalars['Float']['output']>;
+  fiberG?: Maybe<Scalars['Float']['output']>;
+  perServing: Scalars['Boolean']['output'];
+  proteinG?: Maybe<Scalars['Float']['output']>;
+  sodiumMg?: Maybe<Scalars['Float']['output']>;
+};
+
+export type NutritionPreferenceInput = {
+  goal: NutritionGoal;
+  strength: Strength;
 };
 
 export type OnboardingState = {
@@ -155,6 +492,63 @@ export type PantryItem = {
 export type PantryItemFilterInput = {
   location?: InputMaybe<StorageLocation>;
   status?: InputMaybe<ItemStatus>;
+};
+
+export type PlanRequestInput = {
+  allergies: Array<AllergyRequirementInput>;
+  /** Other allergies, resolved to ingredient ids before submit. */
+  allergyIngredients: Array<Scalars['ID']['input']>;
+  budget: BudgetInput;
+  cookingStyle: Array<CookingStyle>;
+  cookingTime: CookingTimeInput;
+  days: Scalars['Int']['input'];
+  dietaryOtherText?: InputMaybe<Scalars['String']['input']>;
+  dietaryRequirements: Array<DietRequirementInput>;
+  dislikes: FoodPreferencesInput;
+  equipment: Array<Equipment>;
+  excludeRecipeIds: Array<Scalars['ID']['input']>;
+  household: HouseholdInput;
+  leftovers: LeftoversPreference;
+  likes: FoodPreferencesInput;
+  meals: MealCountsInput;
+  nutritionPreferences: Array<NutritionPreferenceInput>;
+  /** Canonical ingredient ids, not free text. */
+  pantryItems: Array<Scalars['ID']['input']>;
+  planScope?: InputMaybe<Scalars['String']['input']>;
+  questionnaireVersion: Scalars['String']['input'];
+  seed?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type PlanSummary = {
+  __typename?: 'PlanSummary';
+  balancedMealBaseline?: Maybe<BalancedMealBaseline>;
+  budget?: Maybe<Scalars['Float']['output']>;
+  consumedCostTotal?: Maybe<Scalars['Float']['output']>;
+  estimatedCost: CostRange;
+  /** budget minus estimatedCost.high; null when no budget was set. */
+  headroom?: Maybe<Scalars['Float']['output']>;
+  householdSize: Scalars['Int']['output'];
+  mealsPlanned: Scalars['Int']['output'];
+  nutritionGoal?: Maybe<NutritionGoalSummary>;
+  pantryItemsUsed: Array<Scalars['ID']['output']>;
+  pantryValueUsed?: Maybe<Scalars['Float']['output']>;
+};
+
+export type PlannedMeal = {
+  __typename?: 'PlannedMeal';
+  consumedCost?: Maybe<Scalars['Float']['output']>;
+  goalIndicator?: Maybe<Scalars['String']['output']>;
+  incrementalCheckoutCost?: Maybe<Scalars['Float']['output']>;
+  pantryIngredientsUsed: Array<Scalars['ID']['output']>;
+  proteinGPerServing?: Maybe<Scalars['Float']['output']>;
+  recipeId: Scalars['ID']['output'];
+  scaleFactor: Scalars['Float']['output'];
+  servingsPlanned: Scalars['Float']['output'];
+  slot: MealSlot;
+  title: Scalars['String']['output'];
+  totalTimeMinutes?: Maybe<Scalars['Int']['output']>;
+  /** Penny's one-line explanation, written by the server from computed facts. */
+  why?: Maybe<Scalars['String']['output']>;
 };
 
 export type Profile = {
@@ -188,10 +582,26 @@ export type PushToken = {
 
 export type Query = {
   __typename?: 'Query';
+  /** The plan the viewer is currently on, or null when they have none yet. */
+  currentMealPlan?: Maybe<MealPlan>;
+  /** The saved grocery list for a plan, or null before the plan is accepted. */
+  groceryList?: Maybe<GroceryListPayload>;
   handleAvailability: HandleAvailability;
+  /** Canonical ingredient catalogue, used by the pantry and allergy pickers. */
+  ingredients: Array<Ingredient>;
+  mealPlan?: Maybe<MealPlan>;
   pantryItems: Array<PantryItem>;
   pantryWasteStats: WasteStats;
+  recipe?: Maybe<Recipe>;
+  /** The public recipe library plus the viewer's own recipes. */
+  recipes: Array<Recipe>;
+  savedRecipes: Array<Recipe>;
   viewer: Viewer;
+};
+
+
+export type QueryGroceryListArgs = {
+  planId: Scalars['ID']['input'];
 };
 
 
@@ -200,8 +610,77 @@ export type QueryHandleAvailabilityArgs = {
 };
 
 
+export type QueryIngredientsArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  search?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryMealPlanArgs = {
+  planId: Scalars['ID']['input'];
+};
+
+
 export type QueryPantryItemsArgs = {
   filter?: InputMaybe<PantryItemFilterInput>;
+};
+
+
+export type QueryRecipeArgs = {
+  recipeId: Scalars['ID']['input'];
+};
+
+
+export type QueryRecipesArgs = {
+  query?: InputMaybe<RecipeQueryInput>;
+};
+
+/**
+ * The Standard HTH Recipe Object. One format for library, AI-generated, imported
+ * and hand-entered recipes; `sourceType` is a field, not a second type.
+ */
+export type Recipe = {
+  __typename?: 'Recipe';
+  attributionText?: Maybe<Scalars['String']['output']>;
+  /** Computed server-side. Incomplete recipes stay viewable but are never planned. */
+  baseMealPlanEligible: Scalars['Boolean']['output'];
+  cookTimeMinutes?: Maybe<Scalars['Int']['output']>;
+  cuisine?: Maybe<Scalars['String']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  difficulty?: Maybe<Scalars['Int']['output']>;
+  equipmentRequired: Array<Equipment>;
+  ingredients: Array<IngredientLine>;
+  instructions: Array<InstructionStep>;
+  isComponent: Scalars['Boolean']['output'];
+  licenseId?: Maybe<Scalars['String']['output']>;
+  mealTypes: Array<MealType>;
+  missingInformation: Array<Scalars['String']['output']>;
+  nutrition?: Maybe<NutritionInfo>;
+  /** null for a public library recipe. */
+  ownerUserId?: Maybe<Scalars['ID']['output']>;
+  prepTimeMinutes?: Maybe<Scalars['Int']['output']>;
+  recipeId: Scalars['ID']['output'];
+  reviewStatus: Scalars['String']['output'];
+  scalable: Scalars['Boolean']['output'];
+  servingSizeText?: Maybe<Scalars['String']['output']>;
+  servings?: Maybe<Scalars['Float']['output']>;
+  servingsConfidence: ValueConfidence;
+  sourceName?: Maybe<Scalars['String']['output']>;
+  sourceType: Scalars['String']['output'];
+  sourceUrl?: Maybe<Scalars['String']['output']>;
+  tags: Array<Scalars['String']['output']>;
+  timeConfidence: ValueConfidence;
+  title: Scalars['String']['output'];
+  totalTimeMinutes?: Maybe<Scalars['Int']['output']>;
+  visibility: Scalars['String']['output'];
+};
+
+export type RecipeQueryInput = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  mealType?: InputMaybe<MealType>;
+  search?: InputMaybe<Scalars['String']['input']>;
+  /** Taxonomy ids: OR within a family, AND across families. */
+  tagIds?: InputMaybe<Array<Scalars['String']['input']>>;
 };
 
 export type RegisterPushTokenInput = {
@@ -214,6 +693,24 @@ export type StorageLocation =
   | 'FREEZER'
   | 'PANTRY'
   | 'REFRIGERATOR';
+
+export type Strength =
+  | 'preferred'
+  | 'required';
+
+export type SwapAction =
+  | 'cheaper'
+  | 'dislike'
+  | 'faster'
+  | 'higher_protein'
+  | 'regenerate_week'
+  | 'swap_slot';
+
+export type SwapMealInput = {
+  action: SwapAction;
+  keepBasket?: InputMaybe<Scalars['Boolean']['input']>;
+  slot: MealSlotInput;
+};
 
 export type UpdatePantryItemInput = {
   category?: InputMaybe<Scalars['String']['input']>;
@@ -254,6 +751,13 @@ export type User = {
   updatedAt: Scalars['String']['output'];
 };
 
+/** How a single recipe value was established. `missing` is never guessed away. */
+export type ValueConfidence =
+  | 'human'
+  | 'inferred'
+  | 'missing'
+  | 'source';
+
 export type Viewer = {
   __typename?: 'Viewer';
   onboardingState: OnboardingState;
@@ -275,6 +779,129 @@ export type DeleteViewerDataMutationVariables = Exact<{ [key: string]: never; }>
 
 
 export type DeleteViewerDataMutation = { __typename?: 'Mutation', deleteViewerData: boolean };
+
+export type CostRangeFieldsFragment = { __typename?: 'CostRange', point: number, low: number, high: number, confidence: DataConfidence, tierMix?: any | null, basis?: string | null };
+
+export type GrocerySectionFieldsFragment = { __typename?: 'GrocerySection', aisle: string, items: Array<{ __typename?: 'GroceryItem', ingredientId: string, displayName: string, neededQty: number, unit: string, packages?: number | null, packageLabel?: string | null, estimatedPrice: number, priceTier?: number | null, inPantry: boolean, isChecked: boolean, usedBy: Array<string> }> };
+
+export type MealPlanFieldsFragment = { __typename?: 'MealPlan', planId: string, status: string, pennyMessage: string, swapOptions: Array<SwapAction>, assumptions: Array<string>, summary: { __typename?: 'PlanSummary', householdSize: number, mealsPlanned: number, budget?: number | null, headroom?: number | null, consumedCostTotal?: number | null, pantryValueUsed?: number | null, pantryItemsUsed: Array<string>, estimatedCost: { __typename?: 'CostRange', point: number, low: number, high: number, confidence: DataConfidence, tierMix?: any | null, basis?: string | null }, nutritionGoal?: { __typename?: 'NutritionGoalSummary', goal: string, metBy: number, of: number, avgProteinG?: number | null } | null, balancedMealBaseline?: { __typename?: 'BalancedMealBaseline', applied: boolean, avgScore?: number | null } | null }, meals: Array<{ __typename?: 'PlannedMeal', recipeId: string, title: string, totalTimeMinutes?: number | null, scaleFactor: number, servingsPlanned: number, proteinGPerServing?: number | null, goalIndicator?: string | null, pantryIngredientsUsed: Array<string>, incrementalCheckoutCost?: number | null, consumedCost?: number | null, why?: string | null, slot: { __typename?: 'MealSlot', day: number, mealType: MealType } }>, groceryList: Array<{ __typename?: 'GrocerySection', aisle: string, items: Array<{ __typename?: 'GroceryItem', ingredientId: string, displayName: string, neededQty: number, unit: string, packages?: number | null, packageLabel?: string | null, estimatedPrice: number, priceTier?: number | null, inPantry: boolean, isChecked: boolean, usedBy: Array<string> }> }> };
+
+export type RecipeFieldsFragment = { __typename?: 'Recipe', recipeId: string, ownerUserId?: string | null, title: string, description?: string | null, sourceType: string, sourceUrl?: string | null, sourceName?: string | null, licenseId?: string | null, attributionText?: string | null, visibility: string, reviewStatus: string, servings?: number | null, servingsConfidence: ValueConfidence, servingSizeText?: string | null, scalable: boolean, prepTimeMinutes?: number | null, cookTimeMinutes?: number | null, totalTimeMinutes?: number | null, timeConfidence: ValueConfidence, mealTypes: Array<MealType>, cuisine?: string | null, difficulty?: number | null, equipmentRequired: Array<Equipment>, isComponent: boolean, tags: Array<string>, baseMealPlanEligible: boolean, missingInformation: Array<string>, ingredients: Array<{ __typename?: 'IngredientLine', position: number, rawText: string, ingredientId?: string | null, displayName?: string | null, quantity?: number | null, unit?: string | null, preparation?: string | null, grams?: number | null, isOptional: boolean, isToTaste: boolean, missingInformation?: string | null }>, instructions: Array<{ __typename?: 'InstructionStep', step: number, text: string, minutes?: number | null }>, nutrition?: { __typename?: 'NutritionInfo', basis: string, perServing: boolean, caloriesKcal?: number | null, proteinG?: number | null, carbsG?: number | null, fatG?: number | null, fiberG?: number | null, sodiumMg?: number | null, coveragePct?: number | null, confidence?: DataConfidence | null } | null };
+
+export type GroceryListPayloadFieldsFragment = { __typename?: 'GroceryListPayload', planId?: string | null, sections: Array<{ __typename?: 'GrocerySection', aisle: string, items: Array<{ __typename?: 'GroceryItem', ingredientId: string, displayName: string, neededQty: number, unit: string, packages?: number | null, packageLabel?: string | null, estimatedPrice: number, priceTier?: number | null, inPantry: boolean, isChecked: boolean, usedBy: Array<string> }> }>, cost: { __typename?: 'CostRange', point: number, low: number, high: number, confidence: DataConfidence, tierMix?: any | null, basis?: string | null } };
+
+export type CurrentMealPlanQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type CurrentMealPlanQuery = { __typename?: 'Query', currentMealPlan?: { __typename?: 'MealPlan', planId: string, status: string, pennyMessage: string, swapOptions: Array<SwapAction>, assumptions: Array<string>, summary: { __typename?: 'PlanSummary', householdSize: number, mealsPlanned: number, budget?: number | null, headroom?: number | null, consumedCostTotal?: number | null, pantryValueUsed?: number | null, pantryItemsUsed: Array<string>, estimatedCost: { __typename?: 'CostRange', point: number, low: number, high: number, confidence: DataConfidence, tierMix?: any | null, basis?: string | null }, nutritionGoal?: { __typename?: 'NutritionGoalSummary', goal: string, metBy: number, of: number, avgProteinG?: number | null } | null, balancedMealBaseline?: { __typename?: 'BalancedMealBaseline', applied: boolean, avgScore?: number | null } | null }, meals: Array<{ __typename?: 'PlannedMeal', recipeId: string, title: string, totalTimeMinutes?: number | null, scaleFactor: number, servingsPlanned: number, proteinGPerServing?: number | null, goalIndicator?: string | null, pantryIngredientsUsed: Array<string>, incrementalCheckoutCost?: number | null, consumedCost?: number | null, why?: string | null, slot: { __typename?: 'MealSlot', day: number, mealType: MealType } }>, groceryList: Array<{ __typename?: 'GrocerySection', aisle: string, items: Array<{ __typename?: 'GroceryItem', ingredientId: string, displayName: string, neededQty: number, unit: string, packages?: number | null, packageLabel?: string | null, estimatedPrice: number, priceTier?: number | null, inPantry: boolean, isChecked: boolean, usedBy: Array<string> }> }> } | null };
+
+export type MealPlanQueryVariables = Exact<{
+  planId: Scalars['ID']['input'];
+}>;
+
+
+export type MealPlanQuery = { __typename?: 'Query', mealPlan?: { __typename?: 'MealPlan', planId: string, status: string, pennyMessage: string, swapOptions: Array<SwapAction>, assumptions: Array<string>, summary: { __typename?: 'PlanSummary', householdSize: number, mealsPlanned: number, budget?: number | null, headroom?: number | null, consumedCostTotal?: number | null, pantryValueUsed?: number | null, pantryItemsUsed: Array<string>, estimatedCost: { __typename?: 'CostRange', point: number, low: number, high: number, confidence: DataConfidence, tierMix?: any | null, basis?: string | null }, nutritionGoal?: { __typename?: 'NutritionGoalSummary', goal: string, metBy: number, of: number, avgProteinG?: number | null } | null, balancedMealBaseline?: { __typename?: 'BalancedMealBaseline', applied: boolean, avgScore?: number | null } | null }, meals: Array<{ __typename?: 'PlannedMeal', recipeId: string, title: string, totalTimeMinutes?: number | null, scaleFactor: number, servingsPlanned: number, proteinGPerServing?: number | null, goalIndicator?: string | null, pantryIngredientsUsed: Array<string>, incrementalCheckoutCost?: number | null, consumedCost?: number | null, why?: string | null, slot: { __typename?: 'MealSlot', day: number, mealType: MealType } }>, groceryList: Array<{ __typename?: 'GrocerySection', aisle: string, items: Array<{ __typename?: 'GroceryItem', ingredientId: string, displayName: string, neededQty: number, unit: string, packages?: number | null, packageLabel?: string | null, estimatedPrice: number, priceTier?: number | null, inPantry: boolean, isChecked: boolean, usedBy: Array<string> }> }> } | null };
+
+export type RecipesQueryVariables = Exact<{
+  query?: InputMaybe<RecipeQueryInput>;
+}>;
+
+
+export type RecipesQuery = { __typename?: 'Query', recipes: Array<{ __typename?: 'Recipe', recipeId: string, ownerUserId?: string | null, title: string, description?: string | null, sourceType: string, sourceUrl?: string | null, sourceName?: string | null, licenseId?: string | null, attributionText?: string | null, visibility: string, reviewStatus: string, servings?: number | null, servingsConfidence: ValueConfidence, servingSizeText?: string | null, scalable: boolean, prepTimeMinutes?: number | null, cookTimeMinutes?: number | null, totalTimeMinutes?: number | null, timeConfidence: ValueConfidence, mealTypes: Array<MealType>, cuisine?: string | null, difficulty?: number | null, equipmentRequired: Array<Equipment>, isComponent: boolean, tags: Array<string>, baseMealPlanEligible: boolean, missingInformation: Array<string>, ingredients: Array<{ __typename?: 'IngredientLine', position: number, rawText: string, ingredientId?: string | null, displayName?: string | null, quantity?: number | null, unit?: string | null, preparation?: string | null, grams?: number | null, isOptional: boolean, isToTaste: boolean, missingInformation?: string | null }>, instructions: Array<{ __typename?: 'InstructionStep', step: number, text: string, minutes?: number | null }>, nutrition?: { __typename?: 'NutritionInfo', basis: string, perServing: boolean, caloriesKcal?: number | null, proteinG?: number | null, carbsG?: number | null, fatG?: number | null, fiberG?: number | null, sodiumMg?: number | null, coveragePct?: number | null, confidence?: DataConfidence | null } | null }> };
+
+export type RecipeQueryVariables = Exact<{
+  recipeId: Scalars['ID']['input'];
+}>;
+
+
+export type RecipeQuery = { __typename?: 'Query', recipe?: { __typename?: 'Recipe', recipeId: string, ownerUserId?: string | null, title: string, description?: string | null, sourceType: string, sourceUrl?: string | null, sourceName?: string | null, licenseId?: string | null, attributionText?: string | null, visibility: string, reviewStatus: string, servings?: number | null, servingsConfidence: ValueConfidence, servingSizeText?: string | null, scalable: boolean, prepTimeMinutes?: number | null, cookTimeMinutes?: number | null, totalTimeMinutes?: number | null, timeConfidence: ValueConfidence, mealTypes: Array<MealType>, cuisine?: string | null, difficulty?: number | null, equipmentRequired: Array<Equipment>, isComponent: boolean, tags: Array<string>, baseMealPlanEligible: boolean, missingInformation: Array<string>, ingredients: Array<{ __typename?: 'IngredientLine', position: number, rawText: string, ingredientId?: string | null, displayName?: string | null, quantity?: number | null, unit?: string | null, preparation?: string | null, grams?: number | null, isOptional: boolean, isToTaste: boolean, missingInformation?: string | null }>, instructions: Array<{ __typename?: 'InstructionStep', step: number, text: string, minutes?: number | null }>, nutrition?: { __typename?: 'NutritionInfo', basis: string, perServing: boolean, caloriesKcal?: number | null, proteinG?: number | null, carbsG?: number | null, fatG?: number | null, fiberG?: number | null, sodiumMg?: number | null, coveragePct?: number | null, confidence?: DataConfidence | null } | null } | null };
+
+export type SavedRecipesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type SavedRecipesQuery = { __typename?: 'Query', savedRecipes: Array<{ __typename?: 'Recipe', recipeId: string, ownerUserId?: string | null, title: string, description?: string | null, sourceType: string, sourceUrl?: string | null, sourceName?: string | null, licenseId?: string | null, attributionText?: string | null, visibility: string, reviewStatus: string, servings?: number | null, servingsConfidence: ValueConfidence, servingSizeText?: string | null, scalable: boolean, prepTimeMinutes?: number | null, cookTimeMinutes?: number | null, totalTimeMinutes?: number | null, timeConfidence: ValueConfidence, mealTypes: Array<MealType>, cuisine?: string | null, difficulty?: number | null, equipmentRequired: Array<Equipment>, isComponent: boolean, tags: Array<string>, baseMealPlanEligible: boolean, missingInformation: Array<string>, ingredients: Array<{ __typename?: 'IngredientLine', position: number, rawText: string, ingredientId?: string | null, displayName?: string | null, quantity?: number | null, unit?: string | null, preparation?: string | null, grams?: number | null, isOptional: boolean, isToTaste: boolean, missingInformation?: string | null }>, instructions: Array<{ __typename?: 'InstructionStep', step: number, text: string, minutes?: number | null }>, nutrition?: { __typename?: 'NutritionInfo', basis: string, perServing: boolean, caloriesKcal?: number | null, proteinG?: number | null, carbsG?: number | null, fatG?: number | null, fiberG?: number | null, sodiumMg?: number | null, coveragePct?: number | null, confidence?: DataConfidence | null } | null }> };
+
+export type IngredientsQueryVariables = Exact<{
+  search?: InputMaybe<Scalars['String']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+}>;
+
+
+export type IngredientsQuery = { __typename?: 'Query', ingredients: Array<{ __typename?: 'Ingredient', ingredientId: string, displayName: string, aisle: string, foodGroup: string, priceReferenceUnit: string, isPantryStaple: boolean, assumedOnHand: boolean, allergens: Array<Allergen> }> };
+
+export type GroceryListQueryVariables = Exact<{
+  planId: Scalars['ID']['input'];
+}>;
+
+
+export type GroceryListQuery = { __typename?: 'Query', groceryList?: { __typename?: 'GroceryListPayload', planId?: string | null, sections: Array<{ __typename?: 'GrocerySection', aisle: string, items: Array<{ __typename?: 'GroceryItem', ingredientId: string, displayName: string, neededQty: number, unit: string, packages?: number | null, packageLabel?: string | null, estimatedPrice: number, priceTier?: number | null, inPantry: boolean, isChecked: boolean, usedBy: Array<string> }> }>, cost: { __typename?: 'CostRange', point: number, low: number, high: number, confidence: DataConfidence, tierMix?: any | null, basis?: string | null } } | null };
+
+export type GenerateMealPlanMutationVariables = Exact<{
+  input: PlanRequestInput;
+}>;
+
+
+export type GenerateMealPlanMutation = { __typename?: 'Mutation', generateMealPlan: { __typename?: 'MealPlan', planId: string, status: string, pennyMessage: string, swapOptions: Array<SwapAction>, assumptions: Array<string>, summary: { __typename?: 'PlanSummary', householdSize: number, mealsPlanned: number, budget?: number | null, headroom?: number | null, consumedCostTotal?: number | null, pantryValueUsed?: number | null, pantryItemsUsed: Array<string>, estimatedCost: { __typename?: 'CostRange', point: number, low: number, high: number, confidence: DataConfidence, tierMix?: any | null, basis?: string | null }, nutritionGoal?: { __typename?: 'NutritionGoalSummary', goal: string, metBy: number, of: number, avgProteinG?: number | null } | null, balancedMealBaseline?: { __typename?: 'BalancedMealBaseline', applied: boolean, avgScore?: number | null } | null }, meals: Array<{ __typename?: 'PlannedMeal', recipeId: string, title: string, totalTimeMinutes?: number | null, scaleFactor: number, servingsPlanned: number, proteinGPerServing?: number | null, goalIndicator?: string | null, pantryIngredientsUsed: Array<string>, incrementalCheckoutCost?: number | null, consumedCost?: number | null, why?: string | null, slot: { __typename?: 'MealSlot', day: number, mealType: MealType } }>, groceryList: Array<{ __typename?: 'GrocerySection', aisle: string, items: Array<{ __typename?: 'GroceryItem', ingredientId: string, displayName: string, neededQty: number, unit: string, packages?: number | null, packageLabel?: string | null, estimatedPrice: number, priceTier?: number | null, inPantry: boolean, isChecked: boolean, usedBy: Array<string> }> }> } };
+
+export type SwapPlannedMealMutationVariables = Exact<{
+  planId: Scalars['ID']['input'];
+  input: SwapMealInput;
+}>;
+
+
+export type SwapPlannedMealMutation = { __typename?: 'Mutation', swapPlannedMeal: { __typename?: 'MealPlan', planId: string, status: string, pennyMessage: string, swapOptions: Array<SwapAction>, assumptions: Array<string>, summary: { __typename?: 'PlanSummary', householdSize: number, mealsPlanned: number, budget?: number | null, headroom?: number | null, consumedCostTotal?: number | null, pantryValueUsed?: number | null, pantryItemsUsed: Array<string>, estimatedCost: { __typename?: 'CostRange', point: number, low: number, high: number, confidence: DataConfidence, tierMix?: any | null, basis?: string | null }, nutritionGoal?: { __typename?: 'NutritionGoalSummary', goal: string, metBy: number, of: number, avgProteinG?: number | null } | null, balancedMealBaseline?: { __typename?: 'BalancedMealBaseline', applied: boolean, avgScore?: number | null } | null }, meals: Array<{ __typename?: 'PlannedMeal', recipeId: string, title: string, totalTimeMinutes?: number | null, scaleFactor: number, servingsPlanned: number, proteinGPerServing?: number | null, goalIndicator?: string | null, pantryIngredientsUsed: Array<string>, incrementalCheckoutCost?: number | null, consumedCost?: number | null, why?: string | null, slot: { __typename?: 'MealSlot', day: number, mealType: MealType } }>, groceryList: Array<{ __typename?: 'GrocerySection', aisle: string, items: Array<{ __typename?: 'GroceryItem', ingredientId: string, displayName: string, neededQty: number, unit: string, packages?: number | null, packageLabel?: string | null, estimatedPrice: number, priceTier?: number | null, inPantry: boolean, isChecked: boolean, usedBy: Array<string> }> }> } };
+
+export type MovePlannedMealMutationVariables = Exact<{
+  planId: Scalars['ID']['input'];
+  input: MoveMealInput;
+}>;
+
+
+export type MovePlannedMealMutation = { __typename?: 'Mutation', movePlannedMeal: { __typename?: 'MealPlan', planId: string, status: string, pennyMessage: string, swapOptions: Array<SwapAction>, assumptions: Array<string>, summary: { __typename?: 'PlanSummary', householdSize: number, mealsPlanned: number, budget?: number | null, headroom?: number | null, consumedCostTotal?: number | null, pantryValueUsed?: number | null, pantryItemsUsed: Array<string>, estimatedCost: { __typename?: 'CostRange', point: number, low: number, high: number, confidence: DataConfidence, tierMix?: any | null, basis?: string | null }, nutritionGoal?: { __typename?: 'NutritionGoalSummary', goal: string, metBy: number, of: number, avgProteinG?: number | null } | null, balancedMealBaseline?: { __typename?: 'BalancedMealBaseline', applied: boolean, avgScore?: number | null } | null }, meals: Array<{ __typename?: 'PlannedMeal', recipeId: string, title: string, totalTimeMinutes?: number | null, scaleFactor: number, servingsPlanned: number, proteinGPerServing?: number | null, goalIndicator?: string | null, pantryIngredientsUsed: Array<string>, incrementalCheckoutCost?: number | null, consumedCost?: number | null, why?: string | null, slot: { __typename?: 'MealSlot', day: number, mealType: MealType } }>, groceryList: Array<{ __typename?: 'GrocerySection', aisle: string, items: Array<{ __typename?: 'GroceryItem', ingredientId: string, displayName: string, neededQty: number, unit: string, packages?: number | null, packageLabel?: string | null, estimatedPrice: number, priceTier?: number | null, inPantry: boolean, isChecked: boolean, usedBy: Array<string> }> }> } };
+
+export type AcceptMealPlanMutationVariables = Exact<{
+  planId: Scalars['ID']['input'];
+}>;
+
+
+export type AcceptMealPlanMutation = { __typename?: 'Mutation', acceptMealPlan: { __typename?: 'GroceryListPayload', planId?: string | null, sections: Array<{ __typename?: 'GrocerySection', aisle: string, items: Array<{ __typename?: 'GroceryItem', ingredientId: string, displayName: string, neededQty: number, unit: string, packages?: number | null, packageLabel?: string | null, estimatedPrice: number, priceTier?: number | null, inPantry: boolean, isChecked: boolean, usedBy: Array<string> }> }>, cost: { __typename?: 'CostRange', point: number, low: number, high: number, confidence: DataConfidence, tierMix?: any | null, basis?: string | null } } };
+
+export type DeleteMealPlanMutationVariables = Exact<{
+  planId: Scalars['ID']['input'];
+}>;
+
+
+export type DeleteMealPlanMutation = { __typename?: 'Mutation', deleteMealPlan: boolean };
+
+export type SetGroceryItemCheckedMutationVariables = Exact<{
+  planId: Scalars['ID']['input'];
+  ingredientId: Scalars['ID']['input'];
+  checked: Scalars['Boolean']['input'];
+}>;
+
+
+export type SetGroceryItemCheckedMutation = { __typename?: 'Mutation', setGroceryItemChecked: boolean };
+
+export type GroceryListFromRecipesMutationVariables = Exact<{
+  input: GroceryListFromRecipesInput;
+}>;
+
+
+export type GroceryListFromRecipesMutation = { __typename?: 'Mutation', groceryListFromRecipes: { __typename?: 'GroceryListPayload', planId?: string | null, sections: Array<{ __typename?: 'GrocerySection', aisle: string, items: Array<{ __typename?: 'GroceryItem', ingredientId: string, displayName: string, neededQty: number, unit: string, packages?: number | null, packageLabel?: string | null, estimatedPrice: number, priceTier?: number | null, inPantry: boolean, isChecked: boolean, usedBy: Array<string> }> }>, cost: { __typename?: 'CostRange', point: number, low: number, high: number, confidence: DataConfidence, tierMix?: any | null, basis?: string | null } } };
+
+export type SaveRecipeMutationVariables = Exact<{
+  recipeId: Scalars['ID']['input'];
+}>;
+
+
+export type SaveRecipeMutation = { __typename?: 'Mutation', saveRecipe: boolean };
+
+export type UnsaveRecipeMutationVariables = Exact<{
+  recipeId: Scalars['ID']['input'];
+}>;
+
+
+export type UnsaveRecipeMutation = { __typename?: 'Mutation', unsaveRecipe: boolean };
 
 export type PantryItemsQueryVariables = Exact<{
   filter?: InputMaybe<PantryItemFilterInput>;
