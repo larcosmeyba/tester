@@ -12,9 +12,10 @@ func inventory() pdf.Inventory {
 		PageCount:   1,
 		HasAcroForm: true,
 		Fields: []pdf.Field{
-			{Name: "TxtFld1", Type: pdf.FieldText},
-			{Name: "TxtFld2", Type: pdf.FieldText},
+			{Name: "TxtFld1", Type: pdf.FieldText, Label: "Last name"},
+			{Name: "TxtFld2", Type: pdf.FieldText, Label: "ZIP code"},
 			{Name: "TxtFld3", Type: pdf.FieldText},
+			{Name: "SigFld1", Type: pdf.FieldSignature, Label: "Applicant signature"},
 		},
 	}
 }
@@ -76,8 +77,8 @@ func TestFieldsWithNoSuggestionAreReportedAsUnmapped(t *testing.T) {
 	if err != nil {
 		t.Fatalf("parse: %v", err)
 	}
-	if len(result.Unmapped) != 2 {
-		t.Fatalf("expected the two unplaced fields listed, got %+v", result.Unmapped)
+	if len(result.Unmapped) != 3 {
+		t.Fatalf("expected the unplaced fields listed, got %+v", result.Unmapped)
 	}
 }
 
@@ -114,6 +115,14 @@ func TestThePromptDescribesOnlyTheBlankForm(t *testing.T) {
 	}
 	if !strings.Contains(prompt, "applicant.last_name") {
 		t.Error("the prompt should list the vocabulary the model must choose from")
+	}
+	// The printed label is the only thing that identifies a field on most
+	// government forms, so it has to reach the model.
+	if !strings.Contains(prompt, "ZIP code") {
+		t.Error("the prompt should carry the label printed beside each box")
+	}
+	if strings.Contains(prompt, "SigFld1") {
+		t.Error("a signature field must never be offered for mapping")
 	}
 	if strings.Contains(prompt, "income.monthly_gross_total") {
 		t.Error("computed paths should not be offered to the model as mapping targets")

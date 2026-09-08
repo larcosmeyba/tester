@@ -261,7 +261,8 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
             pendingSignupProfile: securedPending ?? legacyPending,
             profile: { ...defaultProfile, ...persisted.profile },
             preferences: { ...defaultPreferences, ...persisted.preferences },
-            governmentProfile: { ...defaultGovernmentProfile, ...persisted.governmentProfile },
+            // Never restored from device storage: see the write below.
+            governmentProfile: defaultGovernmentProfile,
             pantryItems: normalizePantryItems(persisted.pantryItems ?? defaultState.pantryItems),
             cart: persisted.cart ?? [],
           });
@@ -283,7 +284,19 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     if (!isLocalReady) {
       return;
     }
-    const { pendingSignupProfile: _pendingSignupProfile, ...nonSensitiveState } = state;
+    // governmentProfile is dropped along with the pending signup profile.
+    //
+    // Benefits answers are the most sensitive data in the product — dates of
+    // birth, income, immigration status, and for a whole household including
+    // children — and this store is unencrypted device storage that survives
+    // sign-out. They live on the server now, behind the viewer's token, and are
+    // fetched by the benefits screens when needed. Anything already written to
+    // this key by an older build is overwritten by the line below.
+    const {
+      pendingSignupProfile: _pendingSignupProfile,
+      governmentProfile: _governmentProfile,
+      ...nonSensitiveState
+    } = state;
     AsyncStorage.setItem(storageKey, JSON.stringify(nonSensitiveState)).catch(() => undefined);
   }, [isLocalReady, state]);
 

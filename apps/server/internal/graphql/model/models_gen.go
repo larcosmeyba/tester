@@ -8,6 +8,22 @@ import (
 	"strconv"
 )
 
+// What the reviewer fills in before accepting a draft.
+//
+// It is a patch, not a recipe: only the values a video commonly fails to state,
+// supplied by the person who chose the video. Everything else comes from the
+// draft, and the server re-resolves the result against the ingredient catalogue
+// rather than trusting anything here.
+//
+// A value supplied this way is recorded with `human` confidence — it was stated
+// by a person, not by the source and not inferred.
+type AcceptRecipeImportInput struct {
+	// A serving count the video never gave.
+	Servings *float64 `json:"servings,omitempty"`
+	// Corrections to individual ingredient lines, addressed by position.
+	Ingredients []*ImportIngredientPatchInput `json:"ingredients,omitempty"`
+}
+
 type AddPantryItemInput struct {
 	Name           string          `json:"name"`
 	Quantity       string          `json:"quantity"`
@@ -157,6 +173,12 @@ type BenefitsForm struct {
 	PageCount    int                  `json:"pageCount"`
 	TemplateKind BenefitsTemplateKind `json:"templateKind"`
 	AgencyURL    *string              `json:"agencyUrl,omitempty"`
+	// How many of the form's boxes this mapping fills, out of how many could hold a
+	// value. Partial coverage is the normal state of a real government form — most
+	// have sections no profile holds — and the applicant is told rather than left to
+	// discover it. Signature fields are in neither count.
+	MappedFieldCount   int `json:"mappedFieldCount"`
+	FillableFieldCount int `json:"fillableFieldCount"`
 }
 
 type BenefitsGroup struct {
@@ -338,6 +360,16 @@ type HouseholdInput struct {
 	Children *int `json:"children,omitempty"`
 	// True when the user picked 8+; size is stored as 8.
 	SizeIsPlus bool `json:"sizeIsPlus"`
+}
+
+type ImportIngredientPatchInput struct {
+	// The line's position in the draft, as returned by `recipeImport`.
+	Position int `json:"position"`
+	// An amount the video never stated. Null leaves the line as it is.
+	Quantity *float64 `json:"quantity,omitempty"`
+	Unit     *string  `json:"unit,omitempty"`
+	// Resolve a line the catalogue could not match, by choosing an ingredient.
+	IngredientID *string `json:"ingredientId,omitempty"`
 }
 
 type ImportRecipeFromVideoInput struct {

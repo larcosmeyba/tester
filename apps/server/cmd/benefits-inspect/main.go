@@ -69,7 +69,7 @@ func main() {
 
 	fmt.Printf("\n%d fields:\n\n", len(inventory.Fields))
 	out := tabwriter.NewWriter(os.Stdout, 2, 2, 2, ' ', 0)
-	fmt.Fprintln(out, "NAME\tTYPE\tPAGE\tRECT (x y w h)\tOPTIONS")
+	fmt.Fprintln(out, "NAME\tTYPE\tPAGE\tRECT (x y w h)\tPRINTED LABEL\tOPTIONS")
 	for _, field := range inventory.Fields {
 		for i, widget := range field.Widgets {
 			name, kind := field.Name, string(field.Type)
@@ -83,9 +83,16 @@ func main() {
 			if widget.OnState != "" {
 				options += " on=" + widget.OnState
 			}
-			fmt.Fprintf(out, "%s\t%s\t%d\t%.1f %.1f %.1f %.1f\t%s\n",
+			label := ""
+			if i == 0 {
+				label = field.Label
+				if label != "" && field.LabelPlacement == "above" {
+					label = "^ " + label
+				}
+			}
+			fmt.Fprintf(out, "%s\t%s\t%d\t%.1f %.1f %.1f %.1f\t%s\t%s\n",
 				name, kind, widget.Page,
-				widget.Rect.X, widget.Rect.Y, widget.Rect.W, widget.Rect.H, options)
+				widget.Rect.X, widget.Rect.Y, widget.Rect.W, widget.Rect.H, label, options)
 		}
 	}
 	out.Flush()

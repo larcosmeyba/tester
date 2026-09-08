@@ -30,6 +30,11 @@ const (
 	TargetCheckmark TargetType = "checkmark" // flat forms only: draws a glyph
 )
 
+// IsCheckbox reports whether a target is ticked rather than written into.
+func (t TargetType) IsCheckbox() bool {
+	return t == TargetCheckbox || t == TargetCheckmark
+}
+
 type Strength string
 
 const (

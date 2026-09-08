@@ -28,6 +28,37 @@ type Form struct {
 
 func (f *Form) Key() string { return f.Mapping.Key() }
 
+// Coverage reports how much of a form the mapping actually fills: how many
+// boxes it addresses out of how many could hold a value.
+//
+// It is surfaced rather than kept quiet because partial coverage is the normal
+// state of a real form and the applicant should know. Missouri's SNAP
+// application has 413 fields; a mapping that fills the identity, address,
+// household and income sections and leaves the criminal-history questions to
+// the applicant is doing the right thing, and telling them "46 of these boxes
+// are filled in, the rest are yours" is more use than silence.
+//
+// Signature fields are excluded from both counts: they are nobody's to fill.
+func (f *Form) Coverage() (mapped, fillable int) {
+	targeted := map[string]bool{}
+	for _, field := range f.Mapping.Fields {
+		if field.FillPolicy == domain.FillNever || field.Target.Name == "" {
+			continue
+		}
+		targeted[field.Target.Name] = true
+	}
+	for _, field := range f.Inventory.Fields {
+		if !field.Type.Fillable() {
+			continue
+		}
+		fillable++
+		if targeted[field.Name] {
+			mapped++
+		}
+	}
+	return mapped, fillable
+}
+
 // OpenTemplate returns a reader over the blank official PDF.
 func (f *Form) OpenTemplate() (*os.File, error) {
 	return os.Open(f.TemplatePath)

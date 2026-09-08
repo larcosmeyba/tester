@@ -132,18 +132,20 @@ type ComplexityRoot struct {
 	}
 
 	BenefitsForm struct {
-		AgencyURL    func(childComplexity int) int
-		Country      func(childComplexity int) int
-		FormCode     func(childComplexity int) int
-		FormTitle    func(childComplexity int) int
-		FormVersion  func(childComplexity int) int
-		ID           func(childComplexity int) int
-		Key          func(childComplexity int) int
-		PageCount    func(childComplexity int) int
-		Program      func(childComplexity int) int
-		Revision     func(childComplexity int) int
-		State        func(childComplexity int) int
-		TemplateKind func(childComplexity int) int
+		AgencyURL          func(childComplexity int) int
+		Country            func(childComplexity int) int
+		FillableFieldCount func(childComplexity int) int
+		FormCode           func(childComplexity int) int
+		FormTitle          func(childComplexity int) int
+		FormVersion        func(childComplexity int) int
+		ID                 func(childComplexity int) int
+		Key                func(childComplexity int) int
+		MappedFieldCount   func(childComplexity int) int
+		PageCount          func(childComplexity int) int
+		Program            func(childComplexity int) int
+		Revision           func(childComplexity int) int
+		State              func(childComplexity int) int
+		TemplateKind       func(childComplexity int) int
 	}
 
 	BenefitsGroup struct {
@@ -353,7 +355,7 @@ type ComplexityRoot struct {
 
 	Mutation struct {
 		AcceptMealPlan             func(childComplexity int, planID string) int
-		AcceptRecipeImport         func(childComplexity int, importID string) int
+		AcceptRecipeImport         func(childComplexity int, importID string, input *model.AcceptRecipeImportInput) int
 		AddPantryItem              func(childComplexity int, input model.AddPantryItemInput) int
 		ApproveBenefitsApplication func(childComplexity int, applicationID string) int
 		CancelRecipeImport         func(childComplexity int, importID string) int
@@ -608,7 +610,7 @@ type MutationResolver interface {
 	UnsaveRecipe(ctx context.Context, recipeID string) (bool, error)
 	ImportRecipeFromVideo(ctx context.Context, input model.ImportRecipeFromVideoInput) (*model.RecipeImport, error)
 	CancelRecipeImport(ctx context.Context, importID string) (*model.RecipeImport, error)
-	AcceptRecipeImport(ctx context.Context, importID string) (*model.Recipe, error)
+	AcceptRecipeImport(ctx context.Context, importID string, input *model.AcceptRecipeImportInput) (*model.Recipe, error)
 	SaveBenefitsAnswers(ctx context.Context, input []*model.BenefitsAnswerInput) (*model.BenefitsProfile, error)
 	SaveBenefitsGroup(ctx context.Context, input model.SaveBenefitsGroupInput) (*model.BenefitsProfile, error)
 	StartBenefitsApplication(ctx context.Context, formID string) (*model.BenefitsApplication, error)
@@ -1108,6 +1110,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.BenefitsForm.Country(childComplexity), true
 
+	case "BenefitsForm.fillableFieldCount":
+		if e.complexity.BenefitsForm.FillableFieldCount == nil {
+			break
+		}
+
+		return e.complexity.BenefitsForm.FillableFieldCount(childComplexity), true
+
 	case "BenefitsForm.formCode":
 		if e.complexity.BenefitsForm.FormCode == nil {
 			break
@@ -1142,6 +1151,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.BenefitsForm.Key(childComplexity), true
+
+	case "BenefitsForm.mappedFieldCount":
+		if e.complexity.BenefitsForm.MappedFieldCount == nil {
+			break
+		}
+
+		return e.complexity.BenefitsForm.MappedFieldCount(childComplexity), true
 
 	case "BenefitsForm.pageCount":
 		if e.complexity.BenefitsForm.PageCount == nil {
@@ -2131,7 +2147,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.AcceptRecipeImport(childComplexity, args["importId"].(string)), true
+		return e.complexity.Mutation.AcceptRecipeImport(childComplexity, args["importId"].(string), args["input"].(*model.AcceptRecipeImportInput)), true
 
 	case "Mutation.addPantryItem":
 		if e.complexity.Mutation.AddPantryItem == nil {
@@ -3652,6 +3668,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	rc := graphql.GetOperationContext(ctx)
 	ec := executionContext{rc, e, 0, 0, make(chan graphql.DeferredResult)}
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
+		ec.unmarshalInputAcceptRecipeImportInput,
 		ec.unmarshalInputAddPantryItemInput,
 		ec.unmarshalInputAllergyRequirementInput,
 		ec.unmarshalInputBenefitsAnswerInput,
@@ -3663,6 +3680,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputFoodPreferencesInput,
 		ec.unmarshalInputGroceryListFromRecipesInput,
 		ec.unmarshalInputHouseholdInput,
+		ec.unmarshalInputImportIngredientPatchInput,
 		ec.unmarshalInputImportRecipeFromVideoInput,
 		ec.unmarshalInputMealCountsInput,
 		ec.unmarshalInputMealProfileInput,
@@ -4027,7 +4045,7 @@ extend type Mutation {
   recipes. Idempotent: accepting twice updates the same recipe rather than
   creating a second one.
   """
-  acceptRecipeImport(importId: ID!): Recipe!
+  acceptRecipeImport(importId: ID!, input: AcceptRecipeImportInput): Recipe!
 }
 
 "An arbitrary JSON object. Used only for the cost tier mix."
@@ -4490,6 +4508,34 @@ type RecipeImport {
   createdAt: String!
   completedAt: String
 }
+
+"""
+What the reviewer fills in before accepting a draft.
+
+It is a patch, not a recipe: only the values a video commonly fails to state,
+supplied by the person who chose the video. Everything else comes from the
+draft, and the server re-resolves the result against the ingredient catalogue
+rather than trusting anything here.
+
+A value supplied this way is recorded with ` + "`" + `human` + "`" + ` confidence — it was stated
+by a person, not by the source and not inferred.
+"""
+input AcceptRecipeImportInput {
+  "A serving count the video never gave."
+  servings: Float
+  "Corrections to individual ingredient lines, addressed by position."
+  ingredients: [ImportIngredientPatchInput!]
+}
+
+input ImportIngredientPatchInput {
+  "The line's position in the draft, as returned by ` + "`" + `recipeImport` + "`" + `."
+  position: Int!
+  "An amount the video never stated. Null leaves the line as it is."
+  quantity: Float
+  unit: String
+  "Resolve a line the catalogue could not match, by choosing an ingredient."
+  ingredientId: ID
+}
 `, BuiltIn: false},
 	{Name: "../../../../../packages/api-contract/benefits.graphql", Input: `# ---------------------------------------------------------------------------
 # Government benefits autofill
@@ -4626,6 +4672,14 @@ type BenefitsForm {
   pageCount: Int!
   templateKind: BenefitsTemplateKind!
   agencyUrl: String
+  """
+  How many of the form's boxes this mapping fills, out of how many could hold a
+  value. Partial coverage is the normal state of a real government form — most
+  have sections no profile holds — and the applicant is told rather than left to
+  discover it. Signature fields are in neither count.
+  """
+  mappedFieldCount: Int!
+  fillableFieldCount: Int!
 }
 
 # ---------------------------------------------------------------------------
@@ -5101,6 +5155,15 @@ func (ec *executionContext) field_Mutation_acceptRecipeImport_args(ctx context.C
 		}
 	}
 	args["importId"] = arg0
+	var arg1 *model.AcceptRecipeImportInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg1, err = ec.unmarshalOAcceptRecipeImportInput2ᚖgithubᚗcomᚋhelpthehiveᚋserverᚋinternalᚋgraphqlᚋmodelᚐAcceptRecipeImportInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg1
 	return args, nil
 }
 
@@ -7255,6 +7318,10 @@ func (ec *executionContext) fieldContext_BenefitsApplication_form(_ context.Cont
 				return ec.fieldContext_BenefitsForm_templateKind(ctx, field)
 			case "agencyUrl":
 				return ec.fieldContext_BenefitsForm_agencyUrl(ctx, field)
+			case "mappedFieldCount":
+				return ec.fieldContext_BenefitsForm_mappedFieldCount(ctx, field)
+			case "fillableFieldCount":
+				return ec.fieldContext_BenefitsForm_fillableFieldCount(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type BenefitsForm", field.Name)
 		},
@@ -9180,6 +9247,94 @@ func (ec *executionContext) fieldContext_BenefitsForm_agencyUrl(_ context.Contex
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BenefitsForm_mappedFieldCount(ctx context.Context, field graphql.CollectedField, obj *model.BenefitsForm) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BenefitsForm_mappedFieldCount(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.MappedFieldCount, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BenefitsForm_mappedFieldCount(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BenefitsForm",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BenefitsForm_fillableFieldCount(ctx context.Context, field graphql.CollectedField, obj *model.BenefitsForm) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BenefitsForm_fillableFieldCount(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.FillableFieldCount, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BenefitsForm_fillableFieldCount(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BenefitsForm",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
 		},
 	}
 	return fc, nil
@@ -16755,7 +16910,7 @@ func (ec *executionContext) _Mutation_acceptRecipeImport(ctx context.Context, fi
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().AcceptRecipeImport(rctx, fc.Args["importId"].(string))
+		return ec.resolvers.Mutation().AcceptRecipeImport(rctx, fc.Args["importId"].(string), fc.Args["input"].(*model.AcceptRecipeImportInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -22075,6 +22230,10 @@ func (ec *executionContext) fieldContext_Query_benefitsForms(ctx context.Context
 				return ec.fieldContext_BenefitsForm_templateKind(ctx, field)
 			case "agencyUrl":
 				return ec.fieldContext_BenefitsForm_agencyUrl(ctx, field)
+			case "mappedFieldCount":
+				return ec.fieldContext_BenefitsForm_mappedFieldCount(ctx, field)
+			case "fillableFieldCount":
+				return ec.fieldContext_BenefitsForm_fillableFieldCount(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type BenefitsForm", field.Name)
 		},
@@ -22153,6 +22312,10 @@ func (ec *executionContext) fieldContext_Query_benefitsForm(ctx context.Context,
 				return ec.fieldContext_BenefitsForm_templateKind(ctx, field)
 			case "agencyUrl":
 				return ec.fieldContext_BenefitsForm_agencyUrl(ctx, field)
+			case "mappedFieldCount":
+				return ec.fieldContext_BenefitsForm_mappedFieldCount(ctx, field)
+			case "fillableFieldCount":
+				return ec.fieldContext_BenefitsForm_fillableFieldCount(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type BenefitsForm", field.Name)
 		},
@@ -26964,6 +27127,40 @@ func (ec *executionContext) fieldContext___Type_specifiedByURL(_ context.Context
 
 // region    **************************** input.gotpl *****************************
 
+func (ec *executionContext) unmarshalInputAcceptRecipeImportInput(ctx context.Context, obj interface{}) (model.AcceptRecipeImportInput, error) {
+	var it model.AcceptRecipeImportInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"servings", "ingredients"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "servings":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("servings"))
+			data, err := ec.unmarshalOFloat2ᚖfloat64(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Servings = data
+		case "ingredients":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("ingredients"))
+			data, err := ec.unmarshalOImportIngredientPatchInput2ᚕᚖgithubᚗcomᚋhelpthehiveᚋserverᚋinternalᚋgraphqlᚋmodelᚐImportIngredientPatchInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Ingredients = data
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputAddPantryItemInput(ctx context.Context, obj interface{}) (model.AddPantryItemInput, error) {
 	var it model.AddPantryItemInput
 	asMap := map[string]interface{}{}
@@ -27458,6 +27655,54 @@ func (ec *executionContext) unmarshalInputHouseholdInput(ctx context.Context, ob
 				return it, err
 			}
 			it.SizeIsPlus = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputImportIngredientPatchInput(ctx context.Context, obj interface{}) (model.ImportIngredientPatchInput, error) {
+	var it model.ImportIngredientPatchInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"position", "quantity", "unit", "ingredientId"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "position":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("position"))
+			data, err := ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Position = data
+		case "quantity":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("quantity"))
+			data, err := ec.unmarshalOFloat2ᚖfloat64(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Quantity = data
+		case "unit":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("unit"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Unit = data
+		case "ingredientId":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("ingredientId"))
+			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IngredientID = data
 		}
 	}
 
@@ -29033,6 +29278,16 @@ func (ec *executionContext) _BenefitsForm(ctx context.Context, sel ast.Selection
 			}
 		case "agencyUrl":
 			out.Values[i] = ec._BenefitsForm_agencyUrl(ctx, field, obj)
+		case "mappedFieldCount":
+			out.Values[i] = ec._BenefitsForm_mappedFieldCount(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "fillableFieldCount":
+			out.Values[i] = ec._BenefitsForm_fillableFieldCount(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -33932,6 +34187,11 @@ func (ec *executionContext) marshalNID2ᚕstringᚄ(ctx context.Context, sel ast
 	return ret
 }
 
+func (ec *executionContext) unmarshalNImportIngredientPatchInput2ᚖgithubᚗcomᚋhelpthehiveᚋserverᚋinternalᚋgraphqlᚋmodelᚐImportIngredientPatchInput(ctx context.Context, v interface{}) (*model.ImportIngredientPatchInput, error) {
+	res, err := ec.unmarshalInputImportIngredientPatchInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNImportRecipeFromVideoInput2githubᚗcomᚋhelpthehiveᚋserverᚋinternalᚋgraphqlᚋmodelᚐImportRecipeFromVideoInput(ctx context.Context, v interface{}) (model.ImportRecipeFromVideoInput, error) {
 	res, err := ec.unmarshalInputImportRecipeFromVideoInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -35227,6 +35487,14 @@ func (ec *executionContext) marshalN__TypeKind2string(ctx context.Context, sel a
 	return res
 }
 
+func (ec *executionContext) unmarshalOAcceptRecipeImportInput2ᚖgithubᚗcomᚋhelpthehiveᚋserverᚋinternalᚋgraphqlᚋmodelᚐAcceptRecipeImportInput(ctx context.Context, v interface{}) (*model.AcceptRecipeImportInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputAcceptRecipeImportInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) marshalOBalancedMealBaseline2ᚖgithubᚗcomᚋhelpthehiveᚋserverᚋinternalᚋgraphqlᚋmodelᚐBalancedMealBaseline(ctx context.Context, sel ast.SelectionSet, v *model.BalancedMealBaseline) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
@@ -35342,6 +35610,26 @@ func (ec *executionContext) marshalOID2ᚖstring(ctx context.Context, sel ast.Se
 	}
 	res := graphql.MarshalID(*v)
 	return res
+}
+
+func (ec *executionContext) unmarshalOImportIngredientPatchInput2ᚕᚖgithubᚗcomᚋhelpthehiveᚋserverᚋinternalᚋgraphqlᚋmodelᚐImportIngredientPatchInputᚄ(ctx context.Context, v interface{}) ([]*model.ImportIngredientPatchInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var vSlice []interface{}
+	if v != nil {
+		vSlice = graphql.CoerceList(v)
+	}
+	var err error
+	res := make([]*model.ImportIngredientPatchInput, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNImportIngredientPatchInput2ᚖgithubᚗcomᚋhelpthehiveᚋserverᚋinternalᚋgraphqlᚋmodelᚐImportIngredientPatchInput(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
 }
 
 func (ec *executionContext) unmarshalOInt2ᚖint(ctx context.Context, v interface{}) (*int, error) {

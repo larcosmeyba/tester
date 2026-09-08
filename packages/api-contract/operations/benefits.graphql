@@ -1,0 +1,152 @@
+# Government benefits autofill operations.
+#
+# No operation sends a user id: ownership is decided by the server from the
+# bearer token, never by anything the app passes in.
+
+fragment BenefitsFormFields on BenefitsForm {
+  id
+  key
+  program
+  country
+  state
+  formCode
+  formTitle
+  formVersion
+  revision
+  pageCount
+  templateKind
+  agencyUrl
+  mappedFieldCount
+  fillableFieldCount
+}
+
+fragment BenefitsApplicationFields on BenefitsApplication {
+  id
+  status
+  form { ...BenefitsFormFields }
+  filledFields {
+    fieldId
+    label
+    fieldPath
+    page
+    source
+    text
+    checked
+    isCheckbox
+    isSensitive
+  }
+  missingFields {
+    fieldPath
+    label
+    question
+    group
+    answerKind
+    choices
+    strength
+    isSensitive
+    isDerived
+    formFieldIds
+  }
+  problems { fieldId fieldPath reason }
+  skippedFields { fieldId reason note }
+  draftDocumentPath
+  finalDocumentPath
+  createdAt
+  updatedAt
+  approvedAt
+}
+
+fragment BenefitsProfileFields on BenefitsProfile {
+  vocabularyVersion
+  answers {
+    fieldPath
+    rowId
+    status
+    kind
+    source
+    isSensitive
+    text
+    number
+    moneyCents
+    date
+    bool
+    list
+    hint
+  }
+  groups {
+    groupPath
+    collected
+    rows {
+      rowId
+      answers {
+        fieldPath
+        rowId
+        status
+        kind
+        source
+        isSensitive
+        text
+        number
+        moneyCents
+        date
+        bool
+        list
+        hint
+      }
+    }
+  }
+}
+
+query BenefitsProfile {
+  benefitsProfile { ...BenefitsProfileFields }
+}
+
+query BenefitsForms($state: String, $program: String) {
+  benefitsForms(state: $state, program: $program) { ...BenefitsFormFields }
+}
+
+query BenefitsApplications {
+  benefitsApplications { ...BenefitsApplicationFields }
+}
+
+query BenefitsApplication($applicationId: ID!) {
+  benefitsApplication(applicationId: $applicationId) { ...BenefitsApplicationFields }
+}
+
+query BenefitsFieldVocabulary {
+  benefitsFieldVocabulary {
+    fieldPath
+    kind
+    group
+    label
+    question
+    choices
+    isSensitive
+    isDerived
+    isRepeating
+  }
+}
+
+mutation SaveBenefitsAnswers($input: [BenefitsAnswerInput!]!) {
+  saveBenefitsAnswers(input: $input) { ...BenefitsProfileFields }
+}
+
+mutation SaveBenefitsGroup($input: SaveBenefitsGroupInput!) {
+  saveBenefitsGroup(input: $input) { ...BenefitsProfileFields }
+}
+
+mutation StartBenefitsApplication($formId: ID!) {
+  startBenefitsApplication(formId: $formId) { ...BenefitsApplicationFields }
+}
+
+mutation RefillBenefitsApplication($applicationId: ID!) {
+  refillBenefitsApplication(applicationId: $applicationId) { ...BenefitsApplicationFields }
+}
+
+mutation ApproveBenefitsApplication($applicationId: ID!) {
+  approveBenefitsApplication(applicationId: $applicationId) { ...BenefitsApplicationFields }
+}
+
+mutation DeleteBenefitsApplication($applicationId: ID!) {
+  deleteBenefitsApplication(applicationId: $applicationId)
+}

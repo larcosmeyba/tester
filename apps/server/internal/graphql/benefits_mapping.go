@@ -159,6 +159,7 @@ func benefitsFormModel(form *benefits.Form) *model.BenefitsForm {
 		return nil
 	}
 	mapping := form.Mapping
+	mapped, fillable := form.Coverage()
 	out := &model.BenefitsForm{
 		ID:           mapping.ID,
 		Key:          form.Key(),
@@ -170,6 +171,9 @@ func benefitsFormModel(form *benefits.Form) *model.BenefitsForm {
 		Revision:     mapping.Revision,
 		PageCount:    form.Inventory.PageCount,
 		TemplateKind: templateKindModel(mapping.Template.Kind),
+
+		MappedFieldCount:   mapped,
+		FillableFieldCount: fillable,
 	}
 	if mapping.Jurisdiction.State != "" {
 		state := mapping.Jurisdiction.State

@@ -63,6 +63,14 @@ type Field struct {
 	Options []string
 	MaxLen  int
 	Widgets []Widget
+	// Label is the text printed beside the field's first widget, when the page
+	// prints one close enough to be sure about. It is what makes a form
+	// mappable whose fields are named "Text1 PG 1" — and most government forms
+	// are named exactly that badly.
+	Label string
+	// LabelPlacement records whether the label was found to the left of the box
+	// or above it, so a reviewer can judge the guess.
+	LabelPlacement string
 }
 
 // Pages lists the pages this field appears on, in order.
@@ -247,8 +255,24 @@ func inventoryFromContext(ctx *model.Context) (Inventory, error) {
 		}
 	}
 
+	// Labels come from the page's printed text, read once per page rather than
+	// per field: a 1,444-field form would otherwise re-parse its content stream
+	// 1,444 times.
+	runsByPage := map[int][]TextRun{}
 	for _, name := range order {
-		inventory.Fields = append(inventory.Fields, *byName[name])
+		field := byName[name]
+		if len(field.Widgets) == 0 {
+			inventory.Fields = append(inventory.Fields, *field)
+			continue
+		}
+		widget := field.Widgets[0]
+		runs, loaded := runsByPage[widget.Page]
+		if !loaded {
+			runs, _ = PageText(ctx, widget.Page)
+			runsByPage[widget.Page] = runs
+		}
+		field.Label, field.LabelPlacement = LabelFor(runs, widget.Rect)
+		inventory.Fields = append(inventory.Fields, *field)
 	}
 	return inventory, nil
 }

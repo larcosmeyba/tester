@@ -16,6 +16,10 @@ You are given the field list of a BLANK government form and a fixed vocabulary
 of field paths. For each form field, say which vocabulary path it most likely
 corresponds to.
 
+Each form field may come with a "label": the text printed next to that box on
+the blank form. Where a label is present it is far better evidence than the
+field's name, which on most government forms is meaningless.
+
 Rules:
 - Use only paths from the vocabulary given. Never invent one.
 - If you are not confident about a field, leave it out. A missing suggestion is
@@ -34,7 +38,12 @@ Rules:
 // no parameter here that could carry one.
 func buildPrompt(inventory pdf.Inventory) (string, error) {
 	type promptField struct {
-		Name    string   `json:"name"`
+		Name string `json:"name"`
+		// Label is the text printed beside the box on the blank form. On most
+		// government PDFs it is the only thing that identifies a field at all:
+		// California's SNAP application calls 1,444 of its fields "Text1 PG 1"
+		// and similar, and the printed label is what says which is the ZIP code.
+		Label   string   `json:"label,omitempty"`
 		Type    string   `json:"type"`
 		Pages   []int    `json:"pages"`
 		Options []string `json:"options,omitempty"`
@@ -43,8 +52,13 @@ func buildPrompt(inventory pdf.Inventory) (string, error) {
 
 	fields := make([]promptField, 0, len(inventory.Fields))
 	for _, field := range inventory.Fields {
+		if field.Type == pdf.FieldSignature {
+			// Never offered for mapping: nothing may fill a signature.
+			continue
+		}
 		fields = append(fields, promptField{
 			Name:    field.Name,
+			Label:   field.Label,
 			Type:    string(field.Type),
 			Pages:   field.Pages(),
 			Options: field.Options,

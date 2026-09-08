@@ -133,6 +133,14 @@ type BenefitsForm {
   pageCount: Int!
   templateKind: BenefitsTemplateKind!
   agencyUrl: String
+  """
+  How many of the form's boxes this mapping fills, out of how many could hold a
+  value. Partial coverage is the normal state of a real government form — most
+  have sections no profile holds — and the applicant is told rather than left to
+  discover it. Signature fields are in neither count.
+  """
+  mappedFieldCount: Int!
+  fillableFieldCount: Int!
 }
 
 # ---------------------------------------------------------------------------

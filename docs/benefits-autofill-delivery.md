@@ -13,8 +13,9 @@ The audit and design that preceded this are in
 what is in the tree, where the design changed under implementation, and what is
 not done.
 
-**Status: server engine implemented and tested end to end. Mobile screens not
-started** — that was the agreed scope for this pass.
+**Status: implemented end to end — server engine, one real state form, and the
+mobile screens.** The remaining work is onboarding more of the state forms, and
+[benefits-forms-inventory.md](benefits-forms-inventory.md) says what that takes.
 
 ---
 
@@ -141,6 +142,30 @@ the expense totals) are computed only when every input they need exists, and
 are flagged `isDerived` when reported missing so the app shows "this fills in
 once you have told us about your income" rather than an unanswerable question.
 
+## Reading real government PDFs
+
+Three things the state forms forced, none of which a synthetic fixture would
+have surfaced:
+
+**Labels are extracted from the page.** Most government forms name their fields
+uselessly — California calls 1,444 of them `Text1 PG 1` — so `pdf/text.go` and
+`pdf/labels.go` read the text printed beside each box and attach it to the
+field. Doing that needed a content-stream parser with a font-aware decoder:
+California's labels are drawn in subset Type1 fonts with codes starting at 0x35
+and no ToUnicode map, so they are read through the font's `/Differences` array,
+while other forms need the ToUnicode CMap or plain WinAnsi. With that in place
+those 1,444 fields report as `NAME (FIRST, MIDDLE, LAST)`, `CITY`, `ZIP CODE`,
+and the labels go to the mapping assistant.
+
+**Broken metadata no longer costs a whole state.** New York and North Carolina
+both failed to read: they are produced through Microsoft Office, which stamps
+SharePoint keys into the document information dictionary with escapes a strict
+reader rejects. A validation failure is retried with that dictionary dropped,
+which is safe — it holds a title and an author and affects no field.
+
+**Signature fields are named.** Every fillable state form has them, and the
+registry now refuses any mapping that targets one.
+
 ## What the PDF engine supports
 
 Text fields, checkboxes, radio groups, dropdowns, list boxes, multi-page forms,
@@ -209,17 +234,41 @@ capability to read somebody's benefits application.
 - Logs carry application ids, field ids and hashes. Never a field value.
 - `Value` deliberately has no `String()` method, and a test enforces it.
 
+## Mobile
+
+Three screens, all driven by what the server reports rather than by anything
+hardcoded:
+
+- `features/benefits/benefits-programs-screen.tsx` — the forms this server can
+  fill, each with its coverage stated plainly ("about 32% of this form, 134 of
+  413 boxes — you complete the rest"), and a button to start one.
+- `features/benefits/benefits-questionnaire-screen.tsx` — asks exactly the
+  outstanding questions, in the server's own wording, grouped into sections.
+  Derived values are filtered out: a household's income total is computed, so
+  there is no answer the user could give for it. Leaving a box blank records
+  nothing and the question returns; "I have none of these" is a separate button,
+  because those are different claims and only one may be printed.
+- `features/benefits/benefits-review-screen.tsx` — everything that will appear
+  on the form, grouped by page so it can be read against the printed document,
+  with the source of each value shown. Approve is disabled while anything
+  required is missing. Sensitive values appear as `*** 6789`, never in full.
+
+`benefits-answers.ts` holds the pure logic — which questions to ask, how to turn
+a typed string into an answer, money in cents — with no network or storage
+import, and carries 12 of the app's tests.
+
+**Benefits answers no longer touch device storage.** `app-state.tsx` used to
+persist `governmentProfile` to AsyncStorage: dates of birth, income and
+immigration status for a whole household, unencrypted, surviving sign-out. It is
+now dropped on write and never restored on read, so an older build's copy is
+overwritten the first time the app saves.
+
 ## Still outstanding
 
-- **Mobile.** No screens yet. The questionnaire is meant to be driven by
-  `missingFields` — group by `group`, ask `question`, skip anything
-  `isDerived` — and the review screen by `filledFields`. `GovernmentProfile` in
-  `apps/mobile/src/state/app-state.tsx` still writes benefits answers to
-  AsyncStorage and should become a server-backed mirror; that removal is part of
-  the mobile pass.
-- **A real government form.** The only checked-in mapping is the synthetic
-  `hth-sample-1`. Real state PDFs are produced by tooling no fixture can
-  imitate. `forms/README.md` has the process.
+- **The rest of the state forms.** Missouri is onboarded and proven end to end;
+  13 more fillable forms and 40 flat ones are catalogued in
+  [benefits-forms-inventory.md](benefits-forms-inventory.md) with the effort each
+  needs.
 - **Document durability.** `FileDocumentStore` writes to local disk. On a
   container filesystem that does not survive a restart or a second instance, so
   a draft can vanish between requests. `DocumentStore` is an interface; a
