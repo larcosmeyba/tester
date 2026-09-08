@@ -98,7 +98,7 @@ func (s *Store) SaveGroceryList(ctx context.Context, list GroceryList) (GroceryL
 			VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
 		`, item.ID, listID, item.IngredientID, item.DisplayName, item.NeededQty, item.Unit,
 			item.Packages, item.PackageLabel, item.EstimatedPrice, item.PriceTier, item.InPantry,
-			item.IsChecked, item.UsedBy); err != nil {
+			item.IsChecked, textArray(item.UsedBy)); err != nil {
 			return GroceryList{}, err
 		}
 	}

@@ -111,7 +111,7 @@ func (s *Store) SaveMealPlan(ctx context.Context, plan MealPlan) (MealPlan, erro
 		RETURNING`+mealPlanColumns+`
 	`, plan.ID, plan.UserID, plan.StartDate, plan.Days, plan.HouseholdSize, plan.Request,
 		plan.BudgetAmount, plan.EstimatedCostPoint, plan.EstimatedCostLow, plan.EstimatedCostHigh,
-		plan.CostConfidence, plan.PennyMessage, plan.Assumptions, plan.GenerationSource,
+		plan.CostConfidence, plan.PennyMessage, textArray(plan.Assumptions), plan.GenerationSource,
 		plan.GenerationVersion)
 	saved, err := scanMealPlan(row)
 	if err != nil {
@@ -128,7 +128,7 @@ func (s *Store) SaveMealPlan(ctx context.Context, plan MealPlan) (MealPlan, erro
 			                             servings_planned, pantry_ingredient_ids, consumed_cost, why)
 			VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
 		`, id, saved.ID, meal.Day, meal.MealType, meal.RecipeID, meal.ScaleFactor,
-			meal.ServingsPlanned, meal.PantryIngredientIDs, meal.ConsumedCost, meal.Why); err != nil {
+			meal.ServingsPlanned, textArray(meal.PantryIngredientIDs), meal.ConsumedCost, meal.Why); err != nil {
 			return MealPlan{}, err
 		}
 		meal.ID = id
@@ -179,7 +179,7 @@ func (s *Store) ReplacePlanMealRecipe(ctx context.Context, userID string, planID
 		  AND p.id = $1 AND p.user_id = $2
 		  AND m.day = $3 AND m.meal_type = $10
 	`, planID, userID, day, meal.RecipeID, meal.ScaleFactor, meal.ServingsPlanned,
-		meal.PantryIngredientIDs, meal.ConsumedCost, meal.Why, mealType)
+		textArray(meal.PantryIngredientIDs), meal.ConsumedCost, meal.Why, mealType)
 	if err != nil {
 		return err
 	}
@@ -201,7 +201,7 @@ func (s *Store) UpdateMealPlanCost(ctx context.Context, userID string, planID st
 		    assumptions = $8,
 		    updated_at = now()
 		WHERE id = $1 AND user_id = $2
-	`, planID, userID, point, low, high, confidence, pennyMessage, assumptions)
+	`, planID, userID, point, low, high, confidence, pennyMessage, textArray(assumptions))
 	return err
 }
 

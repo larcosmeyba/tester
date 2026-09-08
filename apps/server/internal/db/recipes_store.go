@@ -286,11 +286,11 @@ func (s *Store) UpsertRecipe(ctx context.Context, recipe Recipe) error {
 		recipe.SourceURL, recipe.SourceName, recipe.LicenseID, recipe.AttributionText,
 		recipe.Visibility, recipe.ReviewStatus, recipe.Servings, recipe.ServingsConfidence,
 		recipe.ServingSizeText, recipe.Scalable, recipe.PrepTimeMinutes, recipe.CookTimeMinutes,
-		recipe.TotalTimeMinutes, recipe.TimeConfidence, recipe.MealTypes, recipe.Cuisine,
-		recipe.Difficulty, recipe.EquipmentRequired, recipe.IsComponent, recipe.Tags,
+		recipe.TotalTimeMinutes, recipe.TimeConfidence, textArray(recipe.MealTypes), recipe.Cuisine,
+		recipe.Difficulty, textArray(recipe.EquipmentRequired), recipe.IsComponent, textArray(recipe.Tags),
 		recipe.CaloriesKcal, recipe.ProteinG, recipe.CarbsG, recipe.FatG, recipe.FiberG,
 		recipe.SodiumMg, recipe.NutritionBasis, recipe.NutritionConfidence,
-		recipe.BaseMealPlanEligible, recipe.MissingInformation,
+		recipe.BaseMealPlanEligible, textArray(recipe.MissingInformation),
 	); err != nil {
 		return err
 	}
@@ -348,6 +348,16 @@ func nullableString(value string) *string {
 		return nil
 	}
 	return &value
+}
+
+// textArray keeps a nil Go slice out of a NOT NULL text[] column: pgx encodes
+// nil as SQL NULL, which the meal tables reject. Callers should not have to
+// remember that, so every write goes through here.
+func textArray(values []string) []string {
+	if values == nil {
+		return []string{}
+	}
+	return values
 }
 
 func nullableStrings(values []string) []string {
