@@ -15,6 +15,8 @@ import (
 	"github.com/helpthehive/server/internal/db"
 	hthgraphql "github.com/helpthehive/server/internal/graphql"
 	serverhttp "github.com/helpthehive/server/internal/http"
+	"github.com/helpthehive/server/internal/modules/meals"
+	"github.com/helpthehive/server/internal/modules/meals/generator"
 	"github.com/helpthehive/server/internal/modules/pantry"
 	"github.com/helpthehive/server/internal/modules/users"
 )
@@ -42,10 +44,19 @@ func run(logger *slog.Logger) error {
 	}
 	defer pool.Close()
 
+	// A misconfigured AI provider is a start-up failure, not a surprise on the
+	// first meal plan. With no provider configured the meal system still works:
+	// plans are built and priced deterministically.
+	aiProvider, err := generator.New(generator.LoadConfig())
+	if err != nil {
+		return err
+	}
+
 	store := db.NewStore(pool)
 	userService := users.NewService(store)
 	pantryService := pantry.NewService(store, userService)
-	resolver := hthgraphql.NewResolver(userService, pantryService)
+	mealsService := meals.NewService(store, userService, aiProvider, logger)
+	resolver := hthgraphql.NewResolver(userService, pantryService, mealsService)
 	verifier := auth.NewVerifier(auth.VerifierConfig{
 		Issuer:   cfg.Auth.Issuer,
 		Audience: cfg.Auth.Audience,

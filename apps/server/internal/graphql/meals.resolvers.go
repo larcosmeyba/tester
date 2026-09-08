@@ -6,87 +6,256 @@ package graphql
 
 import (
 	"context"
-	"fmt"
+	"errors"
 
+	"github.com/helpthehive/server/internal/auth"
+	"github.com/helpthehive/server/internal/db"
+	"github.com/helpthehive/server/internal/graphql/generated"
 	"github.com/helpthehive/server/internal/graphql/model"
+	"github.com/helpthehive/server/internal/modules/meals"
 )
 
 // GenerateMealPlan is the resolver for the generateMealPlan field.
 func (r *mutationResolver) GenerateMealPlan(ctx context.Context, input model.PlanRequestInput) (*model.MealPlan, error) {
-	panic(fmt.Errorf("not implemented: GenerateMealPlan - generateMealPlan"))
+	identity, err := auth.RequireIdentity(ctx)
+	if err != nil {
+		return nil, err
+	}
+	plan, err := r.Meals.Generate(ctx, identity, planRequestFromInput(input))
+	if err != nil {
+		return nil, mealError(err)
+	}
+	return planModel(plan), nil
 }
 
 // SwapPlannedMeal is the resolver for the swapPlannedMeal field.
 func (r *mutationResolver) SwapPlannedMeal(ctx context.Context, planID string, input model.SwapMealInput) (*model.MealPlan, error) {
-	panic(fmt.Errorf("not implemented: SwapPlannedMeal - swapPlannedMeal"))
+	identity, err := auth.RequireIdentity(ctx)
+	if err != nil {
+		return nil, err
+	}
+	keepBasket := input.KeepBasket != nil && *input.KeepBasket
+	plan, err := r.Meals.Swap(ctx, identity, planID, slotFromInput(input.Slot), string(input.Action), keepBasket)
+	if err != nil {
+		return nil, mealError(err)
+	}
+	return planModel(plan), nil
 }
 
 // MovePlannedMeal is the resolver for the movePlannedMeal field.
 func (r *mutationResolver) MovePlannedMeal(ctx context.Context, planID string, input model.MoveMealInput) (*model.MealPlan, error) {
-	panic(fmt.Errorf("not implemented: MovePlannedMeal - movePlannedMeal"))
+	identity, err := auth.RequireIdentity(ctx)
+	if err != nil {
+		return nil, err
+	}
+	plan, err := r.Meals.Move(ctx, identity, planID, slotFromInput(input.From), slotFromInput(input.To))
+	if err != nil {
+		return nil, mealError(err)
+	}
+	return planModel(plan), nil
 }
 
 // AcceptMealPlan is the resolver for the acceptMealPlan field.
 func (r *mutationResolver) AcceptMealPlan(ctx context.Context, planID string) (*model.GroceryListPayload, error) {
-	panic(fmt.Errorf("not implemented: AcceptMealPlan - acceptMealPlan"))
+	identity, err := auth.RequireIdentity(ctx)
+	if err != nil {
+		return nil, err
+	}
+	result, err := r.Meals.Accept(ctx, identity, planID)
+	if err != nil {
+		return nil, mealError(err)
+	}
+	return groceryListPayloadModel(result), nil
 }
 
 // DeleteMealPlan is the resolver for the deleteMealPlan field.
 func (r *mutationResolver) DeleteMealPlan(ctx context.Context, planID string) (bool, error) {
-	panic(fmt.Errorf("not implemented: DeleteMealPlan - deleteMealPlan"))
+	identity, err := auth.RequireIdentity(ctx)
+	if err != nil {
+		return false, err
+	}
+	deleted, err := r.Meals.Delete(ctx, identity, planID)
+	if err != nil {
+		return false, mealError(err)
+	}
+	return deleted, nil
 }
 
 // SetGroceryItemChecked is the resolver for the setGroceryItemChecked field.
 func (r *mutationResolver) SetGroceryItemChecked(ctx context.Context, planID string, ingredientID string, checked bool) (bool, error) {
-	panic(fmt.Errorf("not implemented: SetGroceryItemChecked - setGroceryItemChecked"))
+	identity, err := auth.RequireIdentity(ctx)
+	if err != nil {
+		return false, err
+	}
+	updated, err := r.Meals.SetGroceryItemChecked(ctx, identity, planID, ingredientID, checked)
+	if err != nil {
+		return false, mealError(err)
+	}
+	return updated, nil
 }
 
 // GroceryListFromRecipes is the resolver for the groceryListFromRecipes field.
 func (r *mutationResolver) GroceryListFromRecipes(ctx context.Context, input model.GroceryListFromRecipesInput) (*model.GroceryListPayload, error) {
-	panic(fmt.Errorf("not implemented: GroceryListFromRecipes - groceryListFromRecipes"))
+	identity, err := auth.RequireIdentity(ctx)
+	if err != nil {
+		return nil, err
+	}
+	result, err := r.Meals.GroceryListFromRecipes(ctx, identity, input.RecipeIds, input.HouseholdSize, input.PantryItems)
+	if err != nil {
+		return nil, mealError(err)
+	}
+	return groceryListPayloadModel(result), nil
 }
 
 // SaveRecipe is the resolver for the saveRecipe field.
 func (r *mutationResolver) SaveRecipe(ctx context.Context, recipeID string) (bool, error) {
-	panic(fmt.Errorf("not implemented: SaveRecipe - saveRecipe"))
+	identity, err := auth.RequireIdentity(ctx)
+	if err != nil {
+		return false, err
+	}
+	saved, err := r.Meals.SaveRecipe(ctx, identity, recipeID)
+	if err != nil {
+		return false, mealError(err)
+	}
+	return saved, nil
 }
 
 // UnsaveRecipe is the resolver for the unsaveRecipe field.
 func (r *mutationResolver) UnsaveRecipe(ctx context.Context, recipeID string) (bool, error) {
-	panic(fmt.Errorf("not implemented: UnsaveRecipe - unsaveRecipe"))
+	identity, err := auth.RequireIdentity(ctx)
+	if err != nil {
+		return false, err
+	}
+	removed, err := r.Meals.UnsaveRecipe(ctx, identity, recipeID)
+	if err != nil {
+		return false, mealError(err)
+	}
+	return removed, nil
 }
 
 // Recipes is the resolver for the recipes field.
 func (r *queryResolver) Recipes(ctx context.Context, query *model.RecipeQueryInput) ([]*model.Recipe, error) {
-	panic(fmt.Errorf("not implemented: Recipes - recipes"))
+	identity, err := auth.RequireIdentity(ctx)
+	if err != nil {
+		return nil, err
+	}
+	recipes, err := r.Meals.ListRecipes(ctx, identity, recipeFilterFromInput(query))
+	if err != nil {
+		return nil, mealError(err)
+	}
+	out := make([]*model.Recipe, 0, len(recipes))
+	for _, recipe := range recipes {
+		out = append(out, recipeModel(recipe))
+	}
+	return out, nil
 }
 
 // Recipe is the resolver for the recipe field.
 func (r *queryResolver) Recipe(ctx context.Context, recipeID string) (*model.Recipe, error) {
-	panic(fmt.Errorf("not implemented: Recipe - recipe"))
+	identity, err := auth.RequireIdentity(ctx)
+	if err != nil {
+		return nil, err
+	}
+	recipe, err := r.Meals.GetRecipe(ctx, identity, recipeID)
+	if errors.Is(err, meals.ErrNotFound) {
+		// A recipe the viewer may not see is absent, not forbidden.
+		return nil, nil
+	}
+	if err != nil {
+		return nil, mealError(err)
+	}
+	return recipeModel(recipe), nil
 }
 
 // SavedRecipes is the resolver for the savedRecipes field.
 func (r *queryResolver) SavedRecipes(ctx context.Context) ([]*model.Recipe, error) {
-	panic(fmt.Errorf("not implemented: SavedRecipes - savedRecipes"))
+	identity, err := auth.RequireIdentity(ctx)
+	if err != nil {
+		return nil, err
+	}
+	recipes, err := r.Meals.ListRecipes(ctx, identity, db.RecipeFilter{SavedOnly: true})
+	if err != nil {
+		return nil, mealError(err)
+	}
+	out := make([]*model.Recipe, 0, len(recipes))
+	for _, recipe := range recipes {
+		out = append(out, recipeModel(recipe))
+	}
+	return out, nil
 }
 
 // Ingredients is the resolver for the ingredients field.
 func (r *queryResolver) Ingredients(ctx context.Context, search *string, limit *int) ([]*model.Ingredient, error) {
-	panic(fmt.Errorf("not implemented: Ingredients - ingredients"))
+	if _, err := auth.RequireIdentity(ctx); err != nil {
+		return nil, err
+	}
+	var searchValue string
+	if search != nil {
+		searchValue = *search
+	}
+	var limitValue int
+	if limit != nil {
+		limitValue = *limit
+	}
+	ingredients, err := r.Meals.Ingredients(ctx, searchValue, limitValue)
+	if err != nil {
+		return nil, mealError(err)
+	}
+	out := make([]*model.Ingredient, 0, len(ingredients))
+	for _, ingredient := range ingredients {
+		out = append(out, ingredientModel(ingredient))
+	}
+	return out, nil
 }
 
 // CurrentMealPlan is the resolver for the currentMealPlan field.
 func (r *queryResolver) CurrentMealPlan(ctx context.Context) (*model.MealPlan, error) {
-	panic(fmt.Errorf("not implemented: CurrentMealPlan - currentMealPlan"))
+	identity, err := auth.RequireIdentity(ctx)
+	if err != nil {
+		return nil, err
+	}
+	plan, err := r.Meals.Current(ctx, identity)
+	if err != nil {
+		return nil, mealError(err)
+	}
+	if plan == nil {
+		// Having no plan yet is a normal state, not an error.
+		return nil, nil
+	}
+	return planModel(*plan), nil
 }
 
 // MealPlan is the resolver for the mealPlan field.
 func (r *queryResolver) MealPlan(ctx context.Context, planID string) (*model.MealPlan, error) {
-	panic(fmt.Errorf("not implemented: MealPlan - mealPlan"))
+	identity, err := auth.RequireIdentity(ctx)
+	if err != nil {
+		return nil, err
+	}
+	plan, err := r.Meals.Get(ctx, identity, planID)
+	if errors.Is(err, meals.ErrNotFound) {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, mealError(err)
+	}
+	return planModel(plan), nil
 }
 
 // GroceryList is the resolver for the groceryList field.
 func (r *queryResolver) GroceryList(ctx context.Context, planID string) (*model.GroceryListPayload, error) {
-	panic(fmt.Errorf("not implemented: GroceryList - groceryList"))
+	identity, err := auth.RequireIdentity(ctx)
+	if err != nil {
+		return nil, err
+	}
+	result, err := r.Meals.GroceryList(ctx, identity, planID)
+	if err != nil {
+		return nil, mealError(err)
+	}
+	if result == nil {
+		return nil, nil
+	}
+	return groceryListPayloadModel(*result), nil
 }
+
+// Mutation returns generated.MutationResolver implementation.
+var _ generated.MutationResolver = (*mutationResolver)(nil)
