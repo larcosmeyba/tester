@@ -23,6 +23,15 @@ func (r *mutationResolver) DeleteViewerData(ctx context.Context) (bool, error) {
 	if err != nil {
 		return false, err
 	}
+	// Generated benefits PDFs are files, not rows, so deleting the user does
+	// not remove them: the cascade takes the database record and leaves the
+	// household's completed application sitting on disk. They go first, so a
+	// failure here stops the deletion rather than half-finishing it.
+	if r.Benefits != nil {
+		if err := r.Benefits.PurgeDocumentsForViewer(ctx, identity); err != nil {
+			return false, err
+		}
+	}
 	return r.Users.DeleteViewer(ctx, identity)
 }
 

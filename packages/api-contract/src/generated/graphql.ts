@@ -19,9 +19,13 @@ export type Scalars = {
 export type AddPantryItemInput = {
   category: Scalars['String']['input'];
   expirationDate: Scalars['String']['input'];
+  ingredientId?: InputMaybe<Scalars['ID']['input']>;
   location: StorageLocation;
   name: Scalars['String']['input'];
   quantity: Scalars['String']['input'];
+  quantityAmount?: InputMaybe<Scalars['Float']['input']>;
+  quantityUnit?: InputMaybe<Scalars['String']['input']>;
+  useFirst?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export type Allergen =
@@ -34,6 +38,12 @@ export type Allergen =
   | 'soy'
   | 'tree_nut'
   | 'wheat';
+
+export type AllergyRequirement = {
+  __typename?: 'AllergyRequirement';
+  allergen: Allergen;
+  strength: Strength;
+};
 
 /** Allergies are always required; the server rejects any other strength. */
 export type AllergyRequirementInput = {
@@ -60,6 +70,235 @@ export type BalancedMealBaseline = {
   __typename?: 'BalancedMealBaseline';
   applied: Scalars['Boolean']['output'];
   avgScore?: Maybe<Scalars['Float']['output']>;
+};
+
+/**
+ * One stored answer.
+ *
+ * `status` is the load-bearing field. `PROVIDED` and `NONE` are answers and can
+ * appear on a form; `UNKNOWN` means nobody has asked and `REFUSED` means they
+ * declined, and neither is ever written onto an application.
+ */
+export type BenefitsAnswer = {
+  __typename?: 'BenefitsAnswer';
+  bool?: Maybe<Scalars['Boolean']['output']>;
+  date?: Maybe<Scalars['String']['output']>;
+  fieldPath: Scalars['String']['output'];
+  /** For a sensitive answer this is all that ever comes back — never the value. */
+  hint?: Maybe<Scalars['String']['output']>;
+  isSensitive: Scalars['Boolean']['output'];
+  kind: BenefitsValueKind;
+  list?: Maybe<Array<Scalars['String']['output']>>;
+  moneyCents?: Maybe<Scalars['Int']['output']>;
+  number?: Maybe<Scalars['Float']['output']>;
+  rowId?: Maybe<Scalars['String']['output']>;
+  source: BenefitsValueSource;
+  status: BenefitsAnswerStatus;
+  text?: Maybe<Scalars['String']['output']>;
+};
+
+/**
+ * One answer from the app.
+ *
+ * It carries no kind: the server's vocabulary decides what shape each question
+ * takes, so an answer in the wrong field is rejected rather than stored.
+ */
+export type BenefitsAnswerInput = {
+  bool?: InputMaybe<Scalars['Boolean']['input']>;
+  date?: InputMaybe<Scalars['String']['input']>;
+  fieldPath: Scalars['String']['input'];
+  list?: InputMaybe<Array<Scalars['String']['input']>>;
+  moneyCents?: InputMaybe<Scalars['Int']['input']>;
+  number?: InputMaybe<Scalars['Float']['input']>;
+  status: BenefitsAnswerStatus;
+  text?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type BenefitsAnswerStatus =
+  /** The applicant said they have none of these. A real answer. */
+  | 'NONE'
+  | 'PROVIDED'
+  /** Asked, declined to say. Never written onto a form, and not re-asked. */
+  | 'REFUSED'
+  /** Never asked, or skipped. Never written onto a form. */
+  | 'UNKNOWN';
+
+export type BenefitsApplication = {
+  __typename?: 'BenefitsApplication';
+  approvedAt?: Maybe<Scalars['String']['output']>;
+  createdAt: Scalars['String']['output'];
+  /**
+   * Path to the draft PDF on this API, or null until one has been rendered.
+   * It requires the same bearer token as this query; there is no public link to a
+   * document that carries a household's application.
+   */
+  draftDocumentPath?: Maybe<Scalars['String']['output']>;
+  /** What will appear on the PDF, in page order. Sensitive values are masked. */
+  filledFields: Array<BenefitsFilledField>;
+  /** Path to the approved, flattened PDF. Null until the applicant approves. */
+  finalDocumentPath?: Maybe<Scalars['String']['output']>;
+  form: BenefitsForm;
+  id: Scalars['ID']['output'];
+  /** What the app must ask for. Non-empty exactly when the status is NEEDS_INPUT. */
+  missingFields: Array<BenefitsMissingField>;
+  /** Answers that exist but cannot be written, for a person to look at. */
+  problems: Array<BenefitsFieldProblem>;
+  /** Boxes deliberately left blank — signatures, and rows the household does not have. */
+  skippedFields: Array<BenefitsSkippedField>;
+  status: BenefitsApplicationStatus;
+  updatedAt: Scalars['String']['output'];
+};
+
+export type BenefitsApplicationStatus =
+  | 'APPROVED'
+  | 'DRAFT'
+  | 'NEEDS_INPUT'
+  | 'READY_FOR_REVIEW'
+  | 'SUPERSEDED';
+
+export type BenefitsFieldProblem = {
+  __typename?: 'BenefitsFieldProblem';
+  fieldId: Scalars['String']['output'];
+  fieldPath?: Maybe<Scalars['String']['output']>;
+  /** Why the value could not be written. Never echoes the value itself. */
+  reason: Scalars['String']['output'];
+};
+
+/** One question the profile can hold, with the wording the app should use. */
+export type BenefitsFieldSpec = {
+  __typename?: 'BenefitsFieldSpec';
+  choices: Array<Scalars['String']['output']>;
+  fieldPath: Scalars['String']['output'];
+  group: Scalars['String']['output'];
+  isDerived: Scalars['Boolean']['output'];
+  isRepeating: Scalars['Boolean']['output'];
+  isSensitive: Scalars['Boolean']['output'];
+  kind: BenefitsValueKind;
+  label: Scalars['String']['output'];
+  question: Scalars['String']['output'];
+};
+
+export type BenefitsFieldStrength =
+  | 'PREFERRED'
+  | 'REQUIRED';
+
+export type BenefitsFilledField = {
+  __typename?: 'BenefitsFilledField';
+  checked?: Maybe<Scalars['Boolean']['output']>;
+  fieldId: Scalars['String']['output'];
+  fieldPath?: Maybe<Scalars['String']['output']>;
+  isCheckbox: Scalars['Boolean']['output'];
+  isSensitive: Scalars['Boolean']['output'];
+  label: Scalars['String']['output'];
+  page: Scalars['Int']['output'];
+  source: BenefitsValueSource;
+  /** What will be written. Masked when the answer is sensitive. */
+  text?: Maybe<Scalars['String']['output']>;
+};
+
+export type BenefitsForm = {
+  __typename?: 'BenefitsForm';
+  agencyUrl?: Maybe<Scalars['String']['output']>;
+  country: Scalars['String']['output'];
+  formCode: Scalars['String']['output'];
+  formTitle: Scalars['String']['output'];
+  formVersion: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  /** Identifies the exact revision: id@version#revision. */
+  key: Scalars['String']['output'];
+  pageCount: Scalars['Int']['output'];
+  program: Scalars['String']['output'];
+  revision: Scalars['Int']['output'];
+  state?: Maybe<Scalars['String']['output']>;
+  templateKind: BenefitsTemplateKind;
+};
+
+export type BenefitsGroup = {
+  __typename?: 'BenefitsGroup';
+  /**
+   * Whether this group has been collected at all. False means the household has
+   * not been asked, which is not the same as having none — an uncollected group
+   * still produces a question.
+   */
+  collected: Scalars['Boolean']['output'];
+  groupPath: Scalars['String']['output'];
+  rows: Array<BenefitsGroupRow>;
+};
+
+export type BenefitsGroupRow = {
+  __typename?: 'BenefitsGroupRow';
+  answers: Array<BenefitsAnswer>;
+  rowId: Scalars['ID']['output'];
+};
+
+export type BenefitsGroupRowInput = {
+  answers: Array<BenefitsAnswerInput>;
+  /** Omit to add a new row; pass an existing id to keep that row's identity. */
+  rowId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+export type BenefitsMissingField = {
+  __typename?: 'BenefitsMissingField';
+  answerKind: BenefitsValueKind;
+  choices: Array<Scalars['String']['output']>;
+  fieldPath: Scalars['String']['output'];
+  /** Which boxes on the form are waiting on this one answer. */
+  formFieldIds: Array<Scalars['String']['output']>;
+  group: Scalars['String']['output'];
+  isSensitive: Scalars['Boolean']['output'];
+  label: Scalars['String']['output'];
+  /** The wording the app should put to the user. */
+  question: Scalars['String']['output'];
+  strength: BenefitsFieldStrength;
+};
+
+export type BenefitsProfile = {
+  __typename?: 'BenefitsProfile';
+  answers: Array<BenefitsAnswer>;
+  groups: Array<BenefitsGroup>;
+  /** The field-path vocabulary these answers were recorded against. */
+  vocabularyVersion: Scalars['Int']['output'];
+};
+
+export type BenefitsSkipReason =
+  /** A slot for a row the household does not have. */
+  | 'NOT_APPLICABLE'
+  /** Help The Hive must not fill this — a signature, or the date beside one. */
+  | 'POLICY';
+
+export type BenefitsSkippedField = {
+  __typename?: 'BenefitsSkippedField';
+  fieldId: Scalars['String']['output'];
+  note?: Maybe<Scalars['String']['output']>;
+  reason: BenefitsSkipReason;
+};
+
+export type BenefitsTemplateKind =
+  | 'ACROFORM'
+  | 'FLAT';
+
+export type BenefitsValueKind =
+  | 'BOOLEAN'
+  | 'CHOICE'
+  | 'DATE'
+  | 'LIST'
+  | 'MONEY'
+  | 'NUMBER'
+  | 'TEXT';
+
+export type BenefitsValueSource =
+  /** Computed from provided answers only. */
+  | 'DERIVED'
+  /** Written by a reviewed mapping file, not by the applicant. */
+  | 'MAPPING_CONSTANT'
+  | 'PROFILE'
+  | 'USER';
+
+export type Budget = {
+  __typename?: 'Budget';
+  amount: Scalars['Float']['output'];
+  currency: Scalars['String']['output'];
+  mode: BudgetMode;
 };
 
 export type BudgetInput = {
@@ -89,6 +328,12 @@ export type CookingStyle =
   | 'quick_easy'
   | 'use_what_i_have'
   | 'variety';
+
+export type CookingTime = {
+  __typename?: 'CookingTime';
+  maxMinutes?: Maybe<Scalars['Int']['output']>;
+  strength: Strength;
+};
 
 export type CookingTimeInput = {
   maxMinutes?: InputMaybe<Scalars['Int']['input']>;
@@ -124,6 +369,12 @@ export type Diet =
   | 'vegan'
   | 'vegetarian';
 
+export type DietRequirement = {
+  __typename?: 'DietRequirement';
+  diet: Diet;
+  strength: Strength;
+};
+
 export type DietRequirementInput = {
   diet: Diet;
   strength: Strength;
@@ -138,6 +389,13 @@ export type Equipment =
   | 'oven'
   | 'slow_cooker'
   | 'stovetop';
+
+export type FoodPreferences = {
+  __typename?: 'FoodPreferences';
+  cuisines: Array<Scalars['String']['output']>;
+  freeText?: Maybe<Scalars['String']['output']>;
+  ingredients: Array<Scalars['String']['output']>;
+};
 
 export type FoodPreferencesInput = {
   cuisines: Array<Scalars['String']['input']>;
@@ -176,6 +434,19 @@ export type GroceryListPayload = {
   __typename?: 'GroceryListPayload';
   cost: CostRange;
   planId?: Maybe<Scalars['ID']['output']>;
+  /** What the items still to buy add up to. */
+  purchaseCost: Scalars['Float']['output'];
+  /**
+   * The list with everything the viewer already owns removed: only what has to be
+   * bought.
+   *
+   * It sits alongside `sections`, which keeps pantry items visible at a zero
+   * estimate. Both are computed from the same basket, so they can never disagree;
+   * which one a screen shows is a presentation decision. A shopper who cannot see
+   * that the rice is already at home has no way to tell whether it was considered
+   * or forgotten, which is why the full list is still the default.
+   */
+  purchaseSections: Array<GrocerySection>;
   sections: Array<GrocerySection>;
 };
 
@@ -201,12 +472,28 @@ export type HandleAvailabilityReason =
   | 'RESERVED'
   | 'UNAVAILABLE';
 
+export type Household = {
+  __typename?: 'Household';
+  adults?: Maybe<Scalars['Int']['output']>;
+  children?: Maybe<Scalars['Int']['output']>;
+  size: Scalars['Int']['output'];
+  /** True when the user picked 8+; size is stored as 8. */
+  sizeIsPlus: Scalars['Boolean']['output'];
+};
+
 export type HouseholdInput = {
   adults?: InputMaybe<Scalars['Int']['input']>;
   children?: InputMaybe<Scalars['Int']['input']>;
   size: Scalars['Int']['input'];
   /** True when the user picked 8+; size is stored as 8. */
   sizeIsPlus: Scalars['Boolean']['input'];
+};
+
+export type ImportRecipeFromVideoInput = {
+  /** Language for the extracted text. Defaults to english. */
+  language?: InputMaybe<Scalars['String']['input']>;
+  /** A cooking video link. Supported hosts are decided server-side. */
+  url: Scalars['String']['input'];
 };
 
 export type Ingredient = {
@@ -258,6 +545,14 @@ export type LeftoversPreference =
   | 'sometimes'
   | 'yes';
 
+export type MealCounts = {
+  __typename?: 'MealCounts';
+  breakfast: Scalars['Int']['output'];
+  dinner: Scalars['Int']['output'];
+  lunch: Scalars['Int']['output'];
+  snack: Scalars['Int']['output'];
+};
+
 export type MealCountsInput = {
   breakfast: Scalars['Int']['input'];
   dinner: Scalars['Int']['input'];
@@ -276,6 +571,95 @@ export type MealPlan = {
   status: Scalars['String']['output'];
   summary: PlanSummary;
   swapOptions: Array<SwapAction>;
+};
+
+export type MealPrepPlan = {
+  __typename?: 'MealPrepPlan';
+  planId: Scalars['ID']['output'];
+  prepPlanId: Scalars['ID']['output'];
+  tasks: Array<MealPrepTask>;
+  /** Hands-on time, not elapsed time. */
+  totalActiveMinutes: Scalars['Int']['output'];
+};
+
+export type MealPrepStorage =
+  | 'freeze'
+  | 'pantry'
+  | 'refrigerate';
+
+export type MealPrepTask = {
+  __typename?: 'MealPrepTask';
+  activeMinutes: Scalars['Int']['output'];
+  ingredientIds: Array<Scalars['ID']['output']>;
+  instruction: Scalars['String']['output'];
+  isDone: Scalars['Boolean']['output'];
+  keepsDays?: Maybe<Scalars['Int']['output']>;
+  kind: MealPrepTaskKind;
+  /**
+   * How much to prepare, in the ingredient's own reference unit. Null when the
+   * recipes never stated a quantity — it is not invented, and the instruction
+   * says so instead.
+   */
+  portionAmount?: Maybe<Scalars['Float']['output']>;
+  portionUnit?: Maybe<Scalars['String']['output']>;
+  position: Scalars['Int']['output'];
+  /** Which recipes this is for. */
+  recipeIds: Array<Scalars['ID']['output']>;
+  /** Which slots this feeds, as "day:mealType". */
+  servesSlots: Array<Scalars['String']['output']>;
+  /** Where to keep it. Guidance from the catalogue's food group, not a safety claim. */
+  storage: MealPrepStorage;
+  taskId: Scalars['ID']['output'];
+  title: Scalars['String']['output'];
+};
+
+export type MealPrepTaskKind =
+  /** A whole recipe cooked once for several servings. */
+  | 'batch_cook'
+  /** One ingredient prepared once for several meals. */
+  | 'batch_ingredient';
+
+export type MealProfile = {
+  __typename?: 'MealProfile';
+  /** Always required. The server rejects any other strength rather than downgrading it. */
+  allergies: Array<AllergyRequirement>;
+  /** Other allergies the user named, as canonical ingredient ids. */
+  allergyIngredients: Array<Scalars['ID']['output']>;
+  /** Null when the user has not set a grocery budget. */
+  budget?: Maybe<Budget>;
+  cookingStyle: Array<CookingStyle>;
+  cookingTime: CookingTime;
+  /** Days a generated plan should cover. */
+  days: Scalars['Int']['output'];
+  dietaryOtherText?: Maybe<Scalars['String']['output']>;
+  dietaryRequirements: Array<DietRequirement>;
+  dislikes: FoodPreferences;
+  equipment: Array<Equipment>;
+  household: Household;
+  leftovers: LeftoversPreference;
+  likes: FoodPreferences;
+  /** Meals needed per week, per category. */
+  meals: MealCounts;
+  nutritionGoals: Array<NutritionPreference>;
+  updatedAt: Scalars['String']['output'];
+};
+
+export type MealProfileInput = {
+  allergies: Array<AllergyRequirementInput>;
+  allergyIngredients: Array<Scalars['ID']['input']>;
+  budget?: InputMaybe<BudgetInput>;
+  cookingStyle: Array<CookingStyle>;
+  cookingTime: CookingTimeInput;
+  days: Scalars['Int']['input'];
+  dietaryOtherText?: InputMaybe<Scalars['String']['input']>;
+  dietaryRequirements: Array<DietRequirementInput>;
+  dislikes: FoodPreferencesInput;
+  equipment: Array<Equipment>;
+  household: HouseholdInput;
+  leftovers: LeftoversPreference;
+  likes: FoodPreferencesInput;
+  meals: MealCountsInput;
+  nutritionPreferences: Array<NutritionPreferenceInput>;
 };
 
 export type MealSlot = {
@@ -306,8 +690,19 @@ export type Mutation = {
   __typename?: 'Mutation';
   /** Turns the plan into a saved, consolidated, pantry-aware grocery list. */
   acceptMealPlan: GroceryListPayload;
+  /**
+   * Accepts a finished import's draft and saves it as one of the viewer's
+   * recipes. Idempotent: accepting twice updates the same recipe rather than
+   * creating a second one.
+   */
+  acceptRecipeImport: Recipe;
   addPantryItem: PantryItem;
+  /** Flattens the reviewed document. Refused while anything required is missing. */
+  approveBenefitsApplication: BenefitsApplication;
+  /** Stops an import that has not finished. Already-finished imports are unchanged. */
+  cancelRecipeImport: RecipeImport;
   completeOnboarding: Viewer;
+  deleteBenefitsApplication: Scalars['Boolean']['output'];
   deleteMealPlan: Scalars['Boolean']['output'];
   deletePantryItem: Scalars['Boolean']['output'];
   deletePushToken: Scalars['Boolean']['output'];
@@ -315,12 +710,40 @@ export type Mutation = {
   generateMealPlan: MealPlan;
   /** Choose My Recipes: selected recipes to a consolidated list, nothing saved. */
   groceryListFromRecipes: GroceryListPayload;
+  /**
+   * Starts extracting a recipe from a cooking video. Returns immediately: the
+   * import runs in the background and is polled with `recipeImport`.
+   */
+  importRecipeFromVideo: RecipeImport;
   markPantryItemUsed: PantryItem;
   /** Moves a meal between slots. Never regenerates the week and never re-prices. */
   movePlannedMeal: MealPlan;
+  /** Re-runs the fill after the app has collected more answers. */
+  refillBenefitsApplication: BenefitsApplication;
+  /** Rebuilds one day from the stored questionnaire, leaving the rest of the week alone. */
+  regenerateDay: MealPlan;
+  /** Rebuilds prep work from the plan as it stands now. */
+  regenerateMealPrepPlan: MealPrepPlan;
   registerPushToken: PushToken;
+  /** Puts a specific recipe in a slot. The recipe is still checked against the viewer's filters. */
+  replaceMeal: MealPlan;
+  /** Records scalar answers. Repeating groups go through saveBenefitsGroup. */
+  saveBenefitsAnswers: BenefitsProfile;
+  /** Replaces a repeating group. An empty rows list is how a household says it has none of these. */
+  saveBenefitsGroup: BenefitsProfile;
+  /** Makes a plan the viewer's active one, archiving whichever plan held that place. */
+  saveMealPlan: MealPlan;
+  /**
+   * Replaces the viewer's answers. A questionnaire is a current answer, not an
+   * accumulation: saving without a dislike removes it.
+   */
+  saveMealProfile: MealProfile;
   saveRecipe: Scalars['Boolean']['output'];
   setGroceryItemChecked: Scalars['Boolean']['output'];
+  /** Ticks one task off. False when there was nothing to tick. */
+  setMealPrepTaskDone: Scalars['Boolean']['output'];
+  /** Starts a run against the current revision of a form and fills what it can. */
+  startBenefitsApplication: BenefitsApplication;
   /** Replaces one slot's recipe. keepBasket avoids re-pricing the whole week. */
   swapPlannedMeal: MealPlan;
   unsaveRecipe: Scalars['Boolean']['output'];
@@ -328,6 +751,8 @@ export type Mutation = {
   updatePantryItem: PantryItem;
   updatePreferences: AppPreferences;
   updateProfile: Profile;
+  /** Changes how much food one slot is cooked for. The week is re-priced. */
+  updateServings: MealPlan;
 };
 
 
@@ -336,13 +761,33 @@ export type MutationAcceptMealPlanArgs = {
 };
 
 
+export type MutationAcceptRecipeImportArgs = {
+  importId: Scalars['ID']['input'];
+};
+
+
 export type MutationAddPantryItemArgs = {
   input: AddPantryItemInput;
 };
 
 
+export type MutationApproveBenefitsApplicationArgs = {
+  applicationId: Scalars['ID']['input'];
+};
+
+
+export type MutationCancelRecipeImportArgs = {
+  importId: Scalars['ID']['input'];
+};
+
+
 export type MutationCompleteOnboardingArgs = {
   input: CompleteOnboardingInput;
+};
+
+
+export type MutationDeleteBenefitsApplicationArgs = {
+  applicationId: Scalars['ID']['input'];
 };
 
 
@@ -371,6 +816,11 @@ export type MutationGroceryListFromRecipesArgs = {
 };
 
 
+export type MutationImportRecipeFromVideoArgs = {
+  input: ImportRecipeFromVideoInput;
+};
+
+
 export type MutationMarkPantryItemUsedArgs = {
   id: Scalars['ID']['input'];
 };
@@ -382,8 +832,50 @@ export type MutationMovePlannedMealArgs = {
 };
 
 
+export type MutationRefillBenefitsApplicationArgs = {
+  applicationId: Scalars['ID']['input'];
+};
+
+
+export type MutationRegenerateDayArgs = {
+  day: Scalars['Int']['input'];
+  planId: Scalars['ID']['input'];
+};
+
+
+export type MutationRegenerateMealPrepPlanArgs = {
+  planId: Scalars['ID']['input'];
+};
+
+
 export type MutationRegisterPushTokenArgs = {
   input: RegisterPushTokenInput;
+};
+
+
+export type MutationReplaceMealArgs = {
+  input: ReplaceMealInput;
+  planId: Scalars['ID']['input'];
+};
+
+
+export type MutationSaveBenefitsAnswersArgs = {
+  input: Array<BenefitsAnswerInput>;
+};
+
+
+export type MutationSaveBenefitsGroupArgs = {
+  input: SaveBenefitsGroupInput;
+};
+
+
+export type MutationSaveMealPlanArgs = {
+  planId: Scalars['ID']['input'];
+};
+
+
+export type MutationSaveMealProfileArgs = {
+  input: MealProfileInput;
 };
 
 
@@ -396,6 +888,17 @@ export type MutationSetGroceryItemCheckedArgs = {
   checked: Scalars['Boolean']['input'];
   ingredientId: Scalars['ID']['input'];
   planId: Scalars['ID']['input'];
+};
+
+
+export type MutationSetMealPrepTaskDoneArgs = {
+  done: Scalars['Boolean']['input'];
+  taskId: Scalars['ID']['input'];
+};
+
+
+export type MutationStartBenefitsApplicationArgs = {
+  formId: Scalars['ID']['input'];
 };
 
 
@@ -430,6 +933,12 @@ export type MutationUpdateProfileArgs = {
   input: UpdateProfileInput;
 };
 
+
+export type MutationUpdateServingsArgs = {
+  input: UpdateServingsInput;
+  planId: Scalars['ID']['input'];
+};
+
 export type NutritionGoal =
   | 'balanced'
   | 'high_fiber'
@@ -461,6 +970,12 @@ export type NutritionInfo = {
   sodiumMg?: Maybe<Scalars['Float']['output']>;
 };
 
+export type NutritionPreference = {
+  __typename?: 'NutritionPreference';
+  goal: NutritionGoal;
+  strength: Strength;
+};
+
 export type NutritionPreferenceInput = {
   goal: NutritionGoal;
   strength: Strength;
@@ -482,11 +997,20 @@ export type PantryItem = {
   dateUsed?: Maybe<Scalars['String']['output']>;
   expirationDate: Scalars['String']['output'];
   id: Scalars['ID']['output'];
+  /**
+   * Canonical catalogue id. Null when the item's name could not be resolved —
+   * the item is still in the pantry, it simply does not take part in planning.
+   */
+  ingredientId?: Maybe<Scalars['ID']['output']>;
   location: StorageLocation;
   name: Scalars['String']['output'];
   quantity: Scalars['String']['output'];
+  quantityAmount?: Maybe<Scalars['Float']['output']>;
+  quantityUnit?: Maybe<Scalars['String']['output']>;
   status: ItemStatus;
   updatedAt: Scalars['String']['output'];
+  /** Ranked above other pantry items when a plan is generated. */
+  useFirst: Scalars['Boolean']['output'];
 };
 
 export type PantryItemFilterInput = {
@@ -582,6 +1106,15 @@ export type PushToken = {
 
 export type Query = {
   __typename?: 'Query';
+  benefitsApplication?: Maybe<BenefitsApplication>;
+  benefitsApplications: Array<BenefitsApplication>;
+  /** Every question the profile can hold, so the app renders questions rather than hardcoding them. */
+  benefitsFieldVocabulary: Array<BenefitsFieldSpec>;
+  benefitsForm?: Maybe<BenefitsForm>;
+  /** The government forms this server can fill. Holds no user data. */
+  benefitsForms: Array<BenefitsForm>;
+  /** The viewer's reusable benefits profile. */
+  benefitsProfile: BenefitsProfile;
   /** The plan the viewer is currently on, or null when they have none yet. */
   currentMealPlan?: Maybe<MealPlan>;
   /** The saved grocery list for a plan, or null before the plan is accepted. */
@@ -590,13 +1123,45 @@ export type Query = {
   /** Canonical ingredient catalogue, used by the pantry and allergy pickers. */
   ingredients: Array<Ingredient>;
   mealPlan?: Maybe<MealPlan>;
+  /** Prep work for a plan. Derived on first read; null when the plan is not the viewer's. */
+  mealPrepPlan?: Maybe<MealPrepPlan>;
+  /** The viewer's saved answers, or null when they have not answered yet. */
+  mealProfile?: Maybe<MealProfile>;
+  /**
+   * Canonical ingredient ids for everything the viewer currently has on hand.
+   *
+   * This is what the meal generator matches against. Pantry items whose name has
+   * not been resolved to the catalogue are absent — they are never guessed at —
+   * so this can be shorter than the pantry itself.
+   */
+  pantryIngredientIds: Array<Scalars['ID']['output']>;
   pantryItems: Array<PantryItem>;
   pantryWasteStats: WasteStats;
   recipe?: Maybe<Recipe>;
+  /** One of the viewer's video imports. null when it is not theirs. */
+  recipeImport?: Maybe<RecipeImport>;
+  /** The viewer's imports, newest first. */
+  recipeImports: Array<RecipeImport>;
   /** The public recipe library plus the viewer's own recipes. */
   recipes: Array<Recipe>;
   savedRecipes: Array<Recipe>;
   viewer: Viewer;
+};
+
+
+export type QueryBenefitsApplicationArgs = {
+  applicationId: Scalars['ID']['input'];
+};
+
+
+export type QueryBenefitsFormArgs = {
+  formId: Scalars['ID']['input'];
+};
+
+
+export type QueryBenefitsFormsArgs = {
+  program?: InputMaybe<Scalars['String']['input']>;
+  state?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -621,6 +1186,11 @@ export type QueryMealPlanArgs = {
 };
 
 
+export type QueryMealPrepPlanArgs = {
+  planId: Scalars['ID']['input'];
+};
+
+
 export type QueryPantryItemsArgs = {
   filter?: InputMaybe<PantryItemFilterInput>;
 };
@@ -628,6 +1198,16 @@ export type QueryPantryItemsArgs = {
 
 export type QueryRecipeArgs = {
   recipeId: Scalars['ID']['input'];
+};
+
+
+export type QueryRecipeImportArgs = {
+  importId: Scalars['ID']['input'];
+};
+
+
+export type QueryRecipeImportsArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
 };
 
 
@@ -675,6 +1255,43 @@ export type Recipe = {
   visibility: Scalars['String']['output'];
 };
 
+export type RecipeImport = {
+  __typename?: 'RecipeImport';
+  completedAt?: Maybe<Scalars['String']['output']>;
+  createdAt: Scalars['String']['output'];
+  /**
+   * The extracted recipe, once status is `succeeded`. It is a normal Recipe —
+   * there is no second recipe shape for imports — and it carries the same
+   * `missingInformation` and `baseMealPlanEligible` as any other.
+   *
+   * Its `recipeId` is the id the recipe will have once accepted, so the draft
+   * can be referred to before it is saved.
+   */
+  draft?: Maybe<Recipe>;
+  /**
+   * A named failure, once status is `failed`: UNSUPPORTED_SOURCE,
+   * VIDEO_UNAVAILABLE, VIDEO_TOO_LONG, NO_TRANSCRIPT, NO_RECIPE_FOUND,
+   * PROVIDER_ERROR. The app turns these into sentences; they are not display text.
+   */
+  errorCode?: Maybe<Scalars['String']['output']>;
+  /** Safe to show. Never echoes transcript or video content. */
+  errorMessage?: Maybe<Scalars['String']['output']>;
+  importId: Scalars['ID']['output'];
+  /** Set once the draft has been accepted. Null before that. */
+  recipeId?: Maybe<Scalars['ID']['output']>;
+  /** youtube, instagram, tiktok — as resolved from the URL. */
+  sourcePlatform: Scalars['String']['output'];
+  sourceUrl: Scalars['String']['output'];
+  status: RecipeImportStatus;
+};
+
+export type RecipeImportStatus =
+  | 'cancelled'
+  | 'failed'
+  | 'queued'
+  | 'running'
+  | 'succeeded';
+
 export type RecipeQueryInput = {
   limit?: InputMaybe<Scalars['Int']['input']>;
   mealType?: InputMaybe<MealType>;
@@ -687,6 +1304,16 @@ export type RegisterPushTokenInput = {
   deviceId?: InputMaybe<Scalars['String']['input']>;
   platform: PushPlatform;
   token: Scalars['String']['input'];
+};
+
+export type ReplaceMealInput = {
+  recipeId: Scalars['ID']['input'];
+  slot: MealSlotInput;
+};
+
+export type SaveBenefitsGroupInput = {
+  groupPath: Scalars['String']['input'];
+  rows: Array<BenefitsGroupRowInput>;
 };
 
 export type StorageLocation =
@@ -715,10 +1342,14 @@ export type SwapMealInput = {
 export type UpdatePantryItemInput = {
   category?: InputMaybe<Scalars['String']['input']>;
   expirationDate?: InputMaybe<Scalars['String']['input']>;
+  ingredientId?: InputMaybe<Scalars['ID']['input']>;
   location?: InputMaybe<StorageLocation>;
   name?: InputMaybe<Scalars['String']['input']>;
   quantity?: InputMaybe<Scalars['String']['input']>;
+  quantityAmount?: InputMaybe<Scalars['Float']['input']>;
+  quantityUnit?: InputMaybe<Scalars['String']['input']>;
   status?: InputMaybe<ItemStatus>;
+  useFirst?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export type UpdatePreferencesInput = {
@@ -740,6 +1371,11 @@ export type UpdateProfileInput = {
   phone?: InputMaybe<Scalars['String']['input']>;
   profileImageUri?: InputMaybe<Scalars['String']['input']>;
   zip?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateServingsInput = {
+  servings: Scalars['Float']['input'];
+  slot: MealSlotInput;
 };
 
 export type User = {

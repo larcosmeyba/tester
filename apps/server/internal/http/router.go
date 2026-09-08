@@ -51,6 +51,12 @@ func NewRouter(cfg config.Config, verifier *auth.Verifier, readiness readinessCh
 	}
 	router.With(auth.Middleware(verifier)).Handle("/graphql", gql)
 
+	// Generated benefits PDFs are the one thing this API returns as bytes.
+	// Behind the same auth middleware as /graphql, and scoped to the viewer by
+	// the service — never a public or signed link to somebody's application.
+	router.With(auth.Middleware(verifier)).
+		Get("/benefits/applications/{applicationID}/pdf", BenefitsDocuments(resolver.Benefits, nil))
+
 	return router
 }
 

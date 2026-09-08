@@ -3,7 +3,7 @@ package main
 import (
 	"strconv"
 
-	"github.com/helpthehive/server/internal/db"
+	"github.com/helpthehive/server/internal/domain/meals"
 )
 
 // The fixture types mirror the seed JSON exactly, so a fixture that drifts from
@@ -34,8 +34,8 @@ type seedIngredient struct {
 	IsAnimalDerived    bool    `json:"is_animal_derived"`
 }
 
-func (s seedIngredient) toDomain() db.Ingredient {
-	return db.Ingredient{
+func (s seedIngredient) toDomain() meals.Ingredient {
+	return meals.Ingredient{
 		ID:                 s.IngredientID,
 		DisplayName:        s.DisplayName,
 		Aisle:              s.Aisle,
@@ -71,8 +71,8 @@ type seedPrice struct {
 	GeographicScope string  `json:"geographic_scope"`
 }
 
-func (s seedPrice) toDomain() db.IngredientPrice {
-	return db.IngredientPrice{
+func (s seedPrice) toDomain() meals.IngredientPrice {
+	return meals.IngredientPrice{
 		// Deterministic id: re-seeding updates the row rather than adding one.
 		ID:              "price_" + s.IngredientID + "_t" + strconv.Itoa(s.Tier) + "_" + s.GeographicScope,
 		IngredientID:    s.IngredientID,
@@ -149,8 +149,8 @@ type seedRecipe struct {
 	MissingInformation   []string             `json:"missing_information"`
 }
 
-func (s seedRecipe) toDomain() db.Recipe {
-	recipe := db.Recipe{
+func (s seedRecipe) toDomain() meals.Recipe {
+	recipe := meals.Recipe{
 		ID:                   s.RecipeID,
 		OwnerUserID:          s.OwnerUserID,
 		Title:                s.Title,
@@ -190,7 +190,7 @@ func (s seedRecipe) toDomain() db.Recipe {
 		recipe.NutritionConfidence = s.Nutrition.Confidence
 	}
 	for _, line := range s.Ingredients {
-		recipe.Ingredients = append(recipe.Ingredients, db.RecipeIngredient{
+		recipe.Ingredients = append(recipe.Ingredients, meals.RecipeIngredient{
 			// Deterministic id so a re-seed replaces the line in place.
 			ID:                 s.RecipeID + "_i" + strconv.Itoa(line.Position),
 			Position:           line.Position,
@@ -207,7 +207,7 @@ func (s seedRecipe) toDomain() db.Recipe {
 		})
 	}
 	for _, step := range s.Instructions {
-		recipe.Instructions = append(recipe.Instructions, db.RecipeInstruction{
+		recipe.Instructions = append(recipe.Instructions, meals.RecipeInstruction{
 			ID:      s.RecipeID + "_s" + strconv.Itoa(step.Step),
 			Step:    step.Step,
 			Text:    step.Text,

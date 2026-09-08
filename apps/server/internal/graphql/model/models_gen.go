@@ -14,6 +14,15 @@ type AddPantryItemInput struct {
 	Location       StorageLocation `json:"location"`
 	ExpirationDate string          `json:"expirationDate"`
 	Category       string          `json:"category"`
+	IngredientID   *string         `json:"ingredientId,omitempty"`
+	QuantityAmount *float64        `json:"quantityAmount,omitempty"`
+	QuantityUnit   *string         `json:"quantityUnit,omitempty"`
+	UseFirst       *bool           `json:"useFirst,omitempty"`
+}
+
+type AllergyRequirement struct {
+	Allergen Allergen `json:"allergen"`
+	Strength Strength `json:"strength"`
 }
 
 // Allergies are always required; the server rejects any other strength.
@@ -41,6 +50,172 @@ type BalancedMealBaseline struct {
 	AvgScore *float64 `json:"avgScore,omitempty"`
 }
 
+// One stored answer.
+//
+// `status` is the load-bearing field. `PROVIDED` and `NONE` are answers and can
+// appear on a form; `UNKNOWN` means nobody has asked and `REFUSED` means they
+// declined, and neither is ever written onto an application.
+type BenefitsAnswer struct {
+	FieldPath   string               `json:"fieldPath"`
+	RowID       *string              `json:"rowId,omitempty"`
+	Status      BenefitsAnswerStatus `json:"status"`
+	Kind        BenefitsValueKind    `json:"kind"`
+	Source      BenefitsValueSource  `json:"source"`
+	IsSensitive bool                 `json:"isSensitive"`
+	Text        *string              `json:"text,omitempty"`
+	Number      *float64             `json:"number,omitempty"`
+	MoneyCents  *int                 `json:"moneyCents,omitempty"`
+	Date        *string              `json:"date,omitempty"`
+	Bool        *bool                `json:"bool,omitempty"`
+	List        []string             `json:"list,omitempty"`
+	// For a sensitive answer this is all that ever comes back — never the value.
+	Hint *string `json:"hint,omitempty"`
+}
+
+// One answer from the app.
+//
+// It carries no kind: the server's vocabulary decides what shape each question
+// takes, so an answer in the wrong field is rejected rather than stored.
+type BenefitsAnswerInput struct {
+	FieldPath  string               `json:"fieldPath"`
+	Status     BenefitsAnswerStatus `json:"status"`
+	Text       *string              `json:"text,omitempty"`
+	Number     *float64             `json:"number,omitempty"`
+	MoneyCents *int                 `json:"moneyCents,omitempty"`
+	Date       *string              `json:"date,omitempty"`
+	Bool       *bool                `json:"bool,omitempty"`
+	List       []string             `json:"list,omitempty"`
+}
+
+type BenefitsApplication struct {
+	ID     string                    `json:"id"`
+	Form   *BenefitsForm             `json:"form"`
+	Status BenefitsApplicationStatus `json:"status"`
+	// What will appear on the PDF, in page order. Sensitive values are masked.
+	FilledFields []*BenefitsFilledField `json:"filledFields"`
+	// What the app must ask for. Non-empty exactly when the status is NEEDS_INPUT.
+	MissingFields []*BenefitsMissingField `json:"missingFields"`
+	// Answers that exist but cannot be written, for a person to look at.
+	Problems []*BenefitsFieldProblem `json:"problems"`
+	// Boxes deliberately left blank — signatures, and rows the household does not have.
+	SkippedFields []*BenefitsSkippedField `json:"skippedFields"`
+	// Path to the draft PDF on this API, or null until one has been rendered.
+	// It requires the same bearer token as this query; there is no public link to a
+	// document that carries a household's application.
+	DraftDocumentPath *string `json:"draftDocumentPath,omitempty"`
+	// Path to the approved, flattened PDF. Null until the applicant approves.
+	FinalDocumentPath *string `json:"finalDocumentPath,omitempty"`
+	CreatedAt         string  `json:"createdAt"`
+	UpdatedAt         string  `json:"updatedAt"`
+	ApprovedAt        *string `json:"approvedAt,omitempty"`
+}
+
+type BenefitsFieldProblem struct {
+	FieldID   string  `json:"fieldId"`
+	FieldPath *string `json:"fieldPath,omitempty"`
+	// Why the value could not be written. Never echoes the value itself.
+	Reason string `json:"reason"`
+}
+
+// One question the profile can hold, with the wording the app should use.
+type BenefitsFieldSpec struct {
+	FieldPath   string            `json:"fieldPath"`
+	Kind        BenefitsValueKind `json:"kind"`
+	Group       string            `json:"group"`
+	Label       string            `json:"label"`
+	Question    string            `json:"question"`
+	Choices     []string          `json:"choices"`
+	IsSensitive bool              `json:"isSensitive"`
+	IsDerived   bool              `json:"isDerived"`
+	IsRepeating bool              `json:"isRepeating"`
+}
+
+type BenefitsFilledField struct {
+	FieldID   string              `json:"fieldId"`
+	Label     string              `json:"label"`
+	FieldPath *string             `json:"fieldPath,omitempty"`
+	Page      int                 `json:"page"`
+	Source    BenefitsValueSource `json:"source"`
+	// What will be written. Masked when the answer is sensitive.
+	Text        *string `json:"text,omitempty"`
+	Checked     *bool   `json:"checked,omitempty"`
+	IsCheckbox  bool    `json:"isCheckbox"`
+	IsSensitive bool    `json:"isSensitive"`
+}
+
+type BenefitsForm struct {
+	ID string `json:"id"`
+	// Identifies the exact revision: id@version#revision.
+	Key          string               `json:"key"`
+	Program      string               `json:"program"`
+	Country      string               `json:"country"`
+	State        *string              `json:"state,omitempty"`
+	FormCode     string               `json:"formCode"`
+	FormTitle    string               `json:"formTitle"`
+	FormVersion  string               `json:"formVersion"`
+	Revision     int                  `json:"revision"`
+	PageCount    int                  `json:"pageCount"`
+	TemplateKind BenefitsTemplateKind `json:"templateKind"`
+	AgencyURL    *string              `json:"agencyUrl,omitempty"`
+}
+
+type BenefitsGroup struct {
+	GroupPath string `json:"groupPath"`
+	// Whether this group has been collected at all. False means the household has
+	// not been asked, which is not the same as having none — an uncollected group
+	// still produces a question.
+	Collected bool                `json:"collected"`
+	Rows      []*BenefitsGroupRow `json:"rows"`
+}
+
+type BenefitsGroupRow struct {
+	RowID   string            `json:"rowId"`
+	Answers []*BenefitsAnswer `json:"answers"`
+}
+
+type BenefitsGroupRowInput struct {
+	// Omit to add a new row; pass an existing id to keep that row's identity.
+	RowID   *string                `json:"rowId,omitempty"`
+	Answers []*BenefitsAnswerInput `json:"answers"`
+}
+
+type BenefitsMissingField struct {
+	FieldPath string `json:"fieldPath"`
+	Label     string `json:"label"`
+	// The wording the app should put to the user.
+	Question    string                `json:"question"`
+	Group       string                `json:"group"`
+	AnswerKind  BenefitsValueKind     `json:"answerKind"`
+	Choices     []string              `json:"choices"`
+	Strength    BenefitsFieldStrength `json:"strength"`
+	IsSensitive bool                  `json:"isSensitive"`
+	// True for a value the profile computes rather than collects — a household's
+	// monthly income total, say. The app must not put it to the user as a question:
+	// there is no answer they could give, and answering its inputs is what fills it.
+	IsDerived bool `json:"isDerived"`
+	// Which boxes on the form are waiting on this one answer.
+	FormFieldIds []string `json:"formFieldIds"`
+}
+
+type BenefitsProfile struct {
+	// The field-path vocabulary these answers were recorded against.
+	VocabularyVersion int               `json:"vocabularyVersion"`
+	Answers           []*BenefitsAnswer `json:"answers"`
+	Groups            []*BenefitsGroup  `json:"groups"`
+}
+
+type BenefitsSkippedField struct {
+	FieldID string             `json:"fieldId"`
+	Reason  BenefitsSkipReason `json:"reason"`
+	Note    *string            `json:"note,omitempty"`
+}
+
+type Budget struct {
+	Amount   float64    `json:"amount"`
+	Currency string     `json:"currency"`
+	Mode     BudgetMode `json:"mode"`
+}
+
 type BudgetInput struct {
 	Amount   float64    `json:"amount"`
 	Currency string     `json:"currency"`
@@ -50,6 +225,11 @@ type BudgetInput struct {
 type CompleteOnboardingInput struct {
 	Profile     *UpdateProfileInput     `json:"profile,omitempty"`
 	Preferences *UpdatePreferencesInput `json:"preferences,omitempty"`
+}
+
+type CookingTime struct {
+	MaxMinutes *int     `json:"maxMinutes,omitempty"`
+	Strength   Strength `json:"strength"`
 }
 
 type CookingTimeInput struct {
@@ -69,9 +249,20 @@ type CostRange struct {
 	Basis   *string                `json:"basis,omitempty"`
 }
 
+type DietRequirement struct {
+	Diet     Diet     `json:"diet"`
+	Strength Strength `json:"strength"`
+}
+
 type DietRequirementInput struct {
 	Diet     Diet     `json:"diet"`
 	Strength Strength `json:"strength"`
+}
+
+type FoodPreferences struct {
+	Ingredients []string `json:"ingredients"`
+	Cuisines    []string `json:"cuisines"`
+	FreeText    *string  `json:"freeText,omitempty"`
 }
 
 type FoodPreferencesInput struct {
@@ -108,6 +299,17 @@ type GroceryListPayload struct {
 	PlanID   *string           `json:"planId,omitempty"`
 	Sections []*GrocerySection `json:"sections"`
 	Cost     *CostRange        `json:"cost"`
+	// The list with everything the viewer already owns removed: only what has to be
+	// bought.
+	//
+	// It sits alongside `sections`, which keeps pantry items visible at a zero
+	// estimate. Both are computed from the same basket, so they can never disagree;
+	// which one a screen shows is a presentation decision. A shopper who cannot see
+	// that the rice is already at home has no way to tell whether it was considered
+	// or forgotten, which is why the full list is still the default.
+	PurchaseSections []*GrocerySection `json:"purchaseSections"`
+	// What the items still to buy add up to.
+	PurchaseCost float64 `json:"purchaseCost"`
 }
 
 type GrocerySection struct {
@@ -122,12 +324,27 @@ type HandleAvailability struct {
 	RetryAfter *string                  `json:"retryAfter,omitempty"`
 }
 
+type Household struct {
+	Size     int  `json:"size"`
+	Adults   *int `json:"adults,omitempty"`
+	Children *int `json:"children,omitempty"`
+	// True when the user picked 8+; size is stored as 8.
+	SizeIsPlus bool `json:"sizeIsPlus"`
+}
+
 type HouseholdInput struct {
 	Size     int  `json:"size"`
 	Adults   *int `json:"adults,omitempty"`
 	Children *int `json:"children,omitempty"`
 	// True when the user picked 8+; size is stored as 8.
 	SizeIsPlus bool `json:"sizeIsPlus"`
+}
+
+type ImportRecipeFromVideoInput struct {
+	// A cooking video link. Supported hosts are decided server-side.
+	URL string `json:"url"`
+	// Language for the extracted text. Defaults to english.
+	Language *string `json:"language,omitempty"`
 }
 
 type Ingredient struct {
@@ -164,6 +381,13 @@ type InstructionStep struct {
 	Minutes *int   `json:"minutes,omitempty"`
 }
 
+type MealCounts struct {
+	Breakfast int `json:"breakfast"`
+	Lunch     int `json:"lunch"`
+	Dinner    int `json:"dinner"`
+	Snack     int `json:"snack"`
+}
+
 type MealCountsInput struct {
 	Breakfast int `json:"breakfast"`
 	Lunch     int `json:"lunch"`
@@ -181,6 +405,79 @@ type MealPlan struct {
 	PennyMessage string       `json:"pennyMessage"`
 	SwapOptions  []SwapAction `json:"swapOptions"`
 	Assumptions  []string     `json:"assumptions"`
+}
+
+type MealPrepPlan struct {
+	PrepPlanID string `json:"prepPlanId"`
+	PlanID     string `json:"planId"`
+	// Hands-on time, not elapsed time.
+	TotalActiveMinutes int             `json:"totalActiveMinutes"`
+	Tasks              []*MealPrepTask `json:"tasks"`
+}
+
+type MealPrepTask struct {
+	TaskID        string           `json:"taskId"`
+	Position      int              `json:"position"`
+	Kind          MealPrepTaskKind `json:"kind"`
+	Title         string           `json:"title"`
+	Instruction   string           `json:"instruction"`
+	ActiveMinutes int              `json:"activeMinutes"`
+	// How much to prepare, in the ingredient's own reference unit. Null when the
+	// recipes never stated a quantity — it is not invented, and the instruction
+	// says so instead.
+	PortionAmount *float64 `json:"portionAmount,omitempty"`
+	PortionUnit   *string  `json:"portionUnit,omitempty"`
+	// Where to keep it. Guidance from the catalogue's food group, not a safety claim.
+	Storage       MealPrepStorage `json:"storage"`
+	KeepsDays     *int            `json:"keepsDays,omitempty"`
+	IngredientIds []string        `json:"ingredientIds"`
+	// Which recipes this is for.
+	RecipeIds []string `json:"recipeIds"`
+	// Which slots this feeds, as "day:mealType".
+	ServesSlots []string `json:"servesSlots"`
+	IsDone      bool     `json:"isDone"`
+}
+
+type MealProfile struct {
+	Household *Household `json:"household"`
+	// Null when the user has not set a grocery budget.
+	Budget *Budget `json:"budget,omitempty"`
+	// Meals needed per week, per category.
+	Meals *MealCounts `json:"meals"`
+	// Days a generated plan should cover.
+	Days                int                `json:"days"`
+	DietaryRequirements []*DietRequirement `json:"dietaryRequirements"`
+	// Always required. The server rejects any other strength rather than downgrading it.
+	Allergies []*AllergyRequirement `json:"allergies"`
+	// Other allergies the user named, as canonical ingredient ids.
+	AllergyIngredients []string               `json:"allergyIngredients"`
+	NutritionGoals     []*NutritionPreference `json:"nutritionGoals"`
+	Likes              *FoodPreferences       `json:"likes"`
+	Dislikes           *FoodPreferences       `json:"dislikes"`
+	CookingTime        *CookingTime           `json:"cookingTime"`
+	Equipment          []Equipment            `json:"equipment"`
+	CookingStyle       []CookingStyle         `json:"cookingStyle"`
+	Leftovers          LeftoversPreference    `json:"leftovers"`
+	DietaryOtherText   *string                `json:"dietaryOtherText,omitempty"`
+	UpdatedAt          string                 `json:"updatedAt"`
+}
+
+type MealProfileInput struct {
+	Household            *HouseholdInput             `json:"household"`
+	Budget               *BudgetInput                `json:"budget,omitempty"`
+	Meals                *MealCountsInput            `json:"meals"`
+	Days                 int                         `json:"days"`
+	DietaryRequirements  []*DietRequirementInput     `json:"dietaryRequirements"`
+	Allergies            []*AllergyRequirementInput  `json:"allergies"`
+	AllergyIngredients   []string                    `json:"allergyIngredients"`
+	NutritionPreferences []*NutritionPreferenceInput `json:"nutritionPreferences"`
+	Likes                *FoodPreferencesInput       `json:"likes"`
+	Dislikes             *FoodPreferencesInput       `json:"dislikes"`
+	CookingTime          *CookingTimeInput           `json:"cookingTime"`
+	Equipment            []Equipment                 `json:"equipment"`
+	CookingStyle         []CookingStyle              `json:"cookingStyle"`
+	Leftovers            LeftoversPreference         `json:"leftovers"`
+	DietaryOtherText     *string                     `json:"dietaryOtherText,omitempty"`
 }
 
 type MealSlot struct {
@@ -222,6 +519,11 @@ type NutritionInfo struct {
 	Confidence   *DataConfidence `json:"confidence,omitempty"`
 }
 
+type NutritionPreference struct {
+	Goal     NutritionGoal `json:"goal"`
+	Strength Strength      `json:"strength"`
+}
+
 type NutritionPreferenceInput struct {
 	Goal     NutritionGoal `json:"goal"`
 	Strength Strength      `json:"strength"`
@@ -246,6 +548,13 @@ type PantryItem struct {
 	DateUsed       *string         `json:"dateUsed,omitempty"`
 	CreatedAt      string          `json:"createdAt"`
 	UpdatedAt      string          `json:"updatedAt"`
+	// Canonical catalogue id. Null when the item's name could not be resolved —
+	// the item is still in the pantry, it simply does not take part in planning.
+	IngredientID   *string  `json:"ingredientId,omitempty"`
+	QuantityAmount *float64 `json:"quantityAmount,omitempty"`
+	QuantityUnit   *string  `json:"quantityUnit,omitempty"`
+	// Ranked above other pantry items when a plan is generated.
+	UseFirst bool `json:"useFirst"`
 }
 
 type PantryItemFilterInput struct {
@@ -370,6 +679,31 @@ type Recipe struct {
 	MissingInformation   []string `json:"missingInformation"`
 }
 
+type RecipeImport struct {
+	ImportID  string `json:"importId"`
+	SourceURL string `json:"sourceUrl"`
+	// youtube, instagram, tiktok — as resolved from the URL.
+	SourcePlatform string             `json:"sourcePlatform"`
+	Status         RecipeImportStatus `json:"status"`
+	// The extracted recipe, once status is `succeeded`. It is a normal Recipe —
+	// there is no second recipe shape for imports — and it carries the same
+	// `missingInformation` and `baseMealPlanEligible` as any other.
+	//
+	// Its `recipeId` is the id the recipe will have once accepted, so the draft
+	// can be referred to before it is saved.
+	Draft *Recipe `json:"draft,omitempty"`
+	// Set once the draft has been accepted. Null before that.
+	RecipeID *string `json:"recipeId,omitempty"`
+	// A named failure, once status is `failed`: UNSUPPORTED_SOURCE,
+	// VIDEO_UNAVAILABLE, VIDEO_TOO_LONG, NO_TRANSCRIPT, NO_RECIPE_FOUND,
+	// PROVIDER_ERROR. The app turns these into sentences; they are not display text.
+	ErrorCode *string `json:"errorCode,omitempty"`
+	// Safe to show. Never echoes transcript or video content.
+	ErrorMessage *string `json:"errorMessage,omitempty"`
+	CreatedAt    string  `json:"createdAt"`
+	CompletedAt  *string `json:"completedAt,omitempty"`
+}
+
 type RecipeQueryInput struct {
 	// Taxonomy ids: OR within a family, AND across families.
 	TagIds   []string  `json:"tagIds,omitempty"`
@@ -382,6 +716,16 @@ type RegisterPushTokenInput struct {
 	Token    string       `json:"token"`
 	Platform PushPlatform `json:"platform"`
 	DeviceID *string      `json:"deviceId,omitempty"`
+}
+
+type ReplaceMealInput struct {
+	Slot     *MealSlotInput `json:"slot"`
+	RecipeID string         `json:"recipeId"`
+}
+
+type SaveBenefitsGroupInput struct {
+	GroupPath string                   `json:"groupPath"`
+	Rows      []*BenefitsGroupRowInput `json:"rows"`
 }
 
 type SwapMealInput struct {
@@ -397,6 +741,10 @@ type UpdatePantryItemInput struct {
 	ExpirationDate *string          `json:"expirationDate,omitempty"`
 	Category       *string          `json:"category,omitempty"`
 	Status         *ItemStatus      `json:"status,omitempty"`
+	IngredientID   *string          `json:"ingredientId,omitempty"`
+	QuantityAmount *float64         `json:"quantityAmount,omitempty"`
+	QuantityUnit   *string          `json:"quantityUnit,omitempty"`
+	UseFirst       *bool            `json:"useFirst,omitempty"`
 }
 
 type UpdatePreferencesInput struct {
@@ -418,6 +766,11 @@ type UpdateProfileInput struct {
 	Zip             *string `json:"zip,omitempty"`
 	HouseholdSize   *int    `json:"householdSize,omitempty"`
 	ProfileImageURI *string `json:"profileImageUri,omitempty"`
+}
+
+type UpdateServingsInput struct {
+	Slot     *MealSlotInput `json:"slot"`
+	Servings float64        `json:"servings"`
 }
 
 type User struct {
@@ -495,6 +848,324 @@ func (e *Allergen) UnmarshalGQL(v interface{}) error {
 }
 
 func (e Allergen) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+type BenefitsAnswerStatus string
+
+const (
+	// Never asked, or skipped. Never written onto a form.
+	BenefitsAnswerStatusUnknown  BenefitsAnswerStatus = "UNKNOWN"
+	BenefitsAnswerStatusProvided BenefitsAnswerStatus = "PROVIDED"
+	// The applicant said they have none of these. A real answer.
+	BenefitsAnswerStatusNone BenefitsAnswerStatus = "NONE"
+	// Asked, declined to say. Never written onto a form, and not re-asked.
+	BenefitsAnswerStatusRefused BenefitsAnswerStatus = "REFUSED"
+)
+
+var AllBenefitsAnswerStatus = []BenefitsAnswerStatus{
+	BenefitsAnswerStatusUnknown,
+	BenefitsAnswerStatusProvided,
+	BenefitsAnswerStatusNone,
+	BenefitsAnswerStatusRefused,
+}
+
+func (e BenefitsAnswerStatus) IsValid() bool {
+	switch e {
+	case BenefitsAnswerStatusUnknown, BenefitsAnswerStatusProvided, BenefitsAnswerStatusNone, BenefitsAnswerStatusRefused:
+		return true
+	}
+	return false
+}
+
+func (e BenefitsAnswerStatus) String() string {
+	return string(e)
+}
+
+func (e *BenefitsAnswerStatus) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = BenefitsAnswerStatus(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid BenefitsAnswerStatus", str)
+	}
+	return nil
+}
+
+func (e BenefitsAnswerStatus) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+type BenefitsApplicationStatus string
+
+const (
+	BenefitsApplicationStatusDraft          BenefitsApplicationStatus = "DRAFT"
+	BenefitsApplicationStatusNeedsInput     BenefitsApplicationStatus = "NEEDS_INPUT"
+	BenefitsApplicationStatusReadyForReview BenefitsApplicationStatus = "READY_FOR_REVIEW"
+	BenefitsApplicationStatusApproved       BenefitsApplicationStatus = "APPROVED"
+	BenefitsApplicationStatusSuperseded     BenefitsApplicationStatus = "SUPERSEDED"
+)
+
+var AllBenefitsApplicationStatus = []BenefitsApplicationStatus{
+	BenefitsApplicationStatusDraft,
+	BenefitsApplicationStatusNeedsInput,
+	BenefitsApplicationStatusReadyForReview,
+	BenefitsApplicationStatusApproved,
+	BenefitsApplicationStatusSuperseded,
+}
+
+func (e BenefitsApplicationStatus) IsValid() bool {
+	switch e {
+	case BenefitsApplicationStatusDraft, BenefitsApplicationStatusNeedsInput, BenefitsApplicationStatusReadyForReview, BenefitsApplicationStatusApproved, BenefitsApplicationStatusSuperseded:
+		return true
+	}
+	return false
+}
+
+func (e BenefitsApplicationStatus) String() string {
+	return string(e)
+}
+
+func (e *BenefitsApplicationStatus) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = BenefitsApplicationStatus(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid BenefitsApplicationStatus", str)
+	}
+	return nil
+}
+
+func (e BenefitsApplicationStatus) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+type BenefitsFieldStrength string
+
+const (
+	BenefitsFieldStrengthRequired  BenefitsFieldStrength = "REQUIRED"
+	BenefitsFieldStrengthPreferred BenefitsFieldStrength = "PREFERRED"
+)
+
+var AllBenefitsFieldStrength = []BenefitsFieldStrength{
+	BenefitsFieldStrengthRequired,
+	BenefitsFieldStrengthPreferred,
+}
+
+func (e BenefitsFieldStrength) IsValid() bool {
+	switch e {
+	case BenefitsFieldStrengthRequired, BenefitsFieldStrengthPreferred:
+		return true
+	}
+	return false
+}
+
+func (e BenefitsFieldStrength) String() string {
+	return string(e)
+}
+
+func (e *BenefitsFieldStrength) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = BenefitsFieldStrength(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid BenefitsFieldStrength", str)
+	}
+	return nil
+}
+
+func (e BenefitsFieldStrength) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+type BenefitsSkipReason string
+
+const (
+	// Help The Hive must not fill this — a signature, or the date beside one.
+	BenefitsSkipReasonPolicy BenefitsSkipReason = "POLICY"
+	// A slot for a row the household does not have.
+	BenefitsSkipReasonNotApplicable BenefitsSkipReason = "NOT_APPLICABLE"
+)
+
+var AllBenefitsSkipReason = []BenefitsSkipReason{
+	BenefitsSkipReasonPolicy,
+	BenefitsSkipReasonNotApplicable,
+}
+
+func (e BenefitsSkipReason) IsValid() bool {
+	switch e {
+	case BenefitsSkipReasonPolicy, BenefitsSkipReasonNotApplicable:
+		return true
+	}
+	return false
+}
+
+func (e BenefitsSkipReason) String() string {
+	return string(e)
+}
+
+func (e *BenefitsSkipReason) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = BenefitsSkipReason(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid BenefitsSkipReason", str)
+	}
+	return nil
+}
+
+func (e BenefitsSkipReason) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+type BenefitsTemplateKind string
+
+const (
+	BenefitsTemplateKindAcroform BenefitsTemplateKind = "ACROFORM"
+	BenefitsTemplateKindFlat     BenefitsTemplateKind = "FLAT"
+)
+
+var AllBenefitsTemplateKind = []BenefitsTemplateKind{
+	BenefitsTemplateKindAcroform,
+	BenefitsTemplateKindFlat,
+}
+
+func (e BenefitsTemplateKind) IsValid() bool {
+	switch e {
+	case BenefitsTemplateKindAcroform, BenefitsTemplateKindFlat:
+		return true
+	}
+	return false
+}
+
+func (e BenefitsTemplateKind) String() string {
+	return string(e)
+}
+
+func (e *BenefitsTemplateKind) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = BenefitsTemplateKind(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid BenefitsTemplateKind", str)
+	}
+	return nil
+}
+
+func (e BenefitsTemplateKind) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+type BenefitsValueKind string
+
+const (
+	BenefitsValueKindText    BenefitsValueKind = "TEXT"
+	BenefitsValueKindNumber  BenefitsValueKind = "NUMBER"
+	BenefitsValueKindMoney   BenefitsValueKind = "MONEY"
+	BenefitsValueKindDate    BenefitsValueKind = "DATE"
+	BenefitsValueKindBoolean BenefitsValueKind = "BOOLEAN"
+	BenefitsValueKindChoice  BenefitsValueKind = "CHOICE"
+	BenefitsValueKindList    BenefitsValueKind = "LIST"
+)
+
+var AllBenefitsValueKind = []BenefitsValueKind{
+	BenefitsValueKindText,
+	BenefitsValueKindNumber,
+	BenefitsValueKindMoney,
+	BenefitsValueKindDate,
+	BenefitsValueKindBoolean,
+	BenefitsValueKindChoice,
+	BenefitsValueKindList,
+}
+
+func (e BenefitsValueKind) IsValid() bool {
+	switch e {
+	case BenefitsValueKindText, BenefitsValueKindNumber, BenefitsValueKindMoney, BenefitsValueKindDate, BenefitsValueKindBoolean, BenefitsValueKindChoice, BenefitsValueKindList:
+		return true
+	}
+	return false
+}
+
+func (e BenefitsValueKind) String() string {
+	return string(e)
+}
+
+func (e *BenefitsValueKind) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = BenefitsValueKind(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid BenefitsValueKind", str)
+	}
+	return nil
+}
+
+func (e BenefitsValueKind) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+type BenefitsValueSource string
+
+const (
+	BenefitsValueSourceUser    BenefitsValueSource = "USER"
+	BenefitsValueSourceProfile BenefitsValueSource = "PROFILE"
+	// Computed from provided answers only.
+	BenefitsValueSourceDerived BenefitsValueSource = "DERIVED"
+	// Written by a reviewed mapping file, not by the applicant.
+	BenefitsValueSourceMappingConstant BenefitsValueSource = "MAPPING_CONSTANT"
+)
+
+var AllBenefitsValueSource = []BenefitsValueSource{
+	BenefitsValueSourceUser,
+	BenefitsValueSourceProfile,
+	BenefitsValueSourceDerived,
+	BenefitsValueSourceMappingConstant,
+}
+
+func (e BenefitsValueSource) IsValid() bool {
+	switch e {
+	case BenefitsValueSourceUser, BenefitsValueSourceProfile, BenefitsValueSourceDerived, BenefitsValueSourceMappingConstant:
+		return true
+	}
+	return false
+}
+
+func (e BenefitsValueSource) String() string {
+	return string(e)
+}
+
+func (e *BenefitsValueSource) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = BenefitsValueSource(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid BenefitsValueSource", str)
+	}
+	return nil
+}
+
+func (e BenefitsValueSource) MarshalGQL(w io.Writer) {
 	fmt.Fprint(w, strconv.Quote(e.String()))
 }
 
@@ -880,6 +1551,92 @@ func (e LeftoversPreference) MarshalGQL(w io.Writer) {
 	fmt.Fprint(w, strconv.Quote(e.String()))
 }
 
+type MealPrepStorage string
+
+const (
+	MealPrepStorageRefrigerate MealPrepStorage = "refrigerate"
+	MealPrepStorageFreeze      MealPrepStorage = "freeze"
+	MealPrepStoragePantry      MealPrepStorage = "pantry"
+)
+
+var AllMealPrepStorage = []MealPrepStorage{
+	MealPrepStorageRefrigerate,
+	MealPrepStorageFreeze,
+	MealPrepStoragePantry,
+}
+
+func (e MealPrepStorage) IsValid() bool {
+	switch e {
+	case MealPrepStorageRefrigerate, MealPrepStorageFreeze, MealPrepStoragePantry:
+		return true
+	}
+	return false
+}
+
+func (e MealPrepStorage) String() string {
+	return string(e)
+}
+
+func (e *MealPrepStorage) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = MealPrepStorage(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid MealPrepStorage", str)
+	}
+	return nil
+}
+
+func (e MealPrepStorage) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+type MealPrepTaskKind string
+
+const (
+	// One ingredient prepared once for several meals.
+	MealPrepTaskKindBatchIngredient MealPrepTaskKind = "batch_ingredient"
+	// A whole recipe cooked once for several servings.
+	MealPrepTaskKindBatchCook MealPrepTaskKind = "batch_cook"
+)
+
+var AllMealPrepTaskKind = []MealPrepTaskKind{
+	MealPrepTaskKindBatchIngredient,
+	MealPrepTaskKindBatchCook,
+}
+
+func (e MealPrepTaskKind) IsValid() bool {
+	switch e {
+	case MealPrepTaskKindBatchIngredient, MealPrepTaskKindBatchCook:
+		return true
+	}
+	return false
+}
+
+func (e MealPrepTaskKind) String() string {
+	return string(e)
+}
+
+func (e *MealPrepTaskKind) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = MealPrepTaskKind(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid MealPrepTaskKind", str)
+	}
+	return nil
+}
+
+func (e MealPrepTaskKind) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
 type MealType string
 
 const (
@@ -1018,6 +1775,53 @@ func (e *PushPlatform) UnmarshalGQL(v interface{}) error {
 }
 
 func (e PushPlatform) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+type RecipeImportStatus string
+
+const (
+	RecipeImportStatusQueued    RecipeImportStatus = "queued"
+	RecipeImportStatusRunning   RecipeImportStatus = "running"
+	RecipeImportStatusSucceeded RecipeImportStatus = "succeeded"
+	RecipeImportStatusFailed    RecipeImportStatus = "failed"
+	RecipeImportStatusCancelled RecipeImportStatus = "cancelled"
+)
+
+var AllRecipeImportStatus = []RecipeImportStatus{
+	RecipeImportStatusQueued,
+	RecipeImportStatusRunning,
+	RecipeImportStatusSucceeded,
+	RecipeImportStatusFailed,
+	RecipeImportStatusCancelled,
+}
+
+func (e RecipeImportStatus) IsValid() bool {
+	switch e {
+	case RecipeImportStatusQueued, RecipeImportStatusRunning, RecipeImportStatusSucceeded, RecipeImportStatusFailed, RecipeImportStatusCancelled:
+		return true
+	}
+	return false
+}
+
+func (e RecipeImportStatus) String() string {
+	return string(e)
+}
+
+func (e *RecipeImportStatus) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = RecipeImportStatus(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid RecipeImportStatus", str)
+	}
+	return nil
+}
+
+func (e RecipeImportStatus) MarshalGQL(w io.Writer) {
 	fmt.Fprint(w, strconv.Quote(e.String()))
 }
 

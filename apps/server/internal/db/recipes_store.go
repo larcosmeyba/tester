@@ -3,6 +3,8 @@ package db
 import (
 	"context"
 	"strings"
+
+	"github.com/helpthehive/server/internal/domain/meals"
 )
 
 const recipeColumns = `
@@ -14,8 +16,8 @@ const recipeColumns = `
 	sodium_mg::float8, nutrition_basis, nutrition_confidence, base_meal_plan_eligible,
 	missing_information`
 
-func scanRecipe(row scanner) (Recipe, error) {
-	var r Recipe
+func scanRecipe(row scanner) (meals.Recipe, error) {
+	var r meals.Recipe
 	err := row.Scan(
 		&r.ID, &r.OwnerUserID, &r.Title, &r.Description, &r.SourceType, &r.SourceURL,
 		&r.SourceName, &r.LicenseID, &r.AttributionText, &r.Visibility, &r.ReviewStatus,
@@ -28,23 +30,9 @@ func scanRecipe(row scanner) (Recipe, error) {
 	return r, err
 }
 
-// RecipeFilter narrows the library. Ownership is not part of it: every query
-// below returns public library recipes plus the caller's own, and nothing else.
-type RecipeFilter struct {
-	// Taxonomy ids. A recipe must carry all of them.
-	TagIDs   []string
-	MealType string
-	Search   string
-	Limit    int
-	// true restricts to recipes the engine is allowed to plan automatically.
-	PlannableOnly bool
-	// Restricts to recipes the user has saved.
-	SavedOnly bool
-}
-
 // ListRecipes returns the public library plus the user's own recipes. Passing an
 // empty userID returns the public library alone.
-func (s *Store) ListRecipes(ctx context.Context, userID string, filter RecipeFilter) ([]Recipe, error) {
+func (s *Store) ListRecipes(ctx context.Context, userID string, filter meals.RecipeFilter) ([]meals.Recipe, error) {
 	limit := filter.Limit
 	if limit <= 0 || limit > 200 {
 		limit = 100
@@ -71,7 +59,7 @@ func (s *Store) ListRecipes(ctx context.Context, userID string, filter RecipeFil
 	}
 	defer rows.Close()
 
-	var recipes []Recipe
+	var recipes []meals.Recipe
 	for rows.Next() {
 		recipe, err := scanRecipe(rows)
 		if err != nil {
@@ -88,7 +76,7 @@ func (s *Store) ListRecipes(ctx context.Context, userID string, filter RecipeFil
 // GetRecipe returns one recipe the user is allowed to see: a public library
 // recipe, or one they own. Anything else is reported as not found rather than
 // as forbidden, so the query cannot be used to probe for other users' recipes.
-func (s *Store) GetRecipe(ctx context.Context, userID string, recipeID string) (Recipe, error) {
+func (s *Store) GetRecipe(ctx context.Context, userID string, recipeID string) (meals.Recipe, error) {
 	row := s.pool.QueryRow(ctx, `
 		SELECT`+recipeColumns+`
 		FROM recipes r
@@ -100,18 +88,18 @@ func (s *Store) GetRecipe(ctx context.Context, userID string, recipeID string) (
 	`, nullableString(userID), recipeID)
 	recipe, err := scanRecipe(row)
 	if err != nil {
-		return Recipe{}, err
+		return meals.Recipe{}, err
 	}
-	loaded, err := s.attachRecipeChildren(ctx, []Recipe{recipe})
+	loaded, err := s.attachRecipeChildren(ctx, []meals.Recipe{recipe})
 	if err != nil {
-		return Recipe{}, err
+		return meals.Recipe{}, err
 	}
 	return loaded[0], nil
 }
 
 // ListRecipesByIDs is the planner's bulk loader. It applies the same visibility
 // rule as GetRecipe, so a plan can never reference a recipe the user cannot see.
-func (s *Store) ListRecipesByIDs(ctx context.Context, userID string, recipeIDs []string) ([]Recipe, error) {
+func (s *Store) ListRecipesByIDs(ctx context.Context, userID string, recipeIDs []string) ([]meals.Recipe, error) {
 	if len(recipeIDs) == 0 {
 		return nil, nil
 	}
@@ -129,7 +117,7 @@ func (s *Store) ListRecipesByIDs(ctx context.Context, userID string, recipeIDs [
 	}
 	defer rows.Close()
 
-	var recipes []Recipe
+	var recipes []meals.Recipe
 	for rows.Next() {
 		recipe, err := scanRecipe(rows)
 		if err != nil {
@@ -145,7 +133,7 @@ func (s *Store) ListRecipesByIDs(ctx context.Context, userID string, recipeIDs [
 
 // attachRecipeChildren loads ingredient lines and instructions for a whole page
 // of recipes in two queries rather than two per recipe.
-func (s *Store) attachRecipeChildren(ctx context.Context, recipes []Recipe) ([]Recipe, error) {
+func (s *Store) attachRecipeChildren(ctx context.Context, recipes []meals.Recipe) ([]meals.Recipe, error) {
 	if len(recipes) == 0 {
 		return recipes, nil
 	}
@@ -168,7 +156,7 @@ func (s *Store) attachRecipeChildren(ctx context.Context, recipes []Recipe) ([]R
 	}
 	defer ingredientRows.Close()
 	for ingredientRows.Next() {
-		var line RecipeIngredient
+		var line meals.RecipeIngredient
 		if err := ingredientRows.Scan(
 			&line.ID, &line.RecipeID, &line.Position, &line.RawText, &line.IngredientID,
 			&line.DisplayName, &line.Quantity, &line.Unit, &line.Preparation, &line.Grams,
@@ -195,7 +183,7 @@ func (s *Store) attachRecipeChildren(ctx context.Context, recipes []Recipe) ([]R
 	}
 	defer instructionRows.Close()
 	for instructionRows.Next() {
-		var step RecipeInstruction
+		var step meals.RecipeInstruction
 		if err := instructionRows.Scan(&step.ID, &step.RecipeID, &step.Step, &step.Text, &step.Minutes); err != nil {
 			return nil, err
 		}
@@ -234,7 +222,7 @@ func (s *Store) UnsaveRecipeForUser(ctx context.Context, userID string, recipeID
 
 // UpsertRecipe writes a recipe and replaces its lines and steps. Seeding and
 // the recipe-import paths use it; it is not exposed to the mobile app.
-func (s *Store) UpsertRecipe(ctx context.Context, recipe Recipe) error {
+func (s *Store) UpsertRecipe(ctx context.Context, recipe meals.Recipe) error {
 	tx, err := s.pool.Begin(ctx)
 	if err != nil {
 		return err

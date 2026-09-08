@@ -1,0 +1,69 @@
+# ---------------------------------------------------------------------------
+# Meal prep
+#
+# The batch cooking a week's plan makes possible: the same onion diced once
+# instead of four times, the same grain cooked once for three dinners.
+#
+# A prep plan is *derived* from a meal plan and carries no new user input. It is
+# recomputed when asked for, because a swapped meal or a changed serving count
+# changes what is worth batching — so it is never stale, and the tasks already
+# ticked off are carried across.
+# ---------------------------------------------------------------------------
+
+extend type Query {
+  "Prep work for a plan. Derived on first read; null when the plan is not the viewer's."
+  mealPrepPlan(planId: ID!): MealPrepPlan
+}
+
+extend type Mutation {
+  "Rebuilds prep work from the plan as it stands now."
+  regenerateMealPrepPlan(planId: ID!): MealPrepPlan!
+  "Ticks one task off. False when there was nothing to tick."
+  setMealPrepTaskDone(taskId: ID!, done: Boolean!): Boolean!
+}
+
+enum MealPrepTaskKind {
+  "One ingredient prepared once for several meals."
+  batch_ingredient
+  "A whole recipe cooked once for several servings."
+  batch_cook
+}
+
+enum MealPrepStorage {
+  refrigerate
+  freeze
+  pantry
+}
+
+type MealPrepPlan {
+  prepPlanId: ID!
+  planId: ID!
+  "Hands-on time, not elapsed time."
+  totalActiveMinutes: Int!
+  tasks: [MealPrepTask!]!
+}
+
+type MealPrepTask {
+  taskId: ID!
+  position: Int!
+  kind: MealPrepTaskKind!
+  title: String!
+  instruction: String!
+  activeMinutes: Int!
+  """
+  How much to prepare, in the ingredient's own reference unit. Null when the
+  recipes never stated a quantity — it is not invented, and the instruction
+  says so instead.
+  """
+  portionAmount: Float
+  portionUnit: String
+  "Where to keep it. Guidance from the catalogue's food group, not a safety claim."
+  storage: MealPrepStorage!
+  keepsDays: Int
+  ingredientIds: [ID!]!
+  "Which recipes this is for."
+  recipeIds: [ID!]!
+  "Which slots this feeds, as \"day:mealType\"."
+  servesSlots: [String!]!
+  isDone: Boolean!
+}

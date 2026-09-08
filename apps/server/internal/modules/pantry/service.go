@@ -176,3 +176,24 @@ func trimStringPtr(value **string) {
 	trimmed := strings.TrimSpace(**value)
 	*value = &trimmed
 }
+
+// IngredientIDs is what the meal generator reads: the canonical catalogue ids
+// of everything the viewer currently has on hand, most urgent first.
+//
+// Items whose name has not been resolved to the catalogue are absent. They are
+// never guessed at — matching an unknown pantry name to a catalogue entry is
+// how somebody ends up with an allergen in their week — so an unresolved item
+// stays in the pantry, visible, and simply does not take part in planning.
+func (s *Service) IngredientIDs(ctx context.Context, identity auth.Identity) ([]string, error) {
+	viewer, err := s.users.Viewer(ctx, identity)
+	if err != nil {
+		return nil, err
+	}
+	return s.store.ActivePantryIngredientIDs(ctx, viewer.User.ID)
+}
+
+// IngredientIDsForUser is the same read for a user id the caller has already
+// resolved from a verified token.
+func (s *Service) IngredientIDsForUser(ctx context.Context, userID string) ([]string, error) {
+	return s.store.ActivePantryIngredientIDs(ctx, userID)
+}

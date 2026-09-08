@@ -22,6 +22,10 @@ extend type Query {
   mealPlan(planId: ID!): MealPlan
   "The saved grocery list for a plan, or null before the plan is accepted."
   groceryList(planId: ID!): GroceryListPayload
+  "One of the viewer's video imports. null when it is not theirs."
+  recipeImport(importId: ID!): RecipeImport
+  "The viewer's imports, newest first."
+  recipeImports(limit: Int): [RecipeImport!]!
 }
 
 extend type Mutation {
@@ -38,6 +42,19 @@ extend type Mutation {
   groceryListFromRecipes(input: GroceryListFromRecipesInput!): GroceryListPayload!
   saveRecipe(recipeId: ID!): Boolean!
   unsaveRecipe(recipeId: ID!): Boolean!
+  """
+  Starts extracting a recipe from a cooking video. Returns immediately: the
+  import runs in the background and is polled with `recipeImport`.
+  """
+  importRecipeFromVideo(input: ImportRecipeFromVideoInput!): RecipeImport!
+  "Stops an import that has not finished. Already-finished imports are unchanged."
+  cancelRecipeImport(importId: ID!): RecipeImport!
+  """
+  Accepts a finished import's draft and saves it as one of the viewer's
+  recipes. Idempotent: accepting twice updates the same recipe rather than
+  creating a second one.
+  """
+  acceptRecipeImport(importId: ID!): Recipe!
 }
 
 "An arbitrary JSON object. Used only for the cost tier mix."
@@ -441,4 +458,62 @@ input GroceryListFromRecipesInput {
   recipeIds: [ID!]!
   householdSize: Int!
   pantryItems: [ID!]!
+}
+
+# ---------------------------------------------------------------------------
+# Recipe import
+#
+# Turning a cooking video into a recipe. The extraction itself runs in a
+# separate service; this contract deliberately says nothing about that, because
+# where the words come from is an implementation detail and the app should not
+# have to care.
+#
+# An import produces a *draft*, not a recipe. Nothing is written to the
+# library until the viewer accepts it, because an extraction is a proposal:
+# the video may never have said how much of something to use, and the person
+# who chose the video is the one who can say.
+# ---------------------------------------------------------------------------
+
+enum RecipeImportStatus {
+  queued
+  running
+  succeeded
+  failed
+  cancelled
+}
+
+input ImportRecipeFromVideoInput {
+  "A cooking video link. Supported hosts are decided server-side."
+  url: String!
+  "Language for the extracted text. Defaults to english."
+  language: String
+}
+
+type RecipeImport {
+  importId: ID!
+  sourceUrl: String!
+  "youtube, instagram, tiktok — as resolved from the URL."
+  sourcePlatform: String!
+  status: RecipeImportStatus!
+  """
+  The extracted recipe, once status is `succeeded`. It is a normal Recipe —
+  there is no second recipe shape for imports — and it carries the same
+  `missingInformation` and `baseMealPlanEligible` as any other.
+
+  Its `recipeId` is the id the recipe will have once accepted, so the draft
+  can be referred to before it is saved.
+  """
+  draft: Recipe
+  "Set once the draft has been accepted. Null before that."
+  recipeId: ID
+  """
+  A named failure, once status is `failed`: UNSUPPORTED_SOURCE,
+  VIDEO_UNAVAILABLE, VIDEO_TOO_LONG, NO_TRANSCRIPT, NO_RECIPE_FOUND,
+  PROVIDER_ERROR. The app turns these into sentences; they are not display text.
+  """
+  errorCode: String
+  "Safe to show. Never echoes transcript or video content."
+  errorMessage: String
+  createdAt: String!
+  completedAt: String
 }

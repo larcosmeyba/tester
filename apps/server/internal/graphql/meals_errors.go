@@ -3,7 +3,7 @@ package graphql
 import (
 	"errors"
 
-	"github.com/helpthehive/server/internal/modules/meals"
+	"github.com/helpthehive/server/internal/domain/meals"
 	"github.com/vektah/gqlparser/v2/gqlerror"
 )
 
