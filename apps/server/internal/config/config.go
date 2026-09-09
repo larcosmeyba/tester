@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -11,6 +12,9 @@ type Config struct {
 	HTTPAddr           string
 	DatabaseURL        string
 	CORSAllowedOrigins []string
+	// RateLimitPerMinute caps GraphQL requests per client IP per minute.
+	// 0 or negative disables rate limiting.
+	RateLimitPerMinute int
 	Auth               AuthConfig
 }
 
@@ -26,6 +30,7 @@ func Load() (Config, error) {
 		HTTPAddr:           getEnv("HTTP_ADDR", ":8080"),
 		DatabaseURL:        strings.TrimSpace(os.Getenv("DATABASE_URL")),
 		CORSAllowedOrigins: splitCSV(os.Getenv("CORS_ALLOWED_ORIGINS")),
+		RateLimitPerMinute: getEnvInt("RATE_LIMIT_PER_MINUTE", 100),
 		Auth: AuthConfig{
 			Issuer:   strings.TrimSpace(os.Getenv("BETTER_AUTH_ISSUER")),
 			Audience: strings.TrimSpace(os.Getenv("BETTER_AUTH_AUDIENCE")),
@@ -59,6 +64,18 @@ func getEnv(key string, fallback string) string {
 		return fallback
 	}
 	return value
+}
+
+func getEnvInt(key string, fallback int) int {
+	value := strings.TrimSpace(os.Getenv(key))
+	if value == "" {
+		return fallback
+	}
+	n, err := strconv.Atoi(value)
+	if err != nil {
+		return fallback
+	}
+	return n
 }
 
 func splitCSV(value string) []string {

@@ -54,7 +54,7 @@ func run(logger *slog.Logger) error {
 
 	server := &http.Server{
 		Addr:              cfg.HTTPAddr,
-		Handler:           serverhttp.NewRouter(cfg, verifier, serverhttp.StoreReadiness{Store: store}, resolver),
+		Handler:           serverhttp.NewRouter(cfg, verifier, serverhttp.StoreReadiness{Store: store}, resolver, logger),
 		ReadHeaderTimeout: 5 * time.Second,
 	}
 

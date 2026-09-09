@@ -36,6 +36,7 @@ func TestGraphQLRequiresBearerToken(t *testing.T) {
 		nil,
 		readyFunc(func(context.Context) error { return nil }),
 		&hthgraphql.Resolver{},
+		nil,
 	)
 
 	req := httptest.NewRequest(http.MethodPost, "/graphql", strings.NewReader(`{"query":"{ viewer { user { id } } }"}`))

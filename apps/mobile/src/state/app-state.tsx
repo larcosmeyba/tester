@@ -25,6 +25,7 @@ import {
 } from '@/features/profile/profile-repository';
 import { refreshPushTokenIfPermitted } from '@/features/notifications/notification-service';
 import { clearPendingSignupProfile, loadPendingSignupProfile, savePendingSignupProfile } from './pending-signup-storage';
+import { loadSensitiveProfiles, saveSensitiveProfiles } from './sensitive-profile-storage';
 
 export type AppProfile = {
   handle?: string;
@@ -240,13 +241,14 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       try {
         const raw = await AsyncStorage.getItem(storageKey);
         const securedPending = await loadPendingSignupProfile();
-        if (!raw) {
+        const securedProfiles = await loadSensitiveProfiles();
+        if (!raw && !securedProfiles) {
           if (!cancelled) {
             setState((current) => ({ ...current, pendingSignupProfile: securedPending, pantryItems: normalizePantryItems(current.pantryItems) }));
           }
           return;
         }
-        const parsed = JSON.parse(raw) as Partial<PersistedState> & { notificationPreferences?: unknown };
+        const parsed = (raw ? JSON.parse(raw) : {}) as Partial<PersistedState> & { notificationPreferences?: unknown };
         const legacyPending = parsed.pendingSignupProfile;
         const persisted = { ...parsed };
         delete persisted.notificationPreferences;
@@ -254,14 +256,26 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
         if (!securedPending && legacyPending) {
           await savePendingSignupProfile(legacyPending).catch(() => undefined);
         }
+        // Migrate any PII left in the old plaintext store into SecureStore,
+        // then drop it from the AsyncStorage copy below.
+        const legacyProfile = persisted.profile;
+        const legacyGovernmentProfile = persisted.governmentProfile;
+        delete persisted.profile;
+        delete persisted.governmentProfile;
+        if (!securedProfiles && (legacyProfile || legacyGovernmentProfile)) {
+          await saveSensitiveProfiles({
+            profile: legacyProfile ?? defaultProfile,
+            governmentProfile: legacyGovernmentProfile ?? defaultGovernmentProfile,
+          }).catch(() => undefined);
+        }
         if (!cancelled) {
           setState({
             ...defaultState,
             ...persisted,
             pendingSignupProfile: securedPending ?? legacyPending,
-            profile: { ...defaultProfile, ...persisted.profile },
+            profile: { ...defaultProfile, ...(securedProfiles?.profile ?? legacyProfile) },
             preferences: { ...defaultPreferences, ...persisted.preferences },
-            governmentProfile: { ...defaultGovernmentProfile, ...persisted.governmentProfile },
+            governmentProfile: { ...defaultGovernmentProfile, ...(securedProfiles?.governmentProfile ?? legacyGovernmentProfile) },
             pantryItems: normalizePantryItems(persisted.pantryItems ?? defaultState.pantryItems),
             cart: persisted.cart ?? [],
           });
@@ -283,8 +297,16 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     if (!isLocalReady) {
       return;
     }
-    const { pendingSignupProfile: _pendingSignupProfile, ...nonSensitiveState } = state;
+    // PII (profile, governmentProfile) is encrypted in SecureStore; only
+    // genuinely non-sensitive state goes to unencrypted AsyncStorage.
+    const {
+      pendingSignupProfile: _pendingSignupProfile,
+      profile: _profile,
+      governmentProfile: _governmentProfile,
+      ...nonSensitiveState
+    } = state;
     AsyncStorage.setItem(storageKey, JSON.stringify(nonSensitiveState)).catch(() => undefined);
+    void saveSensitiveProfiles({ profile: state.profile, governmentProfile: state.governmentProfile }).catch(() => undefined);
   }, [isLocalReady, state]);
 
   const patchState = useCallback((patch: Partial<PersistedState>) => {

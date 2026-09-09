@@ -5,7 +5,7 @@ go 1.27.0
 require (
 	github.com/99designs/gqlgen v0.17.49
 	github.com/go-chi/chi/v5 v5.3.1
-	github.com/golang-jwt/jwt/v5 v5.2.1
+	github.com/golang-jwt/jwt/v5 v5.3.0
 	github.com/jackc/pgx/v5 v5.7.1
 	github.com/pressly/goose/v3 v3.21.1
 	github.com/sqlc-dev/sqlc v1.27.0
@@ -30,7 +30,7 @@ require (
 	github.com/go-faster/city v1.0.1 // indirect
 	github.com/go-faster/errors v0.6.1 // indirect
 	github.com/go-sql-driver/mysql v1.8.1 // indirect
-	github.com/golang-jwt/jwt/v4 v4.5.0 // indirect
+	github.com/golang-jwt/jwt/v4 v4.5.2 // indirect
 	github.com/golang-sql/civil v0.0.0-20220223132316-b832511892a9 // indirect
 	github.com/golang-sql/sqlexp v0.1.0 // indirect
 	github.com/google/cel-go v0.21.0 // indirect

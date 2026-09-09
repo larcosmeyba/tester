@@ -2,6 +2,7 @@ package serverhttp
 
 import (
 	"context"
+	"log/slog"
 	"net/http"
 	"strings"
 
@@ -20,7 +21,7 @@ type readinessChecker interface {
 	Ping(ctx context.Context) error
 }
 
-func NewRouter(cfg config.Config, verifier *auth.Verifier, readiness readinessChecker, resolver *hthgraphql.Resolver) http.Handler {
+func NewRouter(cfg config.Config, verifier *auth.Verifier, readiness readinessChecker, resolver *hthgraphql.Resolver, logger *slog.Logger) http.Handler {
 	router := chi.NewRouter()
 	router.Use(middleware.RequestID)
 	router.Use(middleware.RealIP)
@@ -46,10 +47,20 @@ func NewRouter(cfg config.Config, verifier *auth.Verifier, readiness readinessCh
 	}
 
 	gql := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: resolver}))
+	// Sanitize errors: internal details are logged server-side and replaced
+	// with a generic message; only explicitly marked errors reach clients.
+	gql.SetErrorPresenter(newErrorPresenter(logger))
 	if cfg.IsDevelopment() {
 		gql.Use(extension.Introspection{})
 	}
-	router.With(auth.Middleware(verifier)).Handle("/graphql", gql)
+	// Rate limiting runs before auth so abusive unauthenticated traffic is
+	// throttled too. The bucket key is the client IP (see RealIP above).
+	gqlChain := make([]func(http.Handler) http.Handler, 0, 2)
+	if limiter := newIPRateLimiter(cfg.RateLimitPerMinute); limiter != nil {
+		gqlChain = append(gqlChain, limiter.middleware())
+	}
+	gqlChain = append(gqlChain, auth.Middleware(verifier))
+	router.With(gqlChain...).Handle("/graphql", gql)
 
 	return router
 }
