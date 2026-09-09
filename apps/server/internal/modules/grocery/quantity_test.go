@@ -67,8 +67,9 @@ func TestFullPantryCoverageBuysNothing(t *testing.T) {
 	}
 }
 
-// The common case, and the one that must not silently over-promise.
-func TestUnknownPantryQuantityIsCoveredButFlagged(t *testing.T) {
+// The common case, and the one that must not silently over-promise: a pantry
+// row with no number is not evidence of enough.
+func TestUnknownPantryQuantityKeepsTheRequirement(t *testing.T) {
 	catalog := fx.Catalog()
 	dish := fx.Recipe("dish", 4, []string{"dinner"}, fx.Line(1, "chicken", 2))
 
@@ -79,11 +80,37 @@ func TestUnknownPantryQuantityIsCoveredButFlagged(t *testing.T) {
 	)
 	chicken := itemsByID(basket.Items)["chicken"]
 
-	if !chicken.InPantry || chicken.EstimatedPrice != 0 {
-		t.Fatalf("chicken = %+v, want treated as covered", chicken)
+	if chicken.InPantry {
+		t.Error("chicken was treated as covered; nobody said how much there is")
 	}
-	if !mentions(basket.Assumptions, "did not say how much") {
-		t.Fatalf("assumptions = %v, want the unknown quantity said out loud", basket.Assumptions)
+	if !chicken.PantryMayCover {
+		t.Error("chicken is not flagged as possibly covered by the pantry")
+	}
+	if chicken.NeededQty != 2 {
+		t.Errorf("needed = %v, want the full 2", chicken.NeededQty)
+	}
+	if chicken.EstimatedPrice <= 0 {
+		t.Error("the requirement was not priced")
+	}
+	if !mentions(basket.Assumptions, "may already cover") {
+		t.Fatalf("assumptions = %v, want the uncertainty said out loud", basket.Assumptions)
+	}
+}
+
+// An explicit "I have this" from the questionnaire is a different statement and
+// keeps its meaning: do not buy it.
+func TestAssertedCoverageStillZeroesTheLine(t *testing.T) {
+	catalog := fx.Catalog()
+	dish := fx.Recipe("dish", 4, []string{"dinner"}, fx.Line(1, "chicken", 2))
+
+	basket := BuildBasketWithHoldings(
+		[]meals.PlannedRecipe{{Recipe: dish, Scale: 1}},
+		meals.HoldingsFromIDs([]string{"chicken"}),
+		catalog,
+	)
+	chicken := itemsByID(basket.Items)["chicken"]
+	if !chicken.InPantry || chicken.EstimatedPrice != 0 {
+		t.Fatalf("chicken = %+v, want in-pantry at zero cost", chicken)
 	}
 }
 
@@ -99,14 +126,17 @@ func TestIncomparableUnitsFallBackToUnknown(t *testing.T) {
 	)
 	chicken := itemsByID(basket.Items)["chicken"]
 
-	if !chicken.InPantry {
-		t.Error("chicken should still be treated as owned")
+	if chicken.InPantry {
+		t.Error("chicken was treated as covered from an amount that cannot be compared")
+	}
+	if !chicken.PantryMayCover {
+		t.Error("chicken is not flagged as possibly covered by the pantry")
 	}
 	if chicken.PartiallyInPantry {
 		t.Error("no partial quantity should have been computed from cups against pounds")
 	}
-	if !mentions(basket.Assumptions, "did not say how much") {
-		t.Errorf("assumptions = %v, want it reported as an unchecked quantity", basket.Assumptions)
+	if chicken.NeededQty != 2 {
+		t.Errorf("needed = %v, want the full 2", chicken.NeededQty)
 	}
 }
 

@@ -15,15 +15,25 @@ func TestNoHoldingMeansBuyTheLot(t *testing.T) {
 	}
 }
 
-func TestUnknownQuantityIsUnknownNotEnough(t *testing.T) {
+func TestUnknownQuantityKeepsTheFullRequirement(t *testing.T) {
 	// The common case: someone typed "a bag of rice". They have some. How much
-	// is genuinely not known, and the plan has to say so rather than pick.
+	// is genuinely not known — and an unmeasured jar is not evidence of enough,
+	// so the requirement stays in full and is flagged.
 	remaining, coverage := Subtract(2, "cup", holding("rice", nil, ""))
 	if coverage != CoverageUnknown {
 		t.Fatalf("coverage = %v, want CoverageUnknown", coverage)
 	}
-	if remaining != 0 {
-		t.Errorf("remaining = %v, want 0: it is covered, but only as far as anyone knows", remaining)
+	if remaining != 2 {
+		t.Errorf("remaining = %v, want the full 2: nothing here says there is enough", remaining)
+	}
+}
+
+// An explicit assertion that an ingredient is handled is a different statement
+// from a pantry row with no number, and keeps its old meaning.
+func TestAssertedCoverageStillBuysNothing(t *testing.T) {
+	remaining, coverage := Subtract(2, "cup", PantryHolding{IngredientID: "rice", AssumeCovered: true})
+	if coverage != CoverageFull || remaining != 0 {
+		t.Fatalf("Subtract(asserted) = %v/%v, want 0/CoverageFull", remaining, coverage)
 	}
 }
 
@@ -76,8 +86,8 @@ func TestIncomparableUnitsAreUnknownNotConverted(t *testing.T) {
 			t.Errorf("have %s / need %s: coverage = %v, want CoverageUnknown — converting would need a density nobody has",
 				c.haveUnit, c.needUnit, coverage)
 		}
-		if remaining != 0 {
-			t.Errorf("have %s / need %s: remaining = %v, want 0", c.haveUnit, c.needUnit, remaining)
+		if remaining != 2 {
+			t.Errorf("have %s / need %s: remaining = %v, want the full 2", c.haveUnit, c.needUnit, remaining)
 		}
 	}
 }
@@ -109,8 +119,13 @@ func TestMergingTwoMeasuredJarsAddsThemUp(t *testing.T) {
 		holding("rice", amount(2), "cup"),
 	})
 	got := merged["rice"]
-	if !got.Known() || *got.Amount != 3 {
-		t.Fatalf("merged = %+v, want 3 cups", got)
+	if !got.Known() {
+		t.Fatalf("merged = %+v, want a known total", got)
+	}
+	// Volumes are summed in millilitres, so three cups comes back as ~709 ml.
+	threeCups, _ := MillilitresFor(3, "cup")
+	if got.Unit != "ml" || *got.Amount != threeCups {
+		t.Fatalf("merged = %+v, want %v ml (three cups)", got, threeCups)
 	}
 }
 
@@ -155,9 +170,83 @@ func TestPresenceViewsRoundTrip(t *testing.T) {
 		if h.Known() {
 			t.Errorf("holding %+v should carry no quantity", h)
 		}
+		if !h.AssumeCovered {
+			t.Errorf("holding %+v should be an assertion of coverage, not an unmeasured row", h)
+		}
 	}
 	ids := PantryIDs(holdings)
 	if !ids["rice"] || !ids["beans"] || len(ids) != 2 {
 		t.Fatalf("PantryIDs = %v, want rice and beans", ids)
+	}
+}
+
+// Volume conversions. These are definitions — three teaspoons make a tablespoon
+// everywhere — so they are safe in a way a density never is.
+func TestVolumeUnitsConvertAmongThemselves(t *testing.T) {
+	cases := []struct {
+		name         string
+		needQty      float64
+		needUnit     string
+		haveQty      float64
+		haveUnit     string
+		wantCoverage Coverage
+	}{
+		{"tbsp covers tsp", 3, "tsp", 1, "tbsp", CoverageFull},
+		{"tsp under-covers tbsp", 1, "tbsp", 1, "tsp", CoveragePartial},
+		{"cup covers tbsp", 16, "tbsp", 1, "cup", CoverageFull},
+		{"litre covers ml", 500, "ml", 1, "l", CoverageFull},
+		{"ml under-covers litre", 1, "l", 500, "ml", CoveragePartial},
+		{"quart covers cups", 3, "cup", 1, "quart", CoverageFull},
+	}
+	for _, c := range cases {
+		_, coverage := Subtract(c.needQty, c.needUnit, holding("x", amount(c.haveQty), c.haveUnit))
+		if coverage != c.wantCoverage {
+			t.Errorf("%s: coverage = %v, want %v", c.name, coverage, c.wantCoverage)
+		}
+	}
+}
+
+func TestVolumeShortfallIsInTheRecipesUnit(t *testing.T) {
+	// Needs 2 cups, has 1 cup: buy 1 cup, stated in cups.
+	remaining, coverage := Subtract(2, "cups", holding("rice", amount(1), "cup"))
+	if coverage != CoveragePartial || remaining != 1 {
+		t.Fatalf("Subtract = %v/%v, want 1/CoveragePartial", remaining, coverage)
+	}
+}
+
+// The line that must never be crossed.
+func TestVolumeAndMassNeverConvert(t *testing.T) {
+	for _, c := range []struct{ haveUnit, needUnit string }{
+		{"cup", "g"}, {"g", "cup"}, {"tbsp", "oz"}, {"lb", "ml"},
+	} {
+		_, coverage := Subtract(2, c.needUnit, holding("rice", amount(1), c.haveUnit))
+		if coverage != CoverageUnknown {
+			t.Errorf("have %s / need %s: coverage = %v, want CoverageUnknown — this needs a density the catalogue does not hold",
+				c.haveUnit, c.needUnit, coverage)
+		}
+	}
+}
+
+func TestVolumeUnitRecognition(t *testing.T) {
+	for _, unit := range []string{"tsp", "tbsp", "cup", "cups", "ml", "l", "quart", "gal", "fl oz"} {
+		if !IsVolumeUnit(unit) {
+			t.Errorf("IsVolumeUnit(%q) = false, want true", unit)
+		}
+		if IsMassUnit(unit) {
+			t.Errorf("IsMassUnit(%q) = true; a volume is not a mass", unit)
+		}
+	}
+	for _, unit := range []string{"g", "kg", "oz", "lb"} {
+		if !IsMassUnit(unit) {
+			t.Errorf("IsMassUnit(%q) = false, want true", unit)
+		}
+		if IsVolumeUnit(unit) {
+			t.Errorf("IsVolumeUnit(%q) = true; a mass is not a volume", unit)
+		}
+	}
+	for _, unit := range []string{"bag", "pinch", "clove", ""} {
+		if IsVolumeUnit(unit) || IsMassUnit(unit) {
+			t.Errorf("%q should convert to neither", unit)
+		}
 	}
 }

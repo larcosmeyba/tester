@@ -400,6 +400,20 @@ func recipeAt(plan meals.Plan, slot meals.Slot) string {
 // the app and resolved server-side, changes what the plan buys".
 //
 // Nothing in the request mentions the pantry. The service reads it.
+// riceLine finds one ingredient's line in a plan's grocery list.
+func riceLine(t *testing.T, plan meals.Plan, ingredientID string) meals.GroceryItem {
+	t.Helper()
+	for i := range plan.GroceryList {
+		for j := range plan.GroceryList[i].Items {
+			if plan.GroceryList[i].Items[j].IngredientID == ingredientID {
+				return plan.GroceryList[i].Items[j]
+			}
+		}
+	}
+	t.Fatalf("ingredient %q is not on the grocery list", ingredientID)
+	return meals.GroceryItem{}
+}
+
 func TestStoredPantryReachesTheGenerator(t *testing.T) {
 	databaseURL := os.Getenv("TEST_DATABASE_URL")
 	if databaseURL == "" {
@@ -485,7 +499,7 @@ func TestStoredPantryReachesTheGenerator(t *testing.T) {
 		}
 	})
 
-	t.Run("the grocery list stops charging for it", func(t *testing.T) {
+	t.Run("the grocery list flags it without assuming there is enough", func(t *testing.T) {
 		var rice *meals.GroceryItem
 		for i := range after.GroceryList {
 			for j := range after.GroceryList[i].Items {
@@ -497,11 +511,14 @@ func TestStoredPantryReachesTheGenerator(t *testing.T) {
 		if rice == nil {
 			t.Fatal("the rice vanished from the grocery list; a pantry item should stay listed, marked as owned")
 		}
-		if !rice.InPantry {
-			t.Error("rice is not marked in-pantry")
+		// The pantry row carries no amount yet, so the requirement stays in
+		// full and is flagged. Saying "you have rice" is not saying "you have
+		// two cups of rice".
+		if rice.InPantry {
+			t.Error("rice was treated as covered; the pantry row has no quantity")
 		}
-		if rice.EstimatedPrice != 0 {
-			t.Errorf("rice costs %v, want 0 — it is already in the cupboard", rice.EstimatedPrice)
+		if !rice.PantryMayCover {
+			t.Error("rice is not flagged as possibly covered by the pantry")
 		}
 	})
 
@@ -543,10 +560,21 @@ func TestStoredPantryReachesTheGenerator(t *testing.T) {
 		}
 	})
 
-	t.Run("the week gets cheaper", func(t *testing.T) {
-		if after.Summary.EstimatedCost.Point >= before.Summary.EstimatedCost.Point {
-			t.Errorf("cost went from %v to %v; owning an ingredient should reduce the shop",
-				before.Summary.EstimatedCost.Point, after.Summary.EstimatedCost.Point)
+	t.Run("a stated quantity reduces what has to be bought", func(t *testing.T) {
+		// By this point the subtest above recorded half a pound of rice.
+		//
+		// The assertion is on quantity, not price. Rice is sold in two-pound
+		// bags, so needing 1.5 lb instead of 2 lb still buys one bag and costs
+		// the same — which is correct, and is exactly why package rounding
+		// lives in the pricing step rather than the subtraction step.
+		withQty, err := service.Generate(ctx, identity, baseline)
+		if err != nil {
+			t.Fatalf("Generate() error = %v", err)
+		}
+		before := riceLine(t, after, riceID).NeededQty
+		now := riceLine(t, withQty, riceID).NeededQty
+		if now >= before {
+			t.Errorf("needed went from %v to %v lb; recording how much rice there is should reduce it", before, now)
 		}
 	})
 }

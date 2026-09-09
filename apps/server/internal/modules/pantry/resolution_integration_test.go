@@ -133,6 +133,46 @@ func TestPantryResolvesAgainstTheCatalogue(t *testing.T) {
 		}
 	})
 
+	t.Run("quantities persist, and survive a rename", func(t *testing.T) {
+		// A user of their own: the subtests above left this owner with several
+		// unmeasured milk rows, and one measured jar beside two unmeasured ones
+		// correctly totals to "unknown".
+		measured := auth.Identity{Subject: fmt.Sprintf("pantry-measured-%d", stamp)}
+		item := add(t, measured, catalogueName)
+		two, unit := 2.0, "cup"
+		stored, err := service.Update(ctx, measured, item.ID, db.PantryItemPatch{
+			QuantityAmount: &two, QuantityUnit: &unit,
+		})
+		if err != nil {
+			t.Fatalf("Update(quantity) error = %v", err)
+		}
+		if stored.QuantityAmount == nil || *stored.QuantityAmount != 2 {
+			t.Fatalf("quantity_amount = %v, want 2", stored.QuantityAmount)
+		}
+		if stored.QuantityUnit == nil || *stored.QuantityUnit != "cup" {
+			t.Fatalf("quantity_unit = %v, want cup", stored.QuantityUnit)
+		}
+
+		// Renaming re-resolves the ingredient link. It must not quietly discard
+		// how much the user said they have.
+		renamed := catalogueName
+		afterRename, err := service.Update(ctx, measured, item.ID, db.PantryItemPatch{Name: &renamed})
+		if err != nil {
+			t.Fatalf("Update(rename) error = %v", err)
+		}
+		if afterRename.QuantityAmount == nil || *afterRename.QuantityAmount != 2 {
+			t.Fatalf("quantity_amount after rename = %v, want 2 still", afterRename.QuantityAmount)
+		}
+
+		holdings, err := service.HoldingsForUser(ctx, viewerIDFor(t, ctx, userService, measured))
+		if err != nil {
+			t.Fatalf("HoldingsForUser() error = %v", err)
+		}
+		if got := holdings[milkID]; !got.Known() {
+			t.Fatalf("holding = %+v, want the recorded quantity to reach the generator", got)
+		}
+	})
+
 	t.Run("one user's pantry never reaches another", func(t *testing.T) {
 		add(t, other, catalogueName)
 
@@ -247,4 +287,13 @@ func migrate(t *testing.T, databaseURL string) {
 	if err := goose.Up(conn, "../../../migrations"); err != nil {
 		t.Fatalf("goose.Up() error = %v", err)
 	}
+}
+
+func viewerIDFor(t *testing.T, ctx context.Context, userService *users.Service, identity auth.Identity) string {
+	t.Helper()
+	viewer, err := userService.Viewer(ctx, identity)
+	if err != nil {
+		t.Fatalf("Viewer() error = %v", err)
+	}
+	return viewer.User.ID
 }

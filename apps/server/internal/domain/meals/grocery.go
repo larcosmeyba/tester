@@ -30,8 +30,13 @@ type GroceryItem struct {
 	// buy none" and "you own some, buy the rest" are different instructions to
 	// a shopper.
 	PartiallyInPantry bool
-	IsChecked         bool
-	UsedBy            []string
+	// PantryMayCover means the ingredient is in the pantry but without a usable
+	// amount, so the full quantity is still listed. The pantry may already
+	// cover some or all of it; nobody knows, and the list says so rather than
+	// assuming enough exists and sending someone home short.
+	PantryMayCover bool
+	IsChecked      bool
+	UsedBy         []string
 }
 
 type GrocerySection struct {

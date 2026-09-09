@@ -71,11 +71,11 @@ func BuildBasketWithHoldings(occurrences []meals.PlannedRecipe, holdings map[str
 				items = append(items, item)
 				continue
 			case meals.CoverageUnknown:
-				// Owned, amount not known. Covered, and said out loud below.
-				item.InPantry = true
-				items = append(items, item)
+				// Owned, amount not usable. The requirement stays in full and
+				// gets priced: an unmeasured jar is not evidence of enough, and
+				// over-buying is the recoverable mistake here.
+				item.PantryMayCover = true
 				uncheckedQty = append(uncheckedQty, entry.displayName)
-				continue
 			case meals.CoveragePartial:
 				// Buy the shortfall. The line stays on the list at the reduced
 				// quantity, priced normally from here down.
@@ -121,8 +121,8 @@ func BuildBasketWithHoldings(occurrences []meals.PlannedRecipe, holdings map[str
 	}
 	if len(uncheckedQty) > 0 {
 		basket.Assumptions = append(basket.Assumptions,
-			"These are in your pantry but you did not say how much, so check you have enough: "+
-				joinDisplay(uncheckedQty)+".")
+			"These are still on the list in full because you did not say how much you have. "+
+				"Your pantry may already cover some or all of them: "+joinDisplay(uncheckedQty)+".")
 	}
 	if len(partiallyOwned) > 0 {
 		basket.Assumptions = append(basket.Assumptions,
@@ -263,7 +263,14 @@ func holdingFor(ingredientID string, holdings map[string]meals.PantryHolding, ca
 	// coverage is unknown.
 	for id, holding := range holdings {
 		if catalog.Matches(ingredientID, map[string]bool{id: true}) {
-			return meals.PantryHolding{IngredientID: holding.IngredientID, UseFirst: holding.UseFirst}, true
+			// A parent's quantity is not the child's — a pound of "chicken" is
+			// not a pound of chicken thighs — so the amount is dropped and the
+			// coverage falls through to unknown.
+			return meals.PantryHolding{
+				IngredientID:  holding.IngredientID,
+				UseFirst:      holding.UseFirst,
+				AssumeCovered: holding.AssumeCovered,
+			}, true
 		}
 	}
 	return meals.PantryHolding{}, false

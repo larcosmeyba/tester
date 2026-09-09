@@ -22,6 +22,14 @@ type PantryHolding struct {
 	Unit   string
 	// UseFirst ranks this above other pantry items when a plan is built.
 	UseFirst bool
+	// AssumeCovered means the caller asserts this ingredient is handled and no
+	// quantity is needed — the questionnaire's "I already have rice", which is
+	// a statement of intent about the shop rather than a measurement.
+	//
+	// It is deliberately different from a pantry row with no amount. There the
+	// user recorded an item and simply did not say how much, which is not the
+	// same as saying "do not buy this", so the requirement stays on the list.
+	AssumeCovered bool
 }
 
 // Known reports whether this holding carries a usable quantity.
@@ -33,8 +41,9 @@ type Coverage int
 const (
 	// CoverageNone — the user does not have this ingredient at all.
 	CoverageNone Coverage = iota
-	// CoverageUnknown — they have it, but not how much. The line is treated as
-	// covered, and the plan says so out loud so a shopper can check.
+	// CoverageUnknown — they have it, but not how much. The requirement stays
+	// on the list at its full quantity, flagged so a shopper knows the pantry
+	// may already cover some or all of it. Nothing is assumed to be enough.
 	CoverageUnknown
 	// CoveragePartial — they have some. The remainder has to be bought.
 	CoveragePartial
@@ -46,25 +55,33 @@ const (
 //
 // It returns the amount still to buy and which kind of coverage produced it.
 //
-// Units must be comparable. Two mass units convert (GramsFor knows what a pound
-// weighs); two identical units compare directly; anything else — cups against
-// grams, "bag" against anything — does not, because converting it would need a
-// density the catalogue does not hold. An incomparable pair is reported as
-// unknown rather than as a number nobody can justify.
+// Units must be comparable. Two masses convert, two volumes convert, and two
+// spellings of the same unit compare directly. Mass against volume does not,
+// because it needs a density that depends on the ingredient and that the
+// catalogue does not hold — a cup of rice and a cup of oil do not weigh the
+// same. An incomparable pair is reported as unknown rather than as a number
+// nobody can justify.
 func Subtract(neededQty float64, neededUnit string, holding PantryHolding) (remaining float64, coverage Coverage) {
 	if holding.IngredientID == "" {
 		return neededQty, CoverageNone
 	}
+	if holding.AssumeCovered {
+		return 0, CoverageFull
+	}
 	if !holding.Known() {
-		return 0, CoverageUnknown
+		// They have some of this. How much is not known, so the requirement is
+		// kept in full and marked. Zeroing it here would be assuming enough
+		// exists, which is the one thing a pantry row without a number cannot
+		// tell us.
+		return neededQty, CoverageUnknown
 	}
 
 	have, want, ok := comparable(*holding.Amount, holding.Unit, neededQty, neededUnit)
 	if !ok {
-		// They have some of it; the units cannot be lined up. Saying "buy the
-		// full amount" would over-buy and saying "buy nothing" would under-buy.
-		// Unknown is the only honest answer.
-		return 0, CoverageUnknown
+		// They have some of it, in a unit that cannot be lined up with the
+		// recipe's. The amount they hold is unusable here, so this is the same
+		// state as having no number at all.
+		return neededQty, CoverageUnknown
 	}
 	if have >= want {
 		return 0, CoverageFull
@@ -81,6 +98,16 @@ func comparable(haveQty float64, haveUnit string, wantQty float64, wantUnit stri
 	wantGrams, wantIsMass := GramsFor(wantQty, wantUnit)
 	if haveIsMass && wantIsMass {
 		return haveGrams, wantGrams, true
+	}
+	// Volumes convert among themselves: teaspoons, tablespoons, cups, litres.
+	haveMl, haveIsVolume := MillilitresFor(haveQty, haveUnit)
+	wantMl, wantIsVolume := MillilitresFor(wantQty, wantUnit)
+	if haveIsVolume && wantIsVolume {
+		return haveMl, wantMl, true
+	}
+	// One of each is exactly the case that needs a density. Refused.
+	if (haveIsMass && wantIsVolume) || (haveIsVolume && wantIsMass) {
+		return 0, 0, false
 	}
 	// The same unit, however it was spelled: "2 cups" against "1 cup".
 	haveKey, wantKey := comparableUnitKey(haveUnit), comparableUnitKey(wantUnit)
@@ -147,11 +174,13 @@ func merge(a, b PantryHolding) PantryHolding {
 		return PantryHolding{IngredientID: a.IngredientID, UseFirst: useFirst}
 	}
 	total := haveA + haveB
-	// Report the total in a's unit. When both were masses the sum is in grams,
-	// so say grams.
+	// Report the total in the unit the conversion produced: grams for masses,
+	// millilitres for volumes, otherwise whatever a was already stated in.
 	unit := a.Unit
-	if _, isMass := GramsFor(*a.Amount, a.Unit); isMass {
+	if IsMassUnit(a.Unit) {
 		unit = "g"
+	} else if IsVolumeUnit(a.Unit) {
+		unit = "ml"
 	}
 	return PantryHolding{IngredientID: a.IngredientID, Amount: &total, Unit: unit, UseFirst: useFirst}
 }
@@ -166,15 +195,16 @@ func PantryIDs(holdings map[string]PantryHolding) map[string]bool {
 	return out
 }
 
-// HoldingsFromIDs builds unknown-quantity holdings from a plain id list, so the
-// presence-only callers keep working exactly as they did.
+// HoldingsFromIDs builds holdings from a plain id list, for the callers whose
+// input is an assertion that these ingredients are covered rather than a record
+// of what is in a cupboard. Presence-only behaviour is preserved exactly.
 func HoldingsFromIDs(ids []string) map[string]PantryHolding {
 	out := make(map[string]PantryHolding, len(ids))
 	for _, id := range ids {
 		if strings.TrimSpace(id) == "" {
 			continue
 		}
-		out[id] = PantryHolding{IngredientID: id}
+		out[id] = PantryHolding{IngredientID: id, AssumeCovered: true}
 	}
 	return out
 }
