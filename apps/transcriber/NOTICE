@@ -1,0 +1,30 @@
+Help The Hive — recipe import service
+=====================================
+
+This service is derived from Recipe Extractor:
+
+    https://github.com/sleeper/recipe-extractor
+    Copyright (c) 2024 Frederick Ros
+    Licensed under the MIT License.
+
+What was carried over, in substance:
+
+  * the order of preference for obtaining a transcript — post description,
+    then existing captions in their original language, then Whisper
+    transcription of the downloaded audio (`transcripts.py`, derived from
+    upstream `video_transcripts.py`);
+  * the anti-hallucination framing of the extraction prompt, which is the
+    most valuable idea in the original (`extract.py`);
+  * the Markdown rendering of an extracted recipe (`markdown.py`);
+  * the shape of the command line interface (`cli.py`).
+
+What is new here:
+
+  * output conforms to the Standard HTH Recipe Object in
+    packages/api-contract/meals.graphql, rather than a flat recipe shape;
+  * absence is recorded rather than filled — missingInformation,
+    ValueConfidence, and baseMealPlanEligible;
+  * a job-based HTTP API, service authentication, a source allowlist, a
+    duration cap, per-import temporary directories, and provenance.
+
+A copy of the upstream MIT licence is included in LICENSE.

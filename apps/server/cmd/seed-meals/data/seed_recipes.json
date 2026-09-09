@@ -1,0 +1,1803 @@
+[
+  {
+    "recipe_id": "b5018d84-8494-5428-b550-7f617af19f5d",
+    "owner_user_id": null,
+    "title": "Chicken & Black Bean Burrito Bowls",
+    "description": "Seasoned chicken thighs with black beans and rice, topped with salsa, lime, and cilantro.",
+    "source_type": "hth_library",
+    "source_url": null,
+    "source_name": "Help The Hive Seed Library",
+    "license_id": "proprietary-hth",
+    "attribution_text": null,
+    "visibility": "public",
+    "review_status": "approved",
+    "servings": 4.0,
+    "servings_confidence": "source",
+    "serving_size_text": null,
+    "scalable": true,
+    "prep_time_minutes": 10,
+    "cook_time_minutes": 25,
+    "total_time_minutes": 35,
+    "time_confidence": "source",
+    "meal_types": [
+      "dinner"
+    ],
+    "cuisine": "mexican_inspired",
+    "difficulty": 2,
+    "equipment_required": [
+      "stovetop"
+    ],
+    "is_component": false,
+    "tags": [
+      "diet.dairy_free",
+      "diet.egg_free",
+      "diet.gluten_free",
+      "diet.nut_free",
+      "household.family_friendly",
+      "household.leftovers_friendly",
+      "meal.dinner",
+      "method.stovetop",
+      "nutrition.high_protein",
+      "time.45_min",
+      "time.60_min"
+    ],
+    "ingredients": [
+      {
+        "position": 1,
+        "raw_text": "1.5 lb boneless skinless chicken thighs, cut into pieces",
+        "ingredient_id": "chicken_thigh_bs",
+        "display_name": "Chicken Thighs (boneless, skinless)",
+        "quantity": 1.5,
+        "unit": "lb",
+        "preparation": "cut into 1-inch pieces",
+        "grams": 680.4,
+        "is_optional": false,
+        "is_to_taste": false,
+        "missing_information": null
+      },
+      {
+        "position": 2,
+        "raw_text": "1 lb white rice",
+        "ingredient_id": "rice_white",
+        "display_name": "White Rice",
+        "quantity": 1.0,
+        "unit": "lb",
+        "preparation": null,
+        "grams": 453.6,
+        "is_optional": false,
+        "is_to_taste": false,
+        "missing_information": null
+      },
+      {
+        "position": 3,
+        "raw_text": "2 (15 oz) cans black beans, drained and rinsed",
+        "ingredient_id": "black_beans_canned",
+        "display_name": "Black Beans (canned)",
+        "quantity": 2,
+        "unit": "can",
+        "preparation": "drained and rinsed",
+        "grams": 850,
+        "is_optional": false,
+        "is_to_taste": false,
+        "missing_information": null
+      },
+      {
+        "position": 4,
+        "raw_text": "1/2 lb onion, diced",
+        "ingredient_id": "onion",
+        "display_name": "Onion",
+        "quantity": 0.5,
+        "unit": "lb",
+        "preparation": "diced",
+        "grams": 226.8,
+        "is_optional": false,
+        "is_to_taste": false,
+        "missing_information": null
+      },
+      {
+        "position": 5,
+        "raw_text": "3 cloves garlic, minced",
+        "ingredient_id": "garlic",
+        "display_name": "Garlic",
+        "quantity": 0.15,
+        "unit": "head",
+        "preparation": "minced",
+        "grams": 7.5,
+        "is_optional": false,
+        "is_to_taste": false,
+        "missing_information": null
+      },
+      {
+        "position": 6,
+        "raw_text": "1 bell pepper, sliced",
+        "ingredient_id": "bell_pepper",
+        "display_name": "Bell Pepper",
+        "quantity": 1,
+        "unit": "each",
+        "preparation": "sliced",
+        "grams": 120,
+        "is_optional": false,
+        "is_to_taste": false,
+        "missing_information": null
+      },
+      {
+        "position": 7,
+        "raw_text": "1 lime, cut into wedges",
+        "ingredient_id": "lime",
+        "display_name": "Lime",
+        "quantity": 1,
+        "unit": "each",
+        "preparation": null,
+        "grams": 67,
+        "is_optional": false,
+        "is_to_taste": false,
+        "missing_information": null
+      },
+      {
+        "position": 8,
+        "raw_text": "1/2 bunch cilantro, chopped",
+        "ingredient_id": "cilantro",
+        "display_name": "Cilantro (bunch)",
+        "quantity": 0.5,
+        "unit": "bunch",
+        "preparation": "chopped",
+        "grams": 25.0,
+        "is_optional": false,
+        "is_to_taste": false,
+        "missing_information": null
+      },
+      {
+        "position": 9,
+        "raw_text": "8 oz salsa",
+        "ingredient_id": "salsa",
+        "display_name": "Salsa (jar)",
+        "quantity": 8,
+        "unit": "oz",
+        "preparation": null,
+        "grams": 226.8,
+        "is_optional": false,
+        "is_to_taste": false,
+        "missing_information": null
+      },
+      {
+        "position": 10,
+        "raw_text": "1 tbsp taco seasoning",
+        "ingredient_id": "spices_common",
+        "display_name": "Common Dried Spices",
+        "quantity": 3,
+        "unit": "tsp",
+        "preparation": null,
+        "grams": 7.5,
+        "is_optional": false,
+        "is_to_taste": false,
+        "missing_information": null
+      },
+      {
+        "position": 11,
+        "raw_text": "1 tbsp olive oil",
+        "ingredient_id": "olive_oil",
+        "display_name": "Olive Oil",
+        "quantity": 0.5,
+        "unit": "oz",
+        "preparation": null,
+        "grams": 14.2,
+        "is_optional": false,
+        "is_to_taste": false,
+        "missing_information": null
+      },
+      {
+        "position": 12,
+        "raw_text": "salt, to taste",
+        "ingredient_id": "salt",
+        "display_name": "Salt",
+        "quantity": null,
+        "unit": "tsp",
+        "preparation": null,
+        "grams": null,
+        "is_optional": false,
+        "is_to_taste": true,
+        "missing_information": null
+      }
+    ],
+    "instructions": [
+      {
+        "step": 1,
+        "text": "Cook the rice according to package directions.",
+        "minutes": null
+      },
+      {
+        "step": 2,
+        "text": "Heat the oil in a large skillet over medium-high heat. Season the chicken with taco seasoning and salt; cook 6-8 minutes until no longer pink.",
+        "minutes": null
+      },
+      {
+        "step": 3,
+        "text": "Add the onion, garlic, and bell pepper; cook 4-5 minutes until softened.",
+        "minutes": null
+      },
+      {
+        "step": 4,
+        "text": "Stir in the black beans and warm through.",
+        "minutes": null
+      },
+      {
+        "step": 5,
+        "text": "Serve over rice topped with salsa, cilantro, and lime wedges.",
+        "minutes": null
+      }
+    ],
+    "nutrition": {
+      "basis": "hth_computed",
+      "per_serving": true,
+      "calories_kcal": 520,
+      "protein_g": 32,
+      "carbs_g": 62,
+      "fat_g": 14,
+      "fiber_g": 11,
+      "sodium_mg": 640,
+      "coverage_pct": 96,
+      "confidence": "medium"
+    },
+    "base_meal_plan_eligible": true,
+    "missing_information": []
+  },
+  {
+    "recipe_id": "622cd109-766c-5779-a60e-c79da6acdc6e",
+    "owner_user_id": null,
+    "title": "Chicken & Vegetable Stir-Fry over Rice",
+    "description": "Quick chicken breast stir-fry with mixed vegetables and soy sauce over steamed rice.",
+    "source_type": "hth_library",
+    "source_url": null,
+    "source_name": "Help The Hive Seed Library",
+    "license_id": "proprietary-hth",
+    "attribution_text": null,
+    "visibility": "public",
+    "review_status": "approved",
+    "servings": 4.0,
+    "servings_confidence": "source",
+    "serving_size_text": null,
+    "scalable": true,
+    "prep_time_minutes": 10,
+    "cook_time_minutes": 20,
+    "total_time_minutes": 30,
+    "time_confidence": "source",
+    "meal_types": [
+      "dinner"
+    ],
+    "cuisine": "asian_inspired",
+    "difficulty": 2,
+    "equipment_required": [
+      "stovetop"
+    ],
+    "is_component": false,
+    "tags": [
+      "diet.dairy_free",
+      "diet.egg_free",
+      "diet.nut_free",
+      "household.family_friendly",
+      "meal.dinner",
+      "method.stovetop",
+      "nutrition.high_protein",
+      "time.30_min",
+      "time.45_min",
+      "time.60_min"
+    ],
+    "ingredients": [
+      {
+        "position": 1,
+        "raw_text": "1.5 lb chicken breast, sliced thin",
+        "ingredient_id": "chicken_breast",
+        "display_name": "Chicken Breast",
+        "quantity": 1.5,
+        "unit": "lb",
+        "preparation": "sliced thin",
+        "grams": 680.4,
+        "is_optional": false,
+        "is_to_taste": false,
+        "missing_information": null
+      },
+      {
+        "position": 2,
+        "raw_text": "24 oz frozen mixed vegetables",
+        "ingredient_id": "frozen_mixed_veg",
+        "display_name": "Frozen Mixed Vegetables",
+        "quantity": 24,
+        "unit": "oz",
+        "preparation": null,
+        "grams": 680.4,
+        "is_optional": false,
+        "is_to_taste": false,
+        "missing_information": null
+      },
+      {
+        "position": 3,
+        "raw_text": "2 tbsp soy sauce",
+        "ingredient_id": "soy_sauce",
+        "display_name": "Soy Sauce",
+        "quantity": 1,
+        "unit": "oz",
+        "preparation": null,
+        "grams": 28.4,
+        "is_optional": false,
+        "is_to_taste": false,
+        "missing_information": null
+      },
+      {
+        "position": 4,
+        "raw_text": "4 cloves garlic, minced",
+        "ingredient_id": "garlic",
+        "display_name": "Garlic",
+        "quantity": 0.2,
+        "unit": "head",
+        "preparation": "minced",
+        "grams": 10.0,
+        "is_optional": false,
+        "is_to_taste": false,
+        "missing_information": null
+      },
+      {
+        "position": 5,
+        "raw_text": "1/2 lb onion, sliced",
+        "ingredient_id": "onion",
+        "display_name": "Onion",
+        "quantity": 0.5,
+        "unit": "lb",
+        "preparation": "sliced",
+        "grams": 226.8,
+        "is_optional": false,
+        "is_to_taste": false,
+        "missing_information": null
+      },
+      {
+        "position": 6,
+        "raw_text": "1 lb white rice",
+        "ingredient_id": "rice_white",
+        "display_name": "White Rice",
+        "quantity": 1.0,
+        "unit": "lb",
+        "preparation": null,
+        "grams": 453.6,
+        "is_optional": false,
+        "is_to_taste": false,
+        "missing_information": null
+      },
+      {
+        "position": 7,
+        "raw_text": "2 tbsp olive oil",
+        "ingredient_id": "olive_oil",
+        "display_name": "Olive Oil",
+        "quantity": 1,
+        "unit": "oz",
+        "preparation": null,
+        "grams": 28.4,
+        "is_optional": false,
+        "is_to_taste": false,
+        "missing_information": null
+      }
+    ],
+    "instructions": [
+      {
+        "step": 1,
+        "text": "Cook the rice according to package directions.",
+        "minutes": null
+      },
+      {
+        "step": 2,
+        "text": "Heat the oil in a large skillet or wok over high heat. Stir-fry the chicken 5-6 minutes; remove.",
+        "minutes": null
+      },
+      {
+        "step": 3,
+        "text": "Stir-fry the onion, garlic, and frozen vegetables 4-5 minutes.",
+        "minutes": null
+      },
+      {
+        "step": 4,
+        "text": "Return the chicken, add the soy sauce, and toss 1 minute. Serve over rice.",
+        "minutes": null
+      }
+    ],
+    "nutrition": {
+      "basis": "hth_computed",
+      "per_serving": true,
+      "calories_kcal": 495,
+      "protein_g": 30,
+      "carbs_g": 58,
+      "fat_g": 12,
+      "fiber_g": 7,
+      "sodium_mg": 720,
+      "coverage_pct": 96,
+      "confidence": "medium"
+    },
+    "base_meal_plan_eligible": true,
+    "missing_information": []
+  },
+  {
+    "recipe_id": "93116e15-ac44-5e19-a0fd-97f3c6641a8a",
+    "owner_user_id": null,
+    "title": "Turkey & Black Bean Chili",
+    "description": "Hearty one-pot chili with ground turkey, black beans, and tomatoes.",
+    "source_type": "hth_library",
+    "source_url": null,
+    "source_name": "Help The Hive Seed Library",
+    "license_id": "proprietary-hth",
+    "attribution_text": null,
+    "visibility": "public",
+    "review_status": "approved",
+    "servings": 4.0,
+    "servings_confidence": "source",
+    "serving_size_text": null,
+    "scalable": true,
+    "prep_time_minutes": 10,
+    "cook_time_minutes": 35,
+    "total_time_minutes": 45,
+    "time_confidence": "source",
+    "meal_types": [
+      "dinner"
+    ],
+    "cuisine": "american",
+    "difficulty": 2,
+    "equipment_required": [
+      "stovetop"
+    ],
+    "is_component": false,
+    "tags": [
+      "diet.dairy_free",
+      "diet.egg_free",
+      "diet.gluten_free",
+      "diet.nut_free",
+      "household.freezer_friendly",
+      "household.leftovers_friendly",
+      "household.meal_prep",
+      "meal.dinner",
+      "method.one_pot",
+      "method.stovetop",
+      "nutrition.high_fiber",
+      "nutrition.high_protein",
+      "time.45_min",
+      "time.60_min"
+    ],
+    "ingredients": [
+      {
+        "position": 1,
+        "raw_text": "1 lb ground turkey",
+        "ingredient_id": "ground_turkey",
+        "display_name": "Ground Turkey",
+        "quantity": 1.0,
+        "unit": "lb",
+        "preparation": null,
+        "grams": 453.6,
+        "is_optional": false,
+        "is_to_taste": false,
+        "missing_information": null
+      },
+      {
+        "position": 2,
+        "raw_text": "2 (15 oz) cans black beans, drained",
+        "ingredient_id": "black_beans_canned",
+        "display_name": "Black Beans (canned)",
+        "quantity": 2,
+        "unit": "can",
+        "preparation": "drained",
+        "grams": 850,
+        "is_optional": false,
+        "is_to_taste": false,
+        "missing_information": null
+      },
+      {
+        "position": 3,
+        "raw_text": "2 (14.5 oz) cans diced tomatoes",
+        "ingredient_id": "diced_tomatoes_can",
+        "display_name": "Diced Tomatoes (canned)",
+        "quantity": 2,
+        "unit": "can",
+        "preparation": null,
+        "grams": 850,
+        "is_optional": false,
+        "is_to_taste": false,
+        "missing_information": null
+      },
+      {
+        "position": 4,
+        "raw_text": "1/2 lb onion, diced",
+        "ingredient_id": "onion",
+        "display_name": "Onion",
+        "quantity": 0.5,
+        "unit": "lb",
+        "preparation": "diced",
+        "grams": 226.8,
+        "is_optional": false,
+        "is_to_taste": false,
+        "missing_information": null
+      },
+      {
+        "position": 5,
+        "raw_text": "3 cloves garlic, minced",
+        "ingredient_id": "garlic",
+        "display_name": "Garlic",
+        "quantity": 0.15,
+        "unit": "head",
+        "preparation": "minced",
+        "grams": 7.5,
+        "is_optional": false,
+        "is_to_taste": false,
+        "missing_information": null
+      },
+      {
+        "position": 6,
+        "raw_text": "1 bell pepper, diced",
+        "ingredient_id": "bell_pepper",
+        "display_name": "Bell Pepper",
+        "quantity": 1,
+        "unit": "each",
+        "preparation": "diced",
+        "grams": 120,
+        "is_optional": false,
+        "is_to_taste": false,
+        "missing_information": null
+      },
+      {
+        "position": 7,
+        "raw_text": "4 tsp chili powder and cumin",
+        "ingredient_id": "spices_common",
+        "display_name": "Common Dried Spices",
+        "quantity": 4,
+        "unit": "tsp",
+        "preparation": null,
+        "grams": 10.0,
+        "is_optional": false,
+        "is_to_taste": false,
+        "missing_information": null
+      },
+      {
+        "position": 8,
+        "raw_text": "1 tbsp olive oil",
+        "ingredient_id": "olive_oil",
+        "display_name": "Olive Oil",
+        "quantity": 0.5,
+        "unit": "oz",
+        "preparation": null,
+        "grams": 14.2,
+        "is_optional": false,
+        "is_to_taste": false,
+        "missing_information": null
+      }
+    ],
+    "instructions": [
+      {
+        "step": 1,
+        "text": "Heat the oil in a large pot over medium-high heat. Brown the turkey, 5-6 minutes.",
+        "minutes": null
+      },
+      {
+        "step": 2,
+        "text": "Add the onion, garlic, and bell pepper; cook 4 minutes.",
+        "minutes": null
+      },
+      {
+        "step": 3,
+        "text": "Stir in the spices, tomatoes, and beans. Simmer 25 minutes, stirring occasionally.",
+        "minutes": null
+      },
+      {
+        "step": 4,
+        "text": "Season and serve.",
+        "minutes": null
+      }
+    ],
+    "nutrition": {
+      "basis": "hth_computed",
+      "per_serving": true,
+      "calories_kcal": 430,
+      "protein_g": 28,
+      "carbs_g": 46,
+      "fat_g": 13,
+      "fiber_g": 14,
+      "sodium_mg": 690,
+      "coverage_pct": 96,
+      "confidence": "medium"
+    },
+    "base_meal_plan_eligible": true,
+    "missing_information": []
+  },
+  {
+    "recipe_id": "a48015f5-90e0-5edb-868f-07a516f8bf1a",
+    "owner_user_id": null,
+    "title": "Lentil & Sweet Potato Curry",
+    "description": "Creamy coconut curry with lentils and sweet potato over rice.",
+    "source_type": "hth_library",
+    "source_url": null,
+    "source_name": "Help The Hive Seed Library",
+    "license_id": "proprietary-hth",
+    "attribution_text": null,
+    "visibility": "public",
+    "review_status": "approved",
+    "servings": 4.0,
+    "servings_confidence": "source",
+    "serving_size_text": null,
+    "scalable": true,
+    "prep_time_minutes": 10,
+    "cook_time_minutes": 30,
+    "total_time_minutes": 40,
+    "time_confidence": "source",
+    "meal_types": [
+      "dinner"
+    ],
+    "cuisine": "indian_inspired",
+    "difficulty": 2,
+    "equipment_required": [
+      "stovetop"
+    ],
+    "is_component": false,
+    "tags": [
+      "diet.dairy_free",
+      "diet.egg_free",
+      "diet.gluten_free",
+      "diet.pescatarian",
+      "diet.vegan",
+      "diet.vegetarian",
+      "household.freezer_friendly",
+      "household.leftovers_friendly",
+      "meal.dinner",
+      "method.one_pot",
+      "method.stovetop",
+      "nutrition.high_fiber",
+      "time.45_min",
+      "time.60_min"
+    ],
+    "ingredients": [
+      {
+        "position": 1,
+        "raw_text": "16 oz dried lentils, rinsed",
+        "ingredient_id": "lentils_dry",
+        "display_name": "Dried Lentils",
+        "quantity": 16,
+        "unit": "oz",
+        "preparation": "rinsed",
+        "grams": 453.6,
+        "is_optional": false,
+        "is_to_taste": false,
+        "missing_information": null
+      },
+      {
+        "position": 2,
+        "raw_text": "1.5 lb sweet potato, peeled and cubed",
+        "ingredient_id": "sweet_potato",
+        "display_name": "Sweet Potato",
+        "quantity": 1.5,
+        "unit": "lb",
+        "preparation": "peeled and cubed",
+        "grams": 680.4,
+        "is_optional": false,
+        "is_to_taste": false,
+        "missing_information": null
+      },
+      {
+        "position": 3,
+        "raw_text": "1 (13.5 oz) can coconut milk",
+        "ingredient_id": "coconut_milk",
+        "display_name": "Coconut Milk (canned)",
+        "quantity": 1,
+        "unit": "can",
+        "preparation": null,
+        "grams": 425,
+        "is_optional": false,
+        "is_to_taste": false,
+        "missing_information": null
+      },
+      {
+        "position": 4,
+        "raw_text": "1/2 lb onion, diced",
+        "ingredient_id": "onion",
+        "display_name": "Onion",
+        "quantity": 0.5,
+        "unit": "lb",
+        "preparation": "diced",
+        "grams": 226.8,
+        "is_optional": false,
+        "is_to_taste": false,
+        "missing_information": null
+      },
+      {
+        "position": 5,
+        "raw_text": "3 cloves garlic, minced",
+        "ingredient_id": "garlic",
+        "display_name": "Garlic",
+        "quantity": 0.15,
+        "unit": "head",
+        "preparation": "minced",
+        "grams": 7.5,
+        "is_optional": false,
+        "is_to_taste": false,
+        "missing_information": null
+      },
+      {
+        "position": 6,
+        "raw_text": "4 tsp curry powder",
+        "ingredient_id": "spices_common",
+        "display_name": "Common Dried Spices",
+        "quantity": 4,
+        "unit": "tsp",
+        "preparation": null,
+        "grams": 10.0,
+        "is_optional": false,
+        "is_to_taste": false,
+        "missing_information": null
+      },
+      {
+        "position": 7,
+        "raw_text": "1 lb white rice",
+        "ingredient_id": "rice_white",
+        "display_name": "White Rice",
+        "quantity": 1.0,
+        "unit": "lb",
+        "preparation": null,
+        "grams": 453.6,
+        "is_optional": false,
+        "is_to_taste": false,
+        "missing_information": null
+      },
+      {
+        "position": 8,
+        "raw_text": "1 tbsp olive oil",
+        "ingredient_id": "olive_oil",
+        "display_name": "Olive Oil",
+        "quantity": 0.5,
+        "unit": "oz",
+        "preparation": null,
+        "grams": 14.2,
+        "is_optional": false,
+        "is_to_taste": false,
+        "missing_information": null
+      }
+    ],
+    "instructions": [
+      {
+        "step": 1,
+        "text": "Cook the rice according to package directions.",
+        "minutes": null
+      },
+      {
+        "step": 2,
+        "text": "Heat the oil in a large pot; cook the onion and garlic 3 minutes. Stir in the curry powder.",
+        "minutes": null
+      },
+      {
+        "step": 3,
+        "text": "Add the lentils, sweet potato, coconut milk, and 4 cups of water. Simmer 25 minutes until tender.",
+        "minutes": null
+      },
+      {
+        "step": 4,
+        "text": "Serve over rice.",
+        "minutes": null
+      }
+    ],
+    "nutrition": {
+      "basis": "hth_computed",
+      "per_serving": true,
+      "calories_kcal": 560,
+      "protein_g": 18,
+      "carbs_g": 88,
+      "fat_g": 15,
+      "fiber_g": 16,
+      "sodium_mg": 380,
+      "coverage_pct": 96,
+      "confidence": "medium"
+    },
+    "base_meal_plan_eligible": true,
+    "missing_information": []
+  },
+  {
+    "recipe_id": "a56750cf-01ce-5be4-abbb-bbc0d4f1a9ab",
+    "owner_user_id": null,
+    "title": "Egg Fried Rice with Vegetables",
+    "description": "Fast weeknight fried rice with eggs and mixed vegetables.",
+    "source_type": "hth_library",
+    "source_url": null,
+    "source_name": "Help The Hive Seed Library",
+    "license_id": "proprietary-hth",
+    "attribution_text": null,
+    "visibility": "public",
+    "review_status": "approved",
+    "servings": 4.0,
+    "servings_confidence": "source",
+    "serving_size_text": null,
+    "scalable": true,
+    "prep_time_minutes": 5,
+    "cook_time_minutes": 15,
+    "total_time_minutes": 20,
+    "time_confidence": "source",
+    "meal_types": [
+      "dinner"
+    ],
+    "cuisine": "asian_inspired",
+    "difficulty": 2,
+    "equipment_required": [
+      "stovetop"
+    ],
+    "is_component": false,
+    "tags": [
+      "diet.dairy_free",
+      "diet.nut_free",
+      "diet.pescatarian",
+      "diet.vegetarian",
+      "household.family_friendly",
+      "household.kid_friendly",
+      "meal.dinner",
+      "method.one_pot",
+      "method.stovetop",
+      "time.30_min",
+      "time.45_min",
+      "time.60_min"
+    ],
+    "ingredients": [
+      {
+        "position": 1,
+        "raw_text": "8 eggs, beaten",
+        "ingredient_id": "eggs",
+        "display_name": "Eggs",
+        "quantity": 8,
+        "unit": "each",
+        "preparation": "beaten",
+        "grams": 400,
+        "is_optional": false,
+        "is_to_taste": false,
+        "missing_information": null
+      },
+      {
+        "position": 2,
+        "raw_text": "1.25 lb white rice",
+        "ingredient_id": "rice_white",
+        "display_name": "White Rice",
+        "quantity": 1.25,
+        "unit": "lb",
+        "preparation": "cooked and cooled",
+        "grams": 567.0,
+        "is_optional": false,
+        "is_to_taste": false,
+        "missing_information": null
+      },
+      {
+        "position": 3,
+        "raw_text": "12 oz frozen mixed vegetables",
+        "ingredient_id": "frozen_mixed_veg",
+        "display_name": "Frozen Mixed Vegetables",
+        "quantity": 12,
+        "unit": "oz",
+        "preparation": null,
+        "grams": 340.2,
+        "is_optional": false,
+        "is_to_taste": false,
+        "missing_information": null
+      },
+      {
+        "position": 4,
+        "raw_text": "2 tbsp soy sauce",
+        "ingredient_id": "soy_sauce",
+        "display_name": "Soy Sauce",
+        "quantity": 1,
+        "unit": "oz",
+        "preparation": null,
+        "grams": 28.4,
+        "is_optional": false,
+        "is_to_taste": false,
+        "missing_information": null
+      },
+      {
+        "position": 5,
+        "raw_text": "1/2 lb onion, diced",
+        "ingredient_id": "onion",
+        "display_name": "Onion",
+        "quantity": 0.5,
+        "unit": "lb",
+        "preparation": "diced",
+        "grams": 226.8,
+        "is_optional": false,
+        "is_to_taste": false,
+        "missing_information": null
+      },
+      {
+        "position": 6,
+        "raw_text": "3 cloves garlic, minced",
+        "ingredient_id": "garlic",
+        "display_name": "Garlic",
+        "quantity": 0.15,
+        "unit": "head",
+        "preparation": "minced",
+        "grams": 7.5,
+        "is_optional": false,
+        "is_to_taste": false,
+        "missing_information": null
+      },
+      {
+        "position": 7,
+        "raw_text": "2 tbsp olive oil",
+        "ingredient_id": "olive_oil",
+        "display_name": "Olive Oil",
+        "quantity": 1,
+        "unit": "oz",
+        "preparation": null,
+        "grams": 28.4,
+        "is_optional": false,
+        "is_to_taste": false,
+        "missing_information": null
+      }
+    ],
+    "instructions": [
+      {
+        "step": 1,
+        "text": "Cook the rice according to package directions (day-old rice works best).",
+        "minutes": null
+      },
+      {
+        "step": 2,
+        "text": "Heat half the oil in a large skillet; scramble the eggs and set aside.",
+        "minutes": null
+      },
+      {
+        "step": 3,
+        "text": "Heat the remaining oil; cook the onion, garlic, and vegetables 4 minutes.",
+        "minutes": null
+      },
+      {
+        "step": 4,
+        "text": "Add the rice and soy sauce; stir-fry 3 minutes. Fold in the eggs and serve.",
+        "minutes": null
+      }
+    ],
+    "nutrition": {
+      "basis": "hth_computed",
+      "per_serving": true,
+      "calories_kcal": 480,
+      "protein_g": 16,
+      "carbs_g": 66,
+      "fat_g": 15,
+      "fiber_g": 6,
+      "sodium_mg": 610,
+      "coverage_pct": 96,
+      "confidence": "medium"
+    },
+    "base_meal_plan_eligible": true,
+    "missing_information": []
+  },
+  {
+    "recipe_id": "8aa749a7-64ae-5343-93c8-e0b9d56ef9db",
+    "owner_user_id": null,
+    "title": "Sheet-Pan Chicken Thighs with Potatoes & Carrots",
+    "description": "One-pan roasted chicken thighs with potatoes and carrots.",
+    "source_type": "hth_library",
+    "source_url": null,
+    "source_name": "Help The Hive Seed Library",
+    "license_id": "proprietary-hth",
+    "attribution_text": null,
+    "visibility": "public",
+    "review_status": "approved",
+    "servings": 4.0,
+    "servings_confidence": "source",
+    "serving_size_text": null,
+    "scalable": true,
+    "prep_time_minutes": 15,
+    "cook_time_minutes": 40,
+    "total_time_minutes": 55,
+    "time_confidence": "source",
+    "meal_types": [
+      "dinner"
+    ],
+    "cuisine": "american",
+    "difficulty": 2,
+    "equipment_required": [
+      "oven"
+    ],
+    "is_component": false,
+    "tags": [
+      "diet.dairy_free",
+      "diet.egg_free",
+      "diet.gluten_free",
+      "diet.nut_free",
+      "household.family_friendly",
+      "household.kid_friendly",
+      "meal.dinner",
+      "method.oven",
+      "method.sheet_pan",
+      "nutrition.high_protein",
+      "time.60_min"
+    ],
+    "ingredients": [
+      {
+        "position": 1,
+        "raw_text": "2 lb boneless skinless chicken thighs",
+        "ingredient_id": "chicken_thigh_bs",
+        "display_name": "Chicken Thighs (boneless, skinless)",
+        "quantity": 2.0,
+        "unit": "lb",
+        "preparation": null,
+        "grams": 907.2,
+        "is_optional": false,
+        "is_to_taste": false,
+        "missing_information": null
+      },
+      {
+        "position": 2,
+        "raw_text": "2 lb potatoes, cut into wedges",
+        "ingredient_id": "potatoes",
+        "display_name": "Potatoes",
+        "quantity": 2.0,
+        "unit": "lb",
+        "preparation": "cut into wedges",
+        "grams": 907.2,
+        "is_optional": false,
+        "is_to_taste": false,
+        "missing_information": null
+      },
+      {
+        "position": 3,
+        "raw_text": "1 lb carrots, cut into chunks",
+        "ingredient_id": "carrots",
+        "display_name": "Carrots (1 lb bag)",
+        "quantity": 1.0,
+        "unit": "lb",
+        "preparation": "cut into chunks",
+        "grams": 453.6,
+        "is_optional": false,
+        "is_to_taste": false,
+        "missing_information": null
+      },
+      {
+        "position": 4,
+        "raw_text": "1/2 lb onion, cut into wedges",
+        "ingredient_id": "onion",
+        "display_name": "Onion",
+        "quantity": 0.5,
+        "unit": "lb",
+        "preparation": "cut into wedges",
+        "grams": 226.8,
+        "is_optional": false,
+        "is_to_taste": false,
+        "missing_information": null
+      },
+      {
+        "position": 5,
+        "raw_text": "1 tbsp Italian seasoning and paprika",
+        "ingredient_id": "spices_common",
+        "display_name": "Common Dried Spices",
+        "quantity": 3,
+        "unit": "tsp",
+        "preparation": null,
+        "grams": 7.5,
+        "is_optional": false,
+        "is_to_taste": false,
+        "missing_information": null
+      },
+      {
+        "position": 6,
+        "raw_text": "2 tbsp olive oil",
+        "ingredient_id": "olive_oil",
+        "display_name": "Olive Oil",
+        "quantity": 1,
+        "unit": "oz",
+        "preparation": null,
+        "grams": 28.4,
+        "is_optional": false,
+        "is_to_taste": false,
+        "missing_information": null
+      }
+    ],
+    "instructions": [
+      {
+        "step": 1,
+        "text": "Heat the oven to 425\u00b0F.",
+        "minutes": null
+      },
+      {
+        "step": 2,
+        "text": "Toss the potatoes, carrots, and onion with half the oil and seasoning on a rimmed baking sheet; roast 15 minutes.",
+        "minutes": null
+      },
+      {
+        "step": 3,
+        "text": "Toss the chicken with the remaining oil and seasoning; add to the pan.",
+        "minutes": null
+      },
+      {
+        "step": 4,
+        "text": "Roast 22-25 minutes more until the chicken reaches 165\u00b0F. Serve.",
+        "minutes": null
+      }
+    ],
+    "nutrition": {
+      "basis": "hth_computed",
+      "per_serving": true,
+      "calories_kcal": 540,
+      "protein_g": 34,
+      "carbs_g": 42,
+      "fat_g": 22,
+      "fiber_g": 7,
+      "sodium_mg": 520,
+      "coverage_pct": 96,
+      "confidence": "medium"
+    },
+    "base_meal_plan_eligible": true,
+    "missing_information": []
+  },
+  {
+    "recipe_id": "50a77a3b-24a1-58c7-96cf-83b794c80643",
+    "owner_user_id": null,
+    "title": "Beef & Bean Tacos with Cabbage Slaw",
+    "description": "Ground beef and black bean tacos with a crunchy lime-cabbage slaw.",
+    "source_type": "hth_library",
+    "source_url": null,
+    "source_name": "Help The Hive Seed Library",
+    "license_id": "proprietary-hth",
+    "attribution_text": null,
+    "visibility": "public",
+    "review_status": "approved",
+    "servings": 4.0,
+    "servings_confidence": "source",
+    "serving_size_text": null,
+    "scalable": true,
+    "prep_time_minutes": 12,
+    "cook_time_minutes": 18,
+    "total_time_minutes": 30,
+    "time_confidence": "source",
+    "meal_types": [
+      "dinner"
+    ],
+    "cuisine": "mexican_inspired",
+    "difficulty": 2,
+    "equipment_required": [
+      "stovetop"
+    ],
+    "is_component": false,
+    "tags": [
+      "diet.dairy_free",
+      "diet.egg_free",
+      "diet.gluten_free",
+      "diet.nut_free",
+      "household.family_friendly",
+      "household.kid_friendly",
+      "meal.dinner",
+      "method.stovetop",
+      "nutrition.high_protein",
+      "time.30_min",
+      "time.45_min",
+      "time.60_min"
+    ],
+    "ingredients": [
+      {
+        "position": 1,
+        "raw_text": "1 lb ground beef (85% lean)",
+        "ingredient_id": "ground_beef_85",
+        "display_name": "Ground Beef (85% lean)",
+        "quantity": 1.0,
+        "unit": "lb",
+        "preparation": null,
+        "grams": 453.6,
+        "is_optional": false,
+        "is_to_taste": false,
+        "missing_information": null
+      },
+      {
+        "position": 2,
+        "raw_text": "1 (15 oz) can black beans, drained",
+        "ingredient_id": "black_beans_canned",
+        "display_name": "Black Beans (canned)",
+        "quantity": 1,
+        "unit": "can",
+        "preparation": "drained",
+        "grams": 425,
+        "is_optional": false,
+        "is_to_taste": false,
+        "missing_information": null
+      },
+      {
+        "position": 3,
+        "raw_text": "corn tortillas (12)",
+        "ingredient_id": "corn_tortillas",
+        "display_name": "Corn Tortillas (30 ct)",
+        "quantity": 1,
+        "unit": "pkg",
+        "preparation": null,
+        "grams": 750,
+        "is_optional": false,
+        "is_to_taste": false,
+        "missing_information": null
+      },
+      {
+        "position": 4,
+        "raw_text": "1/2 lb onion, diced",
+        "ingredient_id": "onion",
+        "display_name": "Onion",
+        "quantity": 0.5,
+        "unit": "lb",
+        "preparation": "diced",
+        "grams": 226.8,
+        "is_optional": false,
+        "is_to_taste": false,
+        "missing_information": null
+      },
+      {
+        "position": 5,
+        "raw_text": "8 oz salsa",
+        "ingredient_id": "salsa",
+        "display_name": "Salsa (jar)",
+        "quantity": 8,
+        "unit": "oz",
+        "preparation": null,
+        "grams": 226.8,
+        "is_optional": false,
+        "is_to_taste": false,
+        "missing_information": null
+      },
+      {
+        "position": 6,
+        "raw_text": "2 limes",
+        "ingredient_id": "lime",
+        "display_name": "Lime",
+        "quantity": 2,
+        "unit": "each",
+        "preparation": null,
+        "grams": 134,
+        "is_optional": false,
+        "is_to_taste": false,
+        "missing_information": null
+      },
+      {
+        "position": 7,
+        "raw_text": "1/2 bunch cilantro, chopped",
+        "ingredient_id": "cilantro",
+        "display_name": "Cilantro (bunch)",
+        "quantity": 0.5,
+        "unit": "bunch",
+        "preparation": "chopped",
+        "grams": 25.0,
+        "is_optional": false,
+        "is_to_taste": false,
+        "missing_information": null
+      },
+      {
+        "position": 8,
+        "raw_text": "1 lb green cabbage, shredded",
+        "ingredient_id": "cabbage",
+        "display_name": "Green Cabbage",
+        "quantity": 1.0,
+        "unit": "lb",
+        "preparation": "shredded",
+        "grams": 453.6,
+        "is_optional": false,
+        "is_to_taste": false,
+        "missing_information": null
+      },
+      {
+        "position": 9,
+        "raw_text": "2 tsp taco seasoning",
+        "ingredient_id": "spices_common",
+        "display_name": "Common Dried Spices",
+        "quantity": 2,
+        "unit": "tsp",
+        "preparation": null,
+        "grams": 5.0,
+        "is_optional": false,
+        "is_to_taste": false,
+        "missing_information": null
+      },
+      {
+        "position": 10,
+        "raw_text": "1 tbsp olive oil",
+        "ingredient_id": "olive_oil",
+        "display_name": "Olive Oil",
+        "quantity": 0.5,
+        "unit": "oz",
+        "preparation": null,
+        "grams": 14.2,
+        "is_optional": false,
+        "is_to_taste": false,
+        "missing_information": null
+      }
+    ],
+    "instructions": [
+      {
+        "step": 1,
+        "text": "Toss the cabbage with the juice of one lime, half the cilantro, and a pinch of salt; set aside.",
+        "minutes": null
+      },
+      {
+        "step": 2,
+        "text": "Brown the beef with the onion and taco seasoning, 6-8 minutes. Stir in the beans and warm through.",
+        "minutes": null
+      },
+      {
+        "step": 3,
+        "text": "Warm the tortillas in a dry skillet.",
+        "minutes": null
+      },
+      {
+        "step": 4,
+        "text": "Fill the tortillas with the beef mixture, slaw, salsa, and remaining cilantro and lime.",
+        "minutes": null
+      }
+    ],
+    "nutrition": {
+      "basis": "hth_computed",
+      "per_serving": true,
+      "calories_kcal": 510,
+      "protein_g": 27,
+      "carbs_g": 52,
+      "fat_g": 20,
+      "fiber_g": 10,
+      "sodium_mg": 680,
+      "coverage_pct": 96,
+      "confidence": "medium"
+    },
+    "base_meal_plan_eligible": true,
+    "missing_information": []
+  },
+  {
+    "recipe_id": "88ed9aae-6769-5954-bc3f-302fada65144",
+    "owner_user_id": null,
+    "title": "Tuna & Spinach Pasta",
+    "description": "Pantry pasta with canned tuna, garlic, and fresh spinach.",
+    "source_type": "hth_library",
+    "source_url": null,
+    "source_name": "Help The Hive Seed Library",
+    "license_id": "proprietary-hth",
+    "attribution_text": null,
+    "visibility": "public",
+    "review_status": "approved",
+    "servings": 4.0,
+    "servings_confidence": "source",
+    "serving_size_text": null,
+    "scalable": true,
+    "prep_time_minutes": 5,
+    "cook_time_minutes": 20,
+    "total_time_minutes": 25,
+    "time_confidence": "source",
+    "meal_types": [
+      "dinner"
+    ],
+    "cuisine": "italian_inspired",
+    "difficulty": 2,
+    "equipment_required": [
+      "stovetop"
+    ],
+    "is_component": false,
+    "tags": [
+      "diet.dairy_free",
+      "diet.egg_free",
+      "diet.nut_free",
+      "diet.pescatarian",
+      "household.single_person",
+      "meal.dinner",
+      "method.stovetop",
+      "nutrition.high_protein",
+      "pantry.pantry_staples",
+      "time.30_min",
+      "time.45_min",
+      "time.60_min"
+    ],
+    "ingredients": [
+      {
+        "position": 1,
+        "raw_text": "3 (5 oz) cans tuna, drained",
+        "ingredient_id": "tuna_canned",
+        "display_name": "Canned Tuna",
+        "quantity": 3,
+        "unit": "can",
+        "preparation": "drained",
+        "grams": 1275,
+        "is_optional": false,
+        "is_to_taste": false,
+        "missing_information": null
+      },
+      {
+        "position": 2,
+        "raw_text": "1 (16 oz) box pasta",
+        "ingredient_id": "pasta",
+        "display_name": "Pasta",
+        "quantity": 1,
+        "unit": "box",
+        "preparation": null,
+        "grams": 454,
+        "is_optional": false,
+        "is_to_taste": false,
+        "missing_information": null
+      },
+      {
+        "position": 3,
+        "raw_text": "1 bag fresh spinach",
+        "ingredient_id": "spinach_fresh",
+        "display_name": "Fresh Spinach (bag)",
+        "quantity": 1,
+        "unit": "bag",
+        "preparation": null,
+        "grams": 280,
+        "is_optional": false,
+        "is_to_taste": false,
+        "missing_information": null
+      },
+      {
+        "position": 4,
+        "raw_text": "6 cloves garlic, sliced",
+        "ingredient_id": "garlic",
+        "display_name": "Garlic",
+        "quantity": 0.3,
+        "unit": "head",
+        "preparation": "sliced",
+        "grams": 15.0,
+        "is_optional": false,
+        "is_to_taste": false,
+        "missing_information": null
+      },
+      {
+        "position": 5,
+        "raw_text": "3 tbsp olive oil",
+        "ingredient_id": "olive_oil",
+        "display_name": "Olive Oil",
+        "quantity": 1.5,
+        "unit": "oz",
+        "preparation": null,
+        "grams": 42.5,
+        "is_optional": false,
+        "is_to_taste": false,
+        "missing_information": null
+      },
+      {
+        "position": 6,
+        "raw_text": "1 tsp chili flakes",
+        "ingredient_id": "spices_common",
+        "display_name": "Common Dried Spices",
+        "quantity": 1,
+        "unit": "tsp",
+        "preparation": null,
+        "grams": 2.5,
+        "is_optional": false,
+        "is_to_taste": false,
+        "missing_information": null
+      },
+      {
+        "position": 7,
+        "raw_text": "salt, to taste",
+        "ingredient_id": "salt",
+        "display_name": "Salt",
+        "quantity": null,
+        "unit": "tsp",
+        "preparation": null,
+        "grams": null,
+        "is_optional": false,
+        "is_to_taste": true,
+        "missing_information": null
+      }
+    ],
+    "instructions": [
+      {
+        "step": 1,
+        "text": "Cook the pasta in salted water; reserve a cup of pasta water.",
+        "minutes": null
+      },
+      {
+        "step": 2,
+        "text": "Warm the oil with the garlic and chili flakes over medium heat until fragrant.",
+        "minutes": null
+      },
+      {
+        "step": 3,
+        "text": "Add the tuna and spinach; toss until the spinach wilts.",
+        "minutes": null
+      },
+      {
+        "step": 4,
+        "text": "Add the pasta with a splash of pasta water; toss and season.",
+        "minutes": null
+      }
+    ],
+    "nutrition": {
+      "basis": "hth_computed",
+      "per_serving": true,
+      "calories_kcal": 520,
+      "protein_g": 26,
+      "carbs_g": 62,
+      "fat_g": 17,
+      "fiber_g": 5,
+      "sodium_mg": 560,
+      "coverage_pct": 96,
+      "confidence": "medium"
+    },
+    "base_meal_plan_eligible": true,
+    "missing_information": []
+  },
+  {
+    "recipe_id": "f7ad1f72-c29a-5405-9e4f-7bac997edf05",
+    "owner_user_id": null,
+    "title": "Veggie Egg Scramble",
+    "description": "Ten-minute scrambled eggs with peppers, onion, and spinach.",
+    "source_type": "hth_library",
+    "source_url": null,
+    "source_name": "Help The Hive Seed Library",
+    "license_id": "proprietary-hth",
+    "attribution_text": null,
+    "visibility": "public",
+    "review_status": "approved",
+    "servings": 4.0,
+    "servings_confidence": "source",
+    "serving_size_text": null,
+    "scalable": true,
+    "prep_time_minutes": 5,
+    "cook_time_minutes": 5,
+    "total_time_minutes": 10,
+    "time_confidence": "source",
+    "meal_types": [
+      "breakfast"
+    ],
+    "cuisine": "american",
+    "difficulty": 2,
+    "equipment_required": [
+      "stovetop"
+    ],
+    "is_component": false,
+    "tags": [
+      "diet.dairy_free",
+      "diet.gluten_free",
+      "diet.nut_free",
+      "diet.pescatarian",
+      "diet.vegetarian",
+      "household.kid_friendly",
+      "meal.breakfast",
+      "method.stovetop",
+      "time.15_min",
+      "time.30_min",
+      "time.45_min",
+      "time.60_min"
+    ],
+    "ingredients": [
+      {
+        "position": 1,
+        "raw_text": "8 eggs, beaten",
+        "ingredient_id": "eggs",
+        "display_name": "Eggs",
+        "quantity": 8,
+        "unit": "each",
+        "preparation": "beaten",
+        "grams": 400,
+        "is_optional": false,
+        "is_to_taste": false,
+        "missing_information": null
+      },
+      {
+        "position": 2,
+        "raw_text": "1 bell pepper, diced",
+        "ingredient_id": "bell_pepper",
+        "display_name": "Bell Pepper",
+        "quantity": 1,
+        "unit": "each",
+        "preparation": "diced",
+        "grams": 120,
+        "is_optional": false,
+        "is_to_taste": false,
+        "missing_information": null
+      },
+      {
+        "position": 3,
+        "raw_text": "1/4 lb onion, diced",
+        "ingredient_id": "onion",
+        "display_name": "Onion",
+        "quantity": 0.25,
+        "unit": "lb",
+        "preparation": "diced",
+        "grams": 113.4,
+        "is_optional": false,
+        "is_to_taste": false,
+        "missing_information": null
+      },
+      {
+        "position": 4,
+        "raw_text": "1/2 bag fresh spinach",
+        "ingredient_id": "spinach_fresh",
+        "display_name": "Fresh Spinach (bag)",
+        "quantity": 0.5,
+        "unit": "bag",
+        "preparation": null,
+        "grams": 140.0,
+        "is_optional": false,
+        "is_to_taste": false,
+        "missing_information": null
+      },
+      {
+        "position": 5,
+        "raw_text": "1 tbsp olive oil",
+        "ingredient_id": "olive_oil",
+        "display_name": "Olive Oil",
+        "quantity": 0.5,
+        "unit": "oz",
+        "preparation": null,
+        "grams": 14.2,
+        "is_optional": false,
+        "is_to_taste": false,
+        "missing_information": null
+      },
+      {
+        "position": 6,
+        "raw_text": "salt and pepper, to taste",
+        "ingredient_id": "salt",
+        "display_name": "Salt",
+        "quantity": null,
+        "unit": "tsp",
+        "preparation": null,
+        "grams": null,
+        "is_optional": false,
+        "is_to_taste": true,
+        "missing_information": null
+      }
+    ],
+    "instructions": [
+      {
+        "step": 1,
+        "text": "Heat the oil in a nonstick skillet over medium heat; cook the pepper and onion 3 minutes.",
+        "minutes": null
+      },
+      {
+        "step": 2,
+        "text": "Add the spinach and cook until just wilted.",
+        "minutes": null
+      },
+      {
+        "step": 3,
+        "text": "Pour in the eggs and scramble gently to your liking. Season and serve.",
+        "minutes": null
+      }
+    ],
+    "nutrition": {
+      "basis": "hth_computed",
+      "per_serving": true,
+      "calories_kcal": 220,
+      "protein_g": 14,
+      "carbs_g": 6,
+      "fat_g": 15,
+      "fiber_g": 2,
+      "sodium_mg": 320,
+      "coverage_pct": 96,
+      "confidence": "medium"
+    },
+    "base_meal_plan_eligible": true,
+    "missing_information": []
+  },
+  {
+    "recipe_id": "78704b24-c41d-5a5b-88b1-57af0cd2beda",
+    "owner_user_id": null,
+    "title": "Peanut Butter Banana Overnight Oats",
+    "description": "No-cook make-ahead oats with peanut butter, banana, and milk.",
+    "source_type": "hth_library",
+    "source_url": null,
+    "source_name": "Help The Hive Seed Library",
+    "license_id": "proprietary-hth",
+    "attribution_text": null,
+    "visibility": "public",
+    "review_status": "approved",
+    "servings": 4.0,
+    "servings_confidence": "source",
+    "serving_size_text": null,
+    "scalable": true,
+    "prep_time_minutes": 10,
+    "cook_time_minutes": 0,
+    "total_time_minutes": 10,
+    "time_confidence": "source",
+    "meal_types": [
+      "breakfast"
+    ],
+    "cuisine": "american",
+    "difficulty": 2,
+    "equipment_required": [],
+    "is_component": false,
+    "tags": [
+      "diet.egg_free",
+      "diet.pescatarian",
+      "diet.vegetarian",
+      "household.kid_friendly",
+      "household.meal_prep",
+      "meal.breakfast",
+      "method.no_cook",
+      "pantry.5_or_less",
+      "time.15_min",
+      "time.30_min",
+      "time.45_min",
+      "time.60_min"
+    ],
+    "ingredients": [
+      {
+        "position": 1,
+        "raw_text": "6 oz rolled oats",
+        "ingredient_id": "oats",
+        "display_name": "Rolled Oats",
+        "quantity": 6,
+        "unit": "oz",
+        "preparation": null,
+        "grams": 170.1,
+        "is_optional": false,
+        "is_to_taste": false,
+        "missing_information": null
+      },
+      {
+        "position": 2,
+        "raw_text": "4 tbsp peanut butter",
+        "ingredient_id": "peanut_butter",
+        "display_name": "Peanut Butter",
+        "quantity": 2,
+        "unit": "oz",
+        "preparation": null,
+        "grams": 56.7,
+        "is_optional": false,
+        "is_to_taste": false,
+        "missing_information": null
+      },
+      {
+        "position": 3,
+        "raw_text": "2 bananas, sliced",
+        "ingredient_id": "banana",
+        "display_name": "Banana",
+        "quantity": 0.75,
+        "unit": "lb",
+        "preparation": "sliced",
+        "grams": 340.2,
+        "is_optional": false,
+        "is_to_taste": false,
+        "missing_information": null
+      },
+      {
+        "position": 4,
+        "raw_text": "2 cups milk",
+        "ingredient_id": "milk",
+        "display_name": "Milk",
+        "quantity": 0.25,
+        "unit": "each",
+        "preparation": null,
+        "grams": 473.2,
+        "is_optional": false,
+        "is_to_taste": false,
+        "missing_information": null
+      },
+      {
+        "position": 5,
+        "raw_text": "1 tsp cinnamon",
+        "ingredient_id": "spices_common",
+        "display_name": "Common Dried Spices",
+        "quantity": 1,
+        "unit": "tsp",
+        "preparation": null,
+        "grams": 2.5,
+        "is_optional": false,
+        "is_to_taste": false,
+        "missing_information": null
+      }
+    ],
+    "instructions": [
+      {
+        "step": 1,
+        "text": "Divide the oats among four jars.",
+        "minutes": null
+      },
+      {
+        "step": 2,
+        "text": "Stir a tablespoon of peanut butter and a splash of milk into each; top up with the remaining milk and cinnamon.",
+        "minutes": null
+      },
+      {
+        "step": 3,
+        "text": "Top with banana, cover, and refrigerate overnight (or at least 2 hours).",
+        "minutes": null
+      }
+    ],
+    "nutrition": {
+      "basis": "hth_computed",
+      "per_serving": true,
+      "calories_kcal": 340,
+      "protein_g": 12,
+      "carbs_g": 46,
+      "fat_g": 13,
+      "fiber_g": 6,
+      "sodium_mg": 150,
+      "coverage_pct": 96,
+      "confidence": "medium"
+    },
+    "base_meal_plan_eligible": true,
+    "missing_information": []
+  }
+]

@@ -1,0 +1,675 @@
+{
+  "schemaVersion": 1,
+  "id": "us-xx-snap-hth-sample-1",
+  "jurisdiction": {
+    "country": "US",
+    "state": "XX"
+  },
+  "program": "SNAP",
+  "formCode": "HTH-SAMPLE-1",
+  "formTitle": "Sample State Application for Food Assistance",
+  "formVersion": "2026.01",
+  "revision": 1,
+  "status": "draft",
+  "vocabularyVersion": 1,
+  "template": {
+    "kind": "acroform",
+    "file": "template.pdf",
+    "sha256": "b7513467f3eece37a07ba38790bf1157682e8044b971375b848e12c82cdeb6e8",
+    "pageCount": 2,
+    "retrievedAt": "2026-09-08"
+  },
+  "requirements": [
+    {
+      "fieldPath": "applicant.first_name",
+      "strength": "required"
+    },
+    {
+      "fieldPath": "applicant.last_name",
+      "strength": "required"
+    },
+    {
+      "fieldPath": "applicant.date_of_birth",
+      "strength": "required"
+    },
+    {
+      "fieldPath": "applicant.is_us_citizen",
+      "strength": "required"
+    },
+    {
+      "fieldPath": "contact.phone_primary",
+      "strength": "preferred"
+    },
+    {
+      "fieldPath": "household.size",
+      "strength": "required"
+    },
+    {
+      "fieldPath": "household.members",
+      "strength": "required"
+    },
+    {
+      "fieldPath": "housing.status",
+      "strength": "required"
+    },
+    {
+      "fieldPath": "address.residential.state",
+      "strength": "required"
+    },
+    {
+      "fieldPath": "address.residential.street1",
+      "strength": "required",
+      "unless": {
+        "fieldPath": "address.residential.is_homeless",
+        "equals": true
+      }
+    },
+    {
+      "fieldPath": "address.residential.city",
+      "strength": "required",
+      "unless": {
+        "fieldPath": "address.residential.is_homeless",
+        "equals": true
+      }
+    },
+    {
+      "fieldPath": "address.residential.postal_code",
+      "strength": "required",
+      "unless": {
+        "fieldPath": "address.residential.is_homeless",
+        "equals": true
+      }
+    },
+    {
+      "fieldPath": "income.sources",
+      "strength": "required",
+      "unless": {
+        "fieldPath": "income.has_no_income",
+        "equals": true
+      }
+    }
+  ],
+  "fields": [
+    {
+      "id": "last_name",
+      "strength": "required",
+      "target": {
+        "type": "text",
+        "name": "lastName"
+      },
+      "source": {
+        "fieldPath": "applicant.last_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "upper"
+        },
+        {
+          "op": "truncate",
+          "max": 30
+        }
+      ]
+    },
+    {
+      "id": "first_name",
+      "strength": "required",
+      "target": {
+        "type": "text",
+        "name": "firstName"
+      },
+      "source": {
+        "fieldPath": "applicant.first_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "upper"
+        },
+        {
+          "op": "truncate",
+          "max": 30
+        }
+      ]
+    },
+    {
+      "id": "middle_initial",
+      "target": {
+        "type": "text",
+        "name": "middleInitial"
+      },
+      "source": {
+        "fieldPath": "applicant.middle_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "upper"
+        },
+        {
+          "op": "truncate",
+          "max": 1
+        }
+      ]
+    },
+    {
+      "id": "date_of_birth",
+      "strength": "required",
+      "target": {
+        "type": "text",
+        "name": "dateOfBirth"
+      },
+      "source": {
+        "fieldPath": "applicant.date_of_birth"
+      },
+      "transforms": [
+        {
+          "op": "date",
+          "layout": "01/02/2006"
+        }
+      ]
+    },
+    {
+      "id": "ssn",
+      "target": {
+        "type": "text",
+        "name": "ssn"
+      },
+      "source": {
+        "fieldPath": "applicant.ssn"
+      },
+      "transforms": [
+        {
+          "op": "ssn",
+          "style": "full"
+        }
+      ]
+    },
+    {
+      "id": "phone",
+      "target": {
+        "type": "text",
+        "name": "phone"
+      },
+      "source": {
+        "fieldPath": "contact.phone_primary"
+      },
+      "transforms": [
+        {
+          "op": "phone",
+          "style": "dashed"
+        }
+      ]
+    },
+    {
+      "id": "email",
+      "target": {
+        "type": "text",
+        "name": "email"
+      },
+      "source": {
+        "fieldPath": "contact.email"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "lower"
+        }
+      ]
+    },
+    {
+      "id": "citizen_yes",
+      "strength": "required",
+      "target": {
+        "type": "checkbox",
+        "name": "citizenYes"
+      },
+      "source": {
+        "fieldPath": "applicant.is_us_citizen"
+      }
+    },
+    {
+      "id": "citizen_no",
+      "strength": "required",
+      "target": {
+        "type": "checkbox",
+        "name": "citizenNo"
+      },
+      "source": {
+        "fieldPath": "applicant.is_us_citizen"
+      },
+      "valueMap": {
+        "true": "false",
+        "false": "true"
+      },
+      "note": "The two boxes are a yes/no pair, so the No box is the inverse of the same answer."
+    },
+    {
+      "id": "street_address",
+      "target": {
+        "type": "text",
+        "name": "streetAddress"
+      },
+      "source": {
+        "fieldPath": "address.residential.street1"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "truncate",
+          "max": 40
+        }
+      ]
+    },
+    {
+      "id": "apt_unit",
+      "target": {
+        "type": "text",
+        "name": "aptUnit"
+      },
+      "source": {
+        "fieldPath": "address.residential.street2"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "truncate",
+          "max": 12
+        }
+      ]
+    },
+    {
+      "id": "city",
+      "target": {
+        "type": "text",
+        "name": "city"
+      },
+      "source": {
+        "fieldPath": "address.residential.city"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "truncate",
+          "max": 26
+        }
+      ]
+    },
+    {
+      "id": "state",
+      "strength": "required",
+      "target": {
+        "type": "dropdown",
+        "name": "state"
+      },
+      "source": {
+        "fieldPath": "address.residential.state"
+      }
+    },
+    {
+      "id": "zip_code",
+      "target": {
+        "type": "text",
+        "name": "zipCode"
+      },
+      "source": {
+        "fieldPath": "address.residential.postal_code"
+      },
+      "transforms": [
+        {
+          "op": "digits"
+        },
+        {
+          "op": "truncate",
+          "max": 5
+        }
+      ]
+    },
+    {
+      "id": "no_permanent_address",
+      "target": {
+        "type": "checkbox",
+        "name": "noPermanentAddress"
+      },
+      "source": {
+        "fieldPath": "address.residential.is_homeless"
+      }
+    },
+    {
+      "id": "housing_rent",
+      "strength": "required",
+      "target": {
+        "type": "checkbox",
+        "name": "housingRent"
+      },
+      "source": {
+        "fieldPath": "housing.status"
+      },
+      "valueMap": {
+        "rent": "true",
+        "own": "false",
+        "shared": "false",
+        "shelter": "false",
+        "homeless": "false",
+        "no_cost": "false"
+      }
+    },
+    {
+      "id": "housing_own",
+      "target": {
+        "type": "checkbox",
+        "name": "housingOwn"
+      },
+      "source": {
+        "fieldPath": "housing.status"
+      },
+      "valueMap": {
+        "rent": "false",
+        "own": "true",
+        "shared": "false",
+        "shelter": "false",
+        "homeless": "false",
+        "no_cost": "false"
+      }
+    },
+    {
+      "id": "housing_other",
+      "target": {
+        "type": "checkbox",
+        "name": "housingOther"
+      },
+      "source": {
+        "fieldPath": "housing.status"
+      },
+      "valueMap": {
+        "rent": "false",
+        "own": "false",
+        "shared": "true",
+        "shelter": "true",
+        "homeless": "true",
+        "no_cost": "true"
+      }
+    },
+    {
+      "id": "monthly_rent",
+      "target": {
+        "type": "text",
+        "name": "monthlyRent"
+      },
+      "source": {
+        "fieldPath": "housing.rent_monthly"
+      },
+      "transforms": [
+        {
+          "op": "money",
+          "style": "grouped"
+        }
+      ]
+    },
+    {
+      "id": "monthly_utilities",
+      "target": {
+        "type": "text",
+        "name": "monthlyUtilities"
+      },
+      "source": {
+        "fieldPath": "utilities.monthly_total"
+      },
+      "transforms": [
+        {
+          "op": "money",
+          "style": "grouped"
+        }
+      ]
+    },
+    {
+      "id": "pays_heating",
+      "target": {
+        "type": "checkbox",
+        "name": "paysHeating"
+      },
+      "source": {
+        "fieldPath": "utilities.pays_heating_cooling"
+      }
+    },
+    {
+      "id": "pays_electricity",
+      "target": {
+        "type": "checkbox",
+        "name": "paysElectricity"
+      },
+      "source": {
+        "fieldPath": "utilities.pays_electricity"
+      }
+    },
+    {
+      "id": "household_size",
+      "strength": "required",
+      "target": {
+        "type": "text",
+        "name": "householdSize"
+      },
+      "source": {
+        "fieldPath": "household.size"
+      }
+    },
+    {
+      "id": "member_1_name",
+      "target": {
+        "type": "text",
+        "name": "member1Name"
+      },
+      "source": {
+        "fieldPath": "household.members[].last_name"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 0
+      },
+      "transforms": [
+        {
+          "op": "join",
+          "with": "household.members[].first_name",
+          "sep": ", "
+        },
+        {
+          "op": "truncate",
+          "max": 34
+        }
+      ]
+    },
+    {
+      "id": "member_1_dob",
+      "target": {
+        "type": "text",
+        "name": "member1Dob"
+      },
+      "source": {
+        "fieldPath": "household.members[].date_of_birth"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 0
+      },
+      "transforms": [
+        {
+          "op": "date",
+          "layout": "01/02/2006"
+        }
+      ]
+    },
+    {
+      "id": "member_2_name",
+      "target": {
+        "type": "text",
+        "name": "member2Name"
+      },
+      "source": {
+        "fieldPath": "household.members[].last_name"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 1
+      },
+      "transforms": [
+        {
+          "op": "join",
+          "with": "household.members[].first_name",
+          "sep": ", "
+        },
+        {
+          "op": "truncate",
+          "max": 34
+        }
+      ]
+    },
+    {
+      "id": "member_2_dob",
+      "target": {
+        "type": "text",
+        "name": "member2Dob"
+      },
+      "source": {
+        "fieldPath": "household.members[].date_of_birth"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 1
+      },
+      "transforms": [
+        {
+          "op": "date",
+          "layout": "01/02/2006"
+        }
+      ]
+    },
+    {
+      "id": "member_3_name",
+      "target": {
+        "type": "text",
+        "name": "member3Name"
+      },
+      "source": {
+        "fieldPath": "household.members[].last_name"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 2
+      },
+      "transforms": [
+        {
+          "op": "join",
+          "with": "household.members[].first_name",
+          "sep": ", "
+        },
+        {
+          "op": "truncate",
+          "max": 34
+        }
+      ]
+    },
+    {
+      "id": "member_3_dob",
+      "target": {
+        "type": "text",
+        "name": "member3Dob"
+      },
+      "source": {
+        "fieldPath": "household.members[].date_of_birth"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 2
+      },
+      "transforms": [
+        {
+          "op": "date",
+          "layout": "01/02/2006"
+        }
+      ]
+    },
+    {
+      "id": "monthly_gross_income",
+      "strength": "required",
+      "target": {
+        "type": "text",
+        "name": "monthlyGrossIncome"
+      },
+      "source": {
+        "fieldPath": "income.monthly_gross_total"
+      },
+      "transforms": [
+        {
+          "op": "money",
+          "style": "grouped"
+        }
+      ]
+    },
+    {
+      "id": "no_income",
+      "target": {
+        "type": "checkbox",
+        "name": "noIncome"
+      },
+      "source": {
+        "fieldPath": "income.has_no_income"
+      }
+    },
+    {
+      "id": "employer_name",
+      "target": {
+        "type": "text",
+        "name": "employerName"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].employer_name"
+      },
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 0
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "truncate",
+          "max": 34
+        }
+      ]
+    },
+    {
+      "id": "applicant_signature",
+      "target": {
+        "type": "text",
+        "name": "applicantSignature"
+      },
+      "fillPolicy": "never",
+      "note": "Signed by the applicant. Help The Hive does not sign an application on anyone's behalf."
+    },
+    {
+      "id": "signature_date",
+      "target": {
+        "type": "text",
+        "name": "signatureDate"
+      },
+      "fillPolicy": "never",
+      "note": "Dated by the applicant when they sign, not by this system."
+    }
+  ],
+  "provenanceNote": "A synthetic form used to test the engine. It has no agency and no source, so it is never active."
+}

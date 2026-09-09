@@ -2,6 +2,8 @@ package serverhttp
 
 import (
 	"context"
+	"io"
+	"log/slog"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -36,6 +38,11 @@ func TestGraphQLRequiresBearerToken(t *testing.T) {
 		nil,
 		readyFunc(func(context.Context) error { return nil }),
 		&hthgraphql.Resolver{},
+		// Penny is not what this test is about: it checks that /graphql refuses
+		// an unauthenticated request, and the zero value mounts the routes
+		// without a service behind them.
+		PennyDeps{},
+		slog.New(slog.NewTextHandler(io.Discard, nil)),
 	)
 
 	req := httptest.NewRequest(http.MethodPost, "/graphql", strings.NewReader(`{"query":"{ viewer { user { id } } }"}`))

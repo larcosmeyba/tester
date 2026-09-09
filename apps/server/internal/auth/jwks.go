@@ -16,6 +16,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/helpthehive/server/internal/apperrors"
 )
 
 type VerifierConfig struct {
@@ -67,7 +68,7 @@ func NewVerifier(cfg VerifierConfig) *Verifier {
 
 func (v *Verifier) Verify(ctx context.Context, tokenString string) (Identity, error) {
 	if tokenString == "" {
-		return Identity{}, errors.New("token is empty")
+		return Identity{}, apperrors.Public("token is empty")
 	}
 
 	claims := &Claims{}
@@ -87,13 +88,13 @@ func (v *Verifier) Verify(ctx context.Context, tokenString string) (Identity, er
 		return Identity{}, err
 	}
 	if !token.Valid {
-		return Identity{}, errors.New("token is invalid")
+		return Identity{}, apperrors.Public("token is invalid")
 	}
 	if claims.Subject == "" {
-		return Identity{}, errors.New("token subject is required")
+		return Identity{}, apperrors.Public("token subject is required")
 	}
 	if !claims.EmailVerified {
-		return Identity{}, errors.New("verified email is required")
+		return Identity{}, apperrors.Public("verified email is required")
 	}
 
 	return Identity{Subject: claims.Subject, Email: claims.Email, EmailVerified: true}, nil

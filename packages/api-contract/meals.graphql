@@ -1,0 +1,557 @@
+# ---------------------------------------------------------------------------
+# Meals
+#
+# The meal system's engine lives on the server: recipe filtering for diets and
+# allergies, household scaling, pantry matching, pricing, scoring, week
+# optimisation and grocery consolidation. The app collects answers and renders
+# what comes back.
+#
+# Ownership is never a client concern. No meal field accepts a user id; the
+# viewer is resolved from the verified JWT on every call.
+# ---------------------------------------------------------------------------
+
+extend type Query {
+  "The public recipe library plus the viewer's own recipes."
+  recipes(query: RecipeQueryInput): [Recipe!]!
+  recipe(recipeId: ID!): Recipe
+  savedRecipes: [Recipe!]!
+  "Canonical ingredient catalogue, used by the pantry and allergy pickers."
+  ingredients(search: String, limit: Int): [Ingredient!]!
+  "The plan the viewer is currently on, or null when they have none yet."
+  currentMealPlan: MealPlan
+  mealPlan(planId: ID!): MealPlan
+  "The saved grocery list for a plan, or null before the plan is accepted."
+  groceryList(planId: ID!): GroceryListPayload
+  "One of the viewer's video imports. null when it is not theirs."
+  recipeImport(importId: ID!): RecipeImport
+  "The viewer's imports, newest first."
+  recipeImports(limit: Int): [RecipeImport!]!
+}
+
+extend type Mutation {
+  generateMealPlan(input: PlanRequestInput!): MealPlan!
+  "Replaces one slot's recipe. keepBasket avoids re-pricing the whole week."
+  swapPlannedMeal(planId: ID!, input: SwapMealInput!): MealPlan!
+  "Moves a meal between slots. Never regenerates the week and never re-prices."
+  movePlannedMeal(planId: ID!, input: MoveMealInput!): MealPlan!
+  "Turns the plan into a saved, consolidated, pantry-aware grocery list."
+  acceptMealPlan(planId: ID!): GroceryListPayload!
+  deleteMealPlan(planId: ID!): Boolean!
+  setGroceryItemChecked(planId: ID!, ingredientId: ID!, checked: Boolean!): Boolean!
+  "Choose My Recipes: selected recipes to a consolidated list, nothing saved."
+  groceryListFromRecipes(input: GroceryListFromRecipesInput!): GroceryListPayload!
+  saveRecipe(recipeId: ID!): Boolean!
+  unsaveRecipe(recipeId: ID!): Boolean!
+  """
+  Starts extracting a recipe from a cooking video. Returns immediately: the
+  import runs in the background and is polled with `recipeImport`.
+  """
+  importRecipeFromVideo(input: ImportRecipeFromVideoInput!): RecipeImport!
+  "Stops an import that has not finished. Already-finished imports are unchanged."
+  cancelRecipeImport(importId: ID!): RecipeImport!
+  """
+  Accepts a finished import's draft and saves it as one of the viewer's
+  recipes. Idempotent: accepting twice updates the same recipe rather than
+  creating a second one.
+  """
+  acceptRecipeImport(importId: ID!, input: AcceptRecipeImportInput): Recipe!
+}
+
+"An arbitrary JSON object. Used only for the cost tier mix."
+scalar Map
+
+enum DataConfidence {
+  high
+  medium
+  low
+}
+
+"How a single recipe value was established. `missing` is never guessed away."
+enum ValueConfidence {
+  source
+  human
+  inferred
+  missing
+}
+
+enum Strength {
+  required
+  preferred
+}
+
+enum MealType {
+  breakfast
+  lunch
+  dinner
+  snack
+  dessert
+  side
+}
+
+enum Diet {
+  vegan
+  vegetarian
+  pescatarian
+  gluten_free
+  dairy_free
+  egg_free
+  nut_free
+}
+
+enum Allergen {
+  milk
+  egg
+  fish
+  shellfish
+  tree_nut
+  peanut
+  wheat
+  soy
+  sesame
+}
+
+enum NutritionGoal {
+  high_protein
+  high_fiber
+  more_produce
+  lower_sodium
+  lower_calorie
+  balanced
+}
+
+enum BudgetMode {
+  lowest
+  balanced
+  variety
+}
+
+enum Equipment {
+  stovetop
+  oven
+  microwave
+  grill
+  blender
+  air_fryer
+  slow_cooker
+  instant_pot
+}
+
+enum CookingStyle {
+  quick_easy
+  few_ingredients
+  one_pot
+  meal_prep
+  family_friendly
+  kid_friendly
+  freezer_friendly
+  use_what_i_have
+  lowest_cost
+  variety
+}
+
+enum LeftoversPreference {
+  yes
+  sometimes
+  no
+}
+
+enum SwapAction {
+  swap_slot
+  cheaper
+  higher_protein
+  faster
+  dislike
+  regenerate_week
+}
+
+type Ingredient {
+  ingredientId: ID!
+  displayName: String!
+  aisle: String!
+  foodGroup: String!
+  priceReferenceUnit: String!
+  isPantryStaple: Boolean!
+  "salt, pepper and water only: never added to a grocery list."
+  assumedOnHand: Boolean!
+  allergens: [Allergen!]!
+}
+
+"""
+One ingredient line of a recipe. `quantity` is null when the source never
+stated one — it is never invented, and `missingInformation` says so instead.
+"""
+type IngredientLine {
+  position: Int!
+  rawText: String!
+  ingredientId: ID
+  displayName: String
+  quantity: Float
+  unit: String
+  preparation: String
+  grams: Float
+  isOptional: Boolean!
+  isToTaste: Boolean!
+  missingInformation: String
+}
+
+type InstructionStep {
+  step: Int!
+  text: String!
+  minutes: Int
+}
+
+"Per-serving nutrition. Null where the source never stated it."
+type NutritionInfo {
+  basis: String!
+  perServing: Boolean!
+  caloriesKcal: Float
+  proteinG: Float
+  carbsG: Float
+  fatG: Float
+  fiberG: Float
+  sodiumMg: Float
+  coveragePct: Float
+  confidence: DataConfidence
+}
+
+"""
+The Standard HTH Recipe Object. One format for library, AI-generated, imported
+and hand-entered recipes; `sourceType` is a field, not a second type.
+"""
+type Recipe {
+  recipeId: ID!
+  "null for a public library recipe."
+  ownerUserId: ID
+  title: String!
+  description: String
+  sourceType: String!
+  sourceUrl: String
+  sourceName: String
+  licenseId: String
+  attributionText: String
+  visibility: String!
+  reviewStatus: String!
+  servings: Float
+  servingsConfidence: ValueConfidence!
+  servingSizeText: String
+  scalable: Boolean!
+  prepTimeMinutes: Int
+  cookTimeMinutes: Int
+  totalTimeMinutes: Int
+  timeConfidence: ValueConfidence!
+  mealTypes: [MealType!]!
+  cuisine: String
+  difficulty: Int
+  equipmentRequired: [Equipment!]!
+  isComponent: Boolean!
+  tags: [String!]!
+  ingredients: [IngredientLine!]!
+  instructions: [InstructionStep!]!
+  nutrition: NutritionInfo
+  "Computed server-side. Incomplete recipes stay viewable but are never planned."
+  baseMealPlanEligible: Boolean!
+  missingInformation: [String!]!
+}
+
+"""
+An estimated cost is always a range with a confidence, never fake precision.
+Budget compliance is checked against `high`.
+"""
+type CostRange {
+  point: Float!
+  low: Float!
+  high: Float!
+  confidence: DataConfidence!
+  "Share of the basket priced at each tier, e.g. {\"1\": 0.4, \"3\": 0.6}."
+  tierMix: Map
+  basis: String
+}
+
+type MealSlot {
+  day: Int!
+  mealType: MealType!
+}
+
+type PlannedMeal {
+  slot: MealSlot!
+  recipeId: ID!
+  title: String!
+  totalTimeMinutes: Int
+  scaleFactor: Float!
+  servingsPlanned: Float!
+  proteinGPerServing: Float
+  goalIndicator: String
+  pantryIngredientsUsed: [ID!]!
+  incrementalCheckoutCost: Float
+  consumedCost: Float
+  "Penny's one-line explanation, written by the server from computed facts."
+  why: String
+}
+
+"""
+A consolidated grocery line. Items already in the pantry are kept with
+`inPantry: true` and zero cost rather than hidden, so nothing goes missing.
+"""
+type GroceryItem {
+  ingredientId: ID!
+  displayName: String!
+  neededQty: Float!
+  unit: String!
+  "null for loose items sold by weight."
+  packages: Int
+  packageLabel: String
+  estimatedPrice: Float!
+  priceTier: Int
+  inPantry: Boolean!
+  isChecked: Boolean!
+  "Titles of the recipes this line is for."
+  usedBy: [String!]!
+}
+
+type GrocerySection {
+  aisle: String!
+  items: [GroceryItem!]!
+}
+
+type GroceryListPayload {
+  planId: ID
+  sections: [GrocerySection!]!
+  cost: CostRange!
+}
+
+type NutritionGoalSummary {
+  goal: String!
+  metBy: Int!
+  of: Int!
+  avgProteinG: Float
+}
+
+type BalancedMealBaseline {
+  applied: Boolean!
+  avgScore: Float
+}
+
+type PlanSummary {
+  householdSize: Int!
+  mealsPlanned: Int!
+  budget: Float
+  estimatedCost: CostRange!
+  "budget minus estimatedCost.high; null when no budget was set. Negative when the plan costs more than the budget."
+  headroom: Float
+  """
+  True when even the cheapest safe plan costs more than the budget.
+
+  The plan is still returned. Allergy and diet rules are never relaxed to reach
+  a number, so the honest outcome is a safe plan that is marked as too
+  expensive rather than a cheaper one somebody cannot eat.
+  """
+  overBudget: Boolean!
+  "How much over, when overBudget. Null otherwise."
+  overage: Float
+  consumedCostTotal: Float
+  pantryValueUsed: Float
+  pantryItemsUsed: [ID!]!
+  nutritionGoal: NutritionGoalSummary
+  balancedMealBaseline: BalancedMealBaseline
+}
+
+type MealPlan {
+  planId: ID!
+  status: String!
+  summary: PlanSummary!
+  meals: [PlannedMeal!]!
+  groceryList: [GrocerySection!]!
+  "AI-written text. Never a source of numbers."
+  pennyMessage: String!
+  swapOptions: [SwapAction!]!
+  assumptions: [String!]!
+}
+
+input RecipeQueryInput {
+  "Taxonomy ids: OR within a family, AND across families."
+  tagIds: [String!]
+  mealType: MealType
+  search: String
+  limit: Int
+}
+
+input HouseholdInput {
+  size: Int!
+  adults: Int
+  children: Int
+  "True when the user picked 8+; size is stored as 8."
+  sizeIsPlus: Boolean!
+}
+
+input MealCountsInput {
+  breakfast: Int!
+  lunch: Int!
+  dinner: Int!
+  snack: Int!
+}
+
+input BudgetInput {
+  amount: Float!
+  currency: String!
+  mode: BudgetMode!
+}
+
+input DietRequirementInput {
+  diet: Diet!
+  strength: Strength!
+}
+
+"Allergies are always required; the server rejects any other strength."
+input AllergyRequirementInput {
+  allergen: Allergen!
+  strength: Strength!
+}
+
+input NutritionPreferenceInput {
+  goal: NutritionGoal!
+  strength: Strength!
+}
+
+input FoodPreferencesInput {
+  ingredients: [String!]!
+  cuisines: [String!]!
+  freeText: String
+}
+
+input CookingTimeInput {
+  maxMinutes: Int
+  strength: Strength!
+}
+
+input PlanRequestInput {
+  questionnaireVersion: String!
+  planScope: String
+  household: HouseholdInput!
+  meals: MealCountsInput!
+  days: Int!
+  budget: BudgetInput!
+  "Canonical ingredient ids, not free text."
+  pantryItems: [ID!]!
+  dietaryRequirements: [DietRequirementInput!]!
+  dietaryOtherText: String
+  allergies: [AllergyRequirementInput!]!
+  "Other allergies, resolved to ingredient ids before submit."
+  allergyIngredients: [ID!]!
+  nutritionPreferences: [NutritionPreferenceInput!]!
+  likes: FoodPreferencesInput!
+  dislikes: FoodPreferencesInput!
+  cookingTime: CookingTimeInput!
+  equipment: [Equipment!]!
+  cookingStyle: [CookingStyle!]!
+  leftovers: LeftoversPreference!
+  excludeRecipeIds: [ID!]!
+  seed: Int
+}
+
+input MealSlotInput {
+  day: Int!
+  mealType: MealType!
+}
+
+input SwapMealInput {
+  slot: MealSlotInput!
+  action: SwapAction!
+  keepBasket: Boolean
+}
+
+input MoveMealInput {
+  from: MealSlotInput!
+  to: MealSlotInput!
+}
+
+input GroceryListFromRecipesInput {
+  recipeIds: [ID!]!
+  householdSize: Int!
+  pantryItems: [ID!]!
+}
+
+# ---------------------------------------------------------------------------
+# Recipe import
+#
+# Turning a cooking video into a recipe. The extraction itself runs in a
+# separate service; this contract deliberately says nothing about that, because
+# where the words come from is an implementation detail and the app should not
+# have to care.
+#
+# An import produces a *draft*, not a recipe. Nothing is written to the
+# library until the viewer accepts it, because an extraction is a proposal:
+# the video may never have said how much of something to use, and the person
+# who chose the video is the one who can say.
+# ---------------------------------------------------------------------------
+
+enum RecipeImportStatus {
+  queued
+  running
+  succeeded
+  failed
+  cancelled
+}
+
+input ImportRecipeFromVideoInput {
+  "A cooking video link. Supported hosts are decided server-side."
+  url: String!
+  "Language for the extracted text. Defaults to english."
+  language: String
+}
+
+type RecipeImport {
+  importId: ID!
+  sourceUrl: String!
+  "youtube, instagram, tiktok — as resolved from the URL."
+  sourcePlatform: String!
+  status: RecipeImportStatus!
+  """
+  The extracted recipe, once status is `succeeded`. It is a normal Recipe —
+  there is no second recipe shape for imports — and it carries the same
+  `missingInformation` and `baseMealPlanEligible` as any other.
+
+  Its `recipeId` is the id the recipe will have once accepted, so the draft
+  can be referred to before it is saved.
+  """
+  draft: Recipe
+  "Set once the draft has been accepted. Null before that."
+  recipeId: ID
+  """
+  A named failure, once status is `failed`: UNSUPPORTED_SOURCE,
+  VIDEO_UNAVAILABLE, VIDEO_TOO_LONG, NO_TRANSCRIPT, NO_RECIPE_FOUND,
+  PROVIDER_ERROR. The app turns these into sentences; they are not display text.
+  """
+  errorCode: String
+  "Safe to show. Never echoes transcript or video content."
+  errorMessage: String
+  createdAt: String!
+  completedAt: String
+}
+
+"""
+What the reviewer fills in before accepting a draft.
+
+It is a patch, not a recipe: only the values a video commonly fails to state,
+supplied by the person who chose the video. Everything else comes from the
+draft, and the server re-resolves the result against the ingredient catalogue
+rather than trusting anything here.
+
+A value supplied this way is recorded with `human` confidence — it was stated
+by a person, not by the source and not inferred.
+"""
+input AcceptRecipeImportInput {
+  "A serving count the video never gave."
+  servings: Float
+  "Corrections to individual ingredient lines, addressed by position."
+  ingredients: [ImportIngredientPatchInput!]
+}
+
+input ImportIngredientPatchInput {
+  "The line's position in the draft, as returned by `recipeImport`."
+  position: Int!
+  "An amount the video never stated. Null leaves the line as it is."
+  quantity: Float
+  unit: String
+  "Resolve a line the catalogue could not match, by choosing an ingredient."
+  ingredientId: ID
+}

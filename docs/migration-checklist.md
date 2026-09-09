@@ -72,11 +72,11 @@ not a code gap.
 | 5 | Home | PRE-EXISTING | Its "create this week's meal plan" action now routes to the real questionnaire. |
 | 6 | Meal plan core models | IOS TESTED | Standard HTH Recipe Object, `PlanRequest`/`MealPlan`, ingredient catalog, pantry — ported from `HTHMealKit`, with zod validation on every response. |
 | 7 | Manual recipe selection | IMPLEMENTED | `/meals/build` → `/meals/assign`. Filters map to the spec's tag taxonomy. |
-| 8 | Grocery list | IOS TESTED | `/meals/grocery-list`, aisle-grouped, pantry items at $0, shopping-method choice. |
-| 9 | AI Meal Plan Generator | IOS TESTED (frontend) | 13-section questionnaire → generating screen with rotating messages → plan. `POST /plans` is **BACKEND INTEGRATION REQUIRED**; a dev mock implements the same contract. |
-| 10 | Social Recipe Import | NOT STARTED | Whole pipeline is server-side. |
-| 11 | Pantry | PRE-EXISTING | Real GraphQL backend already exists (`pantryItems`, `addPantryItem`, …). |
-| 12 | Penny AI | NOT STARTED | BACKEND INTEGRATION REQUIRED. |
+| 8 | Grocery list | IMPLEMENTED (backend) / IOS TESTED (mock) | `/meals/grocery-list`, aisle-grouped, pantry items at $0, shopping-method choice. Now saved server-side by `acceptMealPlan`, with per-item ticks that survive a reload. Not yet re-run on a device against the real server. |
+| 9 | AI Meal Plan Generator | IMPLEMENTED (backend) / IOS TESTED (mock) | 13-section questionnaire → generating screen → plan. The backend is built: schema, engine, resolvers, seeding and tests (see [meal-system-delivery.md](meal-system-delivery.md)). The app calls it instead of the mock. **Not yet run on a device against the real server** — needs the Go server and Better Auth running. |
+| 10 | Social Recipe Import | NOT STARTED | Whole pipeline is server-side. The data model supports it (`source_type` covers `video_import` and `url_import`); no import path is built. |
+| 11 | Pantry | PRE-EXISTING, NOT CONNECTED | Padraic's GraphQL backend exists (`pantryItems`, `addPantryItem`, …) but has zero call sites: the Pantry tab still reads `initialPantryItems` from `mock-data.ts`. Predates this work. The meal planner does honour the pantry ids the questionnaire collects. |
+| 12 | Penny AI | IMPLEMENTED (backend + agent) / NOT YET RUN END TO END | Tool-using agent, not a chatbot. Go side: conversations, streaming, router, tool gateway, per-turn tokens, memory, RAG store, rate limiting, output guard, audit log (`internal/modules/penny`, `internal/domain/penny`). Agent side: FastAPI + LangGraph in `apps/penny`, deployed with no database credentials. 22 of 25 tools wired; `resources.*` await a resources module. The app calls the real endpoints. See [penny-architecture.md](penny-architecture.md). **Not yet run against a live agent** — needs `PENNY_AGENT_URL` and the Python service up. |
 | 13 | Government Assistance | DEFERRED | Per your decision: not integrated until Padraic ships a production-safe authenticated backend. |
 | 14 | Application autofill / PDF | DEFERRED | Same. |
 | 15 | Local Resources | NOT STARTED | BACKEND INTEGRATION REQUIRED. |

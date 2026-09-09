@@ -1,0 +1,2679 @@
+{
+  "schemaVersion": 1,
+  "id": "us-mo-snap-im1ss",
+  "jurisdiction": {
+    "country": "US",
+    "state": "MO"
+  },
+  "program": "SNAP",
+  "formCode": "IM-1SSL",
+  "formTitle": "Missouri Application for Food Stamp / SNAP Benefits",
+  "formVersion": "2024.01",
+  "revision": 1,
+  "status": "draft",
+  "vocabularyVersion": 1,
+  "agencyUrl": "https://mydss.mo.gov/food-assistance",
+  "template": {
+    "kind": "acroform",
+    "file": "template.pdf",
+    "sha256": "e0dc719f4c1adc41e8222cba340dbcb417798e494a898a77b0963fe980ac56ca",
+    "pageCount": 12,
+    "retrievedAt": "2026-09-08"
+  },
+  "requirements": [
+    {
+      "fieldPath": "applicant.first_name",
+      "strength": "required"
+    },
+    {
+      "fieldPath": "applicant.last_name",
+      "strength": "required"
+    },
+    {
+      "fieldPath": "applicant.date_of_birth",
+      "strength": "required"
+    },
+    {
+      "fieldPath": "household.members",
+      "strength": "required"
+    },
+    {
+      "fieldPath": "housing.status",
+      "strength": "required"
+    },
+    {
+      "fieldPath": "contact.phone_primary",
+      "strength": "preferred"
+    },
+    {
+      "fieldPath": "address.residential.street1",
+      "strength": "required",
+      "unless": {
+        "fieldPath": "address.residential.is_homeless",
+        "equals": true
+      }
+    },
+    {
+      "fieldPath": "address.residential.city",
+      "strength": "required",
+      "unless": {
+        "fieldPath": "address.residential.is_homeless",
+        "equals": true
+      }
+    },
+    {
+      "fieldPath": "address.residential.state",
+      "strength": "required"
+    },
+    {
+      "fieldPath": "address.residential.postal_code",
+      "strength": "required",
+      "unless": {
+        "fieldPath": "address.residential.is_homeless",
+        "equals": true
+      }
+    },
+    {
+      "fieldPath": "income.sources",
+      "strength": "required",
+      "unless": {
+        "fieldPath": "income.has_no_income",
+        "equals": true
+      }
+    }
+  ],
+  "fields": [
+    {
+      "id": "first_name",
+      "target": {
+        "type": "text",
+        "name": "First Name"
+      },
+      "source": {
+        "fieldPath": "applicant.first_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "strength": "required"
+    },
+    {
+      "id": "middle_name",
+      "target": {
+        "type": "text",
+        "name": "Middle Name"
+      },
+      "source": {
+        "fieldPath": "applicant.middle_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ]
+    },
+    {
+      "id": "last_name",
+      "target": {
+        "type": "text",
+        "name": "Last Name"
+      },
+      "source": {
+        "fieldPath": "applicant.last_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "strength": "required"
+    },
+    {
+      "id": "homeless",
+      "target": {
+        "type": "checkbox",
+        "name": "I am homeless"
+      },
+      "source": {
+        "fieldPath": "address.residential.is_homeless"
+      }
+    },
+    {
+      "id": "home_street",
+      "target": {
+        "type": "text",
+        "name": "Home Address - Street"
+      },
+      "source": {
+        "fieldPath": "address.residential.street1"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ]
+    },
+    {
+      "id": "home_apt",
+      "target": {
+        "type": "text",
+        "name": "Home Address - Apt Building Suite Number"
+      },
+      "source": {
+        "fieldPath": "address.residential.street2"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ]
+    },
+    {
+      "id": "home_city",
+      "target": {
+        "type": "text",
+        "name": "Home Address - City"
+      },
+      "source": {
+        "fieldPath": "address.residential.city"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ]
+    },
+    {
+      "id": "home_state",
+      "target": {
+        "type": "text",
+        "name": "Home Address - State"
+      },
+      "source": {
+        "fieldPath": "address.residential.state"
+      }
+    },
+    {
+      "id": "home_zip",
+      "target": {
+        "type": "text",
+        "name": "Home Address - Zip"
+      },
+      "source": {
+        "fieldPath": "address.residential.postal_code"
+      },
+      "transforms": [
+        {
+          "op": "digits"
+        },
+        {
+          "op": "truncate",
+          "max": 5
+        }
+      ]
+    },
+    {
+      "id": "home_county",
+      "target": {
+        "type": "text",
+        "name": "Home Address - County"
+      },
+      "source": {
+        "fieldPath": "address.residential.county"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ]
+    },
+    {
+      "id": "mail_street",
+      "target": {
+        "type": "text",
+        "name": "Mailing Address - Street or PO Box"
+      },
+      "source": {
+        "fieldPath": "address.mailing.street1"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ]
+    },
+    {
+      "id": "mail_apt",
+      "target": {
+        "type": "text",
+        "name": "Mailing Address - Apt Building Suite Number"
+      },
+      "source": {
+        "fieldPath": "address.mailing.street2"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ]
+    },
+    {
+      "id": "mail_city",
+      "target": {
+        "type": "text",
+        "name": "Mailing Address - City"
+      },
+      "source": {
+        "fieldPath": "address.mailing.city"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ]
+    },
+    {
+      "id": "mail_state",
+      "target": {
+        "type": "text",
+        "name": "Mailing Address - State"
+      },
+      "source": {
+        "fieldPath": "address.mailing.state"
+      }
+    },
+    {
+      "id": "mail_zip",
+      "target": {
+        "type": "text",
+        "name": "Mailing Address - Zip"
+      },
+      "source": {
+        "fieldPath": "address.mailing.postal_code"
+      },
+      "transforms": [
+        {
+          "op": "digits"
+        },
+        {
+          "op": "truncate",
+          "max": 5
+        }
+      ]
+    },
+    {
+      "id": "phone_1",
+      "target": {
+        "type": "text",
+        "name": "Phone 1"
+      },
+      "source": {
+        "fieldPath": "contact.phone_primary"
+      },
+      "transforms": [
+        {
+          "op": "phone",
+          "style": "dashed"
+        }
+      ]
+    },
+    {
+      "id": "phone_2",
+      "target": {
+        "type": "text",
+        "name": "Phone 2"
+      },
+      "source": {
+        "fieldPath": "contact.phone_secondary"
+      },
+      "transforms": [
+        {
+          "op": "phone",
+          "style": "dashed"
+        }
+      ]
+    },
+    {
+      "id": "email",
+      "target": {
+        "type": "text",
+        "name": "Email Address"
+      },
+      "source": {
+        "fieldPath": "contact.email"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "lower"
+        }
+      ]
+    },
+    {
+      "id": "expedited_screen_1",
+      "target": {
+        "type": "checkbox",
+        "name": "Is your households monthly gross income less than 150 and do you have 100 or less available in cash and or in a bank account"
+      },
+      "fillPolicy": "never",
+      "note": "An expedited-service screening question. It turns on figures this profile does not hold with the certainty the answer needs, so the applicant answers it."
+    },
+    {
+      "id": "hhm0_first",
+      "target": {
+        "type": "text",
+        "name": "Legal first name HHM.0"
+      },
+      "source": {
+        "fieldPath": "applicant.first_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "note": "Row 0 of this form's roster is the applicant themselves."
+    },
+    {
+      "id": "hhm0_last",
+      "target": {
+        "type": "text",
+        "name": "Legal last name HHM.0"
+      },
+      "source": {
+        "fieldPath": "applicant.last_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ]
+    },
+    {
+      "id": "hhm0_dob",
+      "target": {
+        "type": "text",
+        "name": "Date of birth HHM.0"
+      },
+      "source": {
+        "fieldPath": "applicant.date_of_birth"
+      },
+      "transforms": [
+        {
+          "op": "date",
+          "layout": "01/02/2006"
+        }
+      ]
+    },
+    {
+      "id": "hhm0_ssn",
+      "target": {
+        "type": "text",
+        "name": "SSN HHM.0"
+      },
+      "source": {
+        "fieldPath": "applicant.ssn"
+      },
+      "transforms": [
+        {
+          "op": "ssn",
+          "style": "full"
+        }
+      ]
+    },
+    {
+      "id": "hhm0_sex",
+      "target": {
+        "type": "text",
+        "name": "Sex HHM.0"
+      },
+      "source": {
+        "fieldPath": "applicant.sex"
+      },
+      "valueMap": {
+        "female": "Female",
+        "male": "Male",
+        "other": "Other",
+        "decline_to_state": "Decline to state"
+      }
+    },
+    {
+      "id": "hhm1_first",
+      "target": {
+        "type": "text",
+        "name": "Legal first name HHM.1"
+      },
+      "source": {
+        "fieldPath": "household.members[].first_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 0
+      }
+    },
+    {
+      "id": "hhm1_last",
+      "target": {
+        "type": "text",
+        "name": "Legal last name HHM.1"
+      },
+      "source": {
+        "fieldPath": "household.members[].last_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 0
+      }
+    },
+    {
+      "id": "hhm1_dob",
+      "target": {
+        "type": "text",
+        "name": "Date of birth HHM.1"
+      },
+      "source": {
+        "fieldPath": "household.members[].date_of_birth"
+      },
+      "transforms": [
+        {
+          "op": "date",
+          "layout": "01/02/2006"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 0
+      }
+    },
+    {
+      "id": "hhm1_ssn",
+      "target": {
+        "type": "text",
+        "name": "SSN HHM.1"
+      },
+      "source": {
+        "fieldPath": "household.members[].ssn"
+      },
+      "transforms": [
+        {
+          "op": "ssn",
+          "style": "full"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 0
+      }
+    },
+    {
+      "id": "hhm1_sex",
+      "target": {
+        "type": "text",
+        "name": "Sex HHM.1"
+      },
+      "source": {
+        "fieldPath": "household.members[].sex"
+      },
+      "valueMap": {
+        "female": "Female",
+        "male": "Male",
+        "other": "Other",
+        "decline_to_state": "Decline to state"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 0
+      }
+    },
+    {
+      "id": "hhm1_rel",
+      "target": {
+        "type": "text",
+        "name": "Relationship to applicant.1"
+      },
+      "source": {
+        "fieldPath": "household.members[].relationship"
+      },
+      "valueMap": {
+        "self": "Self",
+        "spouse": "Spouse",
+        "domestic_partner": "Domestic partner",
+        "child": "Child",
+        "stepchild": "Stepchild",
+        "foster_child": "Foster child",
+        "parent": "Parent",
+        "stepparent": "Stepparent",
+        "grandparent": "Grandparent",
+        "grandchild": "Grandchild",
+        "sibling": "Sibling",
+        "other_relative": "Other relative",
+        "unrelated": "Unrelated"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 0
+      }
+    },
+    {
+      "id": "hhm1_cook",
+      "target": {
+        "type": "text",
+        "name": "Buy and Cook HHM.1"
+      },
+      "source": {
+        "fieldPath": "household.members[].buys_and_prepares_food_together"
+      },
+      "valueMap": {
+        "true": "Y",
+        "false": "N"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 0
+      },
+      "note": "The form's own instruction is to mark Y or N, not Yes or No."
+    },
+    {
+      "id": "hhm2_first",
+      "target": {
+        "type": "text",
+        "name": "Legal first name HHM.2"
+      },
+      "source": {
+        "fieldPath": "household.members[].first_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 1
+      }
+    },
+    {
+      "id": "hhm2_last",
+      "target": {
+        "type": "text",
+        "name": "Legal last name HHM.2"
+      },
+      "source": {
+        "fieldPath": "household.members[].last_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 1
+      }
+    },
+    {
+      "id": "hhm2_dob",
+      "target": {
+        "type": "text",
+        "name": "Date of birth HHM.2"
+      },
+      "source": {
+        "fieldPath": "household.members[].date_of_birth"
+      },
+      "transforms": [
+        {
+          "op": "date",
+          "layout": "01/02/2006"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 1
+      }
+    },
+    {
+      "id": "hhm2_ssn",
+      "target": {
+        "type": "text",
+        "name": "SSN HHM.2"
+      },
+      "source": {
+        "fieldPath": "household.members[].ssn"
+      },
+      "transforms": [
+        {
+          "op": "ssn",
+          "style": "full"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 1
+      }
+    },
+    {
+      "id": "hhm2_sex",
+      "target": {
+        "type": "text",
+        "name": "Sex HHM.2"
+      },
+      "source": {
+        "fieldPath": "household.members[].sex"
+      },
+      "valueMap": {
+        "female": "Female",
+        "male": "Male",
+        "other": "Other",
+        "decline_to_state": "Decline to state"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 1
+      }
+    },
+    {
+      "id": "hhm2_rel",
+      "target": {
+        "type": "text",
+        "name": "Relationship to applicant.2"
+      },
+      "source": {
+        "fieldPath": "household.members[].relationship"
+      },
+      "valueMap": {
+        "self": "Self",
+        "spouse": "Spouse",
+        "domestic_partner": "Domestic partner",
+        "child": "Child",
+        "stepchild": "Stepchild",
+        "foster_child": "Foster child",
+        "parent": "Parent",
+        "stepparent": "Stepparent",
+        "grandparent": "Grandparent",
+        "grandchild": "Grandchild",
+        "sibling": "Sibling",
+        "other_relative": "Other relative",
+        "unrelated": "Unrelated"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 1
+      }
+    },
+    {
+      "id": "hhm2_cook",
+      "target": {
+        "type": "text",
+        "name": "Buy and Cook HHM.2"
+      },
+      "source": {
+        "fieldPath": "household.members[].buys_and_prepares_food_together"
+      },
+      "valueMap": {
+        "true": "Y",
+        "false": "N"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 1
+      },
+      "note": "The form's own instruction is to mark Y or N, not Yes or No."
+    },
+    {
+      "id": "hhm3_first",
+      "target": {
+        "type": "text",
+        "name": "Legal first name HHM.3"
+      },
+      "source": {
+        "fieldPath": "household.members[].first_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 2
+      }
+    },
+    {
+      "id": "hhm3_last",
+      "target": {
+        "type": "text",
+        "name": "Legal last name HHM.3"
+      },
+      "source": {
+        "fieldPath": "household.members[].last_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 2
+      }
+    },
+    {
+      "id": "hhm3_dob",
+      "target": {
+        "type": "text",
+        "name": "Date of birth HHM.3"
+      },
+      "source": {
+        "fieldPath": "household.members[].date_of_birth"
+      },
+      "transforms": [
+        {
+          "op": "date",
+          "layout": "01/02/2006"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 2
+      }
+    },
+    {
+      "id": "hhm3_ssn",
+      "target": {
+        "type": "text",
+        "name": "SSN HHM.3"
+      },
+      "source": {
+        "fieldPath": "household.members[].ssn"
+      },
+      "transforms": [
+        {
+          "op": "ssn",
+          "style": "full"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 2
+      }
+    },
+    {
+      "id": "hhm3_sex",
+      "target": {
+        "type": "text",
+        "name": "Sex HHM.3"
+      },
+      "source": {
+        "fieldPath": "household.members[].sex"
+      },
+      "valueMap": {
+        "female": "Female",
+        "male": "Male",
+        "other": "Other",
+        "decline_to_state": "Decline to state"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 2
+      }
+    },
+    {
+      "id": "hhm3_rel",
+      "target": {
+        "type": "text",
+        "name": "Relationship to applicant.3"
+      },
+      "source": {
+        "fieldPath": "household.members[].relationship"
+      },
+      "valueMap": {
+        "self": "Self",
+        "spouse": "Spouse",
+        "domestic_partner": "Domestic partner",
+        "child": "Child",
+        "stepchild": "Stepchild",
+        "foster_child": "Foster child",
+        "parent": "Parent",
+        "stepparent": "Stepparent",
+        "grandparent": "Grandparent",
+        "grandchild": "Grandchild",
+        "sibling": "Sibling",
+        "other_relative": "Other relative",
+        "unrelated": "Unrelated"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 2
+      }
+    },
+    {
+      "id": "hhm3_cook",
+      "target": {
+        "type": "text",
+        "name": "Buy and Cook HHM.3"
+      },
+      "source": {
+        "fieldPath": "household.members[].buys_and_prepares_food_together"
+      },
+      "valueMap": {
+        "true": "Y",
+        "false": "N"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 2
+      },
+      "note": "The form's own instruction is to mark Y or N, not Yes or No."
+    },
+    {
+      "id": "hhm4_first",
+      "target": {
+        "type": "text",
+        "name": "Legal first name HHM.4"
+      },
+      "source": {
+        "fieldPath": "household.members[].first_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 3
+      }
+    },
+    {
+      "id": "hhm4_last",
+      "target": {
+        "type": "text",
+        "name": "Legal last name HHM.4"
+      },
+      "source": {
+        "fieldPath": "household.members[].last_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 3
+      }
+    },
+    {
+      "id": "hhm4_dob",
+      "target": {
+        "type": "text",
+        "name": "Date of birth HHM.4"
+      },
+      "source": {
+        "fieldPath": "household.members[].date_of_birth"
+      },
+      "transforms": [
+        {
+          "op": "date",
+          "layout": "01/02/2006"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 3
+      }
+    },
+    {
+      "id": "hhm4_ssn",
+      "target": {
+        "type": "text",
+        "name": "SSN HHM.4"
+      },
+      "source": {
+        "fieldPath": "household.members[].ssn"
+      },
+      "transforms": [
+        {
+          "op": "ssn",
+          "style": "full"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 3
+      }
+    },
+    {
+      "id": "hhm4_sex",
+      "target": {
+        "type": "text",
+        "name": "Sex HHM.4"
+      },
+      "source": {
+        "fieldPath": "household.members[].sex"
+      },
+      "valueMap": {
+        "female": "Female",
+        "male": "Male",
+        "other": "Other",
+        "decline_to_state": "Decline to state"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 3
+      }
+    },
+    {
+      "id": "hhm4_rel",
+      "target": {
+        "type": "text",
+        "name": "Relationship to applicant.4"
+      },
+      "source": {
+        "fieldPath": "household.members[].relationship"
+      },
+      "valueMap": {
+        "self": "Self",
+        "spouse": "Spouse",
+        "domestic_partner": "Domestic partner",
+        "child": "Child",
+        "stepchild": "Stepchild",
+        "foster_child": "Foster child",
+        "parent": "Parent",
+        "stepparent": "Stepparent",
+        "grandparent": "Grandparent",
+        "grandchild": "Grandchild",
+        "sibling": "Sibling",
+        "other_relative": "Other relative",
+        "unrelated": "Unrelated"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 3
+      }
+    },
+    {
+      "id": "hhm4_cook",
+      "target": {
+        "type": "text",
+        "name": "Buy and Cook HHM.4"
+      },
+      "source": {
+        "fieldPath": "household.members[].buys_and_prepares_food_together"
+      },
+      "valueMap": {
+        "true": "Y",
+        "false": "N"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 3
+      },
+      "note": "The form's own instruction is to mark Y or N, not Yes or No."
+    },
+    {
+      "id": "hhm5_first",
+      "target": {
+        "type": "text",
+        "name": "Legal first name HHM.5"
+      },
+      "source": {
+        "fieldPath": "household.members[].first_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 4
+      }
+    },
+    {
+      "id": "hhm5_last",
+      "target": {
+        "type": "text",
+        "name": "Legal last name HHM.5"
+      },
+      "source": {
+        "fieldPath": "household.members[].last_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 4
+      }
+    },
+    {
+      "id": "hhm5_dob",
+      "target": {
+        "type": "text",
+        "name": "Date of birth HHM.5"
+      },
+      "source": {
+        "fieldPath": "household.members[].date_of_birth"
+      },
+      "transforms": [
+        {
+          "op": "date",
+          "layout": "01/02/2006"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 4
+      }
+    },
+    {
+      "id": "hhm5_ssn",
+      "target": {
+        "type": "text",
+        "name": "SSN HHM.5"
+      },
+      "source": {
+        "fieldPath": "household.members[].ssn"
+      },
+      "transforms": [
+        {
+          "op": "ssn",
+          "style": "full"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 4
+      }
+    },
+    {
+      "id": "hhm5_sex",
+      "target": {
+        "type": "text",
+        "name": "Sex HHM.5"
+      },
+      "source": {
+        "fieldPath": "household.members[].sex"
+      },
+      "valueMap": {
+        "female": "Female",
+        "male": "Male",
+        "other": "Other",
+        "decline_to_state": "Decline to state"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 4
+      }
+    },
+    {
+      "id": "hhm5_rel",
+      "target": {
+        "type": "text",
+        "name": "Relationship to applicant.5"
+      },
+      "source": {
+        "fieldPath": "household.members[].relationship"
+      },
+      "valueMap": {
+        "self": "Self",
+        "spouse": "Spouse",
+        "domestic_partner": "Domestic partner",
+        "child": "Child",
+        "stepchild": "Stepchild",
+        "foster_child": "Foster child",
+        "parent": "Parent",
+        "stepparent": "Stepparent",
+        "grandparent": "Grandparent",
+        "grandchild": "Grandchild",
+        "sibling": "Sibling",
+        "other_relative": "Other relative",
+        "unrelated": "Unrelated"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 4
+      }
+    },
+    {
+      "id": "hhm5_cook",
+      "target": {
+        "type": "text",
+        "name": "Buy and Cook HHM.5"
+      },
+      "source": {
+        "fieldPath": "household.members[].buys_and_prepares_food_together"
+      },
+      "valueMap": {
+        "true": "Y",
+        "false": "N"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 4
+      },
+      "note": "The form's own instruction is to mark Y or N, not Yes or No."
+    },
+    {
+      "id": "hhm6_first",
+      "target": {
+        "type": "text",
+        "name": "Legal first name HHM.6"
+      },
+      "source": {
+        "fieldPath": "household.members[].first_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 5
+      }
+    },
+    {
+      "id": "hhm6_last",
+      "target": {
+        "type": "text",
+        "name": "Legal last name HHM.6"
+      },
+      "source": {
+        "fieldPath": "household.members[].last_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 5
+      }
+    },
+    {
+      "id": "hhm6_dob",
+      "target": {
+        "type": "text",
+        "name": "Date of birth HHM.6"
+      },
+      "source": {
+        "fieldPath": "household.members[].date_of_birth"
+      },
+      "transforms": [
+        {
+          "op": "date",
+          "layout": "01/02/2006"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 5
+      }
+    },
+    {
+      "id": "hhm6_ssn",
+      "target": {
+        "type": "text",
+        "name": "SSN HHM.6"
+      },
+      "source": {
+        "fieldPath": "household.members[].ssn"
+      },
+      "transforms": [
+        {
+          "op": "ssn",
+          "style": "full"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 5
+      }
+    },
+    {
+      "id": "hhm6_sex",
+      "target": {
+        "type": "text",
+        "name": "Sex HHM.6"
+      },
+      "source": {
+        "fieldPath": "household.members[].sex"
+      },
+      "valueMap": {
+        "female": "Female",
+        "male": "Male",
+        "other": "Other",
+        "decline_to_state": "Decline to state"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 5
+      }
+    },
+    {
+      "id": "hhm6_rel",
+      "target": {
+        "type": "text",
+        "name": "Relationship to applicant.6"
+      },
+      "source": {
+        "fieldPath": "household.members[].relationship"
+      },
+      "valueMap": {
+        "self": "Self",
+        "spouse": "Spouse",
+        "domestic_partner": "Domestic partner",
+        "child": "Child",
+        "stepchild": "Stepchild",
+        "foster_child": "Foster child",
+        "parent": "Parent",
+        "stepparent": "Stepparent",
+        "grandparent": "Grandparent",
+        "grandchild": "Grandchild",
+        "sibling": "Sibling",
+        "other_relative": "Other relative",
+        "unrelated": "Unrelated"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 5
+      }
+    },
+    {
+      "id": "hhm6_cook",
+      "target": {
+        "type": "text",
+        "name": "Buy and Cook HHM.6"
+      },
+      "source": {
+        "fieldPath": "household.members[].buys_and_prepares_food_together"
+      },
+      "valueMap": {
+        "true": "Y",
+        "false": "N"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 5
+      },
+      "note": "The form's own instruction is to mark Y or N, not Yes or No."
+    },
+    {
+      "id": "hhm7_first",
+      "target": {
+        "type": "text",
+        "name": "Legal first name HHM.7"
+      },
+      "source": {
+        "fieldPath": "household.members[].first_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 6
+      }
+    },
+    {
+      "id": "hhm7_last",
+      "target": {
+        "type": "text",
+        "name": "Legal last name HHM.7"
+      },
+      "source": {
+        "fieldPath": "household.members[].last_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 6
+      }
+    },
+    {
+      "id": "hhm7_dob",
+      "target": {
+        "type": "text",
+        "name": "Date of birth HHM.7"
+      },
+      "source": {
+        "fieldPath": "household.members[].date_of_birth"
+      },
+      "transforms": [
+        {
+          "op": "date",
+          "layout": "01/02/2006"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 6
+      }
+    },
+    {
+      "id": "hhm7_ssn",
+      "target": {
+        "type": "text",
+        "name": "SSN HHM.7"
+      },
+      "source": {
+        "fieldPath": "household.members[].ssn"
+      },
+      "transforms": [
+        {
+          "op": "ssn",
+          "style": "full"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 6
+      }
+    },
+    {
+      "id": "hhm7_sex",
+      "target": {
+        "type": "text",
+        "name": "Sex HHM.7"
+      },
+      "source": {
+        "fieldPath": "household.members[].sex"
+      },
+      "valueMap": {
+        "female": "Female",
+        "male": "Male",
+        "other": "Other",
+        "decline_to_state": "Decline to state"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 6
+      }
+    },
+    {
+      "id": "hhm7_rel",
+      "target": {
+        "type": "text",
+        "name": "Relationship to applicant.7"
+      },
+      "source": {
+        "fieldPath": "household.members[].relationship"
+      },
+      "valueMap": {
+        "self": "Self",
+        "spouse": "Spouse",
+        "domestic_partner": "Domestic partner",
+        "child": "Child",
+        "stepchild": "Stepchild",
+        "foster_child": "Foster child",
+        "parent": "Parent",
+        "stepparent": "Stepparent",
+        "grandparent": "Grandparent",
+        "grandchild": "Grandchild",
+        "sibling": "Sibling",
+        "other_relative": "Other relative",
+        "unrelated": "Unrelated"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 6
+      }
+    },
+    {
+      "id": "hhm7_cook",
+      "target": {
+        "type": "text",
+        "name": "Buy and Cook HHM.7"
+      },
+      "source": {
+        "fieldPath": "household.members[].buys_and_prepares_food_together"
+      },
+      "valueMap": {
+        "true": "Y",
+        "false": "N"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 6
+      },
+      "note": "The form's own instruction is to mark Y or N, not Yes or No."
+    },
+    {
+      "id": "hhm8_first",
+      "target": {
+        "type": "text",
+        "name": "Legal first name HHM.8"
+      },
+      "source": {
+        "fieldPath": "household.members[].first_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 7
+      }
+    },
+    {
+      "id": "hhm8_last",
+      "target": {
+        "type": "text",
+        "name": "Legal last name HHM.8"
+      },
+      "source": {
+        "fieldPath": "household.members[].last_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 7
+      }
+    },
+    {
+      "id": "hhm8_dob",
+      "target": {
+        "type": "text",
+        "name": "Date of birth HHM.8"
+      },
+      "source": {
+        "fieldPath": "household.members[].date_of_birth"
+      },
+      "transforms": [
+        {
+          "op": "date",
+          "layout": "01/02/2006"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 7
+      }
+    },
+    {
+      "id": "hhm8_ssn",
+      "target": {
+        "type": "text",
+        "name": "SSN HHM.8"
+      },
+      "source": {
+        "fieldPath": "household.members[].ssn"
+      },
+      "transforms": [
+        {
+          "op": "ssn",
+          "style": "full"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 7
+      }
+    },
+    {
+      "id": "hhm8_sex",
+      "target": {
+        "type": "text",
+        "name": "Sex HHM.8"
+      },
+      "source": {
+        "fieldPath": "household.members[].sex"
+      },
+      "valueMap": {
+        "female": "Female",
+        "male": "Male",
+        "other": "Other",
+        "decline_to_state": "Decline to state"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 7
+      }
+    },
+    {
+      "id": "hhm8_rel",
+      "target": {
+        "type": "text",
+        "name": "Relationship to applicant.8"
+      },
+      "source": {
+        "fieldPath": "household.members[].relationship"
+      },
+      "valueMap": {
+        "self": "Self",
+        "spouse": "Spouse",
+        "domestic_partner": "Domestic partner",
+        "child": "Child",
+        "stepchild": "Stepchild",
+        "foster_child": "Foster child",
+        "parent": "Parent",
+        "stepparent": "Stepparent",
+        "grandparent": "Grandparent",
+        "grandchild": "Grandchild",
+        "sibling": "Sibling",
+        "other_relative": "Other relative",
+        "unrelated": "Unrelated"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 7
+      }
+    },
+    {
+      "id": "hhm8_cook",
+      "target": {
+        "type": "text",
+        "name": "Buy and Cook HHM.8"
+      },
+      "source": {
+        "fieldPath": "household.members[].buys_and_prepares_food_together"
+      },
+      "valueMap": {
+        "true": "Y",
+        "false": "N"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 7
+      },
+      "note": "The form's own instruction is to mark Y or N, not Yes or No."
+    },
+    {
+      "id": "hhm9_first",
+      "target": {
+        "type": "text",
+        "name": "Legal first name HHM.9"
+      },
+      "source": {
+        "fieldPath": "household.members[].first_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 8
+      }
+    },
+    {
+      "id": "hhm9_last",
+      "target": {
+        "type": "text",
+        "name": "Legal last name HHM.9"
+      },
+      "source": {
+        "fieldPath": "household.members[].last_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 8
+      }
+    },
+    {
+      "id": "hhm9_dob",
+      "target": {
+        "type": "text",
+        "name": "Date of birth HHM.9"
+      },
+      "source": {
+        "fieldPath": "household.members[].date_of_birth"
+      },
+      "transforms": [
+        {
+          "op": "date",
+          "layout": "01/02/2006"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 8
+      }
+    },
+    {
+      "id": "hhm9_ssn",
+      "target": {
+        "type": "text",
+        "name": "SSN HHM.9"
+      },
+      "source": {
+        "fieldPath": "household.members[].ssn"
+      },
+      "transforms": [
+        {
+          "op": "ssn",
+          "style": "full"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 8
+      }
+    },
+    {
+      "id": "hhm9_sex",
+      "target": {
+        "type": "text",
+        "name": "Sex HHM.9"
+      },
+      "source": {
+        "fieldPath": "household.members[].sex"
+      },
+      "valueMap": {
+        "female": "Female",
+        "male": "Male",
+        "other": "Other",
+        "decline_to_state": "Decline to state"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 8
+      }
+    },
+    {
+      "id": "hhm9_rel",
+      "target": {
+        "type": "text",
+        "name": "Relationship to applicant.9"
+      },
+      "source": {
+        "fieldPath": "household.members[].relationship"
+      },
+      "valueMap": {
+        "self": "Self",
+        "spouse": "Spouse",
+        "domestic_partner": "Domestic partner",
+        "child": "Child",
+        "stepchild": "Stepchild",
+        "foster_child": "Foster child",
+        "parent": "Parent",
+        "stepparent": "Stepparent",
+        "grandparent": "Grandparent",
+        "grandchild": "Grandchild",
+        "sibling": "Sibling",
+        "other_relative": "Other relative",
+        "unrelated": "Unrelated"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 8
+      }
+    },
+    {
+      "id": "hhm9_cook",
+      "target": {
+        "type": "text",
+        "name": "Buy and Cook HHM.9"
+      },
+      "source": {
+        "fieldPath": "household.members[].buys_and_prepares_food_together"
+      },
+      "valueMap": {
+        "true": "Y",
+        "false": "N"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 8
+      },
+      "note": "The form's own instruction is to mark Y or N, not Yes or No."
+    },
+    {
+      "id": "income0_employer",
+      "target": {
+        "type": "text",
+        "name": "ik Employer Name.0"
+      },
+      "source": {
+        "fieldPath": "income.sources[].payer"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "income.sources",
+        "index": 0
+      }
+    },
+    {
+      "id": "income0_amount",
+      "target": {
+        "type": "text",
+        "name": "ik Gross Amount.0"
+      },
+      "source": {
+        "fieldPath": "income.sources[].gross_amount"
+      },
+      "transforms": [
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "income.sources",
+        "index": 0
+      }
+    },
+    {
+      "id": "income0_frequency",
+      "target": {
+        "type": "text",
+        "name": "ik How often Received.0"
+      },
+      "source": {
+        "fieldPath": "income.sources[].frequency"
+      },
+      "valueMap": {
+        "hourly": "Hourly",
+        "daily": "Daily",
+        "weekly": "Weekly",
+        "biweekly": "Every two weeks",
+        "semimonthly": "Twice a month",
+        "monthly": "Monthly",
+        "quarterly": "Quarterly",
+        "annually": "Yearly",
+        "one_time": "One time"
+      },
+      "repeat": {
+        "over": "income.sources",
+        "index": 0
+      }
+    },
+    {
+      "id": "income1_employer",
+      "target": {
+        "type": "text",
+        "name": "ik Employer Name.1"
+      },
+      "source": {
+        "fieldPath": "income.sources[].payer"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "income.sources",
+        "index": 1
+      }
+    },
+    {
+      "id": "income1_amount",
+      "target": {
+        "type": "text",
+        "name": "ik Gross Amount.1"
+      },
+      "source": {
+        "fieldPath": "income.sources[].gross_amount"
+      },
+      "transforms": [
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "income.sources",
+        "index": 1
+      }
+    },
+    {
+      "id": "income1_frequency",
+      "target": {
+        "type": "text",
+        "name": "ik How often Received.1"
+      },
+      "source": {
+        "fieldPath": "income.sources[].frequency"
+      },
+      "valueMap": {
+        "hourly": "Hourly",
+        "daily": "Daily",
+        "weekly": "Weekly",
+        "biweekly": "Every two weeks",
+        "semimonthly": "Twice a month",
+        "monthly": "Monthly",
+        "quarterly": "Quarterly",
+        "annually": "Yearly",
+        "one_time": "One time"
+      },
+      "repeat": {
+        "over": "income.sources",
+        "index": 1
+      }
+    },
+    {
+      "id": "income2_employer",
+      "target": {
+        "type": "text",
+        "name": "ik Employer Name.2"
+      },
+      "source": {
+        "fieldPath": "income.sources[].payer"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "income.sources",
+        "index": 2
+      }
+    },
+    {
+      "id": "income2_amount",
+      "target": {
+        "type": "text",
+        "name": "ik Gross Amount.2"
+      },
+      "source": {
+        "fieldPath": "income.sources[].gross_amount"
+      },
+      "transforms": [
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "income.sources",
+        "index": 2
+      }
+    },
+    {
+      "id": "income2_frequency",
+      "target": {
+        "type": "text",
+        "name": "ik How often Received.2"
+      },
+      "source": {
+        "fieldPath": "income.sources[].frequency"
+      },
+      "valueMap": {
+        "hourly": "Hourly",
+        "daily": "Daily",
+        "weekly": "Weekly",
+        "biweekly": "Every two weeks",
+        "semimonthly": "Twice a month",
+        "monthly": "Monthly",
+        "quarterly": "Quarterly",
+        "annually": "Yearly",
+        "one_time": "One time"
+      },
+      "repeat": {
+        "over": "income.sources",
+        "index": 2
+      }
+    },
+    {
+      "id": "acct0_type",
+      "target": {
+        "type": "text",
+        "name": "Account Type.0"
+      },
+      "source": {
+        "fieldPath": "resources.accounts[].kind"
+      },
+      "valueMap": {
+        "checking": "Checking",
+        "savings": "Savings",
+        "prepaid": "Prepaid card",
+        "cash": "Cash",
+        "investment": "Investment",
+        "other": "Other"
+      },
+      "repeat": {
+        "over": "resources.accounts",
+        "index": 0
+      }
+    },
+    {
+      "id": "acct0_balance",
+      "target": {
+        "type": "text",
+        "name": "Balance Cash Value.0"
+      },
+      "source": {
+        "fieldPath": "resources.accounts[].balance"
+      },
+      "transforms": [
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "resources.accounts",
+        "index": 0
+      }
+    },
+    {
+      "id": "acct0_bank",
+      "target": {
+        "type": "text",
+        "name": "Bank Name.0"
+      },
+      "source": {
+        "fieldPath": "resources.accounts[].institution"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "resources.accounts",
+        "index": 0
+      }
+    },
+    {
+      "id": "acct1_type",
+      "target": {
+        "type": "text",
+        "name": "Account Type.1"
+      },
+      "source": {
+        "fieldPath": "resources.accounts[].kind"
+      },
+      "valueMap": {
+        "checking": "Checking",
+        "savings": "Savings",
+        "prepaid": "Prepaid card",
+        "cash": "Cash",
+        "investment": "Investment",
+        "other": "Other"
+      },
+      "repeat": {
+        "over": "resources.accounts",
+        "index": 1
+      }
+    },
+    {
+      "id": "acct1_balance",
+      "target": {
+        "type": "text",
+        "name": "Balance Cash Value.1"
+      },
+      "source": {
+        "fieldPath": "resources.accounts[].balance"
+      },
+      "transforms": [
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "resources.accounts",
+        "index": 1
+      }
+    },
+    {
+      "id": "acct1_bank",
+      "target": {
+        "type": "text",
+        "name": "Bank Name.1"
+      },
+      "source": {
+        "fieldPath": "resources.accounts[].institution"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "resources.accounts",
+        "index": 1
+      }
+    },
+    {
+      "id": "acct2_type",
+      "target": {
+        "type": "text",
+        "name": "Account Type.2"
+      },
+      "source": {
+        "fieldPath": "resources.accounts[].kind"
+      },
+      "valueMap": {
+        "checking": "Checking",
+        "savings": "Savings",
+        "prepaid": "Prepaid card",
+        "cash": "Cash",
+        "investment": "Investment",
+        "other": "Other"
+      },
+      "repeat": {
+        "over": "resources.accounts",
+        "index": 2
+      }
+    },
+    {
+      "id": "acct2_balance",
+      "target": {
+        "type": "text",
+        "name": "Balance Cash Value.2"
+      },
+      "source": {
+        "fieldPath": "resources.accounts[].balance"
+      },
+      "transforms": [
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "resources.accounts",
+        "index": 2
+      }
+    },
+    {
+      "id": "acct2_bank",
+      "target": {
+        "type": "text",
+        "name": "Bank Name.2"
+      },
+      "source": {
+        "fieldPath": "resources.accounts[].institution"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "resources.accounts",
+        "index": 2
+      }
+    },
+    {
+      "id": "acct3_type",
+      "target": {
+        "type": "text",
+        "name": "Account Type.3"
+      },
+      "source": {
+        "fieldPath": "resources.accounts[].kind"
+      },
+      "valueMap": {
+        "checking": "Checking",
+        "savings": "Savings",
+        "prepaid": "Prepaid card",
+        "cash": "Cash",
+        "investment": "Investment",
+        "other": "Other"
+      },
+      "repeat": {
+        "over": "resources.accounts",
+        "index": 3
+      }
+    },
+    {
+      "id": "acct3_balance",
+      "target": {
+        "type": "text",
+        "name": "Balance Cash Value.3"
+      },
+      "source": {
+        "fieldPath": "resources.accounts[].balance"
+      },
+      "transforms": [
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "resources.accounts",
+        "index": 3
+      }
+    },
+    {
+      "id": "acct3_bank",
+      "target": {
+        "type": "text",
+        "name": "Bank Name.3"
+      },
+      "source": {
+        "fieldPath": "resources.accounts[].institution"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "resources.accounts",
+        "index": 3
+      }
+    },
+    {
+      "id": "pays_rent",
+      "target": {
+        "type": "checkbox",
+        "name": "Rent"
+      },
+      "source": {
+        "fieldPath": "housing.status"
+      },
+      "valueMap": {
+        "rent": "true",
+        "own": "false",
+        "shared": "true",
+        "shelter": "false",
+        "homeless": "false",
+        "no_cost": "false"
+      },
+      "note": "A shared arrangement is treated as renting here: this form offers only Rent and House Payment, and somebody sharing a tenancy is paying rent rather than a mortgage."
+    },
+    {
+      "id": "pays_mortgage",
+      "target": {
+        "type": "checkbox",
+        "name": "House Payment"
+      },
+      "source": {
+        "fieldPath": "housing.status"
+      },
+      "valueMap": {
+        "rent": "false",
+        "own": "true",
+        "shared": "false",
+        "shelter": "false",
+        "homeless": "false",
+        "no_cost": "false"
+      }
+    },
+    {
+      "id": "pays_electric",
+      "target": {
+        "type": "checkbox",
+        "name": "Electric"
+      },
+      "source": {
+        "fieldPath": "utilities.pays_electricity"
+      }
+    },
+    {
+      "id": "pays_gas",
+      "target": {
+        "type": "checkbox",
+        "name": "Gas"
+      },
+      "source": {
+        "fieldPath": "utilities.pays_gas"
+      }
+    },
+    {
+      "id": "pays_phone",
+      "target": {
+        "type": "checkbox",
+        "name": "Phone"
+      },
+      "source": {
+        "fieldPath": "utilities.pays_phone"
+      }
+    },
+    {
+      "id": "pays_water",
+      "target": {
+        "type": "checkbox",
+        "name": "Water"
+      },
+      "source": {
+        "fieldPath": "utilities.pays_water_sewer"
+      }
+    },
+    {
+      "id": "pays_trash",
+      "target": {
+        "type": "checkbox",
+        "name": "Trash"
+      },
+      "source": {
+        "fieldPath": "utilities.pays_trash"
+      }
+    },
+    {
+      "id": "child_support_amount",
+      "target": {
+        "type": "text",
+        "name": "cs Amount paid.0"
+      },
+      "source": {
+        "fieldPath": "expenses.child_support_paid_monthly"
+      },
+      "transforms": [
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ]
+    },
+    {
+      "id": "child_support_frequency",
+      "target": {
+        "type": "text",
+        "name": "cs how often paid.0"
+      },
+      "source": {
+        "constant": "Monthly"
+      },
+      "note": "The profile holds child support as a monthly figure, so the frequency beside it is stated rather than asked."
+    },
+    {
+      "id": "childcare0_provider",
+      "target": {
+        "type": "text",
+        "name": "cac Name of who receives care.0"
+      },
+      "source": {
+        "fieldPath": "expenses.childcare[].provider_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "expenses.childcare",
+        "index": 0
+      }
+    },
+    {
+      "id": "childcare0_amount",
+      "target": {
+        "type": "text",
+        "name": "cac Amount paid.0"
+      },
+      "source": {
+        "fieldPath": "expenses.childcare[].monthly_amount"
+      },
+      "transforms": [
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "expenses.childcare",
+        "index": 0
+      }
+    },
+    {
+      "id": "childcare0_frequency",
+      "target": {
+        "type": "text",
+        "name": "cac How often paid.0"
+      },
+      "source": {
+        "constant": "Monthly"
+      },
+      "note": "Childcare costs are held per month in the profile."
+    },
+    {
+      "id": "medical0_kind",
+      "target": {
+        "type": "text",
+        "name": "disabled 60 Expense type.0"
+      },
+      "source": {
+        "fieldPath": "expenses.medical[].kind"
+      },
+      "valueMap": {
+        "premium": "Insurance premium",
+        "prescription": "Prescription",
+        "doctor": "Doctor",
+        "dental": "Dental",
+        "vision": "Vision",
+        "transportation": "Transportation",
+        "medical_equipment": "Medical equipment",
+        "other": "Other"
+      },
+      "repeat": {
+        "over": "expenses.medical",
+        "index": 0
+      }
+    },
+    {
+      "id": "medical0_amount",
+      "target": {
+        "type": "text",
+        "name": "disabled 60 Amount paid.0"
+      },
+      "source": {
+        "fieldPath": "expenses.medical[].monthly_amount"
+      },
+      "transforms": [
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "expenses.medical",
+        "index": 0
+      }
+    },
+    {
+      "id": "medical0_frequency",
+      "target": {
+        "type": "text",
+        "name": "disabled 60 How often billed.0"
+      },
+      "source": {
+        "constant": "Monthly"
+      },
+      "note": "Medical costs are held per month in the profile."
+    },
+    {
+      "id": "childcare1_provider",
+      "target": {
+        "type": "text",
+        "name": "cac Name of who receives care.1"
+      },
+      "source": {
+        "fieldPath": "expenses.childcare[].provider_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "expenses.childcare",
+        "index": 1
+      }
+    },
+    {
+      "id": "childcare1_amount",
+      "target": {
+        "type": "text",
+        "name": "cac Amount paid.1"
+      },
+      "source": {
+        "fieldPath": "expenses.childcare[].monthly_amount"
+      },
+      "transforms": [
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "expenses.childcare",
+        "index": 1
+      }
+    },
+    {
+      "id": "childcare1_frequency",
+      "target": {
+        "type": "text",
+        "name": "cac How often paid.1"
+      },
+      "source": {
+        "constant": "Monthly"
+      },
+      "note": "Childcare costs are held per month in the profile."
+    },
+    {
+      "id": "medical1_kind",
+      "target": {
+        "type": "text",
+        "name": "disabled 60 Expense type.1"
+      },
+      "source": {
+        "fieldPath": "expenses.medical[].kind"
+      },
+      "valueMap": {
+        "premium": "Insurance premium",
+        "prescription": "Prescription",
+        "doctor": "Doctor",
+        "dental": "Dental",
+        "vision": "Vision",
+        "transportation": "Transportation",
+        "medical_equipment": "Medical equipment",
+        "other": "Other"
+      },
+      "repeat": {
+        "over": "expenses.medical",
+        "index": 1
+      }
+    },
+    {
+      "id": "medical1_amount",
+      "target": {
+        "type": "text",
+        "name": "disabled 60 Amount paid.1"
+      },
+      "source": {
+        "fieldPath": "expenses.medical[].monthly_amount"
+      },
+      "transforms": [
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "expenses.medical",
+        "index": 1
+      }
+    },
+    {
+      "id": "medical1_frequency",
+      "target": {
+        "type": "text",
+        "name": "disabled 60 How often billed.1"
+      },
+      "source": {
+        "constant": "Monthly"
+      },
+      "note": "Medical costs are held per month in the profile."
+    },
+    {
+      "id": "childcare2_provider",
+      "target": {
+        "type": "text",
+        "name": "cac Name of who receives care.2"
+      },
+      "source": {
+        "fieldPath": "expenses.childcare[].provider_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "expenses.childcare",
+        "index": 2
+      }
+    },
+    {
+      "id": "childcare2_amount",
+      "target": {
+        "type": "text",
+        "name": "cac Amount paid.2"
+      },
+      "source": {
+        "fieldPath": "expenses.childcare[].monthly_amount"
+      },
+      "transforms": [
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "expenses.childcare",
+        "index": 2
+      }
+    },
+    {
+      "id": "childcare2_frequency",
+      "target": {
+        "type": "text",
+        "name": "cac How often paid.2"
+      },
+      "source": {
+        "constant": "Monthly"
+      },
+      "note": "Childcare costs are held per month in the profile."
+    },
+    {
+      "id": "medical2_kind",
+      "target": {
+        "type": "text",
+        "name": "disabled 60 Expense type.2"
+      },
+      "source": {
+        "fieldPath": "expenses.medical[].kind"
+      },
+      "valueMap": {
+        "premium": "Insurance premium",
+        "prescription": "Prescription",
+        "doctor": "Doctor",
+        "dental": "Dental",
+        "vision": "Vision",
+        "transportation": "Transportation",
+        "medical_equipment": "Medical equipment",
+        "other": "Other"
+      },
+      "repeat": {
+        "over": "expenses.medical",
+        "index": 2
+      }
+    },
+    {
+      "id": "medical2_amount",
+      "target": {
+        "type": "text",
+        "name": "disabled 60 Amount paid.2"
+      },
+      "source": {
+        "fieldPath": "expenses.medical[].monthly_amount"
+      },
+      "transforms": [
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "expenses.medical",
+        "index": 2
+      }
+    },
+    {
+      "id": "medical2_frequency",
+      "target": {
+        "type": "text",
+        "name": "disabled 60 How often billed.2"
+      },
+      "source": {
+        "constant": "Monthly"
+      },
+      "note": "Medical costs are held per month in the profile."
+    },
+    {
+      "id": "sig_apply",
+      "target": {
+        "type": "text",
+        "name": "signature to apply"
+      },
+      "fillPolicy": "never",
+      "note": "Signed and dated by the applicant. Help The Hive does not sign an application on anyone's behalf."
+    },
+    {
+      "id": "sig_apply_date",
+      "target": {
+        "type": "text",
+        "name": "Date signed to apply"
+      },
+      "fillPolicy": "never",
+      "note": "Signed and dated by the applicant. Help The Hive does not sign an application on anyone's behalf."
+    },
+    {
+      "id": "sig_applicant",
+      "target": {
+        "type": "text",
+        "name": "Applicant Signature"
+      },
+      "fillPolicy": "never",
+      "note": "Signed and dated by the applicant. Help The Hive does not sign an application on anyone's behalf."
+    },
+    {
+      "id": "sig_applicant_date",
+      "target": {
+        "type": "text",
+        "name": "Date signed by applicant"
+      },
+      "fillPolicy": "never",
+      "note": "Signed and dated by the applicant. Help The Hive does not sign an application on anyone's behalf."
+    },
+    {
+      "id": "sig_witness",
+      "target": {
+        "type": "text",
+        "name": "Signature of Witness"
+      },
+      "fillPolicy": "never",
+      "note": "Signed and dated by the applicant. Help The Hive does not sign an application on anyone's behalf."
+    },
+    {
+      "id": "sig_witness_date",
+      "target": {
+        "type": "text",
+        "name": "Date signed by witness"
+      },
+      "fillPolicy": "never",
+      "note": "Signed and dated by the applicant. Help The Hive does not sign an application on anyone's behalf."
+    }
+  ],
+  "provenanceNote": "Supplied as a file rather than downloaded, so the exact agency URL this PDF came from is not known. Confirm it against Missouri DSS, set sourceUrl, and only then set status to active."
+}

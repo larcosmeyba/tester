@@ -1,0 +1,351 @@
+# ---------------------------------------------------------------------------
+# Government benefits autofill
+#
+# The flow this schema serves:
+#
+#   questionnaire -> saved benefits profile -> state + program mapping
+#   -> official government PDF -> autofill -> validation -> user review
+#   -> completed PDF
+#
+# Two rules shape every field below.
+#
+# Nothing is ever guessed. An answer that was never given is reported as a
+# `BenefitsMissingField` carrying the question the app should ask; it never
+# arrives as an empty string or a zero. `missingFields` is the whole contract
+# for "ask the user": it is non-empty exactly when the application is not ready.
+#
+# Nothing sensitive comes back out. A Social Security number can be written into
+# a profile and onto a form, but it is never returned by this API — sensitive
+# answers come back as a hint such as "*** 6789", with `isSensitive` set.
+#
+# Ownership is never a client concern. No benefits field accepts a user id; the
+# viewer is resolved from the verified JWT on every call, and anything the
+# viewer may not see is reported as NOT_FOUND rather than FORBIDDEN.
+#
+# Nothing in this API decides eligibility, and there is deliberately no field
+# through which it could. Help The Hive prepares a form from answers the
+# applicant gave; whether they qualify for a program is decided by the agency
+# that runs it, on the application they submit. Anything resembling a
+# prediction, a score or a likelihood belongs nowhere in this schema.
+# ---------------------------------------------------------------------------
+
+extend type Query {
+  "The viewer's reusable benefits profile."
+  benefitsProfile: BenefitsProfile!
+  "The government forms this server can fill. Holds no user data."
+  benefitsForms(state: String, program: String): [BenefitsForm!]!
+  benefitsForm(formId: ID!): BenefitsForm
+  benefitsApplication(applicationId: ID!): BenefitsApplication
+  benefitsApplications: [BenefitsApplication!]!
+  "Every question the profile can hold, so the app renders questions rather than hardcoding them."
+  benefitsFieldVocabulary: [BenefitsFieldSpec!]!
+}
+
+extend type Mutation {
+  "Records scalar answers. Repeating groups go through saveBenefitsGroup."
+  saveBenefitsAnswers(input: [BenefitsAnswerInput!]!): BenefitsProfile!
+  "Replaces a repeating group. An empty rows list is how a household says it has none of these."
+  saveBenefitsGroup(input: SaveBenefitsGroupInput!): BenefitsProfile!
+
+  "Starts a run against the current revision of a form and fills what it can."
+  startBenefitsApplication(formId: ID!): BenefitsApplication!
+  "Re-runs the fill after the app has collected more answers."
+  refillBenefitsApplication(applicationId: ID!): BenefitsApplication!
+  "Flattens the reviewed document. Refused while anything required is missing."
+  approveBenefitsApplication(applicationId: ID!): BenefitsApplication!
+  deleteBenefitsApplication(applicationId: ID!): Boolean!
+}
+
+# ---------------------------------------------------------------------------
+# Profile
+# ---------------------------------------------------------------------------
+
+type BenefitsProfile {
+  "The field-path vocabulary these answers were recorded against."
+  vocabularyVersion: Int!
+  answers: [BenefitsAnswer!]!
+  groups: [BenefitsGroup!]!
+}
+
+"""
+One stored answer.
+
+`status` is the load-bearing field. `PROVIDED` and `NONE` are answers and can
+appear on a form; `UNKNOWN` means nobody has asked and `REFUSED` means they
+declined, and neither is ever written onto an application.
+"""
+type BenefitsAnswer {
+  fieldPath: String!
+  rowId: String
+  status: BenefitsAnswerStatus!
+  kind: BenefitsValueKind!
+  source: BenefitsValueSource!
+  isSensitive: Boolean!
+
+  text: String
+  number: Float
+  moneyCents: Int
+  date: String
+  bool: Boolean
+  list: [String!]
+  "For a sensitive answer this is all that ever comes back — never the value."
+  hint: String
+}
+
+type BenefitsGroup {
+  groupPath: String!
+  """
+  Whether this group has been collected at all. False means the household has
+  not been asked, which is not the same as having none — an uncollected group
+  still produces a question.
+  """
+  collected: Boolean!
+  rows: [BenefitsGroupRow!]!
+}
+
+type BenefitsGroupRow {
+  rowId: ID!
+  answers: [BenefitsAnswer!]!
+}
+
+"One question the profile can hold, with the wording the app should use."
+type BenefitsFieldSpec {
+  fieldPath: String!
+  kind: BenefitsValueKind!
+  group: String!
+  label: String!
+  question: String!
+  choices: [String!]!
+  isSensitive: Boolean!
+  isDerived: Boolean!
+  isRepeating: Boolean!
+}
+
+# ---------------------------------------------------------------------------
+# Forms
+# ---------------------------------------------------------------------------
+
+type BenefitsForm {
+  id: ID!
+  """
+  Whether this form is offered to applicants. A form whose provenance has not
+  been confirmed against the agency loads and can be tested, but is never
+  offered: DRAFT and DEPRECATED forms do not appear in `benefitsForms`.
+  """
+  status: BenefitsFormStatus!
+  "Identifies the exact revision: id@version#revision."
+  key: String!
+  program: String!
+  country: String!
+  state: String
+  formCode: String!
+  formTitle: String!
+  formVersion: String!
+  revision: Int!
+  pageCount: Int!
+  templateKind: BenefitsTemplateKind!
+  agencyUrl: String
+  """
+  How many of the form's boxes this mapping fills, out of how many could hold a
+  value. Partial coverage is the normal state of a real government form — most
+  have sections no profile holds — and the applicant is told rather than left to
+  discover it. Signature fields are in neither count.
+  """
+  mappedFieldCount: Int!
+  fillableFieldCount: Int!
+
+  "The agency's own effective date for this version of the form, if it states one."
+  effectiveDate: String
+  "Where this exact PDF was downloaded from."
+  sourceUrl: String
+  "The day the PDF was downloaded, so 'is this still current?' is answerable."
+  retrievedAt: String
+}
+
+enum BenefitsFormStatus {
+  ACTIVE
+  DRAFT
+  DEPRECATED
+}
+
+# ---------------------------------------------------------------------------
+# Applications
+# ---------------------------------------------------------------------------
+
+type BenefitsApplication {
+  id: ID!
+  form: BenefitsForm!
+  status: BenefitsApplicationStatus!
+
+  "What will appear on the PDF, in page order. Sensitive values are masked."
+  filledFields: [BenefitsFilledField!]!
+  "What the app must ask for. Non-empty exactly when the status is NEEDS_INPUT."
+  missingFields: [BenefitsMissingField!]!
+  "Answers that exist but cannot be written, for a person to look at."
+  problems: [BenefitsFieldProblem!]!
+  "Boxes deliberately left blank — signatures, and rows the household does not have."
+  skippedFields: [BenefitsSkippedField!]!
+
+  """
+  Path to the draft PDF on this API, or null until one has been rendered.
+  It requires the same bearer token as this query; there is no public link to a
+  document that carries a household's application.
+  """
+  draftDocumentPath: String
+  "Path to the approved, flattened PDF. Null until the applicant approves."
+  finalDocumentPath: String
+
+  "Why the run failed, when the status is FAILED. Never echoes an answer."
+  failureReason: String
+
+  createdAt: String!
+  updatedAt: String!
+  approvedAt: String
+}
+
+type BenefitsFilledField {
+  fieldId: String!
+  label: String!
+  fieldPath: String
+  page: Int!
+  source: BenefitsValueSource!
+  "What will be written. Masked when the answer is sensitive."
+  text: String
+  checked: Boolean
+  isCheckbox: Boolean!
+  isSensitive: Boolean!
+}
+
+type BenefitsMissingField {
+  fieldPath: String!
+  label: String!
+  "The wording the app should put to the user."
+  question: String!
+  group: String!
+  answerKind: BenefitsValueKind!
+  choices: [String!]!
+  strength: BenefitsFieldStrength!
+  isSensitive: Boolean!
+  """
+  True for a value the profile computes rather than collects — a household's
+  monthly income total, say. The app must not put it to the user as a question:
+  there is no answer they could give, and answering its inputs is what fills it.
+  """
+  isDerived: Boolean!
+  "Which boxes on the form are waiting on this one answer."
+  formFieldIds: [String!]!
+}
+
+type BenefitsFieldProblem {
+  fieldId: String!
+  fieldPath: String
+  "Why the value could not be written. Never echoes the value itself."
+  reason: String!
+}
+
+type BenefitsSkippedField {
+  fieldId: String!
+  reason: BenefitsSkipReason!
+  note: String
+}
+
+# ---------------------------------------------------------------------------
+# Inputs
+# ---------------------------------------------------------------------------
+
+"""
+One answer from the app.
+
+It carries no kind: the server's vocabulary decides what shape each question
+takes, so an answer in the wrong field is rejected rather than stored.
+"""
+input BenefitsAnswerInput {
+  fieldPath: String!
+  status: BenefitsAnswerStatus!
+  text: String
+  number: Float
+  moneyCents: Int
+  date: String
+  bool: Boolean
+  list: [String!]
+}
+
+input BenefitsGroupRowInput {
+  "Omit to add a new row; pass an existing id to keep that row's identity."
+  rowId: ID
+  answers: [BenefitsAnswerInput!]!
+}
+
+input SaveBenefitsGroupInput {
+  groupPath: String!
+  rows: [BenefitsGroupRowInput!]!
+}
+
+# ---------------------------------------------------------------------------
+# Enums
+# ---------------------------------------------------------------------------
+
+enum BenefitsAnswerStatus {
+  "Never asked, or skipped. Never written onto a form."
+  UNKNOWN
+  PROVIDED
+  "The applicant said they have none of these. A real answer."
+  NONE
+  "Asked, declined to say. Never written onto a form, and not re-asked."
+  REFUSED
+}
+
+enum BenefitsValueKind {
+  TEXT
+  NUMBER
+  MONEY
+  DATE
+  BOOLEAN
+  CHOICE
+  LIST
+}
+
+enum BenefitsValueSource {
+  USER
+  PROFILE
+  "Computed from provided answers only."
+  DERIVED
+  "Written by a reviewed mapping file, not by the applicant."
+  MAPPING_CONSTANT
+}
+
+enum BenefitsFieldStrength {
+  REQUIRED
+  PREFERRED
+}
+
+enum BenefitsTemplateKind {
+  ACROFORM
+  FLAT
+}
+
+"""
+Where a run has got to. A run is durable: it survives the app closing and is
+resumed rather than restarted.
+"""
+enum BenefitsApplicationStatus {
+  "Created, not yet filled."
+  DRAFT
+  "Filled as far as the profile allows. `missingFields` says what to ask for."
+  NEEDS_INFORMATION
+  "Nothing required is outstanding; awaiting the applicant's read-through."
+  READY_FOR_REVIEW
+  "The applicant approved it and the PDF is flattened."
+  COMPLETED
+  "A fill or render failed. `failureReason` says why; refilling clears it."
+  FAILED
+  "Replaced by a newer run against the same form."
+  SUPERSEDED
+}
+
+enum BenefitsSkipReason {
+  "Help The Hive must not fill this — a signature, or the date beside one."
+  POLICY
+  "A slot for a row the household does not have."
+  NOT_APPLICABLE
+}

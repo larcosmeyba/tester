@@ -1,1 +1,1 @@
-export { default } from '@/features/navigation/planned-route';
+export { default } from '@/features/benefits/benefits-programs-screen';

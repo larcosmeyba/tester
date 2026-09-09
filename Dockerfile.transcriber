@@ -1,0 +1,39 @@
+# The video-to-recipe import service.
+#
+# Like Dockerfile.penny, this image holds no database driver and no migration
+# tool. The service is stateless by design: Postgres owns the import record,
+# the ownership and the draft, and this process turns a URL into a recipe and
+# forgets it. Anything that needs to survive a restart lives on the Go side.
+#
+# Built from the repository root so the context matches the other services:
+#   docker build -f Dockerfile.transcriber .
+
+FROM python:3.11-slim AS runtime
+
+# ffmpeg is not optional: yt-dlp shells out to it to extract the audio track
+# that gets transcribed when a video has no usable captions.
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends ffmpeg ca-certificates \
+ && rm -rf /var/lib/apt/lists/*
+
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PIP_NO_CACHE_DIR=1
+
+WORKDIR /app
+
+COPY apps/transcriber/pyproject.toml apps/transcriber/README.md ./
+COPY apps/transcriber/src ./src
+
+RUN pip install --no-cache-dir --upgrade pip \
+ && pip install --no-cache-dir .
+
+# Not root. This process downloads media from the open internet and runs it
+# through ffmpeg, which is exactly the process that should own least.
+RUN useradd --create-home --uid 10001 hive
+USER hive
+
+EXPOSE 8090
+
+# Cloud Run supplies PORT; 8090 is the local default.
+CMD ["sh", "-c", "uvicorn hth_transcriber.api:app --host 0.0.0.0 --port ${PORT:-8090}"]

@@ -5,6 +5,7 @@ import { useEffect } from "react";
 import { AuthProvider } from "@/auth/auth-context";
 import { AppStateProvider } from "@/state/app-state";
 import { MealPlanProvider } from "@/features/meals/meal-plan-context";
+import { PantryProvider } from "@/features/pantry/pantry-context";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -16,13 +17,15 @@ export default function RootLayout() {
   return (
     <AuthProvider>
       <AppStateProvider>
-        <MealPlanProvider>
-          <Stack screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="index" />
-            <Stack.Screen name="auth/verified" />
-            <Stack.Screen name="auth/reset-password" />
-          </Stack>
-        </MealPlanProvider>
+        <PantryProvider>
+          <MealPlanProvider>
+            <Stack screenOptions={{ headerShown: false }}>
+              <Stack.Screen name="index" />
+              <Stack.Screen name="auth/verified" />
+              <Stack.Screen name="auth/reset-password" />
+            </Stack>
+          </MealPlanProvider>
+        </PantryProvider>
       </AppStateProvider>
     </AuthProvider>
   );
