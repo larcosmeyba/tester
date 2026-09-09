@@ -27,8 +27,8 @@ import (
 	pennymod "github.com/helpthehive/server/internal/modules/penny"
 	pennytools "github.com/helpthehive/server/internal/modules/penny/tools"
 	"github.com/helpthehive/server/internal/modules/recipes"
+	"github.com/helpthehive/server/internal/modules/transcriber"
 	"github.com/helpthehive/server/internal/modules/users"
-	"github.com/helpthehive/server/internal/transcriber"
 )
 
 func main() {

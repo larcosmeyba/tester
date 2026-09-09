@@ -13,8 +13,8 @@ import (
 	"github.com/helpthehive/server/internal/auth"
 	"github.com/helpthehive/server/internal/db"
 	"github.com/helpthehive/server/internal/domain/meals"
+	"github.com/helpthehive/server/internal/modules/transcriber"
 	"github.com/helpthehive/server/internal/modules/users"
-	"github.com/helpthehive/server/internal/transcriber"
 )
 
 // ImportRepository is what importing needs from the database. Declared here so
@@ -41,8 +41,8 @@ type ImportRepository interface {
 }
 
 // Extractor is the extraction service, as this module needs it. The concrete
-// client lives in internal/transcriber and nothing else in the server may talk
-// to it.
+// client lives in internal/modules/transcriber and nothing else in the
+// server may talk to it.
 type Extractor interface {
 	Start(ctx context.Context, req transcriber.StartRequest) (transcriber.Job, error)
 	Job(ctx context.Context, providerJobID string) (transcriber.Job, error)

@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/helpthehive/server/internal/domain/meals"
-	"github.com/helpthehive/server/internal/transcriber"
+	"github.com/helpthehive/server/internal/modules/transcriber"
 )
 
 func failedJob(code, message string) transcriber.Job {

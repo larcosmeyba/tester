@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/helpthehive/server/internal/domain/meals"
-	"github.com/helpthehive/server/internal/transcriber"
+	"github.com/helpthehive/server/internal/modules/transcriber"
 )
 
 // A draft with the two gaps a video most often leaves: no serving count, and

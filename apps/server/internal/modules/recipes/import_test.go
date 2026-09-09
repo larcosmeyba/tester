@@ -12,7 +12,7 @@ import (
 	"github.com/helpthehive/server/internal/auth"
 	"github.com/helpthehive/server/internal/db"
 	"github.com/helpthehive/server/internal/domain/meals"
-	"github.com/helpthehive/server/internal/transcriber"
+	"github.com/helpthehive/server/internal/modules/transcriber"
 	"github.com/jackc/pgx/v5"
 )
 
