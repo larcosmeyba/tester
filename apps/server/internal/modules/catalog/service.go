@@ -53,3 +53,30 @@ func (s *Service) Load(ctx context.Context, scope string) (*meals.Catalog, error
 func (s *Service) Search(ctx context.Context, search string, limit int) ([]meals.Ingredient, error) {
 	return s.repo.SearchIngredients(ctx, search, limit)
 }
+
+// Resolver builds a name resolver over the current catalogue.
+func (s *Service) Resolver(ctx context.Context) (*Resolver, error) {
+	ingredients, err := s.repo.ListIngredients(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return NewResolver(ingredients), nil
+}
+
+// ResolveName maps one free-text name onto a canonical ingredient id.
+//
+// This is the seam the pantry uses. It is server-side on purpose: the catalogue
+// and its allergen flags are reviewed data, and the decision about which row a
+// person's "milk" refers to belongs next to that data rather than in a client
+// that could be out of date or simply wrong.
+//
+// An unresolved name is not an error. The caller stores the item anyway and the
+// planner ignores it, which is the honest outcome for something the catalogue
+// does not know about.
+func (s *Service) ResolveName(ctx context.Context, name string) (Resolution, error) {
+	resolver, err := s.Resolver(ctx)
+	if err != nil {
+		return Resolution{}, err
+	}
+	return resolver.Resolve(name), nil
+}

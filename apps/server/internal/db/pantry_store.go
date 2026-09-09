@@ -55,6 +55,14 @@ type PantryItemPatch struct {
 	ExpirationDate *time.Time
 	Category       *string
 	Status         *string
+	// IngredientID sets the catalogue link. Nil leaves it as it was, unless
+	// ClearIngredient is set.
+	IngredientID *string
+	// ClearIngredient unlinks the item from the catalogue. It exists because a
+	// rename can turn a known ingredient into an unknown one, and leaving the
+	// old id behind would have the planner counting something the user no
+	// longer says they have.
+	ClearIngredient bool
 }
 
 func (s *Store) ListPantryItems(ctx context.Context, userID string, filter PantryFilter) ([]PantryItem, error) {
@@ -62,7 +70,14 @@ func (s *Store) ListPantryItems(ctx context.Context, userID string, filter Pantr
 		SELECT id, user_id, name, quantity, location, expiration_date, category, status, date_added, date_used, ingredient_id, quantity_amount::float8, quantity_unit, use_first, created_at, updated_at
 		FROM pantry_items
 		WHERE user_id = $1
-		  AND ($2::text IS NULL OR status = $2)
+		  -- Compare against the EFFECTIVE status, the same one the API reports.
+		  -- EXPIRED is derived from the expiration date at read time
+		  -- (see EffectiveStatus); filtering on the stored column would return
+		  -- lapsed items under ACTIVE and return nothing under EXPIRED.
+		  AND ($2::text IS NULL OR CASE
+		        WHEN status = 'ACTIVE' AND expiration_date < (now() AT TIME ZONE 'UTC')::date THEN 'EXPIRED'
+		        ELSE status
+		      END = $2)
 		  AND ($3::text IS NULL OR location = $3)
 		ORDER BY expiration_date ASC, created_at ASC
 	`, userID, filter.Status, filter.Location)
@@ -107,10 +122,15 @@ func (s *Store) UpdatePantryItem(ctx context.Context, userID string, id string, 
 		      WHEN $8::text IS NOT NULL AND $8::text <> 'USED' THEN NULL
 		      ELSE date_used
 		    END,
+		    ingredient_id = CASE
+		      WHEN $9::boolean THEN NULL
+		      ELSE COALESCE($10, ingredient_id)
+		    END,
 		    updated_at = now()
 		WHERE user_id = $1 AND id = $2
 		RETURNING id, user_id, name, quantity, location, expiration_date, category, status, date_added, date_used, ingredient_id, quantity_amount::float8, quantity_unit, use_first, created_at, updated_at
-	`, userID, id, patch.Name, patch.Quantity, patch.Location, patch.ExpirationDate, patch.Category, patch.Status)
+	`, userID, id, patch.Name, patch.Quantity, patch.Location, patch.ExpirationDate, patch.Category, patch.Status,
+		patch.ClearIngredient, patch.IngredientID)
 	return scanPantryItem(row)
 }
 

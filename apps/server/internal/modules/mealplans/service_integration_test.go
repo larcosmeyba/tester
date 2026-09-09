@@ -51,7 +51,7 @@ func TestMealServiceEndToEnd(t *testing.T) {
 	groceryService := grocery.NewService(store, userService, catalogService, nil)
 	generatorService := mealgen.NewService(store, catalogService, provider.Disabled{}, nil)
 	profileService := mealprofile.NewService(store, userService)
-	pantryService := pantry.NewService(store, userService)
+	pantryService := pantry.NewService(store, userService).WithResolver(catalogService, nil)
 	service := NewService(store, userService, generatorService, groceryService, profileService, pantryService, nil)
 
 	stamp := time.Now().UnixNano()
@@ -393,4 +393,122 @@ func recipeAt(plan meals.Plan, slot meals.Slot) string {
 		}
 	}
 	return ""
+}
+
+// TestStoredPantryReachesTheGenerator is the second half of the pantry cycle:
+// not "the request said I own rice" but "the user's actual pantry, typed into
+// the app and resolved server-side, changes what the plan buys".
+//
+// Nothing in the request mentions the pantry. The service reads it.
+func TestStoredPantryReachesTheGenerator(t *testing.T) {
+	databaseURL := os.Getenv("TEST_DATABASE_URL")
+	if databaseURL == "" {
+		t.Skip("TEST_DATABASE_URL is not set")
+	}
+
+	ctx := context.Background()
+	migrate(t, databaseURL)
+
+	pool, err := db.Connect(ctx, databaseURL)
+	if err != nil {
+		t.Fatalf("Connect() error = %v", err)
+	}
+	defer pool.Close()
+
+	store := db.NewStore(pool)
+	userService := users.NewService(store)
+	catalogService := catalog.NewService(store)
+	groceryService := grocery.NewService(store, userService, catalogService, nil)
+	generatorService := mealgen.NewService(store, catalogService, provider.Disabled{}, nil)
+	profileService := mealprofile.NewService(store, userService)
+	pantryService := pantry.NewService(store, userService).WithResolver(catalogService, nil)
+	service := NewService(store, userService, generatorService, groceryService, profileService, pantryService, nil)
+
+	stamp := time.Now().UnixNano()
+	identity := auth.Identity{Subject: fmt.Sprintf("stored-pantry-%d", stamp)}
+	riceID := seedFixtures(t, ctx, store, stamp)
+
+	// Give this run's rice a display name no other row claims. The test
+	// database is shared and accumulates fixtures, and the resolver refuses to
+	// choose between several rows called "Rice" — correctly, which is how this
+	// test found out.
+	riceName := fmt.Sprintf("Rice %d", stamp)
+	if err := store.UpsertIngredient(ctx, meals.Ingredient{
+		ID: riceID, DisplayName: riceName, Aisle: "pantry",
+		FoodGroup: "grain", PriceReferenceUnit: "lb",
+	}); err != nil {
+		t.Fatalf("UpsertIngredient(rice) error = %v", err)
+	}
+
+	baseline := fx.BaseRequest()
+	baseline.Meals = meals.MealCounts{Dinner: 1}
+	// Deliberately empty: the point is that the service supplies it.
+	baseline.PantryItems = nil
+
+	before, err := service.Generate(ctx, identity, baseline)
+	if err != nil {
+		t.Fatalf("Generate(empty pantry) error = %v", err)
+	}
+	if len(before.Summary.PantryItemsUsed) != 0 {
+		t.Fatalf("pantry items used = %v, want none before anything is in the pantry", before.Summary.PantryItemsUsed)
+	}
+
+	// The user adds rice, by name, exactly as the mobile app does.
+	item, err := pantryService.Add(ctx, identity, db.CreatePantryItemParams{
+		Name:           riceName,
+		Quantity:       "2 lb",
+		Location:       "PANTRY",
+		Category:       "Grains",
+		ExpirationDate: time.Now().AddDate(0, 0, 30).UTC(),
+	})
+	if err != nil {
+		t.Fatalf("Add() error = %v", err)
+	}
+	if item.IngredientID == nil || *item.IngredientID != riceID {
+		t.Fatalf("ingredient_id = %v, want %q resolved from the name alone", item.IngredientID, riceID)
+	}
+
+	after, err := service.Generate(ctx, identity, baseline)
+	if err != nil {
+		t.Fatalf("Generate(with pantry) error = %v", err)
+	}
+
+	t.Run("the plan knows the rice is already owned", func(t *testing.T) {
+		found := false
+		for _, id := range after.Summary.PantryItemsUsed {
+			if id == riceID {
+				found = true
+			}
+		}
+		if !found {
+			t.Fatalf("pantry items used = %v, want the stored rice", after.Summary.PantryItemsUsed)
+		}
+	})
+
+	t.Run("the grocery list stops charging for it", func(t *testing.T) {
+		var rice *meals.GroceryItem
+		for i := range after.GroceryList {
+			for j := range after.GroceryList[i].Items {
+				if after.GroceryList[i].Items[j].IngredientID == riceID {
+					rice = &after.GroceryList[i].Items[j]
+				}
+			}
+		}
+		if rice == nil {
+			t.Fatal("the rice vanished from the grocery list; a pantry item should stay listed, marked as owned")
+		}
+		if !rice.InPantry {
+			t.Error("rice is not marked in-pantry")
+		}
+		if rice.EstimatedPrice != 0 {
+			t.Errorf("rice costs %v, want 0 — it is already in the cupboard", rice.EstimatedPrice)
+		}
+	})
+
+	t.Run("the week gets cheaper", func(t *testing.T) {
+		if after.Summary.EstimatedCost.Point >= before.Summary.EstimatedCost.Point {
+			t.Errorf("cost went from %v to %v; owning an ingredient should reduce the shop",
+				before.Summary.EstimatedCost.Point, after.Summary.EstimatedCost.Point)
+		}
+	})
 }

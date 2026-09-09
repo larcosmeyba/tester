@@ -67,8 +67,10 @@ func run(logger *slog.Logger) error {
 	// list rather than hidden behind a shared service object.
 	store := db.NewStore(pool)
 	userService := users.NewService(store)
-	pantryService := pantry.NewService(store, userService)
 	catalogService := catalog.NewService(store)
+	// The pantry resolves what a person types against the canonical catalogue,
+	// server-side, so what they actually keep at home can reach the planner.
+	pantryService := pantry.NewService(store, userService).WithResolver(catalogService, logger)
 	recipesService := recipes.NewService(store, userService)
 
 	// Video import is optional. With no extraction service configured the
