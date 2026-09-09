@@ -1,0 +1,2314 @@
+{
+  "schemaVersion": 1,
+  "id": "us-nd-snap-sfn-405",
+  "jurisdiction": {
+    "country": "US",
+    "state": "ND"
+  },
+  "program": "SNAP",
+  "formCode": "SFN 405",
+  "formTitle": "Application for Assistance",
+  "formVersion": "2026.04",
+  "revision": 1,
+  "status": "draft",
+  "vocabularyVersion": 1,
+  "agencyUrl": "https://www.hhs.nd.gov",
+  "template": {
+    "kind": "acroform",
+    "file": "template.pdf",
+    "sha256": "a8ec51605503e57b3b7f7201e2796730252220d38432d35066c02935f62b11a6",
+    "pageCount": 39,
+    "sourceUrl": "https://www.nd.gov/eforms/Doc/sfn00405.pdf",
+    "retrievedAt": "2026-09-09"
+  },
+  "requirements": [
+    {
+      "fieldPath": "applicant.first_name",
+      "strength": "required"
+    },
+    {
+      "fieldPath": "applicant.date_of_birth",
+      "strength": "required"
+    },
+    {
+      "fieldPath": "address.residential.street1",
+      "strength": "required"
+    },
+    {
+      "fieldPath": "address.residential.city",
+      "strength": "required"
+    },
+    {
+      "fieldPath": "address.residential.state",
+      "strength": "required"
+    },
+    {
+      "fieldPath": "address.residential.postal_code",
+      "strength": "required"
+    },
+    {
+      "fieldPath": "contact.phone_primary",
+      "strength": "preferred"
+    }
+  ],
+  "fields": [
+    {
+      "id": "nd_res_street",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page5[0].AboutYou[0].Address[0]"
+      },
+      "source": {
+        "fieldPath": "address.residential.street1"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ]
+    },
+    {
+      "id": "nd_res_street2",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page5[0].AboutYou[0].AptNo[0]"
+      },
+      "source": {
+        "fieldPath": "address.residential.street2"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ]
+    },
+    {
+      "id": "nd_res_city",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page5[0].AboutYou[0].City[0]"
+      },
+      "source": {
+        "fieldPath": "address.residential.city"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ]
+    },
+    {
+      "id": "nd_res_state",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page5[0].AboutYou[0].State[0]"
+      },
+      "source": {
+        "fieldPath": "address.residential.state"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "upper"
+        }
+      ]
+    },
+    {
+      "id": "nd_res_zip",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page5[0].AboutYou[0].Zip[0]"
+      },
+      "source": {
+        "fieldPath": "address.residential.postal_code"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ]
+    },
+    {
+      "id": "nd_mail_street",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page5[0].AboutYou[0].AddressMailing[0]"
+      },
+      "source": {
+        "fieldPath": "address.mailing.street1"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "note": "Mailing block is on page 5; shown only if different."
+    },
+    {
+      "id": "nd_mail_city",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page5[0].AboutYou[0].CityMailing[0]"
+      },
+      "source": {
+        "fieldPath": "address.mailing.city"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ]
+    },
+    {
+      "id": "nd_mail_state",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page5[0].AboutYou[0].StateMailing[0]"
+      },
+      "source": {
+        "fieldPath": "address.mailing.state"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "upper"
+        }
+      ]
+    },
+    {
+      "id": "nd_mail_zip",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page5[0].AboutYou[0].ZipMailing[0]"
+      },
+      "source": {
+        "fieldPath": "address.mailing.postal_code"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ]
+    },
+    {
+      "id": "nd_phone_home",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page5[0].AboutYou[0].TelephoneHome[0]"
+      },
+      "source": {
+        "fieldPath": "contact.phone_primary"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "phone",
+          "style": "dashed"
+        }
+      ]
+    },
+    {
+      "id": "nd_phone_cell",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page5[0].AboutYou[0].CellPhone[0]"
+      },
+      "source": {
+        "fieldPath": "contact.phone_secondary"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "phone",
+          "style": "dashed"
+        }
+      ]
+    },
+    {
+      "id": "nd_lang",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page5[0].AboutYou[0].Language[0]"
+      },
+      "source": {
+        "fieldPath": "applicant.preferred_language"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ]
+    },
+    {
+      "id": "nd_m1_first",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page6[0].Member1[0].LegalName[0]"
+      },
+      "source": {
+        "fieldPath": "applicant.first_name"
+      },
+      "transforms": [
+        {
+          "op": "split",
+          "sep": ",",
+          "index": 0
+        },
+        {
+          "op": "trim"
+        }
+      ],
+      "note": "Member 1 is the applicant. Name box is 'First, Middle Initial, Last'; first token only."
+    },
+    {
+      "id": "nd_m1_dob",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page6[0].Member1[0].DateOfBIrth[0]"
+      },
+      "source": {
+        "fieldPath": "applicant.date_of_birth"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "date",
+          "layout": "01/02/2006"
+        }
+      ]
+    },
+    {
+      "id": "nd_m1_ssn",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page6[0].Member1[0].SSN[0]"
+      },
+      "source": {
+        "fieldPath": "applicant.ssn"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "ssn",
+          "style": "full"
+        }
+      ]
+    },
+    {
+      "id": "nd_m1_sex",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page6[0].Member1[0].Sex[0]"
+      },
+      "source": {
+        "fieldPath": "applicant.sex"
+      },
+      "valueMap": {
+        "female": "Female",
+        "male": "Male",
+        "other": "Other",
+        "decline_to_state": "Decline to state"
+      }
+    },
+    {
+      "id": "nd_m1_citizen",
+      "target": {
+        "type": "radio",
+        "name": "sfn00405[0].page6[0].Member1[0].USCitizenRadio[0]"
+      },
+      "source": {
+        "fieldPath": "applicant.is_us_citizen"
+      },
+      "valueMap": {
+        "true": "0",
+        "false": "1"
+      }
+    },
+    {
+      "id": "nd_m2_first",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page6[0].Member2[0].LegalName[0]"
+      },
+      "source": {
+        "fieldPath": "household.members[].first_name"
+      },
+      "transforms": [
+        {
+          "op": "split",
+          "sep": ",",
+          "index": 0
+        },
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 0
+      },
+      "note": "Name box is 'First, Middle Initial, Last'; first token only."
+    },
+    {
+      "id": "nd_m2_dob",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page6[0].Member2[0].DateOfBIrth[0]"
+      },
+      "source": {
+        "fieldPath": "household.members[].date_of_birth"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "date",
+          "layout": "01/02/2006"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 0
+      }
+    },
+    {
+      "id": "nd_m2_ssn",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page6[0].Member2[0].SSN[0]"
+      },
+      "source": {
+        "fieldPath": "household.members[].ssn"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "ssn",
+          "style": "full"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 0
+      }
+    },
+    {
+      "id": "nd_m2_sex",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page6[0].Member2[0].Sex[0]"
+      },
+      "source": {
+        "fieldPath": "household.members[].sex"
+      },
+      "valueMap": {
+        "female": "Female",
+        "male": "Male",
+        "other": "Other",
+        "decline_to_state": "Decline to state"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 0
+      }
+    },
+    {
+      "id": "nd_m2_citizen",
+      "target": {
+        "type": "radio",
+        "name": "sfn00405[0].page6[0].Member2[0].USCitizenRadio[0]"
+      },
+      "source": {
+        "fieldPath": "household.members[].is_us_citizen"
+      },
+      "valueMap": {
+        "true": "0",
+        "false": "1"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 0
+      }
+    },
+    {
+      "id": "nd_m2_rel",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page6[0].Member2[0].Relationship[0]"
+      },
+      "source": {
+        "fieldPath": "household.members[].relationship"
+      },
+      "valueMap": {
+        "self": "Self",
+        "spouse": "Spouse",
+        "domestic_partner": "Domestic Partner",
+        "child": "Child",
+        "stepchild": "Stepchild",
+        "grandchild": "Grandchild",
+        "parent": "Parent",
+        "stepparent": "Stepparent",
+        "grandparent": "Grandparent",
+        "sibling": "Sibling",
+        "other_relative": "Other Relative",
+        "unrelated": "Unrelated",
+        "foster_child": "Foster Child"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 0
+      }
+    },
+    {
+      "id": "nd_m3_first",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page6[0].Member3[0].LegalName[0]"
+      },
+      "source": {
+        "fieldPath": "household.members[].first_name"
+      },
+      "transforms": [
+        {
+          "op": "split",
+          "sep": ",",
+          "index": 0
+        },
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 1
+      },
+      "note": "Name box is 'First, Middle Initial, Last'; first token only."
+    },
+    {
+      "id": "nd_m3_dob",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page6[0].Member3[0].DateOfBIrth[0]"
+      },
+      "source": {
+        "fieldPath": "household.members[].date_of_birth"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "date",
+          "layout": "01/02/2006"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 1
+      }
+    },
+    {
+      "id": "nd_m3_ssn",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page6[0].Member3[0].SSN[0]"
+      },
+      "source": {
+        "fieldPath": "household.members[].ssn"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "ssn",
+          "style": "full"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 1
+      }
+    },
+    {
+      "id": "nd_m3_sex",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page6[0].Member3[0].Sex[0]"
+      },
+      "source": {
+        "fieldPath": "household.members[].sex"
+      },
+      "valueMap": {
+        "female": "Female",
+        "male": "Male",
+        "other": "Other",
+        "decline_to_state": "Decline to state"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 1
+      }
+    },
+    {
+      "id": "nd_m3_citizen",
+      "target": {
+        "type": "radio",
+        "name": "sfn00405[0].page6[0].Member3[0].USCitizenRadio[0]"
+      },
+      "source": {
+        "fieldPath": "household.members[].is_us_citizen"
+      },
+      "valueMap": {
+        "true": "0",
+        "false": "1"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 1
+      }
+    },
+    {
+      "id": "nd_m3_rel",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page6[0].Member3[0].Relationship[0]"
+      },
+      "source": {
+        "fieldPath": "household.members[].relationship"
+      },
+      "valueMap": {
+        "self": "Self",
+        "spouse": "Spouse",
+        "domestic_partner": "Domestic Partner",
+        "child": "Child",
+        "stepchild": "Stepchild",
+        "grandchild": "Grandchild",
+        "parent": "Parent",
+        "stepparent": "Stepparent",
+        "grandparent": "Grandparent",
+        "sibling": "Sibling",
+        "other_relative": "Other Relative",
+        "unrelated": "Unrelated",
+        "foster_child": "Foster Child"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 1
+      }
+    },
+    {
+      "id": "nd_m4_first",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page6[0].Member4[0].LegalName[0]"
+      },
+      "source": {
+        "fieldPath": "household.members[].first_name"
+      },
+      "transforms": [
+        {
+          "op": "split",
+          "sep": ",",
+          "index": 0
+        },
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 2
+      },
+      "note": "Name box is 'First, Middle Initial, Last'; first token only."
+    },
+    {
+      "id": "nd_m4_dob",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page6[0].Member4[0].DateOfBIrth[0]"
+      },
+      "source": {
+        "fieldPath": "household.members[].date_of_birth"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "date",
+          "layout": "01/02/2006"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 2
+      }
+    },
+    {
+      "id": "nd_m4_ssn",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page6[0].Member4[0].SSN[0]"
+      },
+      "source": {
+        "fieldPath": "household.members[].ssn"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "ssn",
+          "style": "full"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 2
+      }
+    },
+    {
+      "id": "nd_m4_sex",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page6[0].Member4[0].Sex[0]"
+      },
+      "source": {
+        "fieldPath": "household.members[].sex"
+      },
+      "valueMap": {
+        "female": "Female",
+        "male": "Male",
+        "other": "Other",
+        "decline_to_state": "Decline to state"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 2
+      }
+    },
+    {
+      "id": "nd_m4_citizen",
+      "target": {
+        "type": "radio",
+        "name": "sfn00405[0].page6[0].Member4[0].USCitizenRadio[0]"
+      },
+      "source": {
+        "fieldPath": "household.members[].is_us_citizen"
+      },
+      "valueMap": {
+        "true": "0",
+        "false": "1"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 2
+      }
+    },
+    {
+      "id": "nd_m4_rel",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page6[0].Member4[0].Relationship[0]"
+      },
+      "source": {
+        "fieldPath": "household.members[].relationship"
+      },
+      "valueMap": {
+        "self": "Self",
+        "spouse": "Spouse",
+        "domestic_partner": "Domestic Partner",
+        "child": "Child",
+        "stepchild": "Stepchild",
+        "grandchild": "Grandchild",
+        "parent": "Parent",
+        "stepparent": "Stepparent",
+        "grandparent": "Grandparent",
+        "sibling": "Sibling",
+        "other_relative": "Other Relative",
+        "unrelated": "Unrelated",
+        "foster_child": "Foster Child"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 2
+      }
+    },
+    {
+      "id": "nd_m5_first",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page7[0].Member5[0].LegalName[0]"
+      },
+      "source": {
+        "fieldPath": "household.members[].first_name"
+      },
+      "transforms": [
+        {
+          "op": "split",
+          "sep": ",",
+          "index": 0
+        },
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 3
+      },
+      "note": "Name box is 'First, Middle Initial, Last'; first token only."
+    },
+    {
+      "id": "nd_m5_dob",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page7[0].Member5[0].DateOfBIrth[0]"
+      },
+      "source": {
+        "fieldPath": "household.members[].date_of_birth"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "date",
+          "layout": "01/02/2006"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 3
+      }
+    },
+    {
+      "id": "nd_m5_ssn",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page7[0].Member5[0].SSN[0]"
+      },
+      "source": {
+        "fieldPath": "household.members[].ssn"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "ssn",
+          "style": "full"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 3
+      }
+    },
+    {
+      "id": "nd_m5_sex",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page7[0].Member5[0].Sex[0]"
+      },
+      "source": {
+        "fieldPath": "household.members[].sex"
+      },
+      "valueMap": {
+        "female": "Female",
+        "male": "Male",
+        "other": "Other",
+        "decline_to_state": "Decline to state"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 3
+      }
+    },
+    {
+      "id": "nd_m5_citizen",
+      "target": {
+        "type": "radio",
+        "name": "sfn00405[0].page7[0].Member5[0].USCitizenRadio[0]"
+      },
+      "source": {
+        "fieldPath": "household.members[].is_us_citizen"
+      },
+      "valueMap": {
+        "true": "0",
+        "false": "1"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 3
+      }
+    },
+    {
+      "id": "nd_m5_rel",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page7[0].Member5[0].Relationship[0]"
+      },
+      "source": {
+        "fieldPath": "household.members[].relationship"
+      },
+      "valueMap": {
+        "self": "Self",
+        "spouse": "Spouse",
+        "domestic_partner": "Domestic Partner",
+        "child": "Child",
+        "stepchild": "Stepchild",
+        "grandchild": "Grandchild",
+        "parent": "Parent",
+        "stepparent": "Stepparent",
+        "grandparent": "Grandparent",
+        "sibling": "Sibling",
+        "other_relative": "Other Relative",
+        "unrelated": "Unrelated",
+        "foster_child": "Foster Child"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 3
+      }
+    },
+    {
+      "id": "nd_job1_member",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page12[0].HouseholdMember1[0].MemerName[0]"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].member_ref"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 0
+      },
+      "note": "Employment row 1 of 5."
+    },
+    {
+      "id": "nd_job1_employer",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page12[0].HouseholdMember1[0].Employer[0]"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].employer_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 0
+      }
+    },
+    {
+      "id": "nd_job1_hours",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page12[0].HouseholdMember1[0].HoursWorked[0]"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].hours_per_week"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 0
+      }
+    },
+    {
+      "id": "nd_job1_pay",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page12[0].HouseholdMember1[0].HourlyPay[0]"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].pay_rate"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 0
+      }
+    },
+    {
+      "id": "nd_job2_member",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page13[0].HouseholdMember2[0].MemerName[0]"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].member_ref"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 1
+      },
+      "note": "Employment row 2 of 5."
+    },
+    {
+      "id": "nd_job2_employer",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page13[0].HouseholdMember2[0].Employer[0]"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].employer_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 1
+      }
+    },
+    {
+      "id": "nd_job2_hours",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page13[0].HouseholdMember2[0].HoursWorked[0]"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].hours_per_week"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 1
+      }
+    },
+    {
+      "id": "nd_job2_pay",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page13[0].HouseholdMember2[0].HourlyPay[0]"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].pay_rate"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 1
+      }
+    },
+    {
+      "id": "nd_job3_member",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page13[0].HouseholdMember3[0].MemerName[0]"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].member_ref"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 2
+      },
+      "note": "Employment row 3 of 5."
+    },
+    {
+      "id": "nd_job3_employer",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page13[0].HouseholdMember3[0].Employer[0]"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].employer_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 2
+      }
+    },
+    {
+      "id": "nd_job3_hours",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page13[0].HouseholdMember3[0].HoursWorked[0]"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].hours_per_week"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 2
+      }
+    },
+    {
+      "id": "nd_job3_pay",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page13[0].HouseholdMember3[0].HourlyPay[0]"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].pay_rate"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 2
+      }
+    },
+    {
+      "id": "nd_job4_member",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page13[0].HouseholdMember4[0].MemerName[0]"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].member_ref"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 3
+      },
+      "note": "Employment row 4 of 5."
+    },
+    {
+      "id": "nd_job4_employer",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page13[0].HouseholdMember4[0].Employer[0]"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].employer_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 3
+      }
+    },
+    {
+      "id": "nd_job4_hours",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page13[0].HouseholdMember4[0].HoursWorked[0]"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].hours_per_week"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 3
+      }
+    },
+    {
+      "id": "nd_job4_pay",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page13[0].HouseholdMember4[0].HourlyPay[0]"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].pay_rate"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 3
+      }
+    },
+    {
+      "id": "nd_job5_member",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page13[0].HouseholdMember5[0].MemerName[0]"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].member_ref"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 4
+      },
+      "note": "Employment row 5 of 5."
+    },
+    {
+      "id": "nd_job5_employer",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page13[0].HouseholdMember5[0].Employer[0]"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].employer_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 4
+      }
+    },
+    {
+      "id": "nd_job5_hours",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page13[0].HouseholdMember5[0].HoursWorked[0]"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].hours_per_week"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 4
+      }
+    },
+    {
+      "id": "nd_job5_pay",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page13[0].HouseholdMember5[0].HourlyPay[0]"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].pay_rate"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 4
+      }
+    },
+    {
+      "id": "nd_se_member",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page12[0].Income[0].Members[0]"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].member_ref"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 5
+      },
+      "note": "Self-employment row; the form's pay-frequency 'Other' has no profile equivalent."
+    },
+    {
+      "id": "nd_se_business",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page12[0].Income[0].Business[0]"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].employer_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 5
+      }
+    },
+    {
+      "id": "nd_se_start",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page12[0].Income[0].DateBusStarted[0]"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].start_date"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "date",
+          "layout": "01/02/2006"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 5
+      }
+    },
+    {
+      "id": "nd_se_net",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page12[0].Income[0].NetIncome[0]"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].pay_rate"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 5
+      },
+      "note": "Net income expected this month."
+    },
+    {
+      "id": "nd_u_elec",
+      "target": {
+        "type": "radio",
+        "name": "sfn00405[0].page21[0].Expenses[0].ElectricityRadio[0]"
+      },
+      "source": {
+        "fieldPath": "utilities.pays_electricity"
+      },
+      "valueMap": {
+        "true": "1",
+        "false": "0"
+      },
+      "note": "PDF prints No then Yes."
+    },
+    {
+      "id": "nd_u_garbage",
+      "target": {
+        "type": "radio",
+        "name": "sfn00405[0].page21[0].Expenses[0].GarbageRadio[0]"
+      },
+      "source": {
+        "fieldPath": "utilities.pays_trash"
+      },
+      "valueMap": {
+        "true": "1",
+        "false": "0"
+      },
+      "note": "PDF prints No then Yes."
+    },
+    {
+      "id": "nd_u_heat",
+      "target": {
+        "type": "radio",
+        "name": "sfn00405[0].page21[0].Expenses[0].HeatingRadio[0]"
+      },
+      "source": {
+        "fieldPath": "utilities.pays_heating_cooling"
+      },
+      "valueMap": {
+        "true": "1",
+        "false": "0"
+      },
+      "note": "PDF prints No then Yes."
+    },
+    {
+      "id": "nd_u_ac",
+      "target": {
+        "type": "radio",
+        "name": "sfn00405[0].page21[0].Expenses[0].ACRadio[0]"
+      },
+      "source": {
+        "fieldPath": "utilities.pays_heating_cooling"
+      },
+      "valueMap": {
+        "true": "1",
+        "false": "0"
+      },
+      "note": "PDF prints No then Yes."
+    },
+    {
+      "id": "nd_u_phone",
+      "target": {
+        "type": "radio",
+        "name": "sfn00405[0].page21[0].Expenses[0].TelephoneRadio[0]"
+      },
+      "source": {
+        "fieldPath": "utilities.pays_phone"
+      },
+      "valueMap": {
+        "true": "1",
+        "false": "0"
+      },
+      "note": "PDF prints No then Yes."
+    },
+    {
+      "id": "nd_u_sewer",
+      "target": {
+        "type": "radio",
+        "name": "sfn00405[0].page21[0].Expenses[0].SewerRadio[0]"
+      },
+      "source": {
+        "fieldPath": "utilities.pays_water_sewer"
+      },
+      "valueMap": {
+        "true": "1",
+        "false": "0"
+      },
+      "note": "PDF prints No then Yes."
+    },
+    {
+      "id": "nd_u_water",
+      "target": {
+        "type": "radio",
+        "name": "sfn00405[0].page21[0].Expenses[0].WaterRadio[0]"
+      },
+      "source": {
+        "fieldPath": "utilities.pays_water_sewer"
+      },
+      "valueMap": {
+        "true": "1",
+        "false": "0"
+      },
+      "note": "PDF prints No then Yes."
+    },
+    {
+      "id": "nd_med_member",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page22[0].ElderlyDisabled[0].WhoPays[0]"
+      },
+      "source": {
+        "fieldPath": "expenses.medical[].member_ref"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "expenses.medical",
+        "index": 0
+      },
+      "note": "Elderly/disabled health-insurance amount."
+    },
+    {
+      "id": "nd_med_ins",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page22[0].ElderlyDisabled[0].HealthInsurAmt[0]"
+      },
+      "source": {
+        "fieldPath": "expenses.medical[].monthly_amount"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "expenses.medical",
+        "index": 0
+      }
+    },
+    {
+      "id": "nd_med_exp",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page22[0].ElderlyDisabled[0].MedExpAmt[0]"
+      },
+      "source": {
+        "fieldPath": "expenses.medical[].monthly_amount"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "expenses.medical",
+        "index": 1
+      },
+      "note": "Elderly/disabled other medical expenses."
+    },
+    {
+      "id": "nd_veh1_make",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page19[0].Assets[0].VehicleTable[0].Row1[0].MakeModel[0]"
+      },
+      "source": {
+        "fieldPath": "resources.vehicles[].make"
+      },
+      "transforms": [
+        {
+          "op": "split",
+          "sep": " ",
+          "index": 0
+        },
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "resources.vehicles",
+        "index": 0
+      },
+      "note": "Combined make/model box; first token only. Row 1."
+    },
+    {
+      "id": "nd_veh1_year",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page19[0].Assets[0].VehicleTable[0].Row1[0].Year[0]"
+      },
+      "source": {
+        "fieldPath": "resources.vehicles[].year"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "resources.vehicles",
+        "index": 0
+      }
+    },
+    {
+      "id": "nd_veh1_value",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page19[0].Assets[0].VehicleTable[0].Row1[0].Value[0]"
+      },
+      "source": {
+        "fieldPath": "resources.vehicles[].estimated_value"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "resources.vehicles",
+        "index": 0
+      }
+    },
+    {
+      "id": "nd_veh2_make",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page19[0].Assets[0].VehicleTable[0].Row2[0].MakeModel[0]"
+      },
+      "source": {
+        "fieldPath": "resources.vehicles[].make"
+      },
+      "transforms": [
+        {
+          "op": "split",
+          "sep": " ",
+          "index": 0
+        },
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "resources.vehicles",
+        "index": 1
+      },
+      "note": "Combined make/model box; first token only. Row 2."
+    },
+    {
+      "id": "nd_veh2_year",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page19[0].Assets[0].VehicleTable[0].Row2[0].Year[0]"
+      },
+      "source": {
+        "fieldPath": "resources.vehicles[].year"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "resources.vehicles",
+        "index": 1
+      }
+    },
+    {
+      "id": "nd_veh2_value",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page19[0].Assets[0].VehicleTable[0].Row2[0].Value[0]"
+      },
+      "source": {
+        "fieldPath": "resources.vehicles[].estimated_value"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "resources.vehicles",
+        "index": 1
+      }
+    },
+    {
+      "id": "nd_veh3_make",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page19[0].Assets[0].VehicleTable[0].Row3[0].MakeModel[0]"
+      },
+      "source": {
+        "fieldPath": "resources.vehicles[].make"
+      },
+      "transforms": [
+        {
+          "op": "split",
+          "sep": " ",
+          "index": 0
+        },
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "resources.vehicles",
+        "index": 2
+      },
+      "note": "Combined make/model box; first token only. Row 3."
+    },
+    {
+      "id": "nd_veh3_year",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page19[0].Assets[0].VehicleTable[0].Row3[0].Year[0]"
+      },
+      "source": {
+        "fieldPath": "resources.vehicles[].year"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "resources.vehicles",
+        "index": 2
+      }
+    },
+    {
+      "id": "nd_veh3_value",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page19[0].Assets[0].VehicleTable[0].Row3[0].Value[0]"
+      },
+      "source": {
+        "fieldPath": "resources.vehicles[].estimated_value"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "resources.vehicles",
+        "index": 2
+      }
+    },
+    {
+      "id": "nd_veh4_make",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page19[0].Assets[0].VehicleTable[0].Row4[0].MakeModel[0]"
+      },
+      "source": {
+        "fieldPath": "resources.vehicles[].make"
+      },
+      "transforms": [
+        {
+          "op": "split",
+          "sep": " ",
+          "index": 0
+        },
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "resources.vehicles",
+        "index": 3
+      },
+      "note": "Combined make/model box; first token only. Row 4."
+    },
+    {
+      "id": "nd_veh4_year",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page19[0].Assets[0].VehicleTable[0].Row4[0].Year[0]"
+      },
+      "source": {
+        "fieldPath": "resources.vehicles[].year"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "resources.vehicles",
+        "index": 3
+      }
+    },
+    {
+      "id": "nd_veh4_value",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page19[0].Assets[0].VehicleTable[0].Row4[0].Value[0]"
+      },
+      "source": {
+        "fieldPath": "resources.vehicles[].estimated_value"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "resources.vehicles",
+        "index": 3
+      }
+    },
+    {
+      "id": "nd_veh5_make",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page19[0].Assets[0].VehicleTable[0].Row5[0].MakeModel[0]"
+      },
+      "source": {
+        "fieldPath": "resources.vehicles[].make"
+      },
+      "transforms": [
+        {
+          "op": "split",
+          "sep": " ",
+          "index": 0
+        },
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "resources.vehicles",
+        "index": 4
+      },
+      "note": "Combined make/model box; first token only. Row 5."
+    },
+    {
+      "id": "nd_veh5_year",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page19[0].Assets[0].VehicleTable[0].Row5[0].Year[0]"
+      },
+      "source": {
+        "fieldPath": "resources.vehicles[].year"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "resources.vehicles",
+        "index": 4
+      }
+    },
+    {
+      "id": "nd_veh5_value",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page19[0].Assets[0].VehicleTable[0].Row5[0].Value[0]"
+      },
+      "source": {
+        "fieldPath": "resources.vehicles[].estimated_value"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "resources.vehicles",
+        "index": 4
+      }
+    },
+    {
+      "id": "nd_veh6_make",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page19[0].Assets[0].VehicleTable[0].Row6[0].MakeModel[0]"
+      },
+      "source": {
+        "fieldPath": "resources.vehicles[].make"
+      },
+      "transforms": [
+        {
+          "op": "split",
+          "sep": " ",
+          "index": 0
+        },
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "resources.vehicles",
+        "index": 5
+      },
+      "note": "Combined make/model box; first token only. Row 6."
+    },
+    {
+      "id": "nd_veh6_year",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page19[0].Assets[0].VehicleTable[0].Row6[0].Year[0]"
+      },
+      "source": {
+        "fieldPath": "resources.vehicles[].year"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "resources.vehicles",
+        "index": 5
+      }
+    },
+    {
+      "id": "nd_veh6_value",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page19[0].Assets[0].VehicleTable[0].Row6[0].Value[0]"
+      },
+      "source": {
+        "fieldPath": "resources.vehicles[].estimated_value"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "resources.vehicles",
+        "index": 5
+      }
+    },
+    {
+      "id": "nd_rep_name",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page10[0].AssistPerson[0].Name[0]"
+      },
+      "source": {
+        "fieldPath": "program.authorized_representative.name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "note": "Full authorized representative; EBT-only helper has no profile slot."
+    },
+    {
+      "id": "nd_rep_phone",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page10[0].AssistPerson[0].Telephone[0]"
+      },
+      "source": {
+        "fieldPath": "program.authorized_representative.phone"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "phone",
+          "style": "dashed"
+        }
+      ]
+    },
+    {
+      "id": "nd_text_ok",
+      "target": {
+        "type": "radio",
+        "name": "sfn00405[0].page9[0].Notification[0].TextMessageRadio[0]"
+      },
+      "source": {
+        "fieldPath": "contact.ok_to_text"
+      },
+      "valueMap": {
+        "true": "1",
+        "false": "0"
+      },
+      "note": "PDF prints No then Yes."
+    },
+    {
+      "id": "nd_email",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page9[0].Notification[0].EmailAddress[0]"
+      },
+      "source": {
+        "fieldPath": "contact.email"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "lower"
+        }
+      ]
+    },
+    {
+      "id": "nd_sig5",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page5[0].SignDate[0].SignatureApplicant[0]"
+      },
+      "fillPolicy": "never",
+      "note": "Applicant signature; never filled by the app."
+    },
+    {
+      "id": "nd_sig5_date",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page5[0].SignDate[0].DateSignedApplicant[0]"
+      },
+      "fillPolicy": "never",
+      "note": "Attestation date; never filled by the app."
+    },
+    {
+      "id": "nd_sig5_other",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page5[0].SignDate[0].SignatureOther[0]"
+      },
+      "fillPolicy": "never",
+      "note": "Other adult signature; never filled by the app."
+    },
+    {
+      "id": "nd_sig5_other_date",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page5[0].SignDate[0].DateSignedOther[0]"
+      },
+      "fillPolicy": "never",
+      "note": "Attestation date; never filled by the app."
+    },
+    {
+      "id": "nd_sig9",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page9[0].Notification[0].Signature[0]"
+      },
+      "fillPolicy": "never",
+      "note": "Notification consent signature; never filled by the app."
+    },
+    {
+      "id": "nd_sig9_date",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page9[0].Notification[0].DateSigned[0]"
+      },
+      "fillPolicy": "never",
+      "note": "Attestation date; never filled by the app."
+    },
+    {
+      "id": "nd_sig10_rep",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page10[0].AssistPerson[0].Signature[0]"
+      },
+      "fillPolicy": "never",
+      "note": "Authorized-representative signature; never filled by the app."
+    },
+    {
+      "id": "nd_sig10_rep_date",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page10[0].AssistPerson[0].DateSigned[0]"
+      },
+      "fillPolicy": "never",
+      "note": "Attestation date; never filled by the app."
+    },
+    {
+      "id": "nd_sig10_ebt",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page10[0].EBT[0].Signature[0]"
+      },
+      "fillPolicy": "never",
+      "note": "EBT-helper signature; never filled by the app."
+    },
+    {
+      "id": "nd_sig10_ebt_date",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page10[0].EBT[0].DateSigned[0]"
+      },
+      "fillPolicy": "never",
+      "note": "Attestation date; never filled by the app."
+    },
+    {
+      "id": "nd_sig39",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page39[0].SignDate[0].SignatureApp[0]"
+      },
+      "fillPolicy": "never",
+      "note": "Applicant signature; never filled by the app."
+    },
+    {
+      "id": "nd_sig39_date",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page39[0].SignDate[0].DateSignedApp[0]"
+      },
+      "fillPolicy": "never",
+      "note": "Attestation date; never filled by the app."
+    },
+    {
+      "id": "nd_sig39_other",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page39[0].SignDate[0].SignatureOther[0]"
+      },
+      "fillPolicy": "never",
+      "note": "Other adult signature; never filled by the app."
+    },
+    {
+      "id": "nd_sig39_other_date",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page39[0].SignDate[0].DateSignedOther[0]"
+      },
+      "fillPolicy": "never",
+      "note": "Attestation date; never filled by the app."
+    },
+    {
+      "id": "nd_ag4_case",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page4[0].AgencyUse[0].caseNumber[0]"
+      },
+      "fillPolicy": "never",
+      "note": "Office use; never filled by the app."
+    },
+    {
+      "id": "nd_ag4_recv",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page4[0].AgencyUse[0].dateReceived[0]"
+      },
+      "fillPolicy": "never",
+      "note": "Office use; never filled by the app."
+    },
+    {
+      "id": "nd_ag4_req",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page4[0].AgencyUse[0].dateRequested[0]"
+      },
+      "fillPolicy": "never",
+      "note": "Office use; never filled by the app."
+    },
+    {
+      "id": "nd_ag4_int",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page4[0].AgencyUse[0].dateInterviewed[0]"
+      },
+      "fillPolicy": "never",
+      "note": "Office use; never filled by the app."
+    },
+    {
+      "id": "nd_ag4_who",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page4[0].AgencyUse[0].individualInterviewed[0]"
+      },
+      "fillPolicy": "never",
+      "note": "Office use; never filled by the app."
+    },
+    {
+      "id": "nd_ag11_gross",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page11[0].AgencyUseOnly[0].NotEligible[0].GrossIncome[0]"
+      },
+      "fillPolicy": "never",
+      "note": "Office use; never filled by the app."
+    },
+    {
+      "id": "nd_ag11_assets",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page11[0].AgencyUseOnly[0].NotEligible[0].CountableAssets[0]"
+      },
+      "fillPolicy": "never",
+      "note": "Office use; never filled by the app."
+    },
+    {
+      "id": "nd_ag11_rent",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page11[0].AgencyUseOnly[0].NotEligible[0].Rent[0]"
+      },
+      "fillPolicy": "never",
+      "note": "Office use; never filled by the app."
+    },
+    {
+      "id": "nd_ag11_util",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page11[0].AgencyUseOnly[0].NotEligible[0].Utilities[0]"
+      },
+      "fillPolicy": "never",
+      "note": "Office use; never filled by the app."
+    },
+    {
+      "id": "nd_ag11_shelter",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page11[0].AgencyUseOnly[0].NotEligible[0].TotalShelter[0]"
+      },
+      "fillPolicy": "never",
+      "note": "Office use; never filled by the app."
+    },
+    {
+      "id": "nd_ag11_inc",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page11[0].AgencyUseOnly[0].NotEligible[0].TotalIncome[0]"
+      },
+      "fillPolicy": "never",
+      "note": "Office use; never filled by the app."
+    },
+    {
+      "id": "nd_ag11_init",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page11[0].AgencyUseOnly[0].Screening[0].Initials[0]"
+      },
+      "fillPolicy": "never",
+      "note": "Office use; never filled by the app."
+    },
+    {
+      "id": "nd_ag12_case",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page12[0].AgencyUse[0].caseNumber[0]"
+      },
+      "fillPolicy": "never",
+      "note": "Office use; never filled by the app."
+    },
+    {
+      "id": "nd_ag12_req",
+      "target": {
+        "type": "text",
+        "name": "sfn00405[0].page12[0].AgencyUse[0].dateRequested[0]"
+      },
+      "fillPolicy": "never",
+      "note": "Office use; never filled by the app."
+    },
+    {
+      "id": "nd_ag11_elig",
+      "target": {
+        "type": "radio",
+        "name": "sfn00405[0].page11[0].AgencyUseOnly[0].Screening[0].EligibleRadio[0]"
+      },
+      "fillPolicy": "never",
+      "note": "Office use; never filled by the app."
+    },
+    {
+      "id": "nd_ag11_screen",
+      "target": {
+        "type": "radio",
+        "name": "sfn00405[0].page11[0].AgencyUseOnly[0].Screening[0].ScreeningRadio[0]"
+      },
+      "fillPolicy": "never",
+      "note": "Office use; never filled by the app."
+    },
+    {
+      "id": "nd_ag11_verify",
+      "target": {
+        "type": "radio",
+        "name": "sfn00405[0].page11[0].AgencyUseOnly[0].Screening[0].VerifyRadio[0]"
+      },
+      "fillPolicy": "never",
+      "note": "Office use; never filled by the app."
+    },
+    {
+      "id": "nd_ag22_std",
+      "target": {
+        "type": "radio",
+        "name": "sfn00405[0].page22[0].AgencyUse[0].StandardRadio[0]"
+      },
+      "fillPolicy": "never",
+      "note": "Office use; never filled by the app."
+    }
+  ],
+  "provenanceNote": "SFN 405 (4-2026). Household Member 1 maps to the applicant; Members 2-5 map to household.members[0..3]. Five employment rows plus one self-employment row map to employment.jobs[0..5]; the form's pay-frequency 'Other' has no profile equivalent. Utility Yes/No radios print No-then-Yes. Skipped as unsupported: asset screening radios and real-property detail rows (no profile fields), expedited-screening totals, pay-frequency 'Other', and signature/office-use blocks."
+}

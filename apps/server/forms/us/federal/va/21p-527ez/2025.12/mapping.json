@@ -1,0 +1,587 @@
+{
+  "schemaVersion": 1,
+  "id": "us-federal-va-21p-527ez",
+  "jurisdiction": {
+    "country": "US"
+  },
+  "program": "VA",
+  "formCode": "21P-527EZ",
+  "formTitle": "Application for Veterans Pension",
+  "formVersion": "2025.12",
+  "revision": 1,
+  "status": "draft",
+  "vocabularyVersion": 1,
+  "effectiveDate": "2025-12-01",
+  "agencyUrl": "https://www.va.gov/find-forms/about-form-21p-527ez/",
+  "provenanceNote": "Draft: inventory verified against the official December 2025 PDF on 2026-09-09. Vocabulary v1 covers the veteran's identity, mailing address and per-source income; spouse/child/marriage detail, assets, medical expenses, care-facility and direct-deposit sections have no vocabulary paths and are left for the applicant.",
+  "template": {
+    "kind": "acroform",
+    "file": "template.pdf",
+    "sha256": "6f79947dfb24da1c131eb8cddbc6ea8ac89d88baf544813fb639d832aeaf0dc4",
+    "pageCount": 17,
+    "sourceUrl": "https://www.vba.va.gov/pubs/forms/VBA-21P-527EZ-ARE.pdf",
+    "retrievedAt": "2026-09-09"
+  },
+  "requirements": [
+    {
+      "fieldPath": "applicant.first_name",
+      "strength": "required"
+    },
+    {
+      "fieldPath": "applicant.last_name",
+      "strength": "required"
+    },
+    {
+      "fieldPath": "applicant.date_of_birth",
+      "strength": "required"
+    },
+    {
+      "fieldPath": "address.mailing.street1",
+      "strength": "required"
+    },
+    {
+      "fieldPath": "address.mailing.city",
+      "strength": "required"
+    },
+    {
+      "fieldPath": "address.mailing.state",
+      "strength": "required"
+    },
+    {
+      "fieldPath": "address.mailing.postal_code",
+      "strength": "required"
+    },
+    {
+      "fieldPath": "income.sources",
+      "strength": "required",
+      "unless": {
+        "fieldPath": "income.has_no_income",
+        "equals": true
+      }
+    }
+  ],
+  "fields": [
+    {
+      "id": "veteran_first_name",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[21].VeteransFirstName[0]"
+      },
+      "source": {
+        "fieldPath": "applicant.first_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "strength": "required"
+    },
+    {
+      "id": "veteran_last_name",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[21].VeteransLastName[0]"
+      },
+      "source": {
+        "fieldPath": "applicant.last_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "strength": "required"
+    },
+    {
+      "id": "veteran_middle_initial",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[21].VeteransMiddleInitial1[0]"
+      },
+      "source": {
+        "fieldPath": "applicant.middle_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "truncate",
+          "max": 1
+        }
+      ],
+      "note": "The box holds a single initial; longer middle names are truncated."
+    },
+    {
+      "id": "veteran_dob_month",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[21].DOBmonth[0]"
+      },
+      "source": {
+        "fieldPath": "applicant.date_of_birth"
+      },
+      "transforms": [
+        {
+          "op": "date",
+          "layout": "01"
+        }
+      ],
+      "strength": "required"
+    },
+    {
+      "id": "veteran_dob_day",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[21].DOBday[0]"
+      },
+      "source": {
+        "fieldPath": "applicant.date_of_birth"
+      },
+      "transforms": [
+        {
+          "op": "date",
+          "layout": "02"
+        }
+      ],
+      "strength": "required"
+    },
+    {
+      "id": "veteran_dob_year",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[21].DOByear[0]"
+      },
+      "source": {
+        "fieldPath": "applicant.date_of_birth"
+      },
+      "transforms": [
+        {
+          "op": "date",
+          "layout": "2006"
+        }
+      ],
+      "strength": "required"
+    },
+    {
+      "id": "mailing_street",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[21].NumberStreet[0]"
+      },
+      "source": {
+        "fieldPath": "address.mailing.street1"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "strength": "required"
+    },
+    {
+      "id": "mailing_apt",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[21].Apt_Or_Unit_Number[0]"
+      },
+      "source": {
+        "fieldPath": "address.mailing.street2"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ]
+    },
+    {
+      "id": "mailing_city",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[21].City[0]"
+      },
+      "source": {
+        "fieldPath": "address.mailing.city"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "strength": "required"
+    },
+    {
+      "id": "mailing_state",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[21].State[0]"
+      },
+      "source": {
+        "fieldPath": "address.mailing.state"
+      },
+      "strength": "required"
+    },
+    {
+      "id": "mailing_zip5",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[21].Zip_Postal_Code[0]"
+      },
+      "source": {
+        "fieldPath": "address.mailing.postal_code"
+      },
+      "transforms": [
+        {
+          "op": "digits"
+        },
+        {
+          "op": "truncate",
+          "max": 5
+        }
+      ],
+      "strength": "required",
+      "note": "ZIP+4 extension box left for the applicant; no vocabulary path holds it."
+    },
+    {
+      "id": "income0_payer",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[24].Name_Of_Income_Payer[0]"
+      },
+      "source": {
+        "fieldPath": "income.sources[].payer"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "income.sources",
+        "index": 0
+      },
+      "note": "Block 9H(1). Amounts on this form are monthly; the frequency has no box."
+    },
+    {
+      "id": "income0_amount",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[24].Monthly_Amount[1]"
+      },
+      "source": {
+        "fieldPath": "income.sources[].gross_amount"
+      },
+      "transforms": [
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "income.sources",
+        "index": 0
+      }
+    },
+    {
+      "id": "income1_payer",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[25].Name_Of_Income_Payer[1]"
+      },
+      "source": {
+        "fieldPath": "income.sources[].payer"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "income.sources",
+        "index": 1
+      },
+      "note": "Block 9I(1)."
+    },
+    {
+      "id": "income1_amount",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[25].Monthly_Amount[2]"
+      },
+      "source": {
+        "fieldPath": "income.sources[].gross_amount"
+      },
+      "transforms": [
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "income.sources",
+        "index": 1
+      }
+    },
+    {
+      "id": "income2_payer",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[25].Name_Of_Income_Payer[2]"
+      },
+      "source": {
+        "fieldPath": "income.sources[].payer"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "income.sources",
+        "index": 2
+      },
+      "note": "Block 9J(1)."
+    },
+    {
+      "id": "income2_amount",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[25].Monthly_Amount[3]"
+      },
+      "source": {
+        "fieldPath": "income.sources[].gross_amount"
+      },
+      "transforms": [
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "income.sources",
+        "index": 2
+      }
+    },
+    {
+      "id": "income3_payer",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[25].Name_Of_Income_Payer[3]"
+      },
+      "source": {
+        "fieldPath": "income.sources[].payer"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "income.sources",
+        "index": 3
+      },
+      "note": "Block 9K(1)."
+    },
+    {
+      "id": "income3_amount",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[25].Monthly_Amount[4]"
+      },
+      "source": {
+        "fieldPath": "income.sources[].gross_amount"
+      },
+      "transforms": [
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "income.sources",
+        "index": 3
+      }
+    },
+    {
+      "id": "sig_claimant",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[27].SignatureField1[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Claimant signature."
+    },
+    {
+      "id": "sig_claimant_date_m",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[27].Date_Signed_Month[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Date beside the claimant's signature."
+    },
+    {
+      "id": "sig_claimant_date_d",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[27].Date_Signed_Day[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Date beside the claimant's signature."
+    },
+    {
+      "id": "sig_claimant_date_y",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[27].Date_Signed_Year[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Date beside the claimant's signature."
+    },
+    {
+      "id": "sig_witness1",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[27].SignatureField1[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "First witness signature."
+    },
+    {
+      "id": "sig_witness1_date_m",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[27].Date_Signed_Month[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Date beside the first witness signature."
+    },
+    {
+      "id": "sig_witness1_date_d",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[27].Date_Signed_Day[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Date beside the first witness signature."
+    },
+    {
+      "id": "sig_witness1_date_y",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[27].Date_Signed_Year[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Date beside the first witness signature."
+    },
+    {
+      "id": "sig_witness2",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[27].SignatureField1[2]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Second witness signature."
+    },
+    {
+      "id": "sig_custodian",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[27].SignatureField1[3]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Custodian signature."
+    },
+    {
+      "id": "sig_care_facility",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[29].SignatureField11[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Care facility certification signature."
+    },
+    {
+      "id": "sig_care_facility_date_m",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[29].Date_Signed_Month[2]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Date beside the care facility signature."
+    },
+    {
+      "id": "sig_care_facility_date_d",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[29].Date_Signed_Day[2]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Date beside the care facility signature."
+    },
+    {
+      "id": "sig_care_facility_date_y",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[29].Date_Signed_Year[2]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Date beside the care facility signature."
+    },
+    {
+      "id": "sig_inhome_care",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[30].SignatureField11[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "In-home care provider signature."
+    },
+    {
+      "id": "sig_inhome_care_date_m",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[30].Date_Signed_Month[3]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Date beside the in-home care signature."
+    },
+    {
+      "id": "sig_inhome_care_date_d",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[30].Date_Signed_Day[3]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Date beside the in-home care signature."
+    },
+    {
+      "id": "sig_inhome_care_date_y",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[30].Date_Signed_Year[3]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Date beside the in-home care signature."
+    }
+  ]
+}

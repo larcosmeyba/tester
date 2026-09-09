@@ -1,0 +1,1609 @@
+{
+  "schemaVersion": 1,
+  "id": "us-pa-snap-pa-600",
+  "jurisdiction": {
+    "country": "US",
+    "state": "PA"
+  },
+  "program": "SNAP",
+  "formCode": "PA 600",
+  "formTitle": "Application for Benefits",
+  "formVersion": "2024.08",
+  "revision": 1,
+  "status": "draft",
+  "vocabularyVersion": 1,
+  "agencyUrl": "https://www.dhs.pa.gov",
+  "template": {
+    "kind": "acroform",
+    "file": "template.pdf",
+    "sha256": "e13b2302cec52ff6e6b4ca00c510ba27b2d555c3f8403b89220f0123ef15a3a0",
+    "pageCount": 32,
+    "sourceUrl": "https://www.pa.gov/content/dam/copapwp-pagov/en/dhs/documents/services/assistance/documents/benefits-applications/pa-0600.pdf",
+    "retrievedAt": "2026-09-09"
+  },
+  "requirements": [
+    {
+      "fieldPath": "applicant.first_name",
+      "strength": "required"
+    },
+    {
+      "fieldPath": "applicant.date_of_birth",
+      "strength": "required"
+    },
+    {
+      "fieldPath": "contact.phone_primary",
+      "strength": "preferred"
+    },
+    {
+      "fieldPath": "address.residential.county",
+      "strength": "preferred"
+    }
+  ],
+  "fields": [
+    {
+      "id": "pa_p1_first",
+      "target": {
+        "type": "text",
+        "name": "Person 1 Name"
+      },
+      "source": {
+        "fieldPath": "applicant.first_name"
+      },
+      "transforms": [
+        {
+          "op": "split",
+          "sep": " ",
+          "index": 0
+        },
+        {
+          "op": "trim"
+        }
+      ],
+      "note": "Person 1 is the applicant. Single name box; first token only."
+    },
+    {
+      "id": "pa_p1_dob",
+      "target": {
+        "type": "text",
+        "name": "Person 1 Birthdate MM/DD/YYYY"
+      },
+      "source": {
+        "fieldPath": "applicant.date_of_birth"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "date",
+          "layout": "01/02/2006"
+        }
+      ]
+    },
+    {
+      "id": "pa_p1_ssn",
+      "target": {
+        "type": "text",
+        "name": "Person 1 Social Security number"
+      },
+      "source": {
+        "fieldPath": "applicant.ssn"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "ssn",
+          "style": "full"
+        }
+      ]
+    },
+    {
+      "id": "pa_p1_citizen",
+      "target": {
+        "type": "radio",
+        "name": "Person 1 Are you a U.S. citizen or national?"
+      },
+      "source": {
+        "fieldPath": "applicant.is_us_citizen"
+      },
+      "valueMap": {
+        "true": "0",
+        "false": "1"
+      }
+    },
+    {
+      "id": "pa_p1_pregnant",
+      "target": {
+        "type": "radio",
+        "name": "Person 1 Are you pregnant?"
+      },
+      "source": {
+        "fieldPath": "applicant.is_pregnant"
+      },
+      "valueMap": {
+        "true": "0",
+        "false": "1"
+      }
+    },
+    {
+      "id": "pa_p1_student",
+      "target": {
+        "type": "radio",
+        "name": "Person 1 Are you in school?"
+      },
+      "source": {
+        "fieldPath": "applicant.is_student"
+      },
+      "valueMap": {
+        "true": "0",
+        "false": "1"
+      }
+    },
+    {
+      "id": "pa_p2_first",
+      "target": {
+        "type": "text",
+        "name": "Person 2 Name"
+      },
+      "source": {
+        "fieldPath": "household.members[].first_name"
+      },
+      "transforms": [
+        {
+          "op": "split",
+          "sep": " ",
+          "index": 0
+        },
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 0
+      },
+      "note": "Single name box; first token only."
+    },
+    {
+      "id": "pa_p2_dob",
+      "target": {
+        "type": "text",
+        "name": "Person 2 Birthdate MM/DD/YYYY"
+      },
+      "source": {
+        "fieldPath": "household.members[].date_of_birth"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "date",
+          "layout": "01/02/2006"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 0
+      }
+    },
+    {
+      "id": "pa_p2_ssn",
+      "target": {
+        "type": "text",
+        "name": "Person 2 Social Security number 1"
+      },
+      "source": {
+        "fieldPath": "household.members[].ssn"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "ssn",
+          "style": "full"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 0
+      }
+    },
+    {
+      "id": "pa_p2_citizen",
+      "target": {
+        "type": "radio",
+        "name": "Person 2 Are you a U.S. citizen or national?"
+      },
+      "source": {
+        "fieldPath": "household.members[].is_us_citizen"
+      },
+      "valueMap": {
+        "true": "0",
+        "false": "1"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 0
+      }
+    },
+    {
+      "id": "pa_p2_pregnant",
+      "target": {
+        "type": "radio",
+        "name": "Person 2 Are you pregnant?"
+      },
+      "source": {
+        "fieldPath": "household.members[].is_pregnant"
+      },
+      "valueMap": {
+        "true": "0",
+        "false": "1"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 0
+      }
+    },
+    {
+      "id": "pa_p2_applying",
+      "target": {
+        "type": "radio",
+        "name": "Person 2 Are you applying for yourself?"
+      },
+      "source": {
+        "fieldPath": "household.members[].is_applying"
+      },
+      "valueMap": {
+        "true": "0",
+        "false": "1"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 0
+      }
+    },
+    {
+      "id": "pa_p3_first",
+      "target": {
+        "type": "text",
+        "name": "Person 3 Name"
+      },
+      "source": {
+        "fieldPath": "household.members[].first_name"
+      },
+      "transforms": [
+        {
+          "op": "split",
+          "sep": " ",
+          "index": 0
+        },
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 1
+      },
+      "note": "Single name box; first token only."
+    },
+    {
+      "id": "pa_p3_dob",
+      "target": {
+        "type": "text",
+        "name": "Person 3 Birthdate MM/DD/YYYY"
+      },
+      "source": {
+        "fieldPath": "household.members[].date_of_birth"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "date",
+          "layout": "01/02/2006"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 1
+      }
+    },
+    {
+      "id": "pa_p3_ssn",
+      "target": {
+        "type": "text",
+        "name": "Person 3 Social Security number"
+      },
+      "source": {
+        "fieldPath": "household.members[].ssn"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "ssn",
+          "style": "full"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 1
+      }
+    },
+    {
+      "id": "pa_p3_citizen",
+      "target": {
+        "type": "radio",
+        "name": "Person 3 Are you a U.S. citizen or national?"
+      },
+      "source": {
+        "fieldPath": "household.members[].is_us_citizen"
+      },
+      "valueMap": {
+        "true": "0",
+        "false": "1"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 1
+      }
+    },
+    {
+      "id": "pa_p3_pregnant",
+      "target": {
+        "type": "radio",
+        "name": "Person 3 Are you pregnant?"
+      },
+      "source": {
+        "fieldPath": "household.members[].is_pregnant"
+      },
+      "valueMap": {
+        "true": "0",
+        "false": "1"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 1
+      }
+    },
+    {
+      "id": "pa_p3_applying",
+      "target": {
+        "type": "radio",
+        "name": "Person 3 Are you applying for yourself?"
+      },
+      "source": {
+        "fieldPath": "household.members[].is_applying"
+      },
+      "valueMap": {
+        "true": "0",
+        "false": "1"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 1
+      }
+    },
+    {
+      "id": "pa_p4_first",
+      "target": {
+        "type": "text",
+        "name": "Person 4 Name"
+      },
+      "source": {
+        "fieldPath": "household.members[].first_name"
+      },
+      "transforms": [
+        {
+          "op": "split",
+          "sep": " ",
+          "index": 0
+        },
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 2
+      },
+      "note": "Single name box; first token only."
+    },
+    {
+      "id": "pa_p4_dob",
+      "target": {
+        "type": "text",
+        "name": "Person 4 Birthdate MM/DD/YYYY"
+      },
+      "source": {
+        "fieldPath": "household.members[].date_of_birth"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "date",
+          "layout": "01/02/2006"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 2
+      }
+    },
+    {
+      "id": "pa_p4_ssn",
+      "target": {
+        "type": "text",
+        "name": "Person 4 Social Security number"
+      },
+      "source": {
+        "fieldPath": "household.members[].ssn"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "ssn",
+          "style": "full"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 2
+      }
+    },
+    {
+      "id": "pa_p4_citizen",
+      "target": {
+        "type": "radio",
+        "name": "Person 4 Are you a U.S. citizen or national?"
+      },
+      "source": {
+        "fieldPath": "household.members[].is_us_citizen"
+      },
+      "valueMap": {
+        "true": "0",
+        "false": "1"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 2
+      }
+    },
+    {
+      "id": "pa_p4_pregnant",
+      "target": {
+        "type": "radio",
+        "name": "Person 4 Are you pregnant?"
+      },
+      "source": {
+        "fieldPath": "household.members[].is_pregnant"
+      },
+      "valueMap": {
+        "true": "0",
+        "false": "1"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 2
+      }
+    },
+    {
+      "id": "pa_p4_applying",
+      "target": {
+        "type": "radio",
+        "name": "Person 4 Are you applying for yourself?"
+      },
+      "source": {
+        "fieldPath": "household.members[].is_applying"
+      },
+      "valueMap": {
+        "true": "0",
+        "false": "1"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 2
+      }
+    },
+    {
+      "id": "pa_p5_first",
+      "target": {
+        "type": "text",
+        "name": "Person 5 Name"
+      },
+      "source": {
+        "fieldPath": "household.members[].first_name"
+      },
+      "transforms": [
+        {
+          "op": "split",
+          "sep": " ",
+          "index": 0
+        },
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 3
+      },
+      "note": "Single name box; first token only."
+    },
+    {
+      "id": "pa_p5_dob",
+      "target": {
+        "type": "text",
+        "name": "Person 5 Birthdate MM/DD/YYYY"
+      },
+      "source": {
+        "fieldPath": "household.members[].date_of_birth"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "date",
+          "layout": "01/02/2006"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 3
+      }
+    },
+    {
+      "id": "pa_p5_ssn",
+      "target": {
+        "type": "text",
+        "name": "Person 5 Social Security number"
+      },
+      "source": {
+        "fieldPath": "household.members[].ssn"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "ssn",
+          "style": "full"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 3
+      }
+    },
+    {
+      "id": "pa_p5_citizen",
+      "target": {
+        "type": "radio",
+        "name": "Person 5 Are you a U.S. citizen or national?"
+      },
+      "source": {
+        "fieldPath": "household.members[].is_us_citizen"
+      },
+      "valueMap": {
+        "true": "0",
+        "false": "1"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 3
+      }
+    },
+    {
+      "id": "pa_p5_pregnant",
+      "target": {
+        "type": "radio",
+        "name": "Person 5 Are you pregnant?"
+      },
+      "source": {
+        "fieldPath": "household.members[].is_pregnant"
+      },
+      "valueMap": {
+        "true": "0",
+        "false": "1"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 3
+      }
+    },
+    {
+      "id": "pa_p5_applying",
+      "target": {
+        "type": "radio",
+        "name": "Person 5 Are you applying for yourself?"
+      },
+      "source": {
+        "fieldPath": "household.members[].is_applying"
+      },
+      "valueMap": {
+        "true": "0",
+        "false": "1"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 3
+      }
+    },
+    {
+      "id": "pa_p6_first",
+      "target": {
+        "type": "text",
+        "name": "Person 6 Name"
+      },
+      "source": {
+        "fieldPath": "household.members[].first_name"
+      },
+      "transforms": [
+        {
+          "op": "split",
+          "sep": " ",
+          "index": 0
+        },
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 4
+      },
+      "note": "Single name box; first token only."
+    },
+    {
+      "id": "pa_p6_dob",
+      "target": {
+        "type": "text",
+        "name": "Person 6 Birthdate MM/DD/YYYY"
+      },
+      "source": {
+        "fieldPath": "household.members[].date_of_birth"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "date",
+          "layout": "01/02/2006"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 4
+      }
+    },
+    {
+      "id": "pa_p6_ssn",
+      "target": {
+        "type": "text",
+        "name": "Person 6 Social Security number"
+      },
+      "source": {
+        "fieldPath": "household.members[].ssn"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "ssn",
+          "style": "full"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 4
+      }
+    },
+    {
+      "id": "pa_p6_citizen",
+      "target": {
+        "type": "radio",
+        "name": "Person 6 Are you a U.S. citizen or national?"
+      },
+      "source": {
+        "fieldPath": "household.members[].is_us_citizen"
+      },
+      "valueMap": {
+        "true": "0",
+        "false": "1"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 4
+      }
+    },
+    {
+      "id": "pa_p6_pregnant",
+      "target": {
+        "type": "radio",
+        "name": "Person 6 Are you pregnant?"
+      },
+      "source": {
+        "fieldPath": "household.members[].is_pregnant"
+      },
+      "valueMap": {
+        "true": "0",
+        "false": "1"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 4
+      }
+    },
+    {
+      "id": "pa_p6_applying",
+      "target": {
+        "type": "radio",
+        "name": "Person 6 Are you applying for yourself?"
+      },
+      "source": {
+        "fieldPath": "household.members[].is_applying"
+      },
+      "valueMap": {
+        "true": "0",
+        "false": "1"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 4
+      }
+    },
+    {
+      "id": "pa_p7_first",
+      "target": {
+        "type": "text",
+        "name": "Person 7 Name"
+      },
+      "source": {
+        "fieldPath": "household.members[].first_name"
+      },
+      "transforms": [
+        {
+          "op": "split",
+          "sep": " ",
+          "index": 0
+        },
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 5
+      },
+      "note": "Single name box; first token only."
+    },
+    {
+      "id": "pa_p7_dob",
+      "target": {
+        "type": "text",
+        "name": "Person 7 Birthdate MM/DD/YYYY"
+      },
+      "source": {
+        "fieldPath": "household.members[].date_of_birth"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "date",
+          "layout": "01/02/2006"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 5
+      }
+    },
+    {
+      "id": "pa_p7_ssn",
+      "target": {
+        "type": "text",
+        "name": "Person 7 Social Security number"
+      },
+      "source": {
+        "fieldPath": "household.members[].ssn"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "ssn",
+          "style": "full"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 5
+      }
+    },
+    {
+      "id": "pa_p7_citizen",
+      "target": {
+        "type": "radio",
+        "name": "Person 7 Are you a U.S. citizen or national?"
+      },
+      "source": {
+        "fieldPath": "household.members[].is_us_citizen"
+      },
+      "valueMap": {
+        "true": "0",
+        "false": "1"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 5
+      }
+    },
+    {
+      "id": "pa_p7_pregnant",
+      "target": {
+        "type": "radio",
+        "name": "Person 7 Are you pregnant?"
+      },
+      "source": {
+        "fieldPath": "household.members[].is_pregnant"
+      },
+      "valueMap": {
+        "true": "0",
+        "false": "1"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 5
+      }
+    },
+    {
+      "id": "pa_p7_applying",
+      "target": {
+        "type": "radio",
+        "name": "Person 7 Are you applying for yourself?"
+      },
+      "source": {
+        "fieldPath": "household.members[].is_applying"
+      },
+      "valueMap": {
+        "true": "0",
+        "false": "1"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 5
+      }
+    },
+    {
+      "id": "pa_phone",
+      "target": {
+        "type": "text",
+        "name": "Phone Number"
+      },
+      "source": {
+        "fieldPath": "contact.phone_primary"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "phone",
+          "style": "dashed"
+        }
+      ]
+    },
+    {
+      "id": "pa_county",
+      "target": {
+        "type": "text",
+        "name": "County"
+      },
+      "source": {
+        "fieldPath": "address.residential.county"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ]
+    },
+    {
+      "id": "pa_home_addr",
+      "target": {
+        "type": "text",
+        "name": "Applicant Home Address"
+      },
+      "source": {
+        "fieldPath": "address.residential.street1"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ]
+    },
+    {
+      "id": "pa_mail_addr",
+      "target": {
+        "type": "text",
+        "name": "Mailing address"
+      },
+      "source": {
+        "fieldPath": "address.mailing.street1"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ]
+    },
+    {
+      "id": "pa_phone2",
+      "target": {
+        "type": "text",
+        "name": "Second Phone Number"
+      },
+      "source": {
+        "fieldPath": "contact.phone_secondary"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "phone",
+          "style": "dashed"
+        }
+      ]
+    },
+    {
+      "id": "pa_interpreter",
+      "target": {
+        "type": "radio",
+        "name": "Do you need an interpreter? ¿Necesita un intérprete?"
+      },
+      "source": {
+        "fieldPath": "contact.needs_interpreter"
+      },
+      "valueMap": {
+        "true": "0",
+        "false": "1"
+      }
+    },
+    {
+      "id": "pa_lang",
+      "target": {
+        "type": "text",
+        "name": "If yes, what language? En caso afirmativo, ¿de qué idioma?"
+      },
+      "source": {
+        "fieldPath": "applicant.preferred_language"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ]
+    },
+    {
+      "id": "pa_income_total",
+      "target": {
+        "type": "text",
+        "name": "Total monthly income, for you and anyone \nwho is applying, before taxes are taken out:"
+      },
+      "source": {
+        "fieldPath": "income.monthly_gross_total"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "note": "Household-level total; profile may compute this instead."
+    },
+    {
+      "id": "pa_inc1_amount",
+      "target": {
+        "type": "text",
+        "name": "Person 1 Income/Pay:\n How much?"
+      },
+      "source": {
+        "fieldPath": "income.sources[].gross_amount"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "income.sources",
+        "index": 0
+      }
+    },
+    {
+      "id": "pa_inc1_freq",
+      "target": {
+        "type": "text",
+        "name": "Person 1 How often paid?"
+      },
+      "source": {
+        "fieldPath": "income.sources[].frequency"
+      },
+      "valueMap": {
+        "hourly": "Hourly",
+        "daily": "Daily",
+        "weekly": "Weekly",
+        "biweekly": "Biweekly",
+        "semimonthly": "Semimonthly",
+        "monthly": "Monthly",
+        "quarterly": "Quarterly",
+        "annually": "Annually",
+        "one_time": "One Time"
+      },
+      "repeat": {
+        "over": "income.sources",
+        "index": 0
+      }
+    },
+    {
+      "id": "pa_inc2_amount",
+      "target": {
+        "type": "text",
+        "name": "Person 2 Income/Pay:\n How much?"
+      },
+      "source": {
+        "fieldPath": "income.sources[].gross_amount"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "income.sources",
+        "index": 1
+      }
+    },
+    {
+      "id": "pa_inc2_freq",
+      "target": {
+        "type": "text",
+        "name": "Person 2 How often paid?"
+      },
+      "source": {
+        "fieldPath": "income.sources[].frequency"
+      },
+      "valueMap": {
+        "hourly": "Hourly",
+        "daily": "Daily",
+        "weekly": "Weekly",
+        "biweekly": "Biweekly",
+        "semimonthly": "Semimonthly",
+        "monthly": "Monthly",
+        "quarterly": "Quarterly",
+        "annually": "Annually",
+        "one_time": "One Time"
+      },
+      "repeat": {
+        "over": "income.sources",
+        "index": 1
+      }
+    },
+    {
+      "id": "pa_inc3_amount",
+      "target": {
+        "type": "text",
+        "name": "Person 3 Income/Pay:\n How much?"
+      },
+      "source": {
+        "fieldPath": "income.sources[].gross_amount"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "income.sources",
+        "index": 2
+      }
+    },
+    {
+      "id": "pa_inc3_freq",
+      "target": {
+        "type": "text",
+        "name": "Person 3 How often paid?"
+      },
+      "source": {
+        "fieldPath": "income.sources[].frequency"
+      },
+      "valueMap": {
+        "hourly": "Hourly",
+        "daily": "Daily",
+        "weekly": "Weekly",
+        "biweekly": "Biweekly",
+        "semimonthly": "Semimonthly",
+        "monthly": "Monthly",
+        "quarterly": "Quarterly",
+        "annually": "Annually",
+        "one_time": "One Time"
+      },
+      "repeat": {
+        "over": "income.sources",
+        "index": 2
+      }
+    },
+    {
+      "id": "pa_inc4_amount",
+      "target": {
+        "type": "text",
+        "name": "Person 4 Income/Pay:\n How much?"
+      },
+      "source": {
+        "fieldPath": "income.sources[].gross_amount"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "income.sources",
+        "index": 3
+      }
+    },
+    {
+      "id": "pa_inc4_freq",
+      "target": {
+        "type": "text",
+        "name": "Person 4 How often paid?"
+      },
+      "source": {
+        "fieldPath": "income.sources[].frequency"
+      },
+      "valueMap": {
+        "hourly": "Hourly",
+        "daily": "Daily",
+        "weekly": "Weekly",
+        "biweekly": "Biweekly",
+        "semimonthly": "Semimonthly",
+        "monthly": "Monthly",
+        "quarterly": "Quarterly",
+        "annually": "Annually",
+        "one_time": "One Time"
+      },
+      "repeat": {
+        "over": "income.sources",
+        "index": 3
+      }
+    },
+    {
+      "id": "pa_heat_cool",
+      "target": {
+        "type": "radio",
+        "name": "Do you pay for heating or the cost to run air conditioning?"
+      },
+      "source": {
+        "fieldPath": "utilities.pays_heating_cooling"
+      },
+      "valueMap": {
+        "true": "0",
+        "false": "1"
+      }
+    },
+    {
+      "id": "pa_phone_radio",
+      "target": {
+        "type": "radio",
+        "name": "Do you pay for telephone services?"
+      },
+      "source": {
+        "fieldPath": "utilities.pays_phone"
+      },
+      "valueMap": {
+        "true": "0",
+        "false": "1"
+      }
+    },
+    {
+      "id": "pa_elec",
+      "target": {
+        "type": "checkbox",
+        "name": "Electric\r expenses"
+      },
+      "source": {
+        "fieldPath": "utilities.pays_electricity"
+      }
+    },
+    {
+      "id": "pa_gas",
+      "target": {
+        "type": "checkbox",
+        "name": "Gas expenses"
+      },
+      "source": {
+        "fieldPath": "utilities.pays_gas"
+      }
+    },
+    {
+      "id": "pa_water",
+      "target": {
+        "type": "checkbox",
+        "name": "Water expenses"
+      },
+      "source": {
+        "fieldPath": "utilities.pays_water_sewer"
+      }
+    },
+    {
+      "id": "pa_sewer",
+      "target": {
+        "type": "checkbox",
+        "name": "Sewer expenses"
+      },
+      "source": {
+        "fieldPath": "utilities.pays_water_sewer"
+      }
+    },
+    {
+      "id": "pa_trash",
+      "target": {
+        "type": "checkbox",
+        "name": "Garbage expenses"
+      },
+      "source": {
+        "fieldPath": "utilities.pays_trash"
+      }
+    },
+    {
+      "id": "pa_phone_cb",
+      "target": {
+        "type": "checkbox",
+        "name": "Telephone\r expenses"
+      },
+      "source": {
+        "fieldPath": "utilities.pays_phone"
+      }
+    },
+    {
+      "id": "pa_rent",
+      "target": {
+        "type": "text",
+        "name": "do you pay rent"
+      },
+      "source": {
+        "fieldPath": "housing.rent_monthly"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ]
+    },
+    {
+      "id": "pa_mortgage",
+      "target": {
+        "type": "text",
+        "name": "do you pay mortgage"
+      },
+      "source": {
+        "fieldPath": "housing.mortgage_monthly"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ]
+    },
+    {
+      "id": "pa_prop_tax",
+      "target": {
+        "type": "text",
+        "name": "do you pay property taxes"
+      },
+      "source": {
+        "fieldPath": "housing.property_tax_monthly"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ]
+    },
+    {
+      "id": "pa_home_ins",
+      "target": {
+        "type": "text",
+        "name": "do you pay Homeowner’s insurance"
+      },
+      "source": {
+        "fieldPath": "housing.home_insurance_monthly"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ]
+    },
+    {
+      "id": "pa_sig1",
+      "target": {
+        "type": "text",
+        "name": "Page 15 Signature"
+      },
+      "fillPolicy": "never",
+      "note": "Applicant signature; never filled by the app."
+    },
+    {
+      "id": "pa_sig1_date",
+      "target": {
+        "type": "text",
+        "name": "Page 15 Date of Signature"
+      },
+      "fillPolicy": "never",
+      "note": "Attestation date; never filled by the app."
+    },
+    {
+      "id": "pa_sig_cao",
+      "target": {
+        "type": "text",
+        "name": "Page 15 CAO Signature"
+      },
+      "fillPolicy": "never",
+      "note": "Office use; never filled by the app."
+    },
+    {
+      "id": "pa_sig_cao_date",
+      "target": {
+        "type": "text",
+        "name": "Page 15 CAO Date of Signature"
+      },
+      "fillPolicy": "never",
+      "note": "Office use; never filled by the app."
+    },
+    {
+      "id": "pa_sig_a1",
+      "target": {
+        "type": "text",
+        "name": "Page A1 Signature"
+      },
+      "fillPolicy": "never",
+      "note": "Applicant signature; never filled by the app."
+    },
+    {
+      "id": "pa_sig_a1_date",
+      "target": {
+        "type": "text",
+        "name": "Page A1 Date of Signature"
+      },
+      "fillPolicy": "never",
+      "note": "Attestation date; never filled by the app."
+    },
+    {
+      "id": "pa_cao_notified",
+      "target": {
+        "type": "radio",
+        "name": "CAO Only Client Notified"
+      },
+      "fillPolicy": "never",
+      "note": "Office use; never filled by the app."
+    },
+    {
+      "id": "pa_cao_exp_date",
+      "target": {
+        "type": "text",
+        "name": "CAO Only Expedited Review Date"
+      },
+      "fillPolicy": "never",
+      "note": "Office use; never filled by the app."
+    },
+    {
+      "id": "pa_cao_exp_init",
+      "target": {
+        "type": "text",
+        "name": "CAO Only Expedited Review Initials"
+      },
+      "fillPolicy": "never",
+      "note": "Office use; never filled by the app."
+    },
+    {
+      "id": "pa_cao_cats",
+      "target": {
+        "type": "text",
+        "name": "CAO Only REGISTERED FOR CATEGORIES"
+      },
+      "fillPolicy": "never",
+      "note": "Office use; never filled by the app."
+    },
+    {
+      "id": "pa_cao_denial",
+      "target": {
+        "type": "text",
+        "name": "CAO Only Reason for denial"
+      },
+      "fillPolicy": "never",
+      "note": "Office use; never filled by the app."
+    },
+    {
+      "id": "pa_cao_battered",
+      "target": {
+        "type": "radio",
+        "name": "CAO uses only battered women and children"
+      },
+      "fillPolicy": "never",
+      "note": "Office use; never filled by the app."
+    },
+    {
+      "id": "pa_cao_destitute",
+      "target": {
+        "type": "radio",
+        "name": "CAO uses only household destitute"
+      },
+      "fillPolicy": "never",
+      "note": "Office use; never filled by the app."
+    },
+    {
+      "id": "pa_cao_150",
+      "target": {
+        "type": "radio",
+        "name": "CAO uses only less than 150"
+      },
+      "fillPolicy": "never",
+      "note": "Office use; never filled by the app."
+    },
+    {
+      "id": "pa_cao_migrant",
+      "target": {
+        "type": "radio",
+        "name": "CAO uses only migrant or seasonal farm worker "
+      },
+      "fillPolicy": "never",
+      "note": "Office use; never filled by the app."
+    },
+    {
+      "id": "pa_cao_postponed",
+      "target": {
+        "type": "radio",
+        "name": "CAO uses only postponed verification"
+      },
+      "fillPolicy": "never",
+      "note": "Office use; never filled by the app."
+    },
+    {
+      "id": "pa_cao_res100",
+      "target": {
+        "type": "radio",
+        "name": "CAO uses only resources less than 100"
+      },
+      "fillPolicy": "never",
+      "note": "Office use; never filled by the app."
+    },
+    {
+      "id": "pa_cao_shelter",
+      "target": {
+        "type": "radio",
+        "name": "CAO uses only shelter expenses"
+      },
+      "fillPolicy": "never",
+      "note": "Office use; never filled by the app."
+    },
+    {
+      "id": "pa_cao_line1",
+      "target": {
+        "type": "text",
+        "name": "Person 1 CAO Use Only Line #:"
+      },
+      "fillPolicy": "never",
+      "note": "Office use; never filled by the app."
+    },
+    {
+      "id": "pa_cao_line2",
+      "target": {
+        "type": "text",
+        "name": "Person 2 CAO Use Only Line #:"
+      },
+      "fillPolicy": "never",
+      "note": "Office use; never filled by the app."
+    },
+    {
+      "id": "pa_cao_line3",
+      "target": {
+        "type": "text",
+        "name": "Person 3 CAO Use Only Line #:"
+      },
+      "fillPolicy": "never",
+      "note": "Office use; never filled by the app."
+    },
+    {
+      "id": "pa_cao_line4",
+      "target": {
+        "type": "text",
+        "name": "Person 4 CAO Use Only Line #:"
+      },
+      "fillPolicy": "never",
+      "note": "Office use; never filled by the app."
+    },
+    {
+      "id": "pa_cao_line5",
+      "target": {
+        "type": "text",
+        "name": "Person 5 CAO Use Only Line #:"
+      },
+      "fillPolicy": "never",
+      "note": "Office use; never filled by the app."
+    },
+    {
+      "id": "pa_cao_line6",
+      "target": {
+        "type": "text",
+        "name": "Person 6 CAO Use Only Line #:"
+      },
+      "fillPolicy": "never",
+      "note": "Office use; never filled by the app."
+    },
+    {
+      "id": "pa_cao_line7",
+      "target": {
+        "type": "text",
+        "name": "Person 7 CAO Use Only Line #: 2"
+      },
+      "fillPolicy": "never",
+      "note": "Office use; never filled by the app."
+    }
+  ],
+  "provenanceNote": "PA 600 (8/24). Person 1 maps to the applicant; Persons 2-7 map to household.members[0..5]. The person section is marked for non-SNAP programs ('you do not need to answer these questions if you are applying only for SNAP'); fields still map for households that answer them. Income rows exist for Persons 1-4 only. Skipped as unsupported: race/ethnicity detail, sponsor and tax fields, insurance detail, criminal history, and signature/office-use blocks."
+}

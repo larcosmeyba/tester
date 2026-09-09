@@ -1,0 +1,3005 @@
+{
+  "schemaVersion": 1,
+  "id": "us-ca-snap-saws2plus",
+  "jurisdiction": {
+    "country": "US",
+    "state": "CA"
+  },
+  "program": "SNAP",
+  "formCode": "SAWS 2 PLUS",
+  "formTitle": "Application for CalFresh, Cash Aid, and/or Medi-Cal/Health Care Programs",
+  "formVersion": "2015.04",
+  "revision": 1,
+  "status": "draft",
+  "vocabularyVersion": 1,
+  "agencyUrl": "https://www.cdss.ca.gov/",
+  "template": {
+    "kind": "acroform",
+    "file": "template.pdf",
+    "sha256": "086a74e1c608a9ab44f1ec2539a3158af642f27d8f2638b9a15fd31ea8e67a5f",
+    "pageCount": 29,
+    "retrievedAt": "2026-09-09",
+    "sourceUrl": "https://www.cdss.ca.gov/cdssweb/entres/forms/English/SAWS2_PLUS.pdf"
+  },
+  "requirements": [
+    {
+      "fieldPath": "applicant.first_name",
+      "strength": "required"
+    },
+    {
+      "fieldPath": "applicant.last_name",
+      "strength": "required"
+    },
+    {
+      "fieldPath": "applicant.date_of_birth",
+      "strength": "required"
+    },
+    {
+      "fieldPath": "household.members",
+      "strength": "required"
+    },
+    {
+      "fieldPath": "housing.status",
+      "strength": "required"
+    },
+    {
+      "fieldPath": "contact.phone_primary",
+      "strength": "preferred"
+    },
+    {
+      "fieldPath": "address.residential.street1",
+      "strength": "required",
+      "unless": {
+        "fieldPath": "address.residential.is_homeless",
+        "equals": true
+      }
+    },
+    {
+      "fieldPath": "address.residential.city",
+      "strength": "required",
+      "unless": {
+        "fieldPath": "address.residential.is_homeless",
+        "equals": true
+      }
+    },
+    {
+      "fieldPath": "address.residential.postal_code",
+      "strength": "required",
+      "unless": {
+        "fieldPath": "address.residential.is_homeless",
+        "equals": true
+      }
+    },
+    {
+      "fieldPath": "income.sources",
+      "strength": "required",
+      "unless": {
+        "fieldPath": "income.has_no_income",
+        "equals": true
+      }
+    }
+  ],
+  "fields": [
+    {
+      "id": "applicant_name",
+      "target": {
+        "type": "text",
+        "name": "Text1 PG 1"
+      },
+      "source": {
+        "fieldPath": "applicant.first_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "join",
+          "with": "applicant.middle_name",
+          "sep": " "
+        },
+        {
+          "op": "join",
+          "with": "applicant.last_name",
+          "sep": " "
+        }
+      ],
+      "strength": "required",
+      "note": "Printed \"YOUR NAME (FIRST, MIDDLE, LAST)\". Renders \"First Middle Last\"; applicant may add punctuation."
+    },
+    {
+      "id": "applicant_ssn",
+      "target": {
+        "type": "text",
+        "name": "Text3 PG 1"
+      },
+      "source": {
+        "fieldPath": "applicant.ssn"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "ssn",
+          "style": "full"
+        }
+      ]
+    },
+    {
+      "id": "home_street",
+      "target": {
+        "type": "text",
+        "name": "Text4 PG 1"
+      },
+      "source": {
+        "fieldPath": "address.residential.street1"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "strength": "required"
+    },
+    {
+      "id": "home_apt",
+      "target": {
+        "type": "text",
+        "name": "Text5 PG 1"
+      },
+      "source": {
+        "fieldPath": "address.residential.street2"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ]
+    },
+    {
+      "id": "home_city",
+      "target": {
+        "type": "text",
+        "name": "Text6 PG 1"
+      },
+      "source": {
+        "fieldPath": "address.residential.city"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "strength": "required"
+    },
+    {
+      "id": "home_county",
+      "target": {
+        "type": "text",
+        "name": "Text7 PG 1"
+      },
+      "source": {
+        "fieldPath": "address.residential.county"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ]
+    },
+    {
+      "id": "home_state",
+      "target": {
+        "type": "text",
+        "name": "Text8 PG 1"
+      },
+      "source": {
+        "fieldPath": "address.residential.state"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "note": "Applicant profile state for a California application."
+    },
+    {
+      "id": "home_zip",
+      "target": {
+        "type": "text",
+        "name": "Text9 PG 1"
+      },
+      "source": {
+        "fieldPath": "address.residential.postal_code"
+      },
+      "transforms": [
+        {
+          "op": "digits"
+        },
+        {
+          "op": "truncate",
+          "length": 5
+        }
+      ],
+      "strength": "required"
+    },
+    {
+      "id": "mail_street",
+      "target": {
+        "type": "text",
+        "name": "Text10 PG 1"
+      },
+      "source": {
+        "fieldPath": "address.mailing.street1"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ]
+    },
+    {
+      "id": "mail_apt",
+      "target": {
+        "type": "text",
+        "name": "Text11 PG 1"
+      },
+      "source": {
+        "fieldPath": "address.mailing.street2"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ]
+    },
+    {
+      "id": "mail_city",
+      "target": {
+        "type": "text",
+        "name": "Text12 PG 1"
+      },
+      "source": {
+        "fieldPath": "address.mailing.city"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ]
+    },
+    {
+      "id": "mail_state",
+      "target": {
+        "type": "text",
+        "name": "Text14 PG 1"
+      },
+      "source": {
+        "fieldPath": "address.mailing.state"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ]
+    },
+    {
+      "id": "mail_zip",
+      "target": {
+        "type": "text",
+        "name": "Text15 PG 1"
+      },
+      "source": {
+        "fieldPath": "address.mailing.postal_code"
+      },
+      "transforms": [
+        {
+          "op": "digits"
+        },
+        {
+          "op": "truncate",
+          "length": 5
+        }
+      ]
+    },
+    {
+      "id": "phone_primary",
+      "target": {
+        "type": "text",
+        "name": "Text20 PG 1"
+      },
+      "source": {
+        "fieldPath": "contact.phone_primary"
+      },
+      "transforms": [
+        {
+          "op": "phone",
+          "style": "dashed"
+        }
+      ],
+      "strength": "preferred",
+      "note": "Printed \"PRIMARY TELEPHONE NUMBER\". Style dashed mirrors the IM-1SSL mapping."
+    },
+    {
+      "id": "phone_secondary",
+      "target": {
+        "type": "text",
+        "name": "Text21 PG 1"
+      },
+      "source": {
+        "fieldPath": "contact.phone_secondary"
+      },
+      "transforms": [
+        {
+          "op": "phone",
+          "style": "dashed"
+        }
+      ],
+      "note": "Printed \"OTHER OR MESSAGE NUMBER\"."
+    },
+    {
+      "id": "email",
+      "target": {
+        "type": "text",
+        "name": "Text22 PG 1"
+      },
+      "source": {
+        "fieldPath": "contact.email"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "lower"
+        }
+      ]
+    },
+    {
+      "id": "preferred_language",
+      "target": {
+        "type": "text",
+        "name": "Text30 PG 1"
+      },
+      "source": {
+        "fieldPath": "applicant.preferred_language"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "note": "The \"read\" language line. The separate \"speak\" line (Text31 PG 1) has no vocabulary path and is left for the applicant."
+    },
+    {
+      "id": "homeless_yes",
+      "target": {
+        "type": "checkbox",
+        "name": "Check Box28 PG 1"
+      },
+      "source": {
+        "fieldPath": "address.residential.is_homeless"
+      },
+      "note": "Left (\"Yes\") box of the \"Are you homeless?\" pair. Ticked only when the profile answers true; the \"No\" box is left for the applicant."
+    },
+    {
+      "id": "sig_applicant",
+      "target": {
+        "type": "text",
+        "name": "Text61 PG 1"
+      },
+      "fillPolicy": "never",
+      "note": "Applicant signature line. The applicant signs by hand; Help The Hive never signs."
+    },
+    {
+      "id": "sig_date",
+      "target": {
+        "type": "text",
+        "name": "Text62 PG 1"
+      },
+      "fillPolicy": "never",
+      "note": "Date beside the applicant signature. Hand-written with the signature; never filled."
+    },
+    {
+      "id": "authrep_name",
+      "target": {
+        "type": "text",
+        "name": "Text3 PG 2"
+      },
+      "source": {
+        "fieldPath": "program.authorized_representative.name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "note": "Section 2a, health-insurance authorized representative. Same source as the Appendix B representative block (page 26); both name the same person."
+    },
+    {
+      "id": "authrep_phone",
+      "target": {
+        "type": "text",
+        "name": "Text4 PG 2"
+      },
+      "source": {
+        "fieldPath": "program.authorized_representative.phone"
+      },
+      "transforms": [
+        {
+          "op": "phone",
+          "style": "dashed"
+        }
+      ]
+    },
+    {
+      "id": "member0_name",
+      "target": {
+        "type": "text",
+        "name": "Text5 PG 3"
+      },
+      "source": {
+        "fieldPath": "household.members[].last_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "join",
+          "with": "household.members[].first_name",
+          "sep": ", "
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 0
+      },
+      "note": "Printed \"NAME (Last, First, Middle Initial)\". Renders \"Last, First\"; middle initial has no vocabulary path."
+    },
+    {
+      "id": "member0_rel",
+      "target": {
+        "type": "text",
+        "name": "Text6 PG 3"
+      },
+      "source": {
+        "fieldPath": "household.members[].relationship"
+      },
+      "valueMap": {
+        "self": "Self",
+        "spouse": "Spouse",
+        "domestic_partner": "Domestic partner",
+        "child": "Child",
+        "stepchild": "Stepchild",
+        "foster_child": "Foster child",
+        "parent": "Parent",
+        "stepparent": "Stepparent",
+        "grandparent": "Grandparent",
+        "grandchild": "Grandchild",
+        "sibling": "Sibling",
+        "other_relative": "Other relative",
+        "unrelated": "Not related"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 0
+      },
+      "note": "Free-text box; the mapper writes the canonical relationship in plain words."
+    },
+    {
+      "id": "member0_dob",
+      "target": {
+        "type": "text",
+        "name": "Text7 PG 3"
+      },
+      "source": {
+        "fieldPath": "household.members[].date_of_birth"
+      },
+      "transforms": [
+        {
+          "op": "date",
+          "layout": "01/02/2006"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 0
+      }
+    },
+    {
+      "id": "member0_sex",
+      "target": {
+        "type": "text",
+        "name": "Text8 PG 3"
+      },
+      "source": {
+        "fieldPath": "household.members[].sex"
+      },
+      "valueMap": {
+        "female": "F",
+        "male": "M",
+        "other": "Other",
+        "decline_to_state": "Decline to state"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 0
+      }
+    },
+    {
+      "id": "member0_ssn",
+      "target": {
+        "type": "text",
+        "name": "Text17B PG 3"
+      },
+      "source": {
+        "fieldPath": "household.members[].ssn"
+      },
+      "transforms": [
+        {
+          "op": "ssn",
+          "style": "full"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 0
+      }
+    },
+    {
+      "id": "member0_citizen",
+      "target": {
+        "type": "checkbox",
+        "name": "Check Box16 PG 3"
+      },
+      "source": {
+        "fieldPath": "household.members[].is_us_citizen"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 0
+      },
+      "note": "Left (\"Yes\") box of the \"U.S. CITIZEN (check Yes or No)\" pair, verified against the printed Yes/No words. Ticked only when the profile answers true."
+    },
+    {
+      "id": "member1_name",
+      "target": {
+        "type": "text",
+        "name": "Text22 PG 3"
+      },
+      "source": {
+        "fieldPath": "household.members[].last_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "join",
+          "with": "household.members[].first_name",
+          "sep": ", "
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 1
+      },
+      "note": "Printed \"NAME (Last, First, Middle Initial)\". Renders \"Last, First\"; middle initial has no vocabulary path."
+    },
+    {
+      "id": "member1_rel",
+      "target": {
+        "type": "text",
+        "name": "Text23 PG 3"
+      },
+      "source": {
+        "fieldPath": "household.members[].relationship"
+      },
+      "valueMap": {
+        "self": "Self",
+        "spouse": "Spouse",
+        "domestic_partner": "Domestic partner",
+        "child": "Child",
+        "stepchild": "Stepchild",
+        "foster_child": "Foster child",
+        "parent": "Parent",
+        "stepparent": "Stepparent",
+        "grandparent": "Grandparent",
+        "grandchild": "Grandchild",
+        "sibling": "Sibling",
+        "other_relative": "Other relative",
+        "unrelated": "Not related"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 1
+      },
+      "note": "Free-text box; the mapper writes the canonical relationship in plain words."
+    },
+    {
+      "id": "member1_dob",
+      "target": {
+        "type": "text",
+        "name": "Text24 PG 3"
+      },
+      "source": {
+        "fieldPath": "household.members[].date_of_birth"
+      },
+      "transforms": [
+        {
+          "op": "date",
+          "layout": "01/02/2006"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 1
+      }
+    },
+    {
+      "id": "member1_sex",
+      "target": {
+        "type": "text",
+        "name": "Text25 PG 3"
+      },
+      "source": {
+        "fieldPath": "household.members[].sex"
+      },
+      "valueMap": {
+        "female": "F",
+        "male": "M",
+        "other": "Other",
+        "decline_to_state": "Decline to state"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 1
+      }
+    },
+    {
+      "id": "member1_ssn",
+      "target": {
+        "type": "text",
+        "name": "Text35 PG 3"
+      },
+      "source": {
+        "fieldPath": "household.members[].ssn"
+      },
+      "transforms": [
+        {
+          "op": "ssn",
+          "style": "full"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 1
+      }
+    },
+    {
+      "id": "member1_citizen",
+      "target": {
+        "type": "checkbox",
+        "name": "Check Box33 PG 3"
+      },
+      "source": {
+        "fieldPath": "household.members[].is_us_citizen"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 1
+      },
+      "note": "Left (\"Yes\") box of the \"U.S. CITIZEN (check Yes or No)\" pair, verified against the printed Yes/No words. Ticked only when the profile answers true."
+    },
+    {
+      "id": "member2_name",
+      "target": {
+        "type": "text",
+        "name": "Text40 PG 3"
+      },
+      "source": {
+        "fieldPath": "household.members[].last_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "join",
+          "with": "household.members[].first_name",
+          "sep": ", "
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 2
+      },
+      "note": "Printed \"NAME (Last, First, Middle Initial)\". Renders \"Last, First\"; middle initial has no vocabulary path."
+    },
+    {
+      "id": "member2_rel",
+      "target": {
+        "type": "text",
+        "name": "Text41 PG 3"
+      },
+      "source": {
+        "fieldPath": "household.members[].relationship"
+      },
+      "valueMap": {
+        "self": "Self",
+        "spouse": "Spouse",
+        "domestic_partner": "Domestic partner",
+        "child": "Child",
+        "stepchild": "Stepchild",
+        "foster_child": "Foster child",
+        "parent": "Parent",
+        "stepparent": "Stepparent",
+        "grandparent": "Grandparent",
+        "grandchild": "Grandchild",
+        "sibling": "Sibling",
+        "other_relative": "Other relative",
+        "unrelated": "Not related"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 2
+      },
+      "note": "Free-text box; the mapper writes the canonical relationship in plain words."
+    },
+    {
+      "id": "member2_dob",
+      "target": {
+        "type": "text",
+        "name": "Text42 PG 3"
+      },
+      "source": {
+        "fieldPath": "household.members[].date_of_birth"
+      },
+      "transforms": [
+        {
+          "op": "date",
+          "layout": "01/02/2006"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 2
+      }
+    },
+    {
+      "id": "member2_sex",
+      "target": {
+        "type": "text",
+        "name": "Text43 PG 3"
+      },
+      "source": {
+        "fieldPath": "household.members[].sex"
+      },
+      "valueMap": {
+        "female": "F",
+        "male": "M",
+        "other": "Other",
+        "decline_to_state": "Decline to state"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 2
+      }
+    },
+    {
+      "id": "member2_ssn",
+      "target": {
+        "type": "text",
+        "name": "Text53 PG 3"
+      },
+      "source": {
+        "fieldPath": "household.members[].ssn"
+      },
+      "transforms": [
+        {
+          "op": "ssn",
+          "style": "full"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 2
+      }
+    },
+    {
+      "id": "member2_citizen",
+      "target": {
+        "type": "checkbox",
+        "name": "Check Box51 PG 3"
+      },
+      "source": {
+        "fieldPath": "household.members[].is_us_citizen"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 2
+      },
+      "note": "Left (\"Yes\") box of the \"U.S. CITIZEN (check Yes or No)\" pair, verified against the printed Yes/No words. Ticked only when the profile answers true."
+    },
+    {
+      "id": "member3_name",
+      "target": {
+        "type": "text",
+        "name": "Text58 PG 3"
+      },
+      "source": {
+        "fieldPath": "household.members[].last_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "join",
+          "with": "household.members[].first_name",
+          "sep": ", "
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 3
+      },
+      "note": "Printed \"NAME (Last, First, Middle Initial)\". Renders \"Last, First\"; middle initial has no vocabulary path."
+    },
+    {
+      "id": "member3_rel",
+      "target": {
+        "type": "text",
+        "name": "Text59 PG 3"
+      },
+      "source": {
+        "fieldPath": "household.members[].relationship"
+      },
+      "valueMap": {
+        "self": "Self",
+        "spouse": "Spouse",
+        "domestic_partner": "Domestic partner",
+        "child": "Child",
+        "stepchild": "Stepchild",
+        "foster_child": "Foster child",
+        "parent": "Parent",
+        "stepparent": "Stepparent",
+        "grandparent": "Grandparent",
+        "grandchild": "Grandchild",
+        "sibling": "Sibling",
+        "other_relative": "Other relative",
+        "unrelated": "Not related"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 3
+      },
+      "note": "Free-text box; the mapper writes the canonical relationship in plain words."
+    },
+    {
+      "id": "member3_dob",
+      "target": {
+        "type": "text",
+        "name": "Text60 PG 3"
+      },
+      "source": {
+        "fieldPath": "household.members[].date_of_birth"
+      },
+      "transforms": [
+        {
+          "op": "date",
+          "layout": "01/02/2006"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 3
+      }
+    },
+    {
+      "id": "member3_sex",
+      "target": {
+        "type": "text",
+        "name": "Text61 PG 3"
+      },
+      "source": {
+        "fieldPath": "household.members[].sex"
+      },
+      "valueMap": {
+        "female": "F",
+        "male": "M",
+        "other": "Other",
+        "decline_to_state": "Decline to state"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 3
+      }
+    },
+    {
+      "id": "member3_ssn",
+      "target": {
+        "type": "text",
+        "name": "Text71 PG 3"
+      },
+      "source": {
+        "fieldPath": "household.members[].ssn"
+      },
+      "transforms": [
+        {
+          "op": "ssn",
+          "style": "full"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 3
+      }
+    },
+    {
+      "id": "member3_citizen",
+      "target": {
+        "type": "checkbox",
+        "name": "Check Box69 PG 3"
+      },
+      "source": {
+        "fieldPath": "household.members[].is_us_citizen"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 3
+      },
+      "note": "Left (\"Yes\") box of the \"U.S. CITIZEN (check Yes or No)\" pair, verified against the printed Yes/No words. Ticked only when the profile answers true."
+    },
+    {
+      "id": "member4_name",
+      "target": {
+        "type": "text",
+        "name": "Text76 PG 3"
+      },
+      "source": {
+        "fieldPath": "household.members[].last_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "join",
+          "with": "household.members[].first_name",
+          "sep": ", "
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 4
+      },
+      "note": "Printed \"NAME (Last, First, Middle Initial)\". Renders \"Last, First\"; middle initial has no vocabulary path."
+    },
+    {
+      "id": "member4_rel",
+      "target": {
+        "type": "text",
+        "name": "Text77 PG 3"
+      },
+      "source": {
+        "fieldPath": "household.members[].relationship"
+      },
+      "valueMap": {
+        "self": "Self",
+        "spouse": "Spouse",
+        "domestic_partner": "Domestic partner",
+        "child": "Child",
+        "stepchild": "Stepchild",
+        "foster_child": "Foster child",
+        "parent": "Parent",
+        "stepparent": "Stepparent",
+        "grandparent": "Grandparent",
+        "grandchild": "Grandchild",
+        "sibling": "Sibling",
+        "other_relative": "Other relative",
+        "unrelated": "Not related"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 4
+      },
+      "note": "Free-text box; the mapper writes the canonical relationship in plain words."
+    },
+    {
+      "id": "member4_dob",
+      "target": {
+        "type": "text",
+        "name": "Text78 PG 3"
+      },
+      "source": {
+        "fieldPath": "household.members[].date_of_birth"
+      },
+      "transforms": [
+        {
+          "op": "date",
+          "layout": "01/02/2006"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 4
+      }
+    },
+    {
+      "id": "member4_sex",
+      "target": {
+        "type": "text",
+        "name": "Text79 PG 3"
+      },
+      "source": {
+        "fieldPath": "household.members[].sex"
+      },
+      "valueMap": {
+        "female": "F",
+        "male": "M",
+        "other": "Other",
+        "decline_to_state": "Decline to state"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 4
+      }
+    },
+    {
+      "id": "member4_ssn",
+      "target": {
+        "type": "text",
+        "name": "Text89 PG 3"
+      },
+      "source": {
+        "fieldPath": "household.members[].ssn"
+      },
+      "transforms": [
+        {
+          "op": "ssn",
+          "style": "full"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 4
+      }
+    },
+    {
+      "id": "member4_citizen",
+      "target": {
+        "type": "checkbox",
+        "name": "Check Box87 PG 3"
+      },
+      "source": {
+        "fieldPath": "household.members[].is_us_citizen"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 4
+      },
+      "note": "Left (\"Yes\") box of the \"U.S. CITIZEN (check Yes or No)\" pair, verified against the printed Yes/No words. Ticked only when the profile answers true."
+    },
+    {
+      "id": "member5_name",
+      "target": {
+        "type": "text",
+        "name": "Text5 PG 4"
+      },
+      "source": {
+        "fieldPath": "household.members[].last_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "join",
+          "with": "household.members[].first_name",
+          "sep": ", "
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 5
+      },
+      "note": "Printed \"NAME (Last, First, Middle Initial)\". Renders \"Last, First\"; middle initial has no vocabulary path."
+    },
+    {
+      "id": "member5_rel",
+      "target": {
+        "type": "text",
+        "name": "Text6 PG 4"
+      },
+      "source": {
+        "fieldPath": "household.members[].relationship"
+      },
+      "valueMap": {
+        "self": "Self",
+        "spouse": "Spouse",
+        "domestic_partner": "Domestic partner",
+        "child": "Child",
+        "stepchild": "Stepchild",
+        "foster_child": "Foster child",
+        "parent": "Parent",
+        "stepparent": "Stepparent",
+        "grandparent": "Grandparent",
+        "grandchild": "Grandchild",
+        "sibling": "Sibling",
+        "other_relative": "Other relative",
+        "unrelated": "Not related"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 5
+      },
+      "note": "Free-text box; the mapper writes the canonical relationship in plain words."
+    },
+    {
+      "id": "member5_dob",
+      "target": {
+        "type": "text",
+        "name": "Text7 PG 4"
+      },
+      "source": {
+        "fieldPath": "household.members[].date_of_birth"
+      },
+      "transforms": [
+        {
+          "op": "date",
+          "layout": "01/02/2006"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 5
+      }
+    },
+    {
+      "id": "member5_sex",
+      "target": {
+        "type": "text",
+        "name": "Text9 PG 4"
+      },
+      "source": {
+        "fieldPath": "household.members[].sex"
+      },
+      "valueMap": {
+        "female": "F",
+        "male": "M",
+        "other": "Other",
+        "decline_to_state": "Decline to state"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 5
+      }
+    },
+    {
+      "id": "member5_ssn",
+      "target": {
+        "type": "text",
+        "name": "Text19 PG 4"
+      },
+      "source": {
+        "fieldPath": "household.members[].ssn"
+      },
+      "transforms": [
+        {
+          "op": "ssn",
+          "style": "full"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 5
+      }
+    },
+    {
+      "id": "member6_name",
+      "target": {
+        "type": "text",
+        "name": "Text24 PG 4"
+      },
+      "source": {
+        "fieldPath": "household.members[].last_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "join",
+          "with": "household.members[].first_name",
+          "sep": ", "
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 6
+      },
+      "note": "Printed \"NAME (Last, First, Middle Initial)\". Renders \"Last, First\"; middle initial has no vocabulary path."
+    },
+    {
+      "id": "member6_rel",
+      "target": {
+        "type": "text",
+        "name": "Text25 PG 4"
+      },
+      "source": {
+        "fieldPath": "household.members[].relationship"
+      },
+      "valueMap": {
+        "self": "Self",
+        "spouse": "Spouse",
+        "domestic_partner": "Domestic partner",
+        "child": "Child",
+        "stepchild": "Stepchild",
+        "foster_child": "Foster child",
+        "parent": "Parent",
+        "stepparent": "Stepparent",
+        "grandparent": "Grandparent",
+        "grandchild": "Grandchild",
+        "sibling": "Sibling",
+        "other_relative": "Other relative",
+        "unrelated": "Not related"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 6
+      },
+      "note": "Free-text box; the mapper writes the canonical relationship in plain words."
+    },
+    {
+      "id": "member6_dob",
+      "target": {
+        "type": "text",
+        "name": "Text26 PG 4"
+      },
+      "source": {
+        "fieldPath": "household.members[].date_of_birth"
+      },
+      "transforms": [
+        {
+          "op": "date",
+          "layout": "01/02/2006"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 6
+      }
+    },
+    {
+      "id": "member6_sex",
+      "target": {
+        "type": "text",
+        "name": "Text28 PG 4"
+      },
+      "source": {
+        "fieldPath": "household.members[].sex"
+      },
+      "valueMap": {
+        "female": "F",
+        "male": "M",
+        "other": "Other",
+        "decline_to_state": "Decline to state"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 6
+      }
+    },
+    {
+      "id": "member6_ssn",
+      "target": {
+        "type": "text",
+        "name": "Text38 PG 4"
+      },
+      "source": {
+        "fieldPath": "household.members[].ssn"
+      },
+      "transforms": [
+        {
+          "op": "ssn",
+          "style": "full"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 6
+      }
+    },
+    {
+      "id": "member7_name",
+      "target": {
+        "type": "text",
+        "name": "Text43 PG 4"
+      },
+      "source": {
+        "fieldPath": "household.members[].last_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "join",
+          "with": "household.members[].first_name",
+          "sep": ", "
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 7
+      },
+      "note": "Printed \"NAME (Last, First, Middle Initial)\". Renders \"Last, First\"; middle initial has no vocabulary path."
+    },
+    {
+      "id": "member7_rel",
+      "target": {
+        "type": "text",
+        "name": "Text44 PG 4"
+      },
+      "source": {
+        "fieldPath": "household.members[].relationship"
+      },
+      "valueMap": {
+        "self": "Self",
+        "spouse": "Spouse",
+        "domestic_partner": "Domestic partner",
+        "child": "Child",
+        "stepchild": "Stepchild",
+        "foster_child": "Foster child",
+        "parent": "Parent",
+        "stepparent": "Stepparent",
+        "grandparent": "Grandparent",
+        "grandchild": "Grandchild",
+        "sibling": "Sibling",
+        "other_relative": "Other relative",
+        "unrelated": "Not related"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 7
+      },
+      "note": "Free-text box; the mapper writes the canonical relationship in plain words."
+    },
+    {
+      "id": "member7_dob",
+      "target": {
+        "type": "text",
+        "name": "Text45 PG 4"
+      },
+      "source": {
+        "fieldPath": "household.members[].date_of_birth"
+      },
+      "transforms": [
+        {
+          "op": "date",
+          "layout": "01/02/2006"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 7
+      }
+    },
+    {
+      "id": "member7_sex",
+      "target": {
+        "type": "text",
+        "name": "Text47 PG 4"
+      },
+      "source": {
+        "fieldPath": "household.members[].sex"
+      },
+      "valueMap": {
+        "female": "F",
+        "male": "M",
+        "other": "Other",
+        "decline_to_state": "Decline to state"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 7
+      }
+    },
+    {
+      "id": "member7_ssn",
+      "target": {
+        "type": "text",
+        "name": "Text57 PG 4"
+      },
+      "source": {
+        "fieldPath": "household.members[].ssn"
+      },
+      "transforms": [
+        {
+          "op": "ssn",
+          "style": "full"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 7
+      }
+    },
+    {
+      "id": "member8_name",
+      "target": {
+        "type": "text",
+        "name": "Text62 PG 4"
+      },
+      "source": {
+        "fieldPath": "household.members[].last_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "join",
+          "with": "household.members[].first_name",
+          "sep": ", "
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 8
+      },
+      "note": "Printed \"NAME (Last, First, Middle Initial)\". Renders \"Last, First\"; middle initial has no vocabulary path."
+    },
+    {
+      "id": "member8_rel",
+      "target": {
+        "type": "text",
+        "name": "Text63 PG 4"
+      },
+      "source": {
+        "fieldPath": "household.members[].relationship"
+      },
+      "valueMap": {
+        "self": "Self",
+        "spouse": "Spouse",
+        "domestic_partner": "Domestic partner",
+        "child": "Child",
+        "stepchild": "Stepchild",
+        "foster_child": "Foster child",
+        "parent": "Parent",
+        "stepparent": "Stepparent",
+        "grandparent": "Grandparent",
+        "grandchild": "Grandchild",
+        "sibling": "Sibling",
+        "other_relative": "Other relative",
+        "unrelated": "Not related"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 8
+      },
+      "note": "Free-text box; the mapper writes the canonical relationship in plain words."
+    },
+    {
+      "id": "member8_dob",
+      "target": {
+        "type": "text",
+        "name": "Text64 PG 4"
+      },
+      "source": {
+        "fieldPath": "household.members[].date_of_birth"
+      },
+      "transforms": [
+        {
+          "op": "date",
+          "layout": "01/02/2006"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 8
+      }
+    },
+    {
+      "id": "member8_sex",
+      "target": {
+        "type": "text",
+        "name": "Text66 PG 4"
+      },
+      "source": {
+        "fieldPath": "household.members[].sex"
+      },
+      "valueMap": {
+        "female": "F",
+        "male": "M",
+        "other": "Other",
+        "decline_to_state": "Decline to state"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 8
+      }
+    },
+    {
+      "id": "member8_ssn",
+      "target": {
+        "type": "text",
+        "name": "Text76 PG 4"
+      },
+      "source": {
+        "fieldPath": "household.members[].ssn"
+      },
+      "transforms": [
+        {
+          "op": "ssn",
+          "style": "full"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 8
+      }
+    },
+    {
+      "id": "member9_name",
+      "target": {
+        "type": "text",
+        "name": "Text81 PG 4"
+      },
+      "source": {
+        "fieldPath": "household.members[].last_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "join",
+          "with": "household.members[].first_name",
+          "sep": ", "
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 9
+      },
+      "note": "Printed \"NAME (Last, First, Middle Initial)\". Renders \"Last, First\"; middle initial has no vocabulary path."
+    },
+    {
+      "id": "member9_rel",
+      "target": {
+        "type": "text",
+        "name": "Text82 PG 4"
+      },
+      "source": {
+        "fieldPath": "household.members[].relationship"
+      },
+      "valueMap": {
+        "self": "Self",
+        "spouse": "Spouse",
+        "domestic_partner": "Domestic partner",
+        "child": "Child",
+        "stepchild": "Stepchild",
+        "foster_child": "Foster child",
+        "parent": "Parent",
+        "stepparent": "Stepparent",
+        "grandparent": "Grandparent",
+        "grandchild": "Grandchild",
+        "sibling": "Sibling",
+        "other_relative": "Other relative",
+        "unrelated": "Not related"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 9
+      },
+      "note": "Free-text box; the mapper writes the canonical relationship in plain words."
+    },
+    {
+      "id": "member9_dob",
+      "target": {
+        "type": "text",
+        "name": "Text83 PG 4"
+      },
+      "source": {
+        "fieldPath": "household.members[].date_of_birth"
+      },
+      "transforms": [
+        {
+          "op": "date",
+          "layout": "01/02/2006"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 9
+      }
+    },
+    {
+      "id": "member9_sex",
+      "target": {
+        "type": "text",
+        "name": "Text85 PG 4"
+      },
+      "source": {
+        "fieldPath": "household.members[].sex"
+      },
+      "valueMap": {
+        "female": "F",
+        "male": "M",
+        "other": "Other",
+        "decline_to_state": "Decline to state"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 9
+      }
+    },
+    {
+      "id": "member9_ssn",
+      "target": {
+        "type": "text",
+        "name": "Text95 PG 4"
+      },
+      "source": {
+        "fieldPath": "household.members[].ssn"
+      },
+      "transforms": [
+        {
+          "op": "ssn",
+          "style": "full"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 9
+      }
+    },
+    {
+      "id": "incsrc0_person",
+      "target": {
+        "type": "text",
+        "name": "Text54 PG 8"
+      },
+      "source": {
+        "fieldPath": "income.sources[].member_ref"
+      },
+      "repeat": {
+        "over": "income.sources",
+        "index": 0
+      }
+    },
+    {
+      "id": "incsrc0_payer",
+      "target": {
+        "type": "text",
+        "name": "Text55 PG 8"
+      },
+      "source": {
+        "fieldPath": "income.sources[].payer"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "income.sources",
+        "index": 0
+      }
+    },
+    {
+      "id": "incsrc0_amount",
+      "target": {
+        "type": "text",
+        "name": "Text56 PG 8"
+      },
+      "source": {
+        "fieldPath": "income.sources[].gross_amount"
+      },
+      "transforms": [
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "income.sources",
+        "index": 0
+      }
+    },
+    {
+      "id": "incsrc0_freq",
+      "target": {
+        "type": "text",
+        "name": "Text57 PG 8"
+      },
+      "source": {
+        "fieldPath": "income.sources[].frequency"
+      },
+      "repeat": {
+        "over": "income.sources",
+        "index": 0
+      },
+      "note": "Printed \"(weekly, monthly, or other)\". Written verbatim from the profile; matches the canonical lowercase frequency words."
+    },
+    {
+      "id": "incsrc1_person",
+      "target": {
+        "type": "text",
+        "name": "Text60 PG 8"
+      },
+      "source": {
+        "fieldPath": "income.sources[].member_ref"
+      },
+      "repeat": {
+        "over": "income.sources",
+        "index": 1
+      }
+    },
+    {
+      "id": "incsrc1_payer",
+      "target": {
+        "type": "text",
+        "name": "Text61 PG 8"
+      },
+      "source": {
+        "fieldPath": "income.sources[].payer"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "income.sources",
+        "index": 1
+      }
+    },
+    {
+      "id": "incsrc1_amount",
+      "target": {
+        "type": "text",
+        "name": "Text62 PG 8"
+      },
+      "source": {
+        "fieldPath": "income.sources[].gross_amount"
+      },
+      "transforms": [
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "income.sources",
+        "index": 1
+      }
+    },
+    {
+      "id": "incsrc1_freq",
+      "target": {
+        "type": "text",
+        "name": "Text63 PG 8"
+      },
+      "source": {
+        "fieldPath": "income.sources[].frequency"
+      },
+      "repeat": {
+        "over": "income.sources",
+        "index": 1
+      },
+      "note": "Printed \"(weekly, monthly, or other)\". Written verbatim from the profile; matches the canonical lowercase frequency words."
+    },
+    {
+      "id": "incsrc2_person",
+      "target": {
+        "type": "text",
+        "name": "Text66 PG 8"
+      },
+      "source": {
+        "fieldPath": "income.sources[].member_ref"
+      },
+      "repeat": {
+        "over": "income.sources",
+        "index": 2
+      }
+    },
+    {
+      "id": "incsrc2_payer",
+      "target": {
+        "type": "text",
+        "name": "Text67 PG 8"
+      },
+      "source": {
+        "fieldPath": "income.sources[].payer"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "income.sources",
+        "index": 2
+      }
+    },
+    {
+      "id": "incsrc2_amount",
+      "target": {
+        "type": "text",
+        "name": "Text68 PG 8"
+      },
+      "source": {
+        "fieldPath": "income.sources[].gross_amount"
+      },
+      "transforms": [
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "income.sources",
+        "index": 2
+      }
+    },
+    {
+      "id": "incsrc2_freq",
+      "target": {
+        "type": "text",
+        "name": "Text69 PG 8"
+      },
+      "source": {
+        "fieldPath": "income.sources[].frequency"
+      },
+      "repeat": {
+        "over": "income.sources",
+        "index": 2
+      },
+      "note": "Printed \"(weekly, monthly, or other)\". Written verbatim from the profile; matches the canonical lowercase frequency words."
+    },
+    {
+      "id": "incsrc3_person",
+      "target": {
+        "type": "text",
+        "name": "Text72 PG 8"
+      },
+      "source": {
+        "fieldPath": "income.sources[].member_ref"
+      },
+      "repeat": {
+        "over": "income.sources",
+        "index": 3
+      }
+    },
+    {
+      "id": "incsrc3_payer",
+      "target": {
+        "type": "text",
+        "name": "Text73 PG 8"
+      },
+      "source": {
+        "fieldPath": "income.sources[].payer"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "income.sources",
+        "index": 3
+      }
+    },
+    {
+      "id": "incsrc3_amount",
+      "target": {
+        "type": "text",
+        "name": "Text74 PG 8"
+      },
+      "source": {
+        "fieldPath": "income.sources[].gross_amount"
+      },
+      "transforms": [
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "income.sources",
+        "index": 3
+      }
+    },
+    {
+      "id": "incsrc3_freq",
+      "target": {
+        "type": "text",
+        "name": "Text75 PG 8"
+      },
+      "source": {
+        "fieldPath": "income.sources[].frequency"
+      },
+      "repeat": {
+        "over": "income.sources",
+        "index": 3
+      },
+      "note": "Printed \"(weekly, monthly, or other)\". Written verbatim from the profile; matches the canonical lowercase frequency words."
+    },
+    {
+      "id": "job0_person",
+      "target": {
+        "type": "text",
+        "name": "Text3 PG 9"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].member_ref"
+      },
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 0
+      }
+    },
+    {
+      "id": "job0_employer",
+      "target": {
+        "type": "text",
+        "name": "Text4 PG 9"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].employer_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 0
+      }
+    },
+    {
+      "id": "job0_employer_phone",
+      "target": {
+        "type": "text",
+        "name": "Text5 PG 9"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].employer_phone"
+      },
+      "transforms": [
+        {
+          "op": "phone",
+          "style": "dashed"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 0
+      }
+    },
+    {
+      "id": "job0_pay_rate",
+      "target": {
+        "type": "text",
+        "name": "Text6 PG 9"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].pay_rate"
+      },
+      "transforms": [
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 0
+      }
+    },
+    {
+      "id": "job0_hours",
+      "target": {
+        "type": "text",
+        "name": "Text7 PG 9"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].hours_per_week"
+      },
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 0
+      }
+    },
+    {
+      "id": "job0_payfreq",
+      "target": {
+        "type": "text",
+        "name": "Text8 PG 9"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].pay_frequency"
+      },
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 0
+      },
+      "note": "Printed \"weekly, every 2 weeks, monthly, or other\". Written verbatim from the profile."
+    },
+    {
+      "id": "job1_person",
+      "target": {
+        "type": "text",
+        "name": "Text12 PG 9"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].member_ref"
+      },
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 1
+      }
+    },
+    {
+      "id": "job1_employer",
+      "target": {
+        "type": "text",
+        "name": "Text13 PG 9"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].employer_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 1
+      }
+    },
+    {
+      "id": "job1_employer_phone",
+      "target": {
+        "type": "text",
+        "name": "Text14 PG 9"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].employer_phone"
+      },
+      "transforms": [
+        {
+          "op": "phone",
+          "style": "dashed"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 1
+      }
+    },
+    {
+      "id": "job1_pay_rate",
+      "target": {
+        "type": "text",
+        "name": "Text15 PG 9"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].pay_rate"
+      },
+      "transforms": [
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 1
+      }
+    },
+    {
+      "id": "job1_hours",
+      "target": {
+        "type": "text",
+        "name": "Text16 PG 9"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].hours_per_week"
+      },
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 1
+      }
+    },
+    {
+      "id": "job1_payfreq",
+      "target": {
+        "type": "text",
+        "name": "Text17 PG 9"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].pay_frequency"
+      },
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 1
+      },
+      "note": "Printed \"weekly, every 2 weeks, monthly, or other\". Written verbatim from the profile."
+    },
+    {
+      "id": "job2_person",
+      "target": {
+        "type": "text",
+        "name": "Text21 PG 9"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].member_ref"
+      },
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 2
+      }
+    },
+    {
+      "id": "job2_employer",
+      "target": {
+        "type": "text",
+        "name": "Text22 PG 9"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].employer_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 2
+      }
+    },
+    {
+      "id": "job2_employer_phone",
+      "target": {
+        "type": "text",
+        "name": "Text23 PG 9"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].employer_phone"
+      },
+      "transforms": [
+        {
+          "op": "phone",
+          "style": "dashed"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 2
+      }
+    },
+    {
+      "id": "job2_pay_rate",
+      "target": {
+        "type": "text",
+        "name": "Text24 PG 9"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].pay_rate"
+      },
+      "transforms": [
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 2
+      }
+    },
+    {
+      "id": "job2_hours",
+      "target": {
+        "type": "text",
+        "name": "Text25 PG 9"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].hours_per_week"
+      },
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 2
+      }
+    },
+    {
+      "id": "job2_payfreq",
+      "target": {
+        "type": "text",
+        "name": "Text26 PG 9"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].pay_frequency"
+      },
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 2
+      },
+      "note": "Printed \"weekly, every 2 weeks, monthly, or other\". Written verbatim from the profile."
+    },
+    {
+      "id": "job3_person",
+      "target": {
+        "type": "text",
+        "name": "Text30 PG 9"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].member_ref"
+      },
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 3
+      }
+    },
+    {
+      "id": "job3_employer",
+      "target": {
+        "type": "text",
+        "name": "Text31 PG 9"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].employer_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 3
+      }
+    },
+    {
+      "id": "job3_employer_phone",
+      "target": {
+        "type": "text",
+        "name": "Text32 PG 9"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].employer_phone"
+      },
+      "transforms": [
+        {
+          "op": "phone",
+          "style": "dashed"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 3
+      }
+    },
+    {
+      "id": "job3_pay_rate",
+      "target": {
+        "type": "text",
+        "name": "Text33 PG 9"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].pay_rate"
+      },
+      "transforms": [
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 3
+      }
+    },
+    {
+      "id": "job3_hours",
+      "target": {
+        "type": "text",
+        "name": "Text34 PG 9"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].hours_per_week"
+      },
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 3
+      }
+    },
+    {
+      "id": "job3_payfreq",
+      "target": {
+        "type": "text",
+        "name": "Text35 PG 9"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].pay_frequency"
+      },
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 3
+      },
+      "note": "Printed \"weekly, every 2 weeks, monthly, or other\". Written verbatim from the profile."
+    },
+    {
+      "id": "cc0_person",
+      "target": {
+        "type": "text",
+        "name": "Text37 pg 10"
+      },
+      "source": {
+        "fieldPath": "expenses.childcare[].member_ref"
+      },
+      "repeat": {
+        "over": "expenses.childcare",
+        "index": 0
+      }
+    },
+    {
+      "id": "cc0_provider",
+      "target": {
+        "type": "text",
+        "name": "Text38 pg 10"
+      },
+      "source": {
+        "fieldPath": "expenses.childcare[].provider_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "expenses.childcare",
+        "index": 0
+      }
+    },
+    {
+      "id": "cc0_amount",
+      "target": {
+        "type": "text",
+        "name": "Text39 pg 10"
+      },
+      "source": {
+        "fieldPath": "expenses.childcare[].monthly_amount"
+      },
+      "transforms": [
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "expenses.childcare",
+        "index": 0
+      }
+    },
+    {
+      "id": "cc1_person",
+      "target": {
+        "type": "text",
+        "name": "Text41 pg 10"
+      },
+      "source": {
+        "fieldPath": "expenses.childcare[].member_ref"
+      },
+      "repeat": {
+        "over": "expenses.childcare",
+        "index": 1
+      }
+    },
+    {
+      "id": "cc1_provider",
+      "target": {
+        "type": "text",
+        "name": "Text42 pg 10"
+      },
+      "source": {
+        "fieldPath": "expenses.childcare[].provider_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "expenses.childcare",
+        "index": 1
+      }
+    },
+    {
+      "id": "cc1_amount",
+      "target": {
+        "type": "text",
+        "name": "Text43 pg 10"
+      },
+      "source": {
+        "fieldPath": "expenses.childcare[].monthly_amount"
+      },
+      "transforms": [
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "expenses.childcare",
+        "index": 1
+      }
+    },
+    {
+      "id": "cc2_person",
+      "target": {
+        "type": "text",
+        "name": "Text45 pg 10"
+      },
+      "source": {
+        "fieldPath": "expenses.childcare[].member_ref"
+      },
+      "repeat": {
+        "over": "expenses.childcare",
+        "index": 2
+      }
+    },
+    {
+      "id": "cc2_provider",
+      "target": {
+        "type": "text",
+        "name": "Text46 pg 10"
+      },
+      "source": {
+        "fieldPath": "expenses.childcare[].provider_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "expenses.childcare",
+        "index": 2
+      }
+    },
+    {
+      "id": "cc2_amount",
+      "target": {
+        "type": "text",
+        "name": "Text47 pg 10"
+      },
+      "source": {
+        "fieldPath": "expenses.childcare[].monthly_amount"
+      },
+      "transforms": [
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "expenses.childcare",
+        "index": 2
+      }
+    },
+    {
+      "id": "cc3_person",
+      "target": {
+        "type": "text",
+        "name": "Text49 pg 10"
+      },
+      "source": {
+        "fieldPath": "expenses.childcare[].member_ref"
+      },
+      "repeat": {
+        "over": "expenses.childcare",
+        "index": 3
+      }
+    },
+    {
+      "id": "cc3_provider",
+      "target": {
+        "type": "text",
+        "name": "Text50 pg 10"
+      },
+      "source": {
+        "fieldPath": "expenses.childcare[].provider_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "expenses.childcare",
+        "index": 3
+      }
+    },
+    {
+      "id": "cc3_amount",
+      "target": {
+        "type": "text",
+        "name": "Text51 pg 10"
+      },
+      "source": {
+        "fieldPath": "expenses.childcare[].monthly_amount"
+      },
+      "transforms": [
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "expenses.childcare",
+        "index": 3
+      }
+    },
+    {
+      "id": "acct0_kind",
+      "target": {
+        "type": "text",
+        "name": "Text19 PG 14"
+      },
+      "source": {
+        "fieldPath": "resources.accounts[].kind"
+      },
+      "valueMap": {
+        "checking": "Checking",
+        "savings": "Savings",
+        "prepaid": "Prepaid card",
+        "cash": "Cash",
+        "investment": "Investment",
+        "other": "Other"
+      },
+      "repeat": {
+        "over": "resources.accounts",
+        "index": 0
+      },
+      "note": "Free-text \"Type of Resource\" column; the mapper writes a plain-word kind."
+    },
+    {
+      "id": "acct0_balance",
+      "target": {
+        "type": "text",
+        "name": "Text20PG 14"
+      },
+      "source": {
+        "fieldPath": "resources.accounts[].balance"
+      },
+      "transforms": [
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "resources.accounts",
+        "index": 0
+      },
+      "note": "Column \"How Much is it Worth? $\"."
+    },
+    {
+      "id": "acct0_institution",
+      "target": {
+        "type": "text",
+        "name": "Text21 PG 14"
+      },
+      "source": {
+        "fieldPath": "resources.accounts[].institution"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "resources.accounts",
+        "index": 0
+      },
+      "note": "Column \"Where is the Resource? (bank or company where money is held)\"."
+    },
+    {
+      "id": "acct1_kind",
+      "target": {
+        "type": "text",
+        "name": "Text23 PG 14"
+      },
+      "source": {
+        "fieldPath": "resources.accounts[].kind"
+      },
+      "valueMap": {
+        "checking": "Checking",
+        "savings": "Savings",
+        "prepaid": "Prepaid card",
+        "cash": "Cash",
+        "investment": "Investment",
+        "other": "Other"
+      },
+      "repeat": {
+        "over": "resources.accounts",
+        "index": 1
+      },
+      "note": "Free-text \"Type of Resource\" column; the mapper writes a plain-word kind."
+    },
+    {
+      "id": "acct1_balance",
+      "target": {
+        "type": "text",
+        "name": "Text24 PG 14"
+      },
+      "source": {
+        "fieldPath": "resources.accounts[].balance"
+      },
+      "transforms": [
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "resources.accounts",
+        "index": 1
+      },
+      "note": "Column \"How Much is it Worth? $\"."
+    },
+    {
+      "id": "acct1_institution",
+      "target": {
+        "type": "text",
+        "name": "Text25 PG 14"
+      },
+      "source": {
+        "fieldPath": "resources.accounts[].institution"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "resources.accounts",
+        "index": 1
+      },
+      "note": "Column \"Where is the Resource? (bank or company where money is held)\"."
+    },
+    {
+      "id": "acct2_kind",
+      "target": {
+        "type": "text",
+        "name": "Text27 PG 14"
+      },
+      "source": {
+        "fieldPath": "resources.accounts[].kind"
+      },
+      "valueMap": {
+        "checking": "Checking",
+        "savings": "Savings",
+        "prepaid": "Prepaid card",
+        "cash": "Cash",
+        "investment": "Investment",
+        "other": "Other"
+      },
+      "repeat": {
+        "over": "resources.accounts",
+        "index": 2
+      },
+      "note": "Free-text \"Type of Resource\" column; the mapper writes a plain-word kind."
+    },
+    {
+      "id": "acct2_balance",
+      "target": {
+        "type": "text",
+        "name": "Text28 PG 14"
+      },
+      "source": {
+        "fieldPath": "resources.accounts[].balance"
+      },
+      "transforms": [
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "resources.accounts",
+        "index": 2
+      },
+      "note": "Column \"How Much is it Worth? $\"."
+    },
+    {
+      "id": "acct2_institution",
+      "target": {
+        "type": "text",
+        "name": "Text29 PG 14"
+      },
+      "source": {
+        "fieldPath": "resources.accounts[].institution"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "resources.accounts",
+        "index": 2
+      },
+      "note": "Column \"Where is the Resource? (bank or company where money is held)\"."
+    },
+    {
+      "id": "acct3_kind",
+      "target": {
+        "type": "text",
+        "name": "Text31 PG 14"
+      },
+      "source": {
+        "fieldPath": "resources.accounts[].kind"
+      },
+      "valueMap": {
+        "checking": "Checking",
+        "savings": "Savings",
+        "prepaid": "Prepaid card",
+        "cash": "Cash",
+        "investment": "Investment",
+        "other": "Other"
+      },
+      "repeat": {
+        "over": "resources.accounts",
+        "index": 3
+      },
+      "note": "Free-text \"Type of Resource\" column; the mapper writes a plain-word kind."
+    },
+    {
+      "id": "acct3_balance",
+      "target": {
+        "type": "text",
+        "name": "Text32 PG 14"
+      },
+      "source": {
+        "fieldPath": "resources.accounts[].balance"
+      },
+      "transforms": [
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "resources.accounts",
+        "index": 3
+      },
+      "note": "Column \"How Much is it Worth? $\"."
+    },
+    {
+      "id": "acct3_institution",
+      "target": {
+        "type": "text",
+        "name": "Text33 PG 14"
+      },
+      "source": {
+        "fieldPath": "resources.accounts[].institution"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "resources.accounts",
+        "index": 3
+      },
+      "note": "Column \"Where is the Resource? (bank or company where money is held)\"."
+    },
+    {
+      "id": "appxb_rep_name",
+      "target": {
+        "type": "text",
+        "name": "Text1 APPX B"
+      },
+      "source": {
+        "fieldPath": "program.authorized_representative.name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "note": "Appendix B authorized-representative name. Same source as the section-2a block (page 8)."
+    },
+    {
+      "id": "appxb_rep_phone",
+      "target": {
+        "type": "text",
+        "name": "Text7 APPX B"
+      },
+      "source": {
+        "fieldPath": "program.authorized_representative.phone"
+      },
+      "transforms": [
+        {
+          "op": "phone",
+          "style": "dashed"
+        }
+      ]
+    },
+    {
+      "id": "appxb_sig_date",
+      "target": {
+        "type": "text",
+        "name": "Text11 APPX B"
+      },
+      "fillPolicy": "never",
+      "note": "Date beside the authorized-representative signature in Appendix B. Signed by hand; never filled."
+    },
+    {
+      "id": "appxb_start_date",
+      "target": {
+        "type": "text",
+        "name": "Text12 APPX B"
+      },
+      "fillPolicy": "never",
+      "note": "\"Application start date\" in the county/assister-only section (\"For Certified Application Counselors, Navigators, Agents and Brokers Only\"). Office use; never filled."
+    },
+    {
+      "id": "veh0_spec",
+      "target": {
+        "type": "text",
+        "name": "Text28 appx E"
+      },
+      "source": {
+        "fieldPath": "resources.vehicles[].year"
+      },
+      "transforms": [
+        {
+          "op": "join",
+          "with": "resources.vehicles[].make",
+          "sep": " "
+        },
+        {
+          "op": "join",
+          "with": "resources.vehicles[].model",
+          "sep": " "
+        }
+      ],
+      "repeat": {
+        "over": "resources.vehicles",
+        "index": 0
+      },
+      "note": "Printed \"Year/Make/Model\". Renders \"2020 Toyota Camry\"; vehicle 1 of 3."
+    },
+    {
+      "id": "veh0_value",
+      "target": {
+        "type": "text",
+        "name": "Text34 appx E"
+      },
+      "source": {
+        "fieldPath": "resources.vehicles[].estimated_value"
+      },
+      "transforms": [
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "resources.vehicles",
+        "index": 0
+      },
+      "note": "Printed \"Estimated value of vehicle\"; vehicle 1 of 3."
+    },
+    {
+      "id": "veh1_spec",
+      "target": {
+        "type": "text",
+        "name": "Text29 appx E"
+      },
+      "source": {
+        "fieldPath": "resources.vehicles[].year"
+      },
+      "transforms": [
+        {
+          "op": "join",
+          "with": "resources.vehicles[].make",
+          "sep": " "
+        },
+        {
+          "op": "join",
+          "with": "resources.vehicles[].model",
+          "sep": " "
+        }
+      ],
+      "repeat": {
+        "over": "resources.vehicles",
+        "index": 1
+      },
+      "note": "Printed \"Year/Make/Model\". Renders \"2020 Toyota Camry\"; vehicle 2 of 3."
+    },
+    {
+      "id": "veh1_value",
+      "target": {
+        "type": "text",
+        "name": "Text36 appx E"
+      },
+      "source": {
+        "fieldPath": "resources.vehicles[].estimated_value"
+      },
+      "transforms": [
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "resources.vehicles",
+        "index": 1
+      },
+      "note": "Printed \"Estimated value of vehicle\"; vehicle 2 of 3."
+    },
+    {
+      "id": "veh2_spec",
+      "target": {
+        "type": "text",
+        "name": "Text30 appx E"
+      },
+      "source": {
+        "fieldPath": "resources.vehicles[].year"
+      },
+      "transforms": [
+        {
+          "op": "join",
+          "with": "resources.vehicles[].make",
+          "sep": " "
+        },
+        {
+          "op": "join",
+          "with": "resources.vehicles[].model",
+          "sep": " "
+        }
+      ],
+      "repeat": {
+        "over": "resources.vehicles",
+        "index": 2
+      },
+      "note": "Printed \"Year/Make/Model\". Renders \"2020 Toyota Camry\"; vehicle 3 of 3."
+    },
+    {
+      "id": "veh2_value",
+      "target": {
+        "type": "text",
+        "name": "Text38 appx E"
+      },
+      "source": {
+        "fieldPath": "resources.vehicles[].estimated_value"
+      },
+      "transforms": [
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "resources.vehicles",
+        "index": 2
+      },
+      "note": "Printed \"Estimated value of vehicle\"; vehicle 3 of 3."
+    }
+  ],
+  "provenanceNote": "Pinned revision is SAWS 2 PLUS (4/15), effective 2015-04-01, downloaded from the official CDSS forms library. The revision is old for a 2026 application: the county may expect a newer edition. This mapping stays draft until a reviewer confirms the current county-accepted revision and re-verifies every field."
+}

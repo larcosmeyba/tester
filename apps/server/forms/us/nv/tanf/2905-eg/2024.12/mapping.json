@@ -1,0 +1,6475 @@
+{
+  "schemaVersion": 1,
+  "id": "us-nv-tanf-2905-eg",
+  "jurisdiction": {
+    "country": "US",
+    "state": "NV"
+  },
+  "program": "TANF",
+  "formCode": "2905-eg",
+  "formTitle": "Nevada Application for Assistance",
+  "formVersion": "2024.12",
+  "revision": 1,
+  "status": "draft",
+  "vocabularyVersion": 1,
+  "agencyUrl": "https://www.dss.nv.gov/",
+  "template": {
+    "kind": "acroform",
+    "file": "template.pdf",
+    "sha256": "f5babb916fcd40703139e4a3344d5dce08045655b338260b0d50ee6553f23ab6",
+    "pageCount": 23,
+    "retrievedAt": "2026-09-09",
+    "sourceUrl": "https://www.dss.nv.gov/uploadedFiles/dwssnvgov/content/TANF/2905-EG_Application%20for%20Assistance%20-%20ADA%20with%20voter%20reg%2012-24.pdf"
+  },
+  "requirements": [],
+  "provenanceNote": "Template pinned by sha256; official source URL and check date from the Government Forms Master Index (Nevada TANF row). Form version 2024.12 from the December 2024 revision.",
+  "fields": [
+    {
+      "id": "11_are_you_or_any_persons_in_your_household_a_member_of_an_a",
+      "target": {
+        "type": "text",
+        "name": "11 Are you or any persons in your household a member of an American Indian or Alaska Native Tribe"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "12_are_you_or_any_persons_in_your_household_currently_disqua",
+      "target": {
+        "type": "text",
+        "name": "12 Are you or any persons in your household currently disqualified for an Intentional Program Violation IPV"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "24_are_you_or_any_persons_in_your_household_currently_regist",
+      "target": {
+        "type": "radio",
+        "name": "24 Are you or any persons in your household currently registered with or working for a temporary employment"
+      },
+      "fillPolicy": "never",
+      "note": "temporary work / strike / exchange detail; no vocabulary equivalent"
+    },
+    {
+      "id": "28_if_you_do_not_have_any_income_please_explain_how_you_are_",
+      "target": {
+        "type": "text",
+        "name": "28 If you do not have any income please explain how you are paying your bills and buying personal items for your household"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "31_do_you_or_any_persons_in_your_household_own_or_are_they_b",
+      "target": {
+        "type": "radio",
+        "name": "31 Do you or any persons in your household own or are they buying a car motorcycle trailer truck camper boat"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "32_have_you_or_any_persons_in_your_household_sold_traded_or_",
+      "target": {
+        "type": "radio",
+        "name": "32 Have you or any persons in your household sold traded or given away any money vehicles property or other resources or"
+      },
+      "fillPolicy": "never",
+      "note": "housing/vehicle/resource detail with no vocabulary equivalent, an unattributable shared field, or a payment frequency that cannot be converted to a monthly figure"
+    },
+    {
+      "id": "account_number_please_list_the_last_4_numbers_onlycertificat",
+      "target": {
+        "type": "text",
+        "name": "ACCOUNT NUMBER Please list the last 4 numbers onlyCertificates of Deposit"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "account_number_please_list_the_last_4_numbers_onlyindividual",
+      "target": {
+        "type": "text",
+        "name": "ACCOUNT NUMBER Please list the last 4 numbers onlyIndividual Retirement Accounts IRA"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "account_number_please_list_the_last_4_numbers_onlykeogh_acco",
+      "target": {
+        "type": "text",
+        "name": "ACCOUNT NUMBER Please list the last 4 numbers onlyKeogh Account 401K"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "account_number_please_list_the_last_4_numbers_onlystocks_or_",
+      "target": {
+        "type": "text",
+        "name": "ACCOUNT NUMBER Please list the last 4 numbers onlyStocks or Bonds"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "do_you_have_a_physical_or_mental_condition_that_requires_spe",
+      "target": {
+        "type": "text",
+        "name": "Do you have a physical or mental condition that requires special accommodations during your interview"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "do_you_wish_to_pursue_child_support_if_your_household_is_fou",
+      "target": {
+        "type": "checkbox",
+        "name": "Do you wish to pursue child support if your household is found ineligible for TANF"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "i_have_a_valid_nv_drivers_license_or_id_card_and_that_number",
+      "target": {
+        "type": "checkbox",
+        "name": "I have a valid NV Drivers License or ID Card and that number is: check box"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "i_have_not_been_issued_a_nv_drivers_license_or_id_card_the_l",
+      "target": {
+        "type": "checkbox",
+        "name": "I have not been issued a NV Drivers License or ID Card The last 4 digits of my Social Security Number are"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "i_have_not_been_issued_a_nv_drivers_license_or_id_card_and_i_2",
+      "target": {
+        "type": "checkbox",
+        "name": "I have not been issued a NV Drivers License or ID Card and I do not have a Social Security Number  If you select this option you will be contacted. check box"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "if_there_are_any_additional_household_members_who_have_serve",
+      "target": {
+        "type": "radio",
+        "name": "If there are any additional household members who have served in a branch of the United States Armed Forces please include them"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "if_you_checked_no_to_the_above_question_but_are_at_least_17_",
+      "target": {
+        "type": "radio",
+        "name": "If you checked No to the above question but are at least 17 years of age do you wish to preregister to vote"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "is_this_individual_currently_serving_a_disqualification_for_",
+      "target": {
+        "type": "text",
+        "name": "Is this individual currently serving a disqualification for an Intentional Program Violation_2"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "mailing_address_if_different_from_above_p_o_box_or_mail_serv",
+      "target": {
+        "type": "text",
+        "name": "Mailing Address - If different from above (P.O.Box or mail service address acceptabel"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "military_domestic_or_military_spouse_or_dependent_only_check",
+      "target": {
+        "type": "checkbox",
+        "name": "Military Domestic or military spouse or dependent  Only check if you are on active duty and will be absent from your place of registration"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "neva_residential_address_see_instructions_on_back_no_p_o_box_2",
+      "target": {
+        "type": "text",
+        "name": "Neva Residential Address - see instructions on back (NO P.O.Box/Business addres), Apt.#, City, Zip Code"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "policy_or_account_number_please_list_the_last_4_numbers_only",
+      "target": {
+        "type": "text",
+        "name": "POLICY OR ACCOUNT NUMBER Please list the last 4 numbers only CSV"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "policy_or_account_number_please_list_the_last_4_numbers_only_2",
+      "target": {
+        "type": "text",
+        "name": "POLICY OR ACCOUNT NUMBER Please list the last 4 numbers only CSV_2"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "person_appliedreceivingchild_support_voluntary_or_court_orde",
+      "target": {
+        "type": "text",
+        "name": "Person AppliedReceivingChild Support Voluntary or Court Ordered"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income person column; free-text name cannot be linked to a household member"
+    },
+    {
+      "id": "person_appliedreceivingworkers_compensation_or_temporary_dis",
+      "target": {
+        "type": "text",
+        "name": "Person AppliedReceivingWorkers Compensation or Temporary Disability"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income person column; free-text name cannot be linked to a household member"
+    },
+    {
+      "id": "race_please_check_one_of_the_boxes_that_best_describes_your_",
+      "target": {
+        "type": "radio",
+        "name": "Race  Please check one of the boxes that best describes your household"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "to_get_snap_food_assistance_andor_tanf_cash_assistance_most_",
+      "target": {
+        "type": "radio",
+        "name": "To get SNAP food assistance andor TANF cash assistance most people are required to come into the office for a facetoface"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "will_you_be_at_lease_18_years_of_age_on_or_before_election_d",
+      "target": {
+        "type": "radio",
+        "name": "Will you be at lease 18 years of age on or before election day? No check box"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "will_you_be_at_least_18_years_of_age_on_or_before_election_d",
+      "target": {
+        "type": "radio",
+        "name": "Will you be at least 18 years of age on or before election day? Yes check box"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "witness_use_if_applicant_cannot_read_or_write_or_is_blind_th",
+      "target": {
+        "type": "text",
+        "name": "Witness Use if applicant cannot read or write or is blind The information in this application has been read to the"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "you_have_the_right_to_assign_up_to_two_individuals_to_act_on",
+      "target": {
+        "type": "radio",
+        "name": "You have the right to assign up to two individuals to act on your behalf either to apply for benefits or to use your benefits for the"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "your_name_and_residential_address_where_you_were_last_regist",
+      "target": {
+        "type": "text",
+        "name": "Your name and residential address where you were last registered to vote Name Used Address State etc"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "a_have_you_or_any_persons_in_your_household_been_convicted_o",
+      "target": {
+        "type": "text",
+        "name": "a Have you or any persons in your household been convicted of trading SNAP benefits for drugs after"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "b_have_you_or_any_persons_in_your_household_been_convicted_o",
+      "target": {
+        "type": "text",
+        "name": "b Have you or any persons in your household been convicted of buying or selling SNAP benefits over"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "d_have_you_or_any_persons_in_your_household_been_convicted_o",
+      "target": {
+        "type": "text",
+        "name": "d Have you or any persons in your household been convicted of trading SNAP benefits for guns"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "are_there_additional_people_in_your_home",
+      "target": {
+        "type": "text",
+        "name": "Are there additional people in your home"
+      },
+      "fillPolicy": "never",
+      "note": "additional people; free-text, no vocabulary equivalent"
+    },
+    {
+      "id": "cellmessagedaytime_phone",
+      "target": {
+        "type": "text",
+        "name": "CellMessageDaytime Phone"
+      },
+      "source": {
+        "fieldPath": "contact.phone_primary"
+      },
+      "transforms": [
+        {
+          "op": "phone",
+          "style": "dashed"
+        }
+      ],
+      "strength": "preferred",
+      "note": "cell/message/daytime phone"
+    },
+    {
+      "id": "check_box2",
+      "target": {
+        "type": "checkbox",
+        "name": "Check Box2"
+      },
+      "fillPolicy": "never",
+      "note": "per-row FOOD/TANF/NONE program checkboxes share one field name; cannot address per-row values"
+    },
+    {
+      "id": "city",
+      "target": {
+        "type": "text",
+        "name": "City"
+      },
+      "source": {
+        "fieldPath": "address.residential.city"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "strength": "required",
+      "note": "city"
+    },
+    {
+      "id": "city_2",
+      "target": {
+        "type": "text",
+        "name": "City_2"
+      },
+      "source": {
+        "fieldPath": "address.mailing.city"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "strength": "preferred",
+      "note": "mailing city"
+    },
+    {
+      "id": "date_of_birth",
+      "target": {
+        "type": "text",
+        "name": "Date of Birth"
+      },
+      "source": {
+        "fieldPath": "applicant.date_of_birth"
+      },
+      "transforms": [
+        {
+          "op": "date",
+          "layout": "01/02/2006"
+        }
+      ],
+      "strength": "required",
+      "note": "head of household DOB"
+    },
+    {
+      "id": "date_of_birthrow4",
+      "target": {
+        "type": "text",
+        "name": "Date of BirthRow4"
+      },
+      "source": {
+        "fieldPath": "household.members[].date_of_birth"
+      },
+      "transforms": [
+        {
+          "op": "date",
+          "layout": "01/02/2006"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 2
+      },
+      "strength": "preferred",
+      "note": "member 2 DOB"
+    },
+    {
+      "id": "date_of_birthrow5",
+      "target": {
+        "type": "text",
+        "name": "Date of BirthRow5"
+      },
+      "source": {
+        "fieldPath": "household.members[].date_of_birth"
+      },
+      "transforms": [
+        {
+          "op": "date",
+          "layout": "01/02/2006"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 3
+      },
+      "strength": "preferred",
+      "note": "member 3 DOB"
+    },
+    {
+      "id": "date_of_birthrow6",
+      "target": {
+        "type": "text",
+        "name": "Date of BirthRow6"
+      },
+      "source": {
+        "fieldPath": "household.members[].date_of_birth"
+      },
+      "transforms": [
+        {
+          "op": "date",
+          "layout": "01/02/2006"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 4
+      },
+      "strength": "preferred",
+      "note": "member 4 DOB"
+    },
+    {
+      "id": "date_of_birthrow7",
+      "target": {
+        "type": "text",
+        "name": "Date of BirthRow7"
+      },
+      "source": {
+        "fieldPath": "household.members[].date_of_birth"
+      },
+      "transforms": [
+        {
+          "op": "date",
+          "layout": "01/02/2006"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 5
+      },
+      "strength": "preferred",
+      "note": "member 5 DOB"
+    },
+    {
+      "id": "date_of_birth_2",
+      "target": {
+        "type": "text",
+        "name": "Date of Birth_2"
+      },
+      "source": {
+        "fieldPath": "household.members[].date_of_birth"
+      },
+      "transforms": [
+        {
+          "op": "date",
+          "layout": "01/02/2006"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 0
+      },
+      "strength": "preferred",
+      "note": "member 0 DOB"
+    },
+    {
+      "id": "date_of_birth_3",
+      "target": {
+        "type": "text",
+        "name": "Date of Birth_3"
+      },
+      "source": {
+        "fieldPath": "household.members[].date_of_birth"
+      },
+      "transforms": [
+        {
+          "op": "date",
+          "layout": "01/02/2006"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 1
+      },
+      "strength": "preferred",
+      "note": "member 1 DOB"
+    },
+    {
+      "id": "e_mail_address",
+      "target": {
+        "type": "text",
+        "name": "E-mail address"
+      },
+      "source": {
+        "fieldPath": "contact.email"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "lower"
+        }
+      ],
+      "strength": "preferred",
+      "note": "email address"
+    },
+    {
+      "id": "first_namerow1",
+      "target": {
+        "type": "text",
+        "name": "First NameRow1"
+      },
+      "source": {
+        "fieldPath": "applicant.first_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "strength": "required",
+      "note": "head of household first name"
+    },
+    {
+      "id": "first_namerow2",
+      "target": {
+        "type": "text",
+        "name": "First NameRow2"
+      },
+      "source": {
+        "fieldPath": "household.members[].first_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 0
+      },
+      "strength": "preferred",
+      "note": "household member 0 first name"
+    },
+    {
+      "id": "first_namerow3",
+      "target": {
+        "type": "text",
+        "name": "First NameRow3"
+      },
+      "source": {
+        "fieldPath": "household.members[].first_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 1
+      },
+      "strength": "preferred",
+      "note": "household member 1 first name"
+    },
+    {
+      "id": "first_namerow4",
+      "target": {
+        "type": "text",
+        "name": "First NameRow4"
+      },
+      "source": {
+        "fieldPath": "household.members[].first_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 2
+      },
+      "strength": "preferred",
+      "note": "household member 2 first name"
+    },
+    {
+      "id": "first_namerow5",
+      "target": {
+        "type": "text",
+        "name": "First NameRow5"
+      },
+      "source": {
+        "fieldPath": "household.members[].first_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 3
+      },
+      "strength": "preferred",
+      "note": "household member 3 first name"
+    },
+    {
+      "id": "first_namerow6",
+      "target": {
+        "type": "text",
+        "name": "First NameRow6"
+      },
+      "source": {
+        "fieldPath": "household.members[].first_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 4
+      },
+      "strength": "preferred",
+      "note": "household member 4 first name"
+    },
+    {
+      "id": "first_namerow7",
+      "target": {
+        "type": "text",
+        "name": "First NameRow7"
+      },
+      "source": {
+        "fieldPath": "household.members[].first_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 5
+      },
+      "strength": "preferred",
+      "note": "household member 5 first name"
+    },
+    {
+      "id": "hispaniclatino_or",
+      "target": {
+        "type": "checkbox",
+        "name": "HispanicLatino or"
+      },
+      "fillPolicy": "never",
+      "note": "ethnicity; vocabulary v1 does not collect it"
+    },
+    {
+      "id": "home_address_give_directions_if_you_do_not_have_an_address",
+      "target": {
+        "type": "text",
+        "name": "Home Address Give directions if you do not have an address"
+      },
+      "source": {
+        "fieldPath": "address.residential.street1"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "strength": "required",
+      "note": "street address"
+    },
+    {
+      "id": "home_phone",
+      "target": {
+        "type": "text",
+        "name": "Home Phone"
+      },
+      "source": {
+        "fieldPath": "contact.phone_secondary"
+      },
+      "transforms": [
+        {
+          "op": "phone",
+          "style": "dashed"
+        }
+      ],
+      "strength": "preferred",
+      "note": "home phone"
+    },
+    {
+      "id": "if_yes_who",
+      "target": {
+        "type": "text",
+        "name": "If YES who"
+      },
+      "fillPolicy": "never",
+      "note": "prior benefits household member; free-text"
+    },
+    {
+      "id": "last_namerow1",
+      "target": {
+        "type": "text",
+        "name": "Last NameRow1"
+      },
+      "source": {
+        "fieldPath": "applicant.last_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "strength": "required",
+      "note": "head of household last name"
+    },
+    {
+      "id": "last_namerow2",
+      "target": {
+        "type": "text",
+        "name": "Last NameRow2"
+      },
+      "source": {
+        "fieldPath": "household.members[].last_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 0
+      },
+      "strength": "preferred",
+      "note": "household member 0 last name"
+    },
+    {
+      "id": "last_namerow3",
+      "target": {
+        "type": "text",
+        "name": "Last NameRow3"
+      },
+      "source": {
+        "fieldPath": "household.members[].last_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 1
+      },
+      "strength": "preferred",
+      "note": "household member 1 last name"
+    },
+    {
+      "id": "last_namerow4",
+      "target": {
+        "type": "text",
+        "name": "Last NameRow4"
+      },
+      "source": {
+        "fieldPath": "household.members[].last_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 2
+      },
+      "strength": "preferred",
+      "note": "household member 2 last name"
+    },
+    {
+      "id": "last_namerow5",
+      "target": {
+        "type": "text",
+        "name": "Last NameRow5"
+      },
+      "source": {
+        "fieldPath": "household.members[].last_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 3
+      },
+      "strength": "preferred",
+      "note": "household member 3 last name"
+    },
+    {
+      "id": "last_namerow6",
+      "target": {
+        "type": "text",
+        "name": "Last NameRow6"
+      },
+      "source": {
+        "fieldPath": "household.members[].last_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 4
+      },
+      "strength": "preferred",
+      "note": "household member 4 last name"
+    },
+    {
+      "id": "last_namerow7",
+      "target": {
+        "type": "text",
+        "name": "Last NameRow7"
+      },
+      "source": {
+        "fieldPath": "household.members[].last_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 5
+      },
+      "strength": "preferred",
+      "note": "household member 5 last name"
+    },
+    {
+      "id": "last_grade_completed",
+      "target": {
+        "type": "text",
+        "name": "Last grade completed"
+      },
+      "fillPolicy": "never",
+      "note": "education column shares one field name; vocabulary v1 does not collect grade completed"
+    },
+    {
+      "id": "mailing_address_if_different_from_your_home_address",
+      "target": {
+        "type": "text",
+        "name": "Mailing Address If different from your home address"
+      },
+      "source": {
+        "fieldPath": "address.mailing.street1"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "strength": "preferred",
+      "note": "mailing street"
+    },
+    {
+      "id": "modifier_jr_sr",
+      "target": {
+        "type": "text",
+        "name": "Modifier Jr Sr"
+      },
+      "source": {
+        "fieldPath": "applicant.suffix"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "strength": "preferred",
+      "note": "head of household suffix"
+    },
+    {
+      "id": "month_year_completed",
+      "target": {
+        "type": "text",
+        "name": "Month/Year completed"
+      },
+      "fillPolicy": "never",
+      "note": "education column shares one field name; vocabulary v1 does not collect this"
+    },
+    {
+      "id": "nonhispanic_or_latino",
+      "target": {
+        "type": "checkbox",
+        "name": "NonHispanic or Latino"
+      },
+      "fillPolicy": "never",
+      "note": "ethnicity; vocabulary v1 does not collect it"
+    },
+    {
+      "id": "race_ethnicity",
+      "target": {
+        "type": "text",
+        "name": "Race/Ethnicity"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity column shares one field name; vocabulary v1 does not collect race"
+    },
+    {
+      "id": "row1",
+      "target": {
+        "type": "text",
+        "name": "Row1"
+      },
+      "fillPolicy": "never",
+      "note": "gender column rows 1-4 share one field name; per-row values cannot be addressed"
+    },
+    {
+      "id": "row1_2",
+      "target": {
+        "type": "text",
+        "name": "Row1_2"
+      },
+      "fillPolicy": "never",
+      "note": "age column shares one field name across rows; age is derived, not collected"
+    },
+    {
+      "id": "row2",
+      "target": {
+        "type": "text",
+        "name": "Row2"
+      },
+      "fillPolicy": "never",
+      "note": "gender column row 5; per-row values cannot be addressed"
+    },
+    {
+      "id": "row3",
+      "target": {
+        "type": "text",
+        "name": "Row3"
+      },
+      "fillPolicy": "never",
+      "note": "gender column row 6; per-row values cannot be addressed"
+    },
+    {
+      "id": "row4",
+      "target": {
+        "type": "text",
+        "name": "Row4"
+      },
+      "fillPolicy": "never",
+      "note": "gender column row 7; per-row values cannot be addressed"
+    },
+    {
+      "id": "selfrow1",
+      "target": {
+        "type": "text",
+        "name": "SELFRow1"
+      },
+      "source": {
+        "fieldPath": "household.members[].relationship"
+      },
+      "valueMap": {
+        "self": "Self",
+        "spouse": "Spouse",
+        "domestic_partner": "Domestic partner",
+        "child": "Child",
+        "stepchild": "Stepchild",
+        "foster_child": "Foster child",
+        "parent": "Parent",
+        "stepparent": "Stepparent",
+        "grandparent": "Grandparent",
+        "grandchild": "Grandchild",
+        "sibling": "Sibling",
+        "other_relative": "Other relative",
+        "unrelated": "Unrelated"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 0
+      },
+      "strength": "preferred",
+      "note": "member 0 relationship to head"
+    },
+    {
+      "id": "selfrow2",
+      "target": {
+        "type": "text",
+        "name": "SELFRow2"
+      },
+      "source": {
+        "fieldPath": "household.members[].relationship"
+      },
+      "valueMap": {
+        "self": "Self",
+        "spouse": "Spouse",
+        "domestic_partner": "Domestic partner",
+        "child": "Child",
+        "stepchild": "Stepchild",
+        "foster_child": "Foster child",
+        "parent": "Parent",
+        "stepparent": "Stepparent",
+        "grandparent": "Grandparent",
+        "grandchild": "Grandchild",
+        "sibling": "Sibling",
+        "other_relative": "Other relative",
+        "unrelated": "Unrelated"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 1
+      },
+      "strength": "preferred",
+      "note": "member 1 relationship to head"
+    },
+    {
+      "id": "selfrow3",
+      "target": {
+        "type": "text",
+        "name": "SELFRow3"
+      },
+      "source": {
+        "fieldPath": "household.members[].relationship"
+      },
+      "valueMap": {
+        "self": "Self",
+        "spouse": "Spouse",
+        "domestic_partner": "Domestic partner",
+        "child": "Child",
+        "stepchild": "Stepchild",
+        "foster_child": "Foster child",
+        "parent": "Parent",
+        "stepparent": "Stepparent",
+        "grandparent": "Grandparent",
+        "grandchild": "Grandchild",
+        "sibling": "Sibling",
+        "other_relative": "Other relative",
+        "unrelated": "Unrelated"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 2
+      },
+      "strength": "preferred",
+      "note": "member 2 relationship to head"
+    },
+    {
+      "id": "selfrow4",
+      "target": {
+        "type": "text",
+        "name": "SELFRow4"
+      },
+      "source": {
+        "fieldPath": "household.members[].relationship"
+      },
+      "valueMap": {
+        "self": "Self",
+        "spouse": "Spouse",
+        "domestic_partner": "Domestic partner",
+        "child": "Child",
+        "stepchild": "Stepchild",
+        "foster_child": "Foster child",
+        "parent": "Parent",
+        "stepparent": "Stepparent",
+        "grandparent": "Grandparent",
+        "grandchild": "Grandchild",
+        "sibling": "Sibling",
+        "other_relative": "Other relative",
+        "unrelated": "Unrelated"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 3
+      },
+      "strength": "preferred",
+      "note": "member 3 relationship to head"
+    },
+    {
+      "id": "selfrow5",
+      "target": {
+        "type": "text",
+        "name": "SELFRow5"
+      },
+      "source": {
+        "fieldPath": "household.members[].relationship"
+      },
+      "valueMap": {
+        "self": "Self",
+        "spouse": "Spouse",
+        "domestic_partner": "Domestic partner",
+        "child": "Child",
+        "stepchild": "Stepchild",
+        "foster_child": "Foster child",
+        "parent": "Parent",
+        "stepparent": "Stepparent",
+        "grandparent": "Grandparent",
+        "grandchild": "Grandchild",
+        "sibling": "Sibling",
+        "other_relative": "Other relative",
+        "unrelated": "Unrelated"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 4
+      },
+      "strength": "preferred",
+      "note": "member 4 relationship to head"
+    },
+    {
+      "id": "selfrow6",
+      "target": {
+        "type": "text",
+        "name": "SELFRow6"
+      },
+      "source": {
+        "fieldPath": "household.members[].relationship"
+      },
+      "valueMap": {
+        "self": "Self",
+        "spouse": "Spouse",
+        "domestic_partner": "Domestic partner",
+        "child": "Child",
+        "stepchild": "Stepchild",
+        "foster_child": "Foster child",
+        "parent": "Parent",
+        "stepparent": "Stepparent",
+        "grandparent": "Grandparent",
+        "grandchild": "Grandchild",
+        "sibling": "Sibling",
+        "other_relative": "Other relative",
+        "unrelated": "Unrelated"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 5
+      },
+      "strength": "preferred",
+      "note": "member 5 relationship to head"
+    },
+    {
+      "id": "social_security_number",
+      "target": {
+        "type": "text",
+        "name": "Social Security Number"
+      },
+      "source": {
+        "fieldPath": "applicant.ssn"
+      },
+      "transforms": [
+        {
+          "op": "ssn",
+          "style": "full"
+        }
+      ],
+      "strength": "preferred",
+      "note": "head of household SSN"
+    },
+    {
+      "id": "social_security_number_2",
+      "target": {
+        "type": "text",
+        "name": "Social Security Number_2"
+      },
+      "source": {
+        "fieldPath": "household.members[].ssn"
+      },
+      "transforms": [
+        {
+          "op": "ssn",
+          "style": "full"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 0
+      },
+      "strength": "preferred",
+      "note": "member 0 SSN"
+    },
+    {
+      "id": "social_security_number_3",
+      "target": {
+        "type": "text",
+        "name": "Social Security Number_3"
+      },
+      "source": {
+        "fieldPath": "household.members[].ssn"
+      },
+      "transforms": [
+        {
+          "op": "ssn",
+          "style": "full"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 1
+      },
+      "strength": "preferred",
+      "note": "member 1 SSN"
+    },
+    {
+      "id": "social_security_number_4",
+      "target": {
+        "type": "text",
+        "name": "Social Security Number_4"
+      },
+      "source": {
+        "fieldPath": "household.members[].ssn"
+      },
+      "transforms": [
+        {
+          "op": "ssn",
+          "style": "full"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 2
+      },
+      "strength": "preferred",
+      "note": "member 2 SSN"
+    },
+    {
+      "id": "social_security_number_5",
+      "target": {
+        "type": "text",
+        "name": "Social Security Number_5"
+      },
+      "source": {
+        "fieldPath": "household.members[].ssn"
+      },
+      "transforms": [
+        {
+          "op": "ssn",
+          "style": "full"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 3
+      },
+      "strength": "preferred",
+      "note": "member 3 SSN"
+    },
+    {
+      "id": "social_security_number_6",
+      "target": {
+        "type": "text",
+        "name": "Social Security Number_6"
+      },
+      "source": {
+        "fieldPath": "household.members[].ssn"
+      },
+      "transforms": [
+        {
+          "op": "ssn",
+          "style": "full"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 4
+      },
+      "strength": "preferred",
+      "note": "member 4 SSN"
+    },
+    {
+      "id": "social_security_number_7",
+      "target": {
+        "type": "text",
+        "name": "Social Security Number_7"
+      },
+      "source": {
+        "fieldPath": "household.members[].ssn"
+      },
+      "transforms": [
+        {
+          "op": "ssn",
+          "style": "full"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 5
+      },
+      "strength": "preferred",
+      "note": "member 5 SSN"
+    },
+    {
+      "id": "state",
+      "target": {
+        "type": "text",
+        "name": "State"
+      },
+      "source": {
+        "fieldPath": "address.residential.state"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "strength": "required",
+      "note": "state"
+    },
+    {
+      "id": "state_or_country_of_birth",
+      "target": {
+        "type": "text",
+        "name": "State or Country of Birth"
+      },
+      "fillPolicy": "never",
+      "note": "birthplace; vocabulary v1 does not collect place of birth"
+    },
+    {
+      "id": "state_or_country_of_birth_2",
+      "target": {
+        "type": "text",
+        "name": "State or Country of Birth_2"
+      },
+      "fillPolicy": "never",
+      "note": "birthplace; vocabulary v1 does not collect place of birth"
+    },
+    {
+      "id": "state_or_country_of_birth_3",
+      "target": {
+        "type": "text",
+        "name": "State or Country of Birth_3"
+      },
+      "fillPolicy": "never",
+      "note": "birthplace; vocabulary v1 does not collect place of birth"
+    },
+    {
+      "id": "state_or_country_of_birth_4",
+      "target": {
+        "type": "text",
+        "name": "State or Country of Birth_4"
+      },
+      "fillPolicy": "never",
+      "note": "birthplace; vocabulary v1 does not collect place of birth"
+    },
+    {
+      "id": "state_or_country_of_birth_5",
+      "target": {
+        "type": "text",
+        "name": "State or Country of Birth_5"
+      },
+      "fillPolicy": "never",
+      "note": "birthplace; vocabulary v1 does not collect place of birth"
+    },
+    {
+      "id": "state_or_country_of_birth_6",
+      "target": {
+        "type": "text",
+        "name": "State or Country of Birth_6"
+      },
+      "fillPolicy": "never",
+      "note": "birthplace; vocabulary v1 does not collect place of birth"
+    },
+    {
+      "id": "state_or_country_of_birth_7",
+      "target": {
+        "type": "text",
+        "name": "State or Country of Birth_7"
+      },
+      "fillPolicy": "never",
+      "note": "birthplace; vocabulary v1 does not collect place of birth"
+    },
+    {
+      "id": "us_citizen",
+      "target": {
+        "type": "text",
+        "name": "US citizen"
+      },
+      "fillPolicy": "never",
+      "note": "citizenship column shares one field name across 7 rows; per-row values cannot be addressed"
+    },
+    {
+      "id": "where",
+      "target": {
+        "type": "text",
+        "name": "Where"
+      },
+      "fillPolicy": "never",
+      "note": "prior benefits location; free-text"
+    },
+    {
+      "id": "yes_2",
+      "target": {
+        "type": "checkbox",
+        "name": "YES_2"
+      },
+      "fillPolicy": "never",
+      "note": "yes/no control; scrambled attribution"
+    },
+    {
+      "id": "zip_code",
+      "target": {
+        "type": "text",
+        "name": "Zip code"
+      },
+      "source": {
+        "fieldPath": "address.residential.postal_code"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "strength": "required",
+      "note": "ZIP code"
+    },
+    {
+      "id": "last_month_and_year_benefits_were_received",
+      "target": {
+        "type": "text",
+        "name": "last month and year benefits were received"
+      },
+      "fillPolicy": "never",
+      "note": "prior benefits date; free-text month/year"
+    },
+    {
+      "id": "marital_status",
+      "target": {
+        "type": "text",
+        "name": "marital status"
+      },
+      "fillPolicy": "never",
+      "note": "marital-status column shares one field name across 7 rows; per-row values cannot be addressed"
+    },
+    {
+      "id": "undefined_10",
+      "target": {
+        "type": "text",
+        "name": "undefined_10"
+      },
+      "fillPolicy": "never",
+      "note": "expedited screening amount; field name not attributable to a specific question"
+    },
+    {
+      "id": "undefined_11",
+      "target": {
+        "type": "radio",
+        "name": "undefined_11"
+      },
+      "fillPolicy": "never",
+      "note": "expedited yes/no radio; scrambled attribution"
+    },
+    {
+      "id": "undefined_12",
+      "target": {
+        "type": "radio",
+        "name": "undefined_12"
+      },
+      "fillPolicy": "never",
+      "note": "expedited yes/no radio; scrambled attribution"
+    },
+    {
+      "id": "undefined_3",
+      "target": {
+        "type": "text",
+        "name": "undefined_3"
+      },
+      "fillPolicy": "never",
+      "note": "expedited screening amount; field name not attributable to a specific question"
+    },
+    {
+      "id": "undefined_4",
+      "target": {
+        "type": "text",
+        "name": "undefined_4"
+      },
+      "fillPolicy": "never",
+      "note": "expedited screening amount; field name not attributable to a specific question"
+    },
+    {
+      "id": "undefined_5",
+      "target": {
+        "type": "text",
+        "name": "undefined_5"
+      },
+      "fillPolicy": "never",
+      "note": "expedited screening amount; field name not attributable to a specific question"
+    },
+    {
+      "id": "undefined_6",
+      "target": {
+        "type": "text",
+        "name": "undefined_6"
+      },
+      "fillPolicy": "never",
+      "note": "expedited screening amount; field name not attributable to a specific question"
+    },
+    {
+      "id": "undefined_7",
+      "target": {
+        "type": "text",
+        "name": "undefined_7"
+      },
+      "fillPolicy": "never",
+      "note": "expedited screening amount; field name not attributable to a specific question"
+    },
+    {
+      "id": "undefined_8",
+      "target": {
+        "type": "text",
+        "name": "undefined_8"
+      },
+      "fillPolicy": "never",
+      "note": "expedited screening amount; field name not attributable to a specific question"
+    },
+    {
+      "id": "undefined_9",
+      "target": {
+        "type": "text",
+        "name": "undefined_9"
+      },
+      "fillPolicy": "never",
+      "note": "expedited screening amount; field name not attributable to a specific question"
+    },
+    {
+      "id": "what_benefits",
+      "target": {
+        "type": "text",
+        "name": "what benefits"
+      },
+      "fillPolicy": "never",
+      "note": "prior benefits type; free-text"
+    },
+    {
+      "id": "who_buys_food_seperately",
+      "target": {
+        "type": "text",
+        "name": "who buys food seperately"
+      },
+      "fillPolicy": "never",
+      "note": "separate food purchase; no vocabulary equivalent"
+    },
+    {
+      "id": "500_after_september_22_1996",
+      "target": {
+        "type": "text",
+        "name": "500 after September 22 1996"
+      },
+      "fillPolicy": "never",
+      "note": "page 5 screening/representative field; no vocabulary equivalent or cannot attribute to a specific question"
+    },
+    {
+      "id": "addiction_or_alcohol_treatment_program",
+      "target": {
+        "type": "text",
+        "name": "Addiction or Alcohol Treatment Program"
+      },
+      "fillPolicy": "never",
+      "note": "page 5 screening/representative field; no vocabulary equivalent or cannot attribute to a specific question"
+    },
+    {
+      "id": "date_entered",
+      "target": {
+        "type": "text",
+        "name": "Date entered"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "if_no_what_language_do_you_speak",
+      "target": {
+        "type": "radio",
+        "name": "If NO what language do you speak"
+      },
+      "fillPolicy": "never",
+      "note": "page 5 screening/representative field; no vocabulary equivalent or cannot attribute to a specific question"
+    },
+    {
+      "id": "if_yes_what_do_you_need",
+      "target": {
+        "type": "radio",
+        "name": "If YES what do you need"
+      },
+      "fillPolicy": "never",
+      "note": "page 5 screening/representative field; no vocabulary equivalent or cannot attribute to a specific question"
+    },
+    {
+      "id": "if_yes_who_2",
+      "target": {
+        "type": "text",
+        "name": "If YES who_2"
+      },
+      "fillPolicy": "never",
+      "note": "page 5 screening/representative field; no vocabulary equivalent or cannot attribute to a specific question"
+    },
+    {
+      "id": "if_no_please_explain",
+      "target": {
+        "type": "text",
+        "name": "If no, please explain"
+      },
+      "fillPolicy": "never",
+      "note": "page 5 screening/representative field; no vocabulary equivalent or cannot attribute to a specific question"
+    },
+    {
+      "id": "mmyyyy",
+      "target": {
+        "type": "radio",
+        "name": "MMYYYY"
+      },
+      "fillPolicy": "never",
+      "note": "page 5 screening/representative field; no vocabulary equivalent or cannot attribute to a specific question"
+    },
+    {
+      "id": "most_services_are_free_to_you",
+      "target": {
+        "type": "text",
+        "name": "Most services are free to you"
+      },
+      "fillPolicy": "never",
+      "note": "page 5 screening/representative field; no vocabulary equivalent or cannot attribute to a specific question"
+    },
+    {
+      "id": "september_22_1996",
+      "target": {
+        "type": "text",
+        "name": "September 22 1996"
+      },
+      "fillPolicy": "never",
+      "note": "page 5 screening/representative field; no vocabulary equivalent or cannot attribute to a specific question"
+    },
+    {
+      "id": "telephone",
+      "target": {
+        "type": "text",
+        "name": "Telephone #"
+      },
+      "fillPolicy": "never",
+      "note": "page 5 screening/representative field; no vocabulary equivalent or cannot attribute to a specific question"
+    },
+    {
+      "id": "what_tribe",
+      "target": {
+        "type": "text",
+        "name": "What tribe"
+      },
+      "fillPolicy": "never",
+      "note": "page 5 screening/representative field; no vocabulary equivalent or cannot attribute to a specific question"
+    },
+    {
+      "id": "yes_no",
+      "target": {
+        "type": "text",
+        "name": "YES NO"
+      },
+      "fillPolicy": "never",
+      "note": "page 5 screening/representative field; no vocabulary equivalent or cannot attribute to a specific question"
+    },
+    {
+      "id": "yes_no_2",
+      "target": {
+        "type": "text",
+        "name": "YES NO_2"
+      },
+      "fillPolicy": "never",
+      "note": "page 5 screening/representative field; no vocabulary equivalent or cannot attribute to a specific question"
+    },
+    {
+      "id": "address",
+      "target": {
+        "type": "text",
+        "name": "address"
+      },
+      "fillPolicy": "never",
+      "note": "page 5 screening/representative field; no vocabulary equivalent or cannot attribute to a specific question"
+    },
+    {
+      "id": "ammunition_or_explosives_after_september_22_1996",
+      "target": {
+        "type": "text",
+        "name": "ammunition or explosives after September 22 1996"
+      },
+      "fillPolicy": "never",
+      "note": "page 5 screening/representative field; no vocabulary equivalent or cannot attribute to a specific question"
+    },
+    {
+      "id": "condition_of_parole_or_probation",
+      "target": {
+        "type": "text",
+        "name": "condition of parole or probation"
+      },
+      "fillPolicy": "never",
+      "note": "page 5 screening/representative field; no vocabulary equivalent or cannot attribute to a specific question"
+    },
+    {
+      "id": "date_completed",
+      "target": {
+        "type": "text",
+        "name": "date completed"
+      },
+      "fillPolicy": "never",
+      "note": "page 5 screening/representative field; no vocabulary equivalent or cannot attribute to a specific question"
+    },
+    {
+      "id": "date_entered_2",
+      "target": {
+        "type": "text",
+        "name": "date entered"
+      },
+      "fillPolicy": "never",
+      "note": "page 5 screening/representative field; no vocabulary equivalent or cannot attribute to a specific question"
+    },
+    {
+      "id": "date_of_birth_4",
+      "target": {
+        "type": "text",
+        "name": "date of birth"
+      },
+      "fillPolicy": "never",
+      "note": "page 5 screening/representative field; no vocabulary equivalent or cannot attribute to a specific question"
+    },
+    {
+      "id": "facility_address",
+      "target": {
+        "type": "text",
+        "name": "facility address"
+      },
+      "fillPolicy": "never",
+      "note": "page 5 screening/representative field; no vocabulary equivalent or cannot attribute to a specific question"
+    },
+    {
+      "id": "if_yes_who_3",
+      "target": {
+        "type": "text",
+        "name": "if yes who"
+      },
+      "fillPolicy": "never",
+      "note": "page 5 screening/representative field; no vocabulary equivalent or cannot attribute to a specific question"
+    },
+    {
+      "id": "most_recent_date_you_started_living_in_nv",
+      "target": {
+        "type": "text",
+        "name": "most recent date you started living in NV"
+      },
+      "fillPolicy": "never",
+      "note": "page 5 screening/representative field; no vocabulary equivalent or cannot attribute to a specific question"
+    },
+    {
+      "id": "relationship",
+      "target": {
+        "type": "text",
+        "name": "relationship"
+      },
+      "fillPolicy": "never",
+      "note": "page 5 screening/representative field; no vocabulary equivalent or cannot attribute to a specific question"
+    },
+    {
+      "id": "undefined_13",
+      "target": {
+        "type": "radio",
+        "name": "undefined_13"
+      },
+      "fillPolicy": "never",
+      "note": "page 5 yes/no radio; scrambled field name, cannot attribute"
+    },
+    {
+      "id": "undefined_14",
+      "target": {
+        "type": "radio",
+        "name": "undefined_14"
+      },
+      "fillPolicy": "never",
+      "note": "page 5 yes/no radio; scrambled field name, cannot attribute"
+    },
+    {
+      "id": "undefined_16",
+      "target": {
+        "type": "radio",
+        "name": "undefined_16"
+      },
+      "fillPolicy": "never",
+      "note": "page 5 yes/no radio; scrambled field name, cannot attribute"
+    },
+    {
+      "id": "undefined_17",
+      "target": {
+        "type": "radio",
+        "name": "undefined_17"
+      },
+      "fillPolicy": "never",
+      "note": "page 5 yes/no radio; scrambled field name, cannot attribute"
+    },
+    {
+      "id": "undefined_18",
+      "target": {
+        "type": "checkbox",
+        "name": "undefined_18"
+      },
+      "fillPolicy": "never",
+      "note": "page 5 yes/no radio; scrambled field name, cannot attribute"
+    },
+    {
+      "id": "undefined_19",
+      "target": {
+        "type": "checkbox",
+        "name": "undefined_19"
+      },
+      "fillPolicy": "never",
+      "note": "page 5 yes/no radio; scrambled field name, cannot attribute"
+    },
+    {
+      "id": "undefined_20",
+      "target": {
+        "type": "radio",
+        "name": "undefined_20"
+      },
+      "fillPolicy": "never",
+      "note": "page 5 yes/no radio; scrambled field name, cannot attribute"
+    },
+    {
+      "id": "undefined_21",
+      "target": {
+        "type": "checkbox",
+        "name": "undefined_21"
+      },
+      "fillPolicy": "never",
+      "note": "page 5 yes/no radio; scrambled field name, cannot attribute"
+    },
+    {
+      "id": "undefined_22",
+      "target": {
+        "type": "checkbox",
+        "name": "undefined_22"
+      },
+      "fillPolicy": "never",
+      "note": "page 5 yes/no radio; scrambled field name, cannot attribute"
+    },
+    {
+      "id": "undefined_23",
+      "target": {
+        "type": "radio",
+        "name": "undefined_23"
+      },
+      "fillPolicy": "never",
+      "note": "page 5 yes/no radio; scrambled field name, cannot attribute"
+    },
+    {
+      "id": "undefined_24",
+      "target": {
+        "type": "radio",
+        "name": "undefined_24"
+      },
+      "fillPolicy": "never",
+      "note": "page 5 yes/no radio; scrambled field name, cannot attribute"
+    },
+    {
+      "id": "undefined_25",
+      "target": {
+        "type": "radio",
+        "name": "undefined_25"
+      },
+      "fillPolicy": "never",
+      "note": "page 5 yes/no radio; scrambled field name, cannot attribute"
+    },
+    {
+      "id": "undefined_26",
+      "target": {
+        "type": "radio",
+        "name": "undefined_26"
+      },
+      "fillPolicy": "never",
+      "note": "page 5 yes/no radio; scrambled field name, cannot attribute"
+    },
+    {
+      "id": "undefined_27",
+      "target": {
+        "type": "radio",
+        "name": "undefined_27"
+      },
+      "fillPolicy": "never",
+      "note": "page 5 yes/no radio; scrambled field name, cannot attribute"
+    },
+    {
+      "id": "what_state",
+      "target": {
+        "type": "text",
+        "name": "what state"
+      },
+      "fillPolicy": "never",
+      "note": "page 5 screening/representative field; no vocabulary equivalent or cannot attribute to a specific question"
+    },
+    {
+      "id": "where_2",
+      "target": {
+        "type": "text",
+        "name": "where"
+      },
+      "fillPolicy": "never",
+      "note": "page 5 screening/representative field; no vocabulary equivalent or cannot attribute to a specific question"
+    },
+    {
+      "id": "who_and_age",
+      "target": {
+        "type": "text",
+        "name": "who and age"
+      },
+      "fillPolicy": "never",
+      "note": "page 5 screening/representative field; no vocabulary equivalent or cannot attribute to a specific question"
+    },
+    {
+      "id": "why",
+      "target": {
+        "type": "text",
+        "name": "why"
+      },
+      "fillPolicy": "never",
+      "note": "page 5 screening/representative field; no vocabulary equivalent or cannot attribute to a specific question"
+    },
+    {
+      "id": "alie",
+      "target": {
+        "type": "radio",
+        "name": "ALIE"
+      },
+      "fillPolicy": "never",
+      "note": "employment field shared across blocks, past-job field, or school/disability/non-citizen detail with no vocabulary equivalent"
+    },
+    {
+      "id": "applied_workers_compensation",
+      "target": {
+        "type": "checkbox",
+        "name": "Applied Workers Compensation"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "applied_workers_compensation_2",
+      "target": {
+        "type": "checkbox",
+        "name": "Applied Workers Compensation_2"
+      },
+      "fillPolicy": "never",
+      "note": "employment field shared across blocks, past-job field, or school/disability/non-citizen detail with no vocabulary equivalent"
+    },
+    {
+      "id": "employers_address",
+      "target": {
+        "type": "text",
+        "name": "Employers address"
+      },
+      "fillPolicy": "never",
+      "note": "employment field shared across blocks, past-job field, or school/disability/non-citizen detail with no vocabulary equivalent"
+    },
+    {
+      "id": "employers_address_2",
+      "target": {
+        "type": "text",
+        "name": "Employers address_2"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "employers_address_3",
+      "target": {
+        "type": "text",
+        "name": "Employers address_3"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "employers_name",
+      "target": {
+        "type": "text",
+        "name": "Employers name"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].employer_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 0
+      },
+      "strength": "preferred",
+      "note": "current job 1 employer"
+    },
+    {
+      "id": "employers_name_2",
+      "target": {
+        "type": "text",
+        "name": "Employers name_2"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].employer_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 1
+      },
+      "strength": "preferred",
+      "note": "current job 2 employer"
+    },
+    {
+      "id": "employers_name_3",
+      "target": {
+        "type": "text",
+        "name": "Employers name_3"
+      },
+      "fillPolicy": "never",
+      "note": "employment field shared across blocks, past-job field, or school/disability/non-citizen detail with no vocabulary equivalent"
+    },
+    {
+      "id": "employers_name_4",
+      "target": {
+        "type": "text",
+        "name": "Employers name_4"
+      },
+      "fillPolicy": "never",
+      "note": "employment field shared across blocks, past-job field, or school/disability/non-citizen detail with no vocabulary equivalent"
+    },
+    {
+      "id": "fired",
+      "target": {
+        "type": "checkbox",
+        "name": "Fired"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "fired_2",
+      "target": {
+        "type": "checkbox",
+        "name": "Fired_2"
+      },
+      "fillPolicy": "never",
+      "note": "employment field shared across blocks, past-job field, or school/disability/non-citizen detail with no vocabulary equivalent"
+    },
+    {
+      "id": "hourly_wage",
+      "target": {
+        "type": "text",
+        "name": "Hourly wage"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].pay_rate"
+      },
+      "transforms": [
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 0
+      },
+      "strength": "preferred",
+      "note": "current job 1 hourly wage"
+    },
+    {
+      "id": "hourly_wage_2",
+      "target": {
+        "type": "text",
+        "name": "Hourly wage_2"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].pay_rate"
+      },
+      "transforms": [
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 1
+      },
+      "strength": "preferred",
+      "note": "current job 2 hourly wage"
+    },
+    {
+      "id": "hourly_wage_3",
+      "target": {
+        "type": "text",
+        "name": "Hourly wage_3"
+      },
+      "fillPolicy": "never",
+      "note": "employment field shared across blocks, past-job field, or school/disability/non-citizen detail with no vocabulary equivalent"
+    },
+    {
+      "id": "hourly_wage_4",
+      "target": {
+        "type": "text",
+        "name": "Hourly wage_4"
+      },
+      "fillPolicy": "never",
+      "note": "employment field shared across blocks, past-job field, or school/disability/non-citizen detail with no vocabulary equivalent"
+    },
+    {
+      "id": "hours_per_week",
+      "target": {
+        "type": "text",
+        "name": "Hours per week"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "hours_per_week_2",
+      "target": {
+        "type": "text",
+        "name": "Hours per week_2"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "hours_worked_per_week",
+      "target": {
+        "type": "radio",
+        "name": "Hours worked per week"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "hours_worked_per_week_2",
+      "target": {
+        "type": "radio",
+        "name": "Hours worked per week_2"
+      },
+      "fillPolicy": "never",
+      "note": "employment field shared across blocks, past-job field, or school/disability/non-citizen detail with no vocabulary equivalent"
+    },
+    {
+      "id": "hours_worked_per_week_3",
+      "target": {
+        "type": "checkbox",
+        "name": "Hours worked per week_3"
+      },
+      "fillPolicy": "never",
+      "note": "employment field shared across blocks, past-job field, or school/disability/non-citizen detail with no vocabulary equivalent"
+    },
+    {
+      "id": "how_often_are_they_paid",
+      "target": {
+        "type": "text",
+        "name": "How often are they paid"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].pay_frequency"
+      },
+      "valueMap": {
+        "hourly": "Hourly",
+        "daily": "Daily",
+        "weekly": "Weekly",
+        "biweekly": "Bi-Weekly",
+        "semimonthly": "Semi-Monthly",
+        "monthly": "Monthly",
+        "quarterly": "Quarterly",
+        "annually": "Annually",
+        "one_time": "One-Time"
+      },
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 0
+      },
+      "strength": "preferred",
+      "note": "current job 1 pay frequency"
+    },
+    {
+      "id": "how_often_are_they_paid_2",
+      "target": {
+        "type": "text",
+        "name": "How often are they paid_2"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].pay_frequency"
+      },
+      "valueMap": {
+        "hourly": "Hourly",
+        "daily": "Daily",
+        "weekly": "Weekly",
+        "biweekly": "Bi-Weekly",
+        "semimonthly": "Semi-Monthly",
+        "monthly": "Monthly",
+        "quarterly": "Quarterly",
+        "annually": "Annually",
+        "one_time": "One-Time"
+      },
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 1
+      },
+      "strength": "preferred",
+      "note": "current job 2 pay frequency"
+    },
+    {
+      "id": "how_often_were_they_paid",
+      "target": {
+        "type": "text",
+        "name": "How often were they paid"
+      },
+      "fillPolicy": "never",
+      "note": "employment field shared across blocks, past-job field, or school/disability/non-citizen detail with no vocabulary equivalent"
+    },
+    {
+      "id": "how_often_where_they_paid",
+      "target": {
+        "type": "text",
+        "name": "How often where they paid"
+      },
+      "fillPolicy": "never",
+      "note": "employment field shared across blocks, past-job field, or school/disability/non-citizen detail with no vocabulary equivalent"
+    },
+    {
+      "id": "if_yes_who_is_employed",
+      "target": {
+        "type": "text",
+        "name": "If YES who is employed"
+      },
+      "fillPolicy": "never",
+      "note": "employment field shared across blocks, past-job field, or school/disability/non-citizen detail with no vocabulary equivalent"
+    },
+    {
+      "id": "if_yes_who_3_2",
+      "target": {
+        "type": "text",
+        "name": "If YES who_3"
+      },
+      "fillPolicy": "never",
+      "note": "employment field shared across blocks, past-job field, or school/disability/non-citizen detail with no vocabulary equivalent"
+    },
+    {
+      "id": "if_yes_who_4",
+      "target": {
+        "type": "text",
+        "name": "If YES who_4"
+      },
+      "fillPolicy": "never",
+      "note": "employment field shared across blocks, past-job field, or school/disability/non-citizen detail with no vocabulary equivalent"
+    },
+    {
+      "id": "if_yes_who_5",
+      "target": {
+        "type": "text",
+        "name": "If YES who_5"
+      },
+      "fillPolicy": "never",
+      "note": "employment field shared across blocks, past-job field, or school/disability/non-citizen detail with no vocabulary equivalent"
+    },
+    {
+      "id": "if_yes_who_6",
+      "target": {
+        "type": "text",
+        "name": "If YES who_6"
+      },
+      "fillPolicy": "never",
+      "note": "employment field shared across blocks, past-job field, or school/disability/non-citizen detail with no vocabulary equivalent"
+    },
+    {
+      "id": "if_yes_who_7",
+      "target": {
+        "type": "text",
+        "name": "If YES who_7"
+      },
+      "fillPolicy": "never",
+      "note": "employment field shared across blocks, past-job field, or school/disability/non-citizen detail with no vocabulary equivalent"
+    },
+    {
+      "id": "if_selfemployed_please_list_any_business_related_expenses_1",
+      "target": {
+        "type": "text",
+        "name": "If selfemployed please list any business related expenses 1"
+      },
+      "fillPolicy": "never",
+      "note": "employment field shared across blocks, past-job field, or school/disability/non-citizen detail with no vocabulary equivalent"
+    },
+    {
+      "id": "if_selfemployed_please_list_any_business_related_expenses_1_",
+      "target": {
+        "type": "text",
+        "name": "If selfemployed please list any business related expenses 1_2"
+      },
+      "fillPolicy": "never",
+      "note": "employment field shared across blocks, past-job field, or school/disability/non-citizen detail with no vocabulary equivalent"
+    },
+    {
+      "id": "if_selfemployed_please_list_any_business_related_expenses_2",
+      "target": {
+        "type": "text",
+        "name": "If selfemployed please list any business related expenses 2"
+      },
+      "fillPolicy": "never",
+      "note": "employment field shared across blocks, past-job field, or school/disability/non-citizen detail with no vocabulary equivalent"
+    },
+    {
+      "id": "if_selfemployed_please_list_any_business_related_expenses_2_",
+      "target": {
+        "type": "text",
+        "name": "If selfemployed please list any business related expenses 2_2"
+      },
+      "fillPolicy": "never",
+      "note": "employment field shared across blocks, past-job field, or school/disability/non-citizen detail with no vocabulary equivalent"
+    },
+    {
+      "id": "leave_of_absence",
+      "target": {
+        "type": "checkbox",
+        "name": "Leave of Absence"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "leave_of_absence_2",
+      "target": {
+        "type": "checkbox",
+        "name": "Leave of Absence_2"
+      },
+      "fillPolicy": "never",
+      "note": "employment field shared across blocks, past-job field, or school/disability/non-citizen detail with no vocabulary equivalent"
+    },
+    {
+      "id": "mm_dd_yyyy",
+      "target": {
+        "type": "text",
+        "name": "MM/DD/YYYY"
+      },
+      "fillPolicy": "never",
+      "note": "employment field shared across blocks, past-job field, or school/disability/non-citizen detail with no vocabulary equivalent"
+    },
+    {
+      "id": "mmddyyyy",
+      "target": {
+        "type": "radio",
+        "name": "MMDDYYYY"
+      },
+      "fillPolicy": "never",
+      "note": "employment field shared across blocks, past-job field, or school/disability/non-citizen detail with no vocabulary equivalent"
+    },
+    {
+      "id": "mmddyyyy_2",
+      "target": {
+        "type": "radio",
+        "name": "MMDDYYYY_2"
+      },
+      "fillPolicy": "never",
+      "note": "employment field shared across blocks, past-job field, or school/disability/non-citizen detail with no vocabulary equivalent"
+    },
+    {
+      "id": "other_2",
+      "target": {
+        "type": "checkbox",
+        "name": "Other_2"
+      },
+      "fillPolicy": "never",
+      "note": "employment field shared across blocks, past-job field, or school/disability/non-citizen detail with no vocabulary equivalent"
+    },
+    {
+      "id": "quit",
+      "target": {
+        "type": "checkbox",
+        "name": "Quit"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "quit_2",
+      "target": {
+        "type": "checkbox",
+        "name": "Quit_2"
+      },
+      "fillPolicy": "never",
+      "note": "employment field shared across blocks, past-job field, or school/disability/non-citizen detail with no vocabulary equivalent"
+    },
+    {
+      "id": "row1_3",
+      "target": {
+        "type": "text",
+        "name": "Row1_3"
+      },
+      "fillPolicy": "never",
+      "note": "employment field shared across blocks, past-job field, or school/disability/non-citizen detail with no vocabulary equivalent"
+    },
+    {
+      "id": "school_name",
+      "target": {
+        "type": "text",
+        "name": "School name"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "school_name_2",
+      "target": {
+        "type": "text",
+        "name": "School name_2"
+      },
+      "fillPolicy": "never",
+      "note": "employment field shared across blocks, past-job field, or school/disability/non-citizen detail with no vocabulary equivalent"
+    },
+    {
+      "id": "who",
+      "target": {
+        "type": "text",
+        "name": "Who"
+      },
+      "fillPolicy": "never",
+      "note": "employment field shared across blocks, past-job field, or school/disability/non-citizen detail with no vocabulary equivalent"
+    },
+    {
+      "id": "who_was_employed",
+      "target": {
+        "type": "text",
+        "name": "Who was employed"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "who_was_employed_2",
+      "target": {
+        "type": "text",
+        "name": "Who was employed_2"
+      },
+      "fillPolicy": "never",
+      "note": "employment field shared across blocks, past-job field, or school/disability/non-citizen detail with no vocabulary equivalent"
+    },
+    {
+      "id": "yes_norow1",
+      "target": {
+        "type": "text",
+        "name": "YES NORow1"
+      },
+      "fillPolicy": "never",
+      "note": "employment field shared across blocks, past-job field, or school/disability/non-citizen detail with no vocabulary equivalent"
+    },
+    {
+      "id": "alien_registration",
+      "target": {
+        "type": "text",
+        "name": "alien registration #"
+      },
+      "fillPolicy": "never",
+      "note": "employment field shared across blocks, past-job field, or school/disability/non-citizen detail with no vocabulary equivalent"
+    },
+    {
+      "id": "employer_telephone",
+      "target": {
+        "type": "text",
+        "name": "employer telephone"
+      },
+      "fillPolicy": "never",
+      "note": "employment field shared across blocks, past-job field, or school/disability/non-citizen detail with no vocabulary equivalent"
+    },
+    {
+      "id": "end_date",
+      "target": {
+        "type": "text",
+        "name": "end date"
+      },
+      "fillPolicy": "never",
+      "note": "employment field shared across blocks, past-job field, or school/disability/non-citizen detail with no vocabulary equivalent"
+    },
+    {
+      "id": "expected_due_date",
+      "target": {
+        "type": "text",
+        "name": "expected due date"
+      },
+      "fillPolicy": "never",
+      "note": "employment field shared across blocks, past-job field, or school/disability/non-citizen detail with no vocabulary equivalent"
+    },
+    {
+      "id": "fill_39",
+      "target": {
+        "type": "text",
+        "name": "fill_39"
+      },
+      "fillPolicy": "never",
+      "note": "employment field shared across blocks, past-job field, or school/disability/non-citizen detail with no vocabulary equivalent"
+    },
+    {
+      "id": "hours_worked_per_week_4",
+      "target": {
+        "type": "text",
+        "name": "hours worked per week"
+      },
+      "fillPolicy": "never",
+      "note": "employment field shared across blocks, past-job field, or school/disability/non-citizen detail with no vocabulary equivalent"
+    },
+    {
+      "id": "school_name_3",
+      "target": {
+        "type": "text",
+        "name": "school name"
+      },
+      "fillPolicy": "never",
+      "note": "employment field shared across blocks, past-job field, or school/disability/non-citizen detail with no vocabulary equivalent"
+    },
+    {
+      "id": "start_date",
+      "target": {
+        "type": "text",
+        "name": "start date"
+      },
+      "fillPolicy": "never",
+      "note": "employment field shared across blocks, past-job field, or school/disability/non-citizen detail with no vocabulary equivalent"
+    },
+    {
+      "id": "tips_paid_per_month",
+      "target": {
+        "type": "text",
+        "name": "tips paid per month"
+      },
+      "fillPolicy": "never",
+      "note": "employment field shared across blocks, past-job field, or school/disability/non-citizen detail with no vocabulary equivalent"
+    },
+    {
+      "id": "undefined_28",
+      "target": {
+        "type": "radio",
+        "name": "undefined_28"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "undefined_29",
+      "target": {
+        "type": "radio",
+        "name": "undefined_29"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "undefined_30",
+      "target": {
+        "type": "text",
+        "name": "undefined_30"
+      },
+      "fillPolicy": "never",
+      "note": "employment field shared across blocks, past-job field, or school/disability/non-citizen detail with no vocabulary equivalent"
+    },
+    {
+      "id": "what_is_the_disability",
+      "target": {
+        "type": "text",
+        "name": "what is the disability"
+      },
+      "fillPolicy": "never",
+      "note": "employment field shared across blocks, past-job field, or school/disability/non-citizen detail with no vocabulary equivalent"
+    },
+    {
+      "id": "when_did_this_condition_begin",
+      "target": {
+        "type": "text",
+        "name": "when did this condition begin"
+      },
+      "fillPolicy": "never",
+      "note": "employment field shared across blocks, past-job field, or school/disability/non-citizen detail with no vocabulary equivalent"
+    },
+    {
+      "id": "if_yes_who_8",
+      "target": {
+        "type": "text",
+        "name": "If YES who_8"
+      },
+      "fillPolicy": "never",
+      "note": "temporary work / strike / exchange detail; no vocabulary equivalent"
+    },
+    {
+      "id": "other_please_list",
+      "target": {
+        "type": "text",
+        "name": "Other please list"
+      },
+      "fillPolicy": "never",
+      "note": "temporary work / strike / exchange detail; no vocabulary equivalent"
+    },
+    {
+      "id": "person_appliedreceivingalimony",
+      "target": {
+        "type": "text",
+        "name": "Person AppliedReceivingAlimony"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income person column; free-text name cannot be linked to a household member"
+    },
+    {
+      "id": "person_appliedreceivingboarderroomer_income",
+      "target": {
+        "type": "text",
+        "name": "Person AppliedReceivingBoarderRoomer Income"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income person column; free-text name cannot be linked to a household member"
+    },
+    {
+      "id": "person_appliedreceivingcontributionsgifts",
+      "target": {
+        "type": "text",
+        "name": "Person AppliedReceivingContributionsGifts"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income person column; free-text name cannot be linked to a household member"
+    },
+    {
+      "id": "person_appliedreceivingeducational_assistancestudent_loans",
+      "target": {
+        "type": "text",
+        "name": "Person AppliedReceivingEducational AssistanceStudent Loans"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income person column; free-text name cannot be linked to a household member"
+    },
+    {
+      "id": "person_appliedreceivingfoster_care",
+      "target": {
+        "type": "text",
+        "name": "Person AppliedReceivingFoster Care"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income person column; free-text name cannot be linked to a household member"
+    },
+    {
+      "id": "person_appliedreceivinggambling_winnings",
+      "target": {
+        "type": "text",
+        "name": "Person AppliedReceivingGambling Winnings"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income person column; free-text name cannot be linked to a household member"
+    },
+    {
+      "id": "person_appliedreceivinggeneral_assistance",
+      "target": {
+        "type": "text",
+        "name": "Person AppliedReceivingGeneral Assistance"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income person column; free-text name cannot be linked to a household member"
+    },
+    {
+      "id": "person_appliedreceivinginsurance_settlements",
+      "target": {
+        "type": "text",
+        "name": "Person AppliedReceivingInsurance Settlements"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income person column; free-text name cannot be linked to a household member"
+    },
+    {
+      "id": "person_appliedreceivinginterestdividends",
+      "target": {
+        "type": "text",
+        "name": "Person AppliedReceivingInterestDividends"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income person column; free-text name cannot be linked to a household member"
+    },
+    {
+      "id": "person_appliedreceivingloans",
+      "target": {
+        "type": "text",
+        "name": "Person AppliedReceivingLoans"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income person column; free-text name cannot be linked to a household member"
+    },
+    {
+      "id": "person_appliedreceivingmilitary_allotment",
+      "target": {
+        "type": "text",
+        "name": "Person AppliedReceivingMilitary Allotment"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income person column; free-text name cannot be linked to a household member"
+    },
+    {
+      "id": "person_appliedreceivingmining_claims",
+      "target": {
+        "type": "text",
+        "name": "Person AppliedReceivingMining Claims"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income person column; free-text name cannot be linked to a household member"
+    },
+    {
+      "id": "person_appliedreceivingother_please_list",
+      "target": {
+        "type": "text",
+        "name": "Person AppliedReceivingOther please list"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income person column; free-text name cannot be linked to a household member"
+    },
+    {
+      "id": "person_appliedreceivingpanhandling",
+      "target": {
+        "type": "text",
+        "name": "Person AppliedReceivingPanhandling"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income person column; free-text name cannot be linked to a household member"
+    },
+    {
+      "id": "person_appliedreceivingpensionsretirement",
+      "target": {
+        "type": "text",
+        "name": "Person AppliedReceivingPensionsRetirement"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income person column; free-text name cannot be linked to a household member"
+    },
+    {
+      "id": "person_appliedreceivingproperty_rentals",
+      "target": {
+        "type": "text",
+        "name": "Person AppliedReceivingProperty Rentals"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income person column; free-text name cannot be linked to a household member"
+    },
+    {
+      "id": "person_appliedreceivingrailroad_retirement",
+      "target": {
+        "type": "text",
+        "name": "Person AppliedReceivingRailroad Retirement"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income person column; free-text name cannot be linked to a household member"
+    },
+    {
+      "id": "person_appliedreceivingroyalties",
+      "target": {
+        "type": "text",
+        "name": "Person AppliedReceivingRoyalties"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income person column; free-text name cannot be linked to a household member"
+    },
+    {
+      "id": "person_appliedreceivingsocial_security_benefits_rsdi",
+      "target": {
+        "type": "text",
+        "name": "Person AppliedReceivingSocial Security Benefits RSDI"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income person column; free-text name cannot be linked to a household member"
+    },
+    {
+      "id": "person_appliedreceivingstrike_benefits",
+      "target": {
+        "type": "text",
+        "name": "Person AppliedReceivingStrike Benefits"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income person column; free-text name cannot be linked to a household member"
+    },
+    {
+      "id": "person_appliedreceivingsubsidized_housing",
+      "target": {
+        "type": "text",
+        "name": "Person AppliedReceivingSubsidized Housing"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income person column; free-text name cannot be linked to a household member"
+    },
+    {
+      "id": "person_appliedreceivingsupplemental_security_income_ssi",
+      "target": {
+        "type": "text",
+        "name": "Person AppliedReceivingSupplemental Security Income SSI"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income person column; free-text name cannot be linked to a household member"
+    },
+    {
+      "id": "person_appliedreceivingsupported_living_arrangement_sla",
+      "target": {
+        "type": "text",
+        "name": "Person AppliedReceivingSupported Living Arrangement SLA"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income person column; free-text name cannot be linked to a household member"
+    },
+    {
+      "id": "person_appliedreceivingtanf_assistance",
+      "target": {
+        "type": "text",
+        "name": "Person AppliedReceivingTANF Assistance"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income person column; free-text name cannot be linked to a household member"
+    },
+    {
+      "id": "person_appliedreceivingtrust_income",
+      "target": {
+        "type": "text",
+        "name": "Person AppliedReceivingTrust Income"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income person column; free-text name cannot be linked to a household member"
+    },
+    {
+      "id": "person_appliedreceivingunemployment_insurance",
+      "target": {
+        "type": "text",
+        "name": "Person AppliedReceivingUnemployment Insurance"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income person column; free-text name cannot be linked to a household member"
+    },
+    {
+      "id": "person_appliedreceivingutility_allowancerebate_check",
+      "target": {
+        "type": "text",
+        "name": "Person AppliedReceivingUtility AllowanceRebate Check"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income person column; free-text name cannot be linked to a household member"
+    },
+    {
+      "id": "person_appliedreceivingveterans_benefits",
+      "target": {
+        "type": "text",
+        "name": "Person AppliedReceivingVeterans Benefits"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income person column; free-text name cannot be linked to a household member"
+    },
+    {
+      "id": "what_do_they_receive_for_their_work",
+      "target": {
+        "type": "text",
+        "name": "What do they receive for their work"
+      },
+      "fillPolicy": "never",
+      "note": "temporary work / strike / exchange detail; no vocabulary equivalent"
+    },
+    {
+      "id": "yes_no_3",
+      "target": {
+        "type": "text",
+        "name": "YES NO_3"
+      },
+      "fillPolicy": "never",
+      "note": "temporary work / strike / exchange detail; no vocabulary equivalent"
+    },
+    {
+      "id": "fill_66",
+      "target": {
+        "type": "text",
+        "name": "fill_66"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income grid amount/yes-box; cannot attribute to a member"
+    },
+    {
+      "id": "fill_67",
+      "target": {
+        "type": "text",
+        "name": "fill_67"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income grid amount/yes-box; cannot attribute to a member"
+    },
+    {
+      "id": "fill_68",
+      "target": {
+        "type": "text",
+        "name": "fill_68"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income grid amount/yes-box; cannot attribute to a member"
+    },
+    {
+      "id": "fill_69",
+      "target": {
+        "type": "text",
+        "name": "fill_69"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income grid amount/yes-box; cannot attribute to a member"
+    },
+    {
+      "id": "fill_70",
+      "target": {
+        "type": "text",
+        "name": "fill_70"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income grid amount/yes-box; cannot attribute to a member"
+    },
+    {
+      "id": "fill_71",
+      "target": {
+        "type": "text",
+        "name": "fill_71"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income grid amount/yes-box; cannot attribute to a member"
+    },
+    {
+      "id": "fill_72",
+      "target": {
+        "type": "text",
+        "name": "fill_72"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income grid amount/yes-box; cannot attribute to a member"
+    },
+    {
+      "id": "fill_73",
+      "target": {
+        "type": "text",
+        "name": "fill_73"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income grid amount/yes-box; cannot attribute to a member"
+    },
+    {
+      "id": "fill_74",
+      "target": {
+        "type": "text",
+        "name": "fill_74"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income grid amount/yes-box; cannot attribute to a member"
+    },
+    {
+      "id": "fill_75",
+      "target": {
+        "type": "text",
+        "name": "fill_75"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income grid amount/yes-box; cannot attribute to a member"
+    },
+    {
+      "id": "fill_76",
+      "target": {
+        "type": "text",
+        "name": "fill_76"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income grid amount/yes-box; cannot attribute to a member"
+    },
+    {
+      "id": "fill_77",
+      "target": {
+        "type": "text",
+        "name": "fill_77"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income grid amount/yes-box; cannot attribute to a member"
+    },
+    {
+      "id": "fill_78",
+      "target": {
+        "type": "text",
+        "name": "fill_78"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income grid amount/yes-box; cannot attribute to a member"
+    },
+    {
+      "id": "fill_79",
+      "target": {
+        "type": "text",
+        "name": "fill_79"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income grid amount/yes-box; cannot attribute to a member"
+    },
+    {
+      "id": "fill_80",
+      "target": {
+        "type": "text",
+        "name": "fill_80"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income grid amount/yes-box; cannot attribute to a member"
+    },
+    {
+      "id": "fill_81",
+      "target": {
+        "type": "text",
+        "name": "fill_81"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income grid amount/yes-box; cannot attribute to a member"
+    },
+    {
+      "id": "fill_82",
+      "target": {
+        "type": "text",
+        "name": "fill_82"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income grid amount/yes-box; cannot attribute to a member"
+    },
+    {
+      "id": "fill_83",
+      "target": {
+        "type": "text",
+        "name": "fill_83"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income grid amount/yes-box; cannot attribute to a member"
+    },
+    {
+      "id": "fill_84",
+      "target": {
+        "type": "text",
+        "name": "fill_84"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income grid amount/yes-box; cannot attribute to a member"
+    },
+    {
+      "id": "fill_85",
+      "target": {
+        "type": "text",
+        "name": "fill_85"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income grid amount/yes-box; cannot attribute to a member"
+    },
+    {
+      "id": "fill_86",
+      "target": {
+        "type": "text",
+        "name": "fill_86"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income grid amount/yes-box; cannot attribute to a member"
+    },
+    {
+      "id": "fill_87",
+      "target": {
+        "type": "text",
+        "name": "fill_87"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income grid amount/yes-box; cannot attribute to a member"
+    },
+    {
+      "id": "fill_88",
+      "target": {
+        "type": "text",
+        "name": "fill_88"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income grid amount/yes-box; cannot attribute to a member"
+    },
+    {
+      "id": "fill_89",
+      "target": {
+        "type": "text",
+        "name": "fill_89"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income grid amount/yes-box; cannot attribute to a member"
+    },
+    {
+      "id": "fill_90",
+      "target": {
+        "type": "text",
+        "name": "fill_90"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income grid amount/yes-box; cannot attribute to a member"
+    },
+    {
+      "id": "fill_91",
+      "target": {
+        "type": "text",
+        "name": "fill_91"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income grid amount/yes-box; cannot attribute to a member"
+    },
+    {
+      "id": "fill_92",
+      "target": {
+        "type": "text",
+        "name": "fill_92"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income grid amount/yes-box; cannot attribute to a member"
+    },
+    {
+      "id": "fill_93",
+      "target": {
+        "type": "text",
+        "name": "fill_93"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income grid amount/yes-box; cannot attribute to a member"
+    },
+    {
+      "id": "fill_95",
+      "target": {
+        "type": "text",
+        "name": "fill_95"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income grid amount/yes-box; cannot attribute to a member"
+    },
+    {
+      "id": "fill_96",
+      "target": {
+        "type": "text",
+        "name": "fill_96"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income grid amount/yes-box; cannot attribute to a member"
+    },
+    {
+      "id": "undefined_31",
+      "target": {
+        "type": "checkbox",
+        "name": "undefined_31"
+      },
+      "fillPolicy": "never",
+      "note": "temporary work / strike / exchange detail; no vocabulary equivalent"
+    },
+    {
+      "id": "undefined_32",
+      "target": {
+        "type": "checkbox",
+        "name": "undefined_32"
+      },
+      "fillPolicy": "never",
+      "note": "temporary work / strike / exchange detail; no vocabulary equivalent"
+    },
+    {
+      "id": "undefined_33",
+      "target": {
+        "type": "radio",
+        "name": "undefined_33"
+      },
+      "fillPolicy": "never",
+      "note": "temporary work / strike / exchange detail; no vocabulary equivalent"
+    },
+    {
+      "id": "undefined_34",
+      "target": {
+        "type": "text",
+        "name": "undefined_34"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income grid amount/yes-box; cannot attribute to a member"
+    },
+    {
+      "id": "undefined_35",
+      "target": {
+        "type": "text",
+        "name": "undefined_35"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income grid amount/yes-box; cannot attribute to a member"
+    },
+    {
+      "id": "undefined_36",
+      "target": {
+        "type": "text",
+        "name": "undefined_36"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income grid amount/yes-box; cannot attribute to a member"
+    },
+    {
+      "id": "undefined_37",
+      "target": {
+        "type": "text",
+        "name": "undefined_37"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income grid amount/yes-box; cannot attribute to a member"
+    },
+    {
+      "id": "undefined_38",
+      "target": {
+        "type": "text",
+        "name": "undefined_38"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income grid amount/yes-box; cannot attribute to a member"
+    },
+    {
+      "id": "undefined_39",
+      "target": {
+        "type": "text",
+        "name": "undefined_39"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income grid amount/yes-box; cannot attribute to a member"
+    },
+    {
+      "id": "undefined_40",
+      "target": {
+        "type": "text",
+        "name": "undefined_40"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income grid amount/yes-box; cannot attribute to a member"
+    },
+    {
+      "id": "undefined_41",
+      "target": {
+        "type": "text",
+        "name": "undefined_41"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income grid amount/yes-box; cannot attribute to a member"
+    },
+    {
+      "id": "undefined_42",
+      "target": {
+        "type": "text",
+        "name": "undefined_42"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income grid amount/yes-box; cannot attribute to a member"
+    },
+    {
+      "id": "undefined_43",
+      "target": {
+        "type": "text",
+        "name": "undefined_43"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income grid amount/yes-box; cannot attribute to a member"
+    },
+    {
+      "id": "undefined_44",
+      "target": {
+        "type": "text",
+        "name": "undefined_44"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income grid amount/yes-box; cannot attribute to a member"
+    },
+    {
+      "id": "undefined_45",
+      "target": {
+        "type": "text",
+        "name": "undefined_45"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income grid amount/yes-box; cannot attribute to a member"
+    },
+    {
+      "id": "undefined_46",
+      "target": {
+        "type": "text",
+        "name": "undefined_46"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income grid amount/yes-box; cannot attribute to a member"
+    },
+    {
+      "id": "undefined_47",
+      "target": {
+        "type": "text",
+        "name": "undefined_47"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income grid amount/yes-box; cannot attribute to a member"
+    },
+    {
+      "id": "undefined_48",
+      "target": {
+        "type": "text",
+        "name": "undefined_48"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income grid amount/yes-box; cannot attribute to a member"
+    },
+    {
+      "id": "undefined_49",
+      "target": {
+        "type": "text",
+        "name": "undefined_49"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income grid amount/yes-box; cannot attribute to a member"
+    },
+    {
+      "id": "undefined_50",
+      "target": {
+        "type": "text",
+        "name": "undefined_50"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income grid amount/yes-box; cannot attribute to a member"
+    },
+    {
+      "id": "undefined_51",
+      "target": {
+        "type": "text",
+        "name": "undefined_51"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income grid amount/yes-box; cannot attribute to a member"
+    },
+    {
+      "id": "undefined_52",
+      "target": {
+        "type": "text",
+        "name": "undefined_52"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income grid amount/yes-box; cannot attribute to a member"
+    },
+    {
+      "id": "undefined_53",
+      "target": {
+        "type": "text",
+        "name": "undefined_53"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income grid amount/yes-box; cannot attribute to a member"
+    },
+    {
+      "id": "undefined_54",
+      "target": {
+        "type": "text",
+        "name": "undefined_54"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income grid amount/yes-box; cannot attribute to a member"
+    },
+    {
+      "id": "undefined_55",
+      "target": {
+        "type": "text",
+        "name": "undefined_55"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income grid amount/yes-box; cannot attribute to a member"
+    },
+    {
+      "id": "undefined_56",
+      "target": {
+        "type": "text",
+        "name": "undefined_56"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income grid amount/yes-box; cannot attribute to a member"
+    },
+    {
+      "id": "undefined_57",
+      "target": {
+        "type": "text",
+        "name": "undefined_57"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income grid amount/yes-box; cannot attribute to a member"
+    },
+    {
+      "id": "undefined_58",
+      "target": {
+        "type": "text",
+        "name": "undefined_58"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income grid amount/yes-box; cannot attribute to a member"
+    },
+    {
+      "id": "undefined_59",
+      "target": {
+        "type": "text",
+        "name": "undefined_59"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income grid amount/yes-box; cannot attribute to a member"
+    },
+    {
+      "id": "undefined_60",
+      "target": {
+        "type": "text",
+        "name": "undefined_60"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income grid amount/yes-box; cannot attribute to a member"
+    },
+    {
+      "id": "undefined_61",
+      "target": {
+        "type": "text",
+        "name": "undefined_61"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income grid amount/yes-box; cannot attribute to a member"
+    },
+    {
+      "id": "undefined_62",
+      "target": {
+        "type": "text",
+        "name": "undefined_62"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income grid amount/yes-box; cannot attribute to a member"
+    },
+    {
+      "id": "undefined_63",
+      "target": {
+        "type": "text",
+        "name": "undefined_63"
+      },
+      "fillPolicy": "never",
+      "note": "unearned-income grid amount/yes-box; cannot attribute to a member"
+    },
+    {
+      "id": "value_of_exchange",
+      "target": {
+        "type": "text",
+        "name": "value of exchange?"
+      },
+      "fillPolicy": "never",
+      "note": "temporary work / strike / exchange detail; no vocabulary equivalent"
+    },
+    {
+      "id": "when_did_this_begin",
+      "target": {
+        "type": "text",
+        "name": "when did this begin"
+      },
+      "fillPolicy": "never",
+      "note": "temporary work / strike / exchange detail; no vocabulary equivalent"
+    },
+    {
+      "id": "which_service_agency",
+      "target": {
+        "type": "text",
+        "name": "which service/agency"
+      },
+      "fillPolicy": "never",
+      "note": "temporary work / strike / exchange detail; no vocabulary equivalent"
+    },
+    {
+      "id": "account_number_please_list_the_last_4_numbers_only",
+      "target": {
+        "type": "text",
+        "name": "ACCOUNT NUMBER Please list the last 4 numbers only"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "account_number_please_list_the_last_4_numbers_onlyannuities",
+      "target": {
+        "type": "text",
+        "name": "ACCOUNT NUMBER Please list the last 4 numbers onlyAnnuities"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "account_number_please_list_the_last_4_numbers_only_2",
+      "target": {
+        "type": "text",
+        "name": "ACCOUNT NUMBER Please list the last 4 numbers only_2"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "account_number_please_list_the_last_4_numbers_only_3",
+      "target": {
+        "type": "text",
+        "name": "ACCOUNT NUMBER Please list the last 4 numbers only_3"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "account_number_please_list_the_last_4_numbers_only_4",
+      "target": {
+        "type": "text",
+        "name": "ACCOUNT NUMBER Please list the last 4 numbers only_4"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "account_number_please_list_the_last_4_numbers_only_5",
+      "target": {
+        "type": "text",
+        "name": "ACCOUNT NUMBER Please list the last 4 numbers only_5"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "account_number_please_list_the_last_4_numbers_only_6",
+      "target": {
+        "type": "text",
+        "name": "ACCOUNT NUMBER Please list the last 4 numbers only_6"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "account_number_please_list_the_last_4_numbers_only_7",
+      "target": {
+        "type": "text",
+        "name": "ACCOUNT NUMBER Please list the last 4 numbers only_7"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "account_number_please_list_the_last_4_numbers_only_8",
+      "target": {
+        "type": "text",
+        "name": "ACCOUNT NUMBER Please list the last 4 numbers only_8"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "account_number_please_list_the_last_4_numbers_only_9",
+      "target": {
+        "type": "text",
+        "name": "ACCOUNT NUMBER Please list the last 4 numbers only_9"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "name_of_bank_or_companyannuities",
+      "target": {
+        "type": "text",
+        "name": "NAME OF BANK OR COMPANYAnnuities"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "name_of_bank_or_companycertificates_of_deposit",
+      "target": {
+        "type": "text",
+        "name": "NAME OF BANK OR COMPANYCertificates of Deposit"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "name_of_bank_or_companyindividual_retirement_accounts_ira",
+      "target": {
+        "type": "text",
+        "name": "NAME OF BANK OR COMPANYIndividual Retirement Accounts IRA"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "name_of_bank_or_companykeogh_account_401k",
+      "target": {
+        "type": "text",
+        "name": "NAME OF BANK OR COMPANYKeogh Account 401K"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "name_of_bank_or_companystocks_or_bonds",
+      "target": {
+        "type": "text",
+        "name": "NAME OF BANK OR COMPANYStocks or Bonds"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "name_of_bankbusiness_account",
+      "target": {
+        "type": "text",
+        "name": "NAME OF BANKBusiness Account"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "name_of_bankchecking_account",
+      "target": {
+        "type": "text",
+        "name": "NAME OF BANKChecking Account"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "name_of_bankchristmas_club_account",
+      "target": {
+        "type": "text",
+        "name": "NAME OF BANKChristmas Club Account"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "name_of_bankcredit_union_account",
+      "target": {
+        "type": "text",
+        "name": "NAME OF BANKCredit Union Account"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "name_of_bankeducational_savings_account",
+      "target": {
+        "type": "text",
+        "name": "NAME OF BANKEducational Savings Account"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "name_of_bankindividual_indian_money_account",
+      "target": {
+        "type": "text",
+        "name": "NAME OF BANKIndividual Indian Money Account"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "name_of_bankminor_savings",
+      "target": {
+        "type": "text",
+        "name": "NAME OF BANKMinor Savings"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "name_of_bankpatient_trust_fund",
+      "target": {
+        "type": "text",
+        "name": "NAME OF BANKPatient Trust Fund"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "name_of_banksavings_account",
+      "target": {
+        "type": "text",
+        "name": "NAME OF BANKSavings Account"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "name_of_company_or_bankavailable_trusts",
+      "target": {
+        "type": "text",
+        "name": "NAME OF COMPANY OR BANKAvailable Trusts"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "name_of_company_or_bankburial_fundsplans",
+      "target": {
+        "type": "text",
+        "name": "NAME OF COMPANY OR BANKBurial FundsPlans"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "name_of_company_or_banklife_insurance",
+      "target": {
+        "type": "text",
+        "name": "NAME OF COMPANY OR BANKLife Insurance"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "name_of_company_or_bankunavailable_trusts",
+      "target": {
+        "type": "text",
+        "name": "NAME OF COMPANY OR BANKUnavailable Trusts"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "ownersannuities",
+      "target": {
+        "type": "text",
+        "name": "OWNERSAnnuities"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "ownersavailable_trusts",
+      "target": {
+        "type": "text",
+        "name": "OWNERSAvailable Trusts"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "ownersburial_fundsplans",
+      "target": {
+        "type": "text",
+        "name": "OWNERSBurial FundsPlans"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "ownersbusiness_account",
+      "target": {
+        "type": "text",
+        "name": "OWNERSBusiness Account"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "ownerscertificates_of_deposit",
+      "target": {
+        "type": "text",
+        "name": "OWNERSCertificates of Deposit"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "ownerschecking_account",
+      "target": {
+        "type": "text",
+        "name": "OWNERSChecking Account"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "ownerschristmas_club_account",
+      "target": {
+        "type": "text",
+        "name": "OWNERSChristmas Club Account"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "ownerscredit_union_account",
+      "target": {
+        "type": "text",
+        "name": "OWNERSCredit Union Account"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "ownerseducational_savings_account",
+      "target": {
+        "type": "text",
+        "name": "OWNERSEducational Savings Account"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "ownersindividual_indian_money_account",
+      "target": {
+        "type": "text",
+        "name": "OWNERSIndividual Indian Money Account"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "ownersindividual_retirement_accounts_ira",
+      "target": {
+        "type": "text",
+        "name": "OWNERSIndividual Retirement Accounts IRA"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "ownerskeogh_account_401k",
+      "target": {
+        "type": "text",
+        "name": "OWNERSKeogh Account 401K"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "ownerslife_estates",
+      "target": {
+        "type": "text",
+        "name": "OWNERSLife Estates"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "ownerslife_insurance",
+      "target": {
+        "type": "text",
+        "name": "OWNERSLife Insurance"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "ownersminor_savings",
+      "target": {
+        "type": "text",
+        "name": "OWNERSMinor Savings"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "ownerspatient_trust_fund",
+      "target": {
+        "type": "text",
+        "name": "OWNERSPatient Trust Fund"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "ownerssavings_account",
+      "target": {
+        "type": "text",
+        "name": "OWNERSSavings Account"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "ownerssavings_bonds",
+      "target": {
+        "type": "text",
+        "name": "OWNERSSavings Bonds"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "ownersstocks_or_bonds",
+      "target": {
+        "type": "text",
+        "name": "OWNERSStocks or Bonds"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "ownersunavailable_trusts",
+      "target": {
+        "type": "text",
+        "name": "OWNERSUnavailable Trusts"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "policy_or_account_number_please_list_the_last_4_numbers_only_3",
+      "target": {
+        "type": "text",
+        "name": "POLICY OR ACCOUNT NUMBER Please list the last 4 numbers only"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "policy_or_account_number_please_list_the_last_4_numbers_only_4",
+      "target": {
+        "type": "text",
+        "name": "POLICY OR ACCOUNT NUMBER Please list the last 4 numbers only_2"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "valueannuities",
+      "target": {
+        "type": "text",
+        "name": "VALUEAnnuities"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "valuecertificates_of_deposit",
+      "target": {
+        "type": "text",
+        "name": "VALUECertificates of Deposit"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "valueindividual_retirement_accounts_ira",
+      "target": {
+        "type": "text",
+        "name": "VALUEIndividual Retirement Accounts IRA"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "valuekeogh_account_401k",
+      "target": {
+        "type": "text",
+        "name": "VALUEKeogh Account 401K"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "valuestocks_or_bonds",
+      "target": {
+        "type": "text",
+        "name": "VALUEStocks or Bonds"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "face_value",
+      "target": {
+        "type": "text",
+        "name": "face value"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "other",
+      "target": {
+        "type": "text",
+        "name": "other"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "undefined_65",
+      "target": {
+        "type": "text",
+        "name": "undefined_65"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "undefined_66",
+      "target": {
+        "type": "text",
+        "name": "undefined_66"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "undefined_67",
+      "target": {
+        "type": "text",
+        "name": "undefined_67"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "undefined_68",
+      "target": {
+        "type": "text",
+        "name": "undefined_68"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "undefined_69",
+      "target": {
+        "type": "text",
+        "name": "undefined_69"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "undefined_70",
+      "target": {
+        "type": "text",
+        "name": "undefined_70"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "undefined_71",
+      "target": {
+        "type": "text",
+        "name": "undefined_71"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "undefined_72",
+      "target": {
+        "type": "text",
+        "name": "undefined_72"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "undefined_73",
+      "target": {
+        "type": "text",
+        "name": "undefined_73"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "undefined_74",
+      "target": {
+        "type": "text",
+        "name": "undefined_74"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "undefined_75",
+      "target": {
+        "type": "text",
+        "name": "undefined_75"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "undefined_76",
+      "target": {
+        "type": "text",
+        "name": "undefined_76"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "undefined_77",
+      "target": {
+        "type": "text",
+        "name": "undefined_77"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "undefined_78",
+      "target": {
+        "type": "text",
+        "name": "undefined_78"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "undefined_79",
+      "target": {
+        "type": "text",
+        "name": "undefined_79"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "undefined_80",
+      "target": {
+        "type": "text",
+        "name": "undefined_80"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "undefined_81",
+      "target": {
+        "type": "text",
+        "name": "undefined_81"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "undefined_82",
+      "target": {
+        "type": "text",
+        "name": "undefined_82"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "undefined_83",
+      "target": {
+        "type": "text",
+        "name": "undefined_83"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "undefined_84",
+      "target": {
+        "type": "text",
+        "name": "undefined_84"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "value",
+      "target": {
+        "type": "text",
+        "name": "value"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "valuesaving_bonds",
+      "target": {
+        "type": "text",
+        "name": "valueSaving Bonds"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "35_what_is_your_landlords_name",
+      "target": {
+        "type": "text",
+        "name": "35 What is your landlords name"
+      },
+      "source": {
+        "fieldPath": "housing.landlord_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "strength": "preferred",
+      "note": "landlord's name"
+    },
+    {
+      "id": "36_what_is_your_landlords_address",
+      "target": {
+        "type": "text",
+        "name": "36 What is your landlords address"
+      },
+      "fillPolicy": "never",
+      "note": "housing/vehicle/resource detail with no vocabulary equivalent, an unattributable shared field, or a payment frequency that cannot be converted to a monthly figure"
+    },
+    {
+      "id": "association_fees_if_paid_separately",
+      "target": {
+        "type": "text",
+        "name": "Association Fees if paid separately"
+      },
+      "fillPolicy": "never",
+      "note": "housing/vehicle/resource detail with no vocabulary equivalent, an unattributable shared field, or a payment frequency that cannot be converted to a monthly figure"
+    },
+    {
+      "id": "contents_or_type_of_resourcebusiness_equipment_inventory",
+      "target": {
+        "type": "text",
+        "name": "CONTENTS OR TYPE OF RESOURCEBusiness Equipment Inventory"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "contents_or_type_of_resourceland_mineral_rights",
+      "target": {
+        "type": "text",
+        "name": "CONTENTS OR TYPE OF RESOURCELand Mineral Rights"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "contents_or_type_of_resourcelivestock",
+      "target": {
+        "type": "text",
+        "name": "CONTENTS OR TYPE OF RESOURCELivestock"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "contents_or_type_of_resourcemining_claims",
+      "target": {
+        "type": "text",
+        "name": "CONTENTS OR TYPE OF RESOURCEMining Claims"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "contents_or_type_of_resourcesafe_deposit_box",
+      "target": {
+        "type": "text",
+        "name": "CONTENTS OR TYPE OF RESOURCESafe Deposit Box"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "homeowners_insurance_if_paid_separately",
+      "target": {
+        "type": "text",
+        "name": "Homeowners Insurance if paid separately"
+      },
+      "source": {
+        "fieldPath": "housing.home_insurance_monthly"
+      },
+      "transforms": [
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "strength": "preferred",
+      "note": "homeowners insurance amount"
+    },
+    {
+      "id": "how_often_paid",
+      "target": {
+        "type": "text",
+        "name": "How Often Paid"
+      },
+      "fillPolicy": "never",
+      "note": "housing/vehicle/resource detail with no vocabulary equivalent, an unattributable shared field, or a payment frequency that cannot be converted to a monthly figure"
+    },
+    {
+      "id": "how_often_paid_2",
+      "target": {
+        "type": "text",
+        "name": "How Often Paid_2"
+      },
+      "fillPolicy": "never",
+      "note": "housing/vehicle/resource detail with no vocabulary equivalent, an unattributable shared field, or a payment frequency that cannot be converted to a monthly figure"
+    },
+    {
+      "id": "how_often_paid_3",
+      "target": {
+        "type": "text",
+        "name": "How Often Paid_3"
+      },
+      "fillPolicy": "never",
+      "note": "housing/vehicle/resource detail with no vocabulary equivalent, an unattributable shared field, or a payment frequency that cannot be converted to a monthly figure"
+    },
+    {
+      "id": "how_often_paid_4",
+      "target": {
+        "type": "text",
+        "name": "How Often Paid_4"
+      },
+      "fillPolicy": "never",
+      "note": "housing/vehicle/resource detail with no vocabulary equivalent, an unattributable shared field, or a payment frequency that cannot be converted to a monthly figure"
+    },
+    {
+      "id": "how_often_paid_5",
+      "target": {
+        "type": "text",
+        "name": "How Often Paid_5"
+      },
+      "fillPolicy": "never",
+      "note": "housing/vehicle/resource detail with no vocabulary equivalent, an unattributable shared field, or a payment frequency that cannot be converted to a monthly figure"
+    },
+    {
+      "id": "if_yes_which_resources",
+      "target": {
+        "type": "text",
+        "name": "If YES which resources"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "if_yes_who_9",
+      "target": {
+        "type": "text",
+        "name": "If YES who_9"
+      },
+      "fillPolicy": "never",
+      "note": "housing/vehicle/resource detail with no vocabulary equivalent, an unattributable shared field, or a payment frequency that cannot be converted to a monthly figure"
+    },
+    {
+      "id": "is_this_property_currently",
+      "target": {
+        "type": "radio",
+        "name": "Is this property currently"
+      },
+      "fillPolicy": "never",
+      "note": "housing/vehicle/resource detail with no vocabulary equivalent, an unattributable shared field, or a payment frequency that cannot be converted to a monthly figure"
+    },
+    {
+      "id": "locationbusiness_equipment_inventory",
+      "target": {
+        "type": "text",
+        "name": "LOCATIONBusiness Equipment Inventory"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "locationhousesland_or_buildings",
+      "target": {
+        "type": "text",
+        "name": "LOCATIONHousesLand or Buildings"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "locationland_mineral_rights",
+      "target": {
+        "type": "text",
+        "name": "LOCATIONLand Mineral Rights"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "locationlivestock",
+      "target": {
+        "type": "text",
+        "name": "LOCATIONLivestock"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "locationmining_claims",
+      "target": {
+        "type": "text",
+        "name": "LOCATIONMining Claims"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "locationsafe_deposit_box",
+      "target": {
+        "type": "text",
+        "name": "LOCATIONSafe Deposit Box"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "lotspace_rent",
+      "target": {
+        "type": "text",
+        "name": "LotSpace Rent"
+      },
+      "fillPolicy": "never",
+      "note": "housing/vehicle/resource detail with no vocabulary equivalent, an unattributable shared field, or a payment frequency that cannot be converted to a monthly figure"
+    },
+    {
+      "id": "mortgagerelated_expenses",
+      "target": {
+        "type": "checkbox",
+        "name": "MORTGAGERELATED EXPENSES"
+      },
+      "fillPolicy": "never",
+      "note": "housing/vehicle/resource detail with no vocabulary equivalent, an unattributable shared field, or a payment frequency that cannot be converted to a monthly figure"
+    },
+    {
+      "id": "mortgage_amount_including_second",
+      "target": {
+        "type": "text",
+        "name": "Mortgage Amount including second"
+      },
+      "source": {
+        "fieldPath": "housing.mortgage_monthly"
+      },
+      "transforms": [
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "strength": "preferred",
+      "note": "mortgage payment amount"
+    },
+    {
+      "id": "none",
+      "target": {
+        "type": "checkbox",
+        "name": "NONE"
+      },
+      "fillPolicy": "never",
+      "note": "housing/vehicle/resource detail with no vocabulary equivalent, an unattributable shared field, or a payment frequency that cannot be converted to a monthly figure"
+    },
+    {
+      "id": "ownerrow1",
+      "target": {
+        "type": "text",
+        "name": "OWNERRow1"
+      },
+      "fillPolicy": "never",
+      "note": "housing/vehicle/resource detail with no vocabulary equivalent, an unattributable shared field, or a payment frequency that cannot be converted to a monthly figure"
+    },
+    {
+      "id": "ownerrow2",
+      "target": {
+        "type": "text",
+        "name": "OWNERRow2"
+      },
+      "fillPolicy": "never",
+      "note": "housing/vehicle/resource detail with no vocabulary equivalent, an unattributable shared field, or a payment frequency that cannot be converted to a monthly figure"
+    },
+    {
+      "id": "ownerrow3",
+      "target": {
+        "type": "text",
+        "name": "OWNERRow3"
+      },
+      "fillPolicy": "never",
+      "note": "housing/vehicle/resource detail with no vocabulary equivalent, an unattributable shared field, or a payment frequency that cannot be converted to a monthly figure"
+    },
+    {
+      "id": "ownersbusiness_equipment_inventory",
+      "target": {
+        "type": "text",
+        "name": "OWNERSBusiness Equipment Inventory"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "ownerscash_on_hand",
+      "target": {
+        "type": "text",
+        "name": "OWNERSCash on Hand"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "ownershousesland_or_buildings",
+      "target": {
+        "type": "text",
+        "name": "OWNERSHousesLand or Buildings"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "ownersland_mineral_rights",
+      "target": {
+        "type": "text",
+        "name": "OWNERSLand Mineral Rights"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "ownerslivestock",
+      "target": {
+        "type": "text",
+        "name": "OWNERSLivestock"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "ownersmining_claims",
+      "target": {
+        "type": "text",
+        "name": "OWNERSMining Claims"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "ownersother_please_list",
+      "target": {
+        "type": "text",
+        "name": "OWNERSOther please list"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "ownerspromissory_notes",
+      "target": {
+        "type": "text",
+        "name": "OWNERSPromissory Notes"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "ownerssafe_deposit_box",
+      "target": {
+        "type": "text",
+        "name": "OWNERSSafe Deposit Box"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "registered",
+      "target": {
+        "type": "radio",
+        "name": "REGISTERED"
+      },
+      "fillPolicy": "never",
+      "note": "housing/vehicle/resource detail with no vocabulary equivalent, an unattributable shared field, or a payment frequency that cannot be converted to a monthly figure"
+    },
+    {
+      "id": "rent",
+      "target": {
+        "type": "checkbox",
+        "name": "RENT"
+      },
+      "fillPolicy": "never",
+      "note": "housing/vehicle/resource detail with no vocabulary equivalent, an unattributable shared field, or a payment frequency that cannot be converted to a monthly figure"
+    },
+    {
+      "id": "relationship_to_you",
+      "target": {
+        "type": "text",
+        "name": "Relationship to you"
+      },
+      "fillPolicy": "never",
+      "note": "housing/vehicle/resource detail with no vocabulary equivalent, an unattributable shared field, or a payment frequency that cannot be converted to a monthly figure"
+    },
+    {
+      "id": "transferred_resource",
+      "target": {
+        "type": "radio",
+        "name": "TRANSFERRED RESOURCE"
+      },
+      "fillPolicy": "never",
+      "note": "housing/vehicle/resource detail with no vocabulary equivalent, an unattributable shared field, or a payment frequency that cannot be converted to a monthly figure"
+    },
+    {
+      "id": "type_of_vehiclerow1",
+      "target": {
+        "type": "text",
+        "name": "TYPE OF VEHICLERow1"
+      },
+      "fillPolicy": "never",
+      "note": "housing/vehicle/resource detail with no vocabulary equivalent, an unattributable shared field, or a payment frequency that cannot be converted to a monthly figure"
+    },
+    {
+      "id": "type_of_vehiclerow2",
+      "target": {
+        "type": "text",
+        "name": "TYPE OF VEHICLERow2"
+      },
+      "fillPolicy": "never",
+      "note": "housing/vehicle/resource detail with no vocabulary equivalent, an unattributable shared field, or a payment frequency that cannot be converted to a monthly figure"
+    },
+    {
+      "id": "type_of_vehiclerow3",
+      "target": {
+        "type": "text",
+        "name": "TYPE OF VEHICLERow3"
+      },
+      "fillPolicy": "never",
+      "note": "housing/vehicle/resource detail with no vocabulary equivalent, an unattributable shared field, or a payment frequency that cannot be converted to a monthly figure"
+    },
+    {
+      "id": "taxes_if_paid_separately",
+      "target": {
+        "type": "text",
+        "name": "Taxes if paid separately"
+      },
+      "source": {
+        "fieldPath": "housing.property_tax_monthly"
+      },
+      "transforms": [
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "strength": "preferred",
+      "note": "property tax amount"
+    },
+    {
+      "id": "what_resource_was_transferred",
+      "target": {
+        "type": "text",
+        "name": "What resource was transferred"
+      },
+      "fillPolicy": "never",
+      "note": "housing/vehicle/resource detail with no vocabulary equivalent, an unattributable shared field, or a payment frequency that cannot be converted to a monthly figure"
+    },
+    {
+      "id": "what_was_the_value_of_this_resource_when_it_was_transferred",
+      "target": {
+        "type": "text",
+        "name": "What was the value of this resource when it was transferred"
+      },
+      "fillPolicy": "never",
+      "note": "housing/vehicle/resource detail with no vocabulary equivalent, an unattributable shared field, or a payment frequency that cannot be converted to a monthly figure"
+    },
+    {
+      "id": "when",
+      "target": {
+        "type": "text",
+        "name": "When"
+      },
+      "fillPolicy": "never",
+      "note": "housing/vehicle/resource detail with no vocabulary equivalent, an unattributable shared field, or a payment frequency that cannot be converted to a monthly figure"
+    },
+    {
+      "id": "who_was_the_resource_transferred_to",
+      "target": {
+        "type": "text",
+        "name": "Who was the resource transferred to"
+      },
+      "fillPolicy": "never",
+      "note": "housing/vehicle/resource detail with no vocabulary equivalent, an unattributable shared field, or a payment frequency that cannot be converted to a monthly figure"
+    },
+    {
+      "id": "why_was_the_resource_transferred",
+      "target": {
+        "type": "text",
+        "name": "Why was the resource transferred"
+      },
+      "fillPolicy": "never",
+      "note": "housing/vehicle/resource detail with no vocabulary equivalent, an unattributable shared field, or a payment frequency that cannot be converted to a monthly figure"
+    },
+    {
+      "id": "year_make_modelrow1",
+      "target": {
+        "type": "text",
+        "name": "YEAR MAKE  MODELRow1"
+      },
+      "fillPolicy": "never",
+      "note": "housing/vehicle/resource detail with no vocabulary equivalent, an unattributable shared field, or a payment frequency that cannot be converted to a monthly figure"
+    },
+    {
+      "id": "year_make_modelrow2",
+      "target": {
+        "type": "text",
+        "name": "YEAR MAKE  MODELRow2"
+      },
+      "fillPolicy": "never",
+      "note": "housing/vehicle/resource detail with no vocabulary equivalent, an unattributable shared field, or a payment frequency that cannot be converted to a monthly figure"
+    },
+    {
+      "id": "year_make_modelrow3",
+      "target": {
+        "type": "text",
+        "name": "YEAR MAKE  MODELRow3"
+      },
+      "fillPolicy": "never",
+      "note": "housing/vehicle/resource detail with no vocabulary equivalent, an unattributable shared field, or a payment frequency that cannot be converted to a monthly figure"
+    },
+    {
+      "id": "by_which_agency",
+      "target": {
+        "type": "text",
+        "name": "by which agency"
+      },
+      "fillPolicy": "never",
+      "note": "housing/vehicle/resource detail with no vocabulary equivalent, an unattributable shared field, or a payment frequency that cannot be converted to a monthly figure"
+    },
+    {
+      "id": "fill_59",
+      "target": {
+        "type": "text",
+        "name": "fill_59"
+      },
+      "fillPolicy": "never",
+      "note": "housing/vehicle/resource detail with no vocabulary equivalent, an unattributable shared field, or a payment frequency that cannot be converted to a monthly figure"
+    },
+    {
+      "id": "fill_60",
+      "target": {
+        "type": "text",
+        "name": "fill_60"
+      },
+      "fillPolicy": "never",
+      "note": "housing/vehicle/resource detail with no vocabulary equivalent, an unattributable shared field, or a payment frequency that cannot be converted to a monthly figure"
+    },
+    {
+      "id": "fill_61",
+      "target": {
+        "type": "text",
+        "name": "fill_61"
+      },
+      "fillPolicy": "never",
+      "note": "housing/vehicle/resource detail with no vocabulary equivalent, an unattributable shared field, or a payment frequency that cannot be converted to a monthly figure"
+    },
+    {
+      "id": "fill_62",
+      "target": {
+        "type": "text",
+        "name": "fill_62"
+      },
+      "fillPolicy": "never",
+      "note": "housing/vehicle/resource detail with no vocabulary equivalent, an unattributable shared field, or a payment frequency that cannot be converted to a monthly figure"
+    },
+    {
+      "id": "fill_63",
+      "target": {
+        "type": "text",
+        "name": "fill_63"
+      },
+      "fillPolicy": "never",
+      "note": "housing/vehicle/resource detail with no vocabulary equivalent, an unattributable shared field, or a payment frequency that cannot be converted to a monthly figure"
+    },
+    {
+      "id": "fill_64",
+      "target": {
+        "type": "text",
+        "name": "fill_64"
+      },
+      "fillPolicy": "never",
+      "note": "housing/vehicle/resource detail with no vocabulary equivalent, an unattributable shared field, or a payment frequency that cannot be converted to a monthly figure"
+    },
+    {
+      "id": "fill_65",
+      "target": {
+        "type": "text",
+        "name": "fill_65"
+      },
+      "fillPolicy": "never",
+      "note": "housing/vehicle/resource detail with no vocabulary equivalent, an unattributable shared field, or a payment frequency that cannot be converted to a monthly figure"
+    },
+    {
+      "id": "fill_66_2",
+      "target": {
+        "type": "text",
+        "name": "fill_66_2"
+      },
+      "fillPolicy": "never",
+      "note": "housing/vehicle/resource detail with no vocabulary equivalent, an unattributable shared field, or a payment frequency that cannot be converted to a monthly figure"
+    },
+    {
+      "id": "fill_67_2",
+      "target": {
+        "type": "text",
+        "name": "fill_67_2"
+      },
+      "fillPolicy": "never",
+      "note": "housing/vehicle/resource detail with no vocabulary equivalent, an unattributable shared field, or a payment frequency that cannot be converted to a monthly figure"
+    },
+    {
+      "id": "fill_72_2",
+      "target": {
+        "type": "text",
+        "name": "fill_72_2"
+      },
+      "fillPolicy": "never",
+      "note": "housing/vehicle/resource detail with no vocabulary equivalent, an unattributable shared field, or a payment frequency that cannot be converted to a monthly figure"
+    },
+    {
+      "id": "fill_73_2",
+      "target": {
+        "type": "text",
+        "name": "fill_73_2"
+      },
+      "fillPolicy": "never",
+      "note": "housing/vehicle/resource detail with no vocabulary equivalent, an unattributable shared field, or a payment frequency that cannot be converted to a monthly figure"
+    },
+    {
+      "id": "fill_74_2",
+      "target": {
+        "type": "text",
+        "name": "fill_74_2"
+      },
+      "fillPolicy": "never",
+      "note": "housing/vehicle/resource detail with no vocabulary equivalent, an unattributable shared field, or a payment frequency that cannot be converted to a monthly figure"
+    },
+    {
+      "id": "fill_75_2",
+      "target": {
+        "type": "text",
+        "name": "fill_75_2"
+      },
+      "fillPolicy": "never",
+      "note": "housing/vehicle/resource detail with no vocabulary equivalent, an unattributable shared field, or a payment frequency that cannot be converted to a monthly figure"
+    },
+    {
+      "id": "fill_76_2",
+      "target": {
+        "type": "text",
+        "name": "fill_76_2"
+      },
+      "fillPolicy": "never",
+      "note": "housing/vehicle/resource detail with no vocabulary equivalent, an unattributable shared field, or a payment frequency that cannot be converted to a monthly figure"
+    },
+    {
+      "id": "fill_77_2",
+      "target": {
+        "type": "text",
+        "name": "fill_77_2"
+      },
+      "fillPolicy": "never",
+      "note": "housing/vehicle/resource detail with no vocabulary equivalent, an unattributable shared field, or a payment frequency that cannot be converted to a monthly figure"
+    },
+    {
+      "id": "landlord_s_phone_numner",
+      "target": {
+        "type": "text",
+        "name": "landlord's phone numner"
+      },
+      "source": {
+        "fieldPath": "housing.landlord_phone"
+      },
+      "transforms": [
+        {
+          "op": "phone",
+          "style": "dashed"
+        }
+      ],
+      "strength": "preferred",
+      "note": "landlord's phone number"
+    },
+    {
+      "id": "undefined_85",
+      "target": {
+        "type": "text",
+        "name": "undefined_85"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "undefined_86",
+      "target": {
+        "type": "text",
+        "name": "undefined_86"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "undefined_87",
+      "target": {
+        "type": "text",
+        "name": "undefined_87"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "undefined_88",
+      "target": {
+        "type": "text",
+        "name": "undefined_88"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "undefined_89",
+      "target": {
+        "type": "text",
+        "name": "undefined_89"
+      },
+      "fillPolicy": "never",
+      "note": "resource/bank/insurance detail; vocabulary v1 does not collect per-account resources"
+    },
+    {
+      "id": "undefined_90",
+      "target": {
+        "type": "text",
+        "name": "undefined_90"
+      },
+      "fillPolicy": "never",
+      "note": "housing/vehicle/resource detail with no vocabulary equivalent, an unattributable shared field, or a payment frequency that cannot be converted to a monthly figure"
+    },
+    {
+      "id": "undefined_91",
+      "target": {
+        "type": "text",
+        "name": "undefined_91"
+      },
+      "fillPolicy": "never",
+      "note": "housing/vehicle/resource detail with no vocabulary equivalent, an unattributable shared field, or a payment frequency that cannot be converted to a monthly figure"
+    },
+    {
+      "id": "undefined_92",
+      "target": {
+        "type": "text",
+        "name": "undefined_92"
+      },
+      "fillPolicy": "never",
+      "note": "housing/vehicle/resource detail with no vocabulary equivalent, an unattributable shared field, or a payment frequency that cannot be converted to a monthly figure"
+    },
+    {
+      "id": "undefined_93",
+      "target": {
+        "type": "text",
+        "name": "undefined_93"
+      },
+      "fillPolicy": "never",
+      "note": "housing/vehicle/resource detail with no vocabulary equivalent, an unattributable shared field, or a payment frequency that cannot be converted to a monthly figure"
+    },
+    {
+      "id": "undefined_94",
+      "target": {
+        "type": "checkbox",
+        "name": "undefined_94"
+      },
+      "fillPolicy": "never",
+      "note": "housing/vehicle/resource detail with no vocabulary equivalent, an unattributable shared field, or a payment frequency that cannot be converted to a monthly figure"
+    },
+    {
+      "id": "undefined_95",
+      "target": {
+        "type": "checkbox",
+        "name": "undefined_95"
+      },
+      "fillPolicy": "never",
+      "note": "housing/vehicle/resource detail with no vocabulary equivalent, an unattributable shared field, or a payment frequency that cannot be converted to a monthly figure"
+    },
+    {
+      "id": "undefined_96",
+      "target": {
+        "type": "radio",
+        "name": "undefined_96"
+      },
+      "fillPolicy": "never",
+      "note": "housing/vehicle/resource detail with no vocabulary equivalent, an unattributable shared field, or a payment frequency that cannot be converted to a monthly figure"
+    },
+    {
+      "id": "undefined_97",
+      "target": {
+        "type": "text",
+        "name": "undefined_97"
+      },
+      "fillPolicy": "never",
+      "note": "housing/vehicle/resource detail with no vocabulary equivalent, an unattributable shared field, or a payment frequency that cannot be converted to a monthly figure"
+    },
+    {
+      "id": "undefined_98",
+      "target": {
+        "type": "radio",
+        "name": "undefined_98"
+      },
+      "source": {
+        "fieldPath": "housing.is_subsidized"
+      },
+      "valueMap": {
+        "true": "YES_35",
+        "false": "NO_34"
+      },
+      "strength": "preferred",
+      "note": "rent subsidized by an agency"
+    },
+    {
+      "id": "undefined_99",
+      "target": {
+        "type": "radio",
+        "name": "undefined_99"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "attorneys_address",
+      "target": {
+        "type": "text",
+        "name": "Attorneys address"
+      },
+      "fillPolicy": "never",
+      "note": "page 10 expense/utility detail shared across questions or with no vocabulary equivalent"
+    },
+    {
+      "id": "for_whom",
+      "target": {
+        "type": "text",
+        "name": "For whom"
+      },
+      "fillPolicy": "never",
+      "note": "page 10 expense/utility detail shared across questions or with no vocabulary equivalent"
+    },
+    {
+      "id": "how_much_per_month",
+      "target": {
+        "type": "text",
+        "name": "How much per month"
+      },
+      "source": {
+        "fieldPath": "expenses.child_support_paid_monthly"
+      },
+      "transforms": [
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "strength": "preferred",
+      "note": "court-ordered child support paid"
+    },
+    {
+      "id": "how_often",
+      "target": {
+        "type": "radio",
+        "name": "How often"
+      },
+      "fillPolicy": "never",
+      "note": "page 10 expense/utility detail shared across questions or with no vocabulary equivalent"
+    },
+    {
+      "id": "how_often_2",
+      "target": {
+        "type": "radio",
+        "name": "How often_2"
+      },
+      "source": {
+        "fieldPath": "utilities.received_liheap_last_12mo"
+      },
+      "valueMap": {
+        "true": "YES_40",
+        "false": "NO_39"
+      },
+      "strength": "preferred",
+      "note": "energy assistance program"
+    },
+    {
+      "id": "if_yes_what_is_the_attorneys_name",
+      "target": {
+        "type": "text",
+        "name": "If YES what is the attorneys name"
+      },
+      "fillPolicy": "never",
+      "note": "page 10 expense/utility detail shared across questions or with no vocabulary equivalent"
+    },
+    {
+      "id": "if_yes_who_is_the_father",
+      "target": {
+        "type": "text",
+        "name": "If YES who is the father"
+      },
+      "fillPolicy": "never",
+      "note": "page 10 expense/utility detail shared across questions or with no vocabulary equivalent"
+    },
+    {
+      "id": "sett",
+      "target": {
+        "type": "radio",
+        "name": "SETT"
+      },
+      "fillPolicy": "never",
+      "note": "page 10 expense/utility detail shared across questions or with no vocabulary equivalent"
+    },
+    {
+      "id": "sudemedxdcex",
+      "target": {
+        "type": "radio",
+        "name": "SUDEMEDXDCEX"
+      },
+      "fillPolicy": "never",
+      "note": "page 10 expense/utility detail shared across questions or with no vocabulary equivalent"
+    },
+    {
+      "id": "deceased",
+      "target": {
+        "type": "checkbox",
+        "name": "deceased"
+      },
+      "fillPolicy": "never",
+      "note": "page 10 expense/utility detail shared across questions or with no vocabulary equivalent"
+    },
+    {
+      "id": "disabled_or",
+      "target": {
+        "type": "checkbox",
+        "name": "disabled or"
+      },
+      "fillPolicy": "never",
+      "note": "page 10 expense/utility detail shared across questions or with no vocabulary equivalent"
+    },
+    {
+      "id": "from_where",
+      "target": {
+        "type": "text",
+        "name": "from where"
+      },
+      "fillPolicy": "never",
+      "note": "page 10 expense/utility detail shared across questions or with no vocabulary equivalent"
+    },
+    {
+      "id": "how_much",
+      "target": {
+        "type": "text",
+        "name": "how much"
+      },
+      "fillPolicy": "never",
+      "note": "page 10 expense/utility detail shared across questions or with no vocabulary equivalent"
+    },
+    {
+      "id": "how_often_3",
+      "target": {
+        "type": "text",
+        "name": "how often"
+      },
+      "fillPolicy": "never",
+      "note": "page 10 expense/utility detail shared across questions or with no vocabulary equivalent"
+    },
+    {
+      "id": "living_somewhere_else",
+      "target": {
+        "type": "checkbox",
+        "name": "living somewhere else"
+      },
+      "fillPolicy": "never",
+      "note": "page 10 expense/utility detail shared across questions or with no vocabulary equivalent"
+    },
+    {
+      "id": "telephone_2",
+      "target": {
+        "type": "text",
+        "name": "telephone"
+      },
+      "fillPolicy": "never",
+      "note": "page 10 expense/utility detail shared across questions or with no vocabulary equivalent"
+    },
+    {
+      "id": "undefined_100",
+      "target": {
+        "type": "radio",
+        "name": "undefined_100"
+      },
+      "source": {
+        "fieldPath": "utilities.pays_heating_cooling"
+      },
+      "valueMap": {
+        "true": "YES_38",
+        "false": "NO_37"
+      },
+      "strength": "preferred",
+      "note": "utility expense includes heating or cooling"
+    },
+    {
+      "id": "undefined_101",
+      "target": {
+        "type": "text",
+        "name": "undefined_101"
+      },
+      "fillPolicy": "never",
+      "note": "page 10 expense/utility detail shared across questions or with no vocabulary equivalent"
+    },
+    {
+      "id": "undefined_102",
+      "target": {
+        "type": "text",
+        "name": "undefined_102"
+      },
+      "fillPolicy": "never",
+      "note": "page 10 expense/utility detail shared across questions or with no vocabulary equivalent"
+    },
+    {
+      "id": "undefined_103",
+      "target": {
+        "type": "text",
+        "name": "undefined_103"
+      },
+      "fillPolicy": "never",
+      "note": "page 10 expense/utility detail shared across questions or with no vocabulary equivalent"
+    },
+    {
+      "id": "undefined_104",
+      "target": {
+        "type": "checkbox",
+        "name": "undefined_104"
+      },
+      "source": {
+        "fieldPath": "utilities.pays_water_sewer"
+      },
+      "strength": "preferred",
+      "note": "pays sewer"
+    },
+    {
+      "id": "undefined_105",
+      "target": {
+        "type": "text",
+        "name": "undefined_105"
+      },
+      "fillPolicy": "never",
+      "note": "page 10 expense/utility detail shared across questions or with no vocabulary equivalent"
+    },
+    {
+      "id": "undefined_106",
+      "target": {
+        "type": "text",
+        "name": "undefined_106"
+      },
+      "fillPolicy": "never",
+      "note": "page 10 expense/utility detail shared across questions or with no vocabulary equivalent"
+    },
+    {
+      "id": "undefined_107",
+      "target": {
+        "type": "checkbox",
+        "name": "undefined_107"
+      },
+      "source": {
+        "fieldPath": "utilities.pays_gas"
+      },
+      "strength": "preferred",
+      "note": "pays natural gas"
+    },
+    {
+      "id": "undefined_108",
+      "target": {
+        "type": "checkbox",
+        "name": "undefined_108"
+      },
+      "source": {
+        "fieldPath": "utilities.pays_gas"
+      },
+      "strength": "preferred",
+      "note": "pays propane"
+    },
+    {
+      "id": "undefined_109",
+      "target": {
+        "type": "checkbox",
+        "name": "undefined_109"
+      },
+      "source": {
+        "fieldPath": "utilities.pays_phone"
+      },
+      "strength": "preferred",
+      "note": "pays telephone"
+    },
+    {
+      "id": "undefined_111",
+      "target": {
+        "type": "radio",
+        "name": "undefined_111"
+      },
+      "fillPolicy": "never",
+      "note": "page 10 expense/utility detail shared across questions or with no vocabulary equivalent"
+    },
+    {
+      "id": "undefined_112",
+      "target": {
+        "type": "radio",
+        "name": "undefined_112"
+      },
+      "fillPolicy": "never",
+      "note": "page 10 expense/utility detail shared across questions or with no vocabulary equivalent"
+    },
+    {
+      "id": "undefined_113",
+      "target": {
+        "type": "radio",
+        "name": "undefined_113"
+      },
+      "fillPolicy": "never",
+      "note": "page 10 expense/utility detail shared across questions or with no vocabulary equivalent"
+    },
+    {
+      "id": "undefined_114",
+      "target": {
+        "type": "radio",
+        "name": "undefined_114"
+      },
+      "fillPolicy": "never",
+      "note": "page 10 expense/utility detail shared across questions or with no vocabulary equivalent"
+    },
+    {
+      "id": "undefined_115",
+      "target": {
+        "type": "radio",
+        "name": "undefined_115"
+      },
+      "fillPolicy": "never",
+      "note": "page 10 expense/utility detail shared across questions or with no vocabulary equivalent"
+    },
+    {
+      "id": "undefined_116",
+      "target": {
+        "type": "radio",
+        "name": "undefined_116"
+      },
+      "fillPolicy": "never",
+      "note": "page 10 expense/utility detail shared across questions or with no vocabulary equivalent"
+    },
+    {
+      "id": "undefined_117",
+      "target": {
+        "type": "radio",
+        "name": "undefined_117"
+      },
+      "fillPolicy": "never",
+      "note": "page 10 expense/utility detail shared across questions or with no vocabulary equivalent"
+    },
+    {
+      "id": "undefined_118",
+      "target": {
+        "type": "radio",
+        "name": "undefined_118"
+      },
+      "fillPolicy": "never",
+      "note": "page 10 expense/utility detail shared across questions or with no vocabulary equivalent"
+    },
+    {
+      "id": "when_2",
+      "target": {
+        "type": "text",
+        "name": "when"
+      },
+      "fillPolicy": "never",
+      "note": "page 10 expense/utility detail shared across questions or with no vocabulary equivalent"
+    },
+    {
+      "id": "who_2",
+      "target": {
+        "type": "text",
+        "name": "who"
+      },
+      "fillPolicy": "never",
+      "note": "page 10 expense/utility detail shared across questions or with no vocabulary equivalent"
+    },
+    {
+      "id": "no_i_am_not_claiming_good_cause_at_this_time",
+      "target": {
+        "type": "checkbox",
+        "name": "NO I am not claiming good cause at this time"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "yes_i_wish_to_claim_good_cause",
+      "target": {
+        "type": "checkbox",
+        "name": "YES I wish to claim good cause"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "address_2",
+      "target": {
+        "type": "text",
+        "name": "ADDRESS"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "at_any_time_was_the_mother_married_to",
+      "target": {
+        "type": "radio",
+        "name": "AT ANY TIME WAS THE MOTHER MARRIED TO"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "birth_city_and_state",
+      "target": {
+        "type": "text",
+        "name": "BIRTH CITY AND STATE"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "city_3",
+      "target": {
+        "type": "text",
+        "name": "CITY"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "city_and_state",
+      "target": {
+        "type": "text",
+        "name": "CITY AND STATE"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "childs_first_namerow1",
+      "target": {
+        "type": "text",
+        "name": "Childs First NameRow1"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "childs_first_namerow2",
+      "target": {
+        "type": "text",
+        "name": "Childs First NameRow2"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "childs_first_namerow3",
+      "target": {
+        "type": "text",
+        "name": "Childs First NameRow3"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "childs_last_namerow1",
+      "target": {
+        "type": "text",
+        "name": "Childs Last NameRow1"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "childs_last_namerow2",
+      "target": {
+        "type": "text",
+        "name": "Childs Last NameRow2"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "childs_last_namerow3",
+      "target": {
+        "type": "text",
+        "name": "Childs Last NameRow3"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "childs_middle_initialrow1",
+      "target": {
+        "type": "text",
+        "name": "Childs Middle InitialRow1"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "childs_middle_initialrow2",
+      "target": {
+        "type": "text",
+        "name": "Childs Middle InitialRow2"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "childs_middle_initialrow3",
+      "target": {
+        "type": "text",
+        "name": "Childs Middle InitialRow3"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "childs_social_security_numberrow1",
+      "target": {
+        "type": "text",
+        "name": "Childs Social Security NumberRow1"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "childs_social_security_numberrow2",
+      "target": {
+        "type": "text",
+        "name": "Childs Social Security NumberRow2"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "childs_social_security_numberrow3",
+      "target": {
+        "type": "text",
+        "name": "Childs Social Security NumberRow3"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "childs_date_of_birth_mmddyyrow1",
+      "target": {
+        "type": "text",
+        "name": "Childs date of birth MMDDYYRow1"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "childs_date_of_birth_mmddyyrow2",
+      "target": {
+        "type": "text",
+        "name": "Childs date of birth MMDDYYRow2"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "childs_date_of_birth_mmddyyrow3",
+      "target": {
+        "type": "text",
+        "name": "Childs date of birth MMDDYYRow3"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "custody_monthyes_no",
+      "target": {
+        "type": "text",
+        "name": "Custody MonthYES NO"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "custody_monthyes_no_2",
+      "target": {
+        "type": "text",
+        "name": "Custody MonthYES NO_2"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "custody_monthyes_no_3",
+      "target": {
+        "type": "text",
+        "name": "Custody MonthYES NO_3"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "date_last_seen_or_contacted",
+      "target": {
+        "type": "text",
+        "name": "DATE LAST SEEN OR CONTACTED"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "date_of_birth_5",
+      "target": {
+        "type": "text",
+        "name": "DATE OF BIRTH"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "date_of_divorce",
+      "target": {
+        "type": "text",
+        "name": "DATE OF DIVORCE"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "date_of_marriage",
+      "target": {
+        "type": "text",
+        "name": "DATE OF MARRIAGE"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "existing_child_support_court_order",
+      "target": {
+        "type": "radio",
+        "name": "EXISTING CHILD SUPPORT COURT ORDER"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "eye_color",
+      "target": {
+        "type": "text",
+        "name": "EYE COLOR"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "first_name",
+      "target": {
+        "type": "text",
+        "name": "FIRST NAME"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "hair_color",
+      "target": {
+        "type": "text",
+        "name": "HAIR COLOR"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "height",
+      "target": {
+        "type": "text",
+        "name": "HEIGHT"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "if_deceased_date_of_death",
+      "target": {
+        "type": "text",
+        "name": "IF DECEASED DATE OF DEATH"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "if_deceased_place_of_death",
+      "target": {
+        "type": "text",
+        "name": "IF DECEASED PLACE OF DEATH"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "information_on_the_children_for_this_absent_parent",
+      "target": {
+        "type": "text",
+        "name": "INFORMATION ON THE CHILDREN FOR THIS ABSENT PARENT"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "if_yes_where_city_state",
+      "target": {
+        "type": "text",
+        "name": "If YES where City State"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "last_name",
+      "target": {
+        "type": "text",
+        "name": "LAST NAME"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "middle_initial",
+      "target": {
+        "type": "text",
+        "name": "MIDDLE INITIAL"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "modifier_jr_sr_etc",
+      "target": {
+        "type": "text",
+        "name": "MODIFIER Jr Sr etc"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "place_divorce_filed",
+      "target": {
+        "type": "text",
+        "name": "PLACE DIVORCE FILED"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "place_of_marriage",
+      "target": {
+        "type": "text",
+        "name": "PLACE OF MARRIAGE"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "race",
+      "target": {
+        "type": "text",
+        "name": "RACE"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "sex",
+      "target": {
+        "type": "text",
+        "name": "SEX"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "social_security_number_8",
+      "target": {
+        "type": "text",
+        "name": "SOCIAL SECURITY NUMBER"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "state_2",
+      "target": {
+        "type": "text",
+        "name": "STATE"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "telephone_cell_phone",
+      "target": {
+        "type": "text",
+        "name": "TELEPHONE  CELL PHONE"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "weight",
+      "target": {
+        "type": "text",
+        "name": "WEIGHT"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "your_dob",
+      "target": {
+        "type": "text",
+        "name": "YOUR DOB"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "your_name",
+      "target": {
+        "type": "text",
+        "name": "YOUR NAME"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "your_relationship_to_the_children",
+      "target": {
+        "type": "text",
+        "name": "YOUR RELATIONSHIP TO THE CHILDREN"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "your_ssn",
+      "target": {
+        "type": "text",
+        "name": "YOUR SSN"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "zip",
+      "target": {
+        "type": "text",
+        "name": "ZIP"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "undefined_119",
+      "target": {
+        "type": "radio",
+        "name": "undefined_119"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "undefined_120",
+      "target": {
+        "type": "checkbox",
+        "name": "undefined_120"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "undefined_121",
+      "target": {
+        "type": "checkbox",
+        "name": "undefined_121"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "undefined_122",
+      "target": {
+        "type": "checkbox",
+        "name": "undefined_122"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "undefined_123",
+      "target": {
+        "type": "checkbox",
+        "name": "undefined_123"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "undefined_124",
+      "target": {
+        "type": "radio",
+        "name": "undefined_124"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "undefined_125",
+      "target": {
+        "type": "radio",
+        "name": "undefined_125"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "undefined_126",
+      "target": {
+        "type": "radio",
+        "name": "undefined_126"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "undefined_127",
+      "target": {
+        "type": "radio",
+        "name": "undefined_127"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "undefined_128",
+      "target": {
+        "type": "radio",
+        "name": "undefined_128"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "initials",
+      "target": {
+        "type": "text",
+        "name": "Initials"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "no_2",
+      "target": {
+        "type": "checkbox",
+        "name": "No_2"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "initials_2",
+      "target": {
+        "type": "text",
+        "name": "Initials_2"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "initials_3",
+      "target": {
+        "type": "text",
+        "name": "Initials_3"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "initials_4",
+      "target": {
+        "type": "text",
+        "name": "Initials_4"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "initials_5",
+      "target": {
+        "type": "text",
+        "name": "Initials_5"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "initials_6",
+      "target": {
+        "type": "text",
+        "name": "Initials_6"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "initials_7",
+      "target": {
+        "type": "text",
+        "name": "Initials_7"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "date",
+      "target": {
+        "type": "text",
+        "name": "Date"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "date_2",
+      "target": {
+        "type": "text",
+        "name": "Date_2"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "date_3",
+      "target": {
+        "type": "text",
+        "name": "Date_3"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "date_4",
+      "target": {
+        "type": "text",
+        "name": "Date_4"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "initials_8",
+      "target": {
+        "type": "text",
+        "name": "Initials_8"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "please_check_one",
+      "target": {
+        "type": "radio",
+        "name": "Please check one"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "signature_or_mark_of_spouse",
+      "target": {
+        "type": "text",
+        "name": "Signature or Mark of Spouse"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "at",
+      "target": {
+        "type": "text",
+        "name": "at"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "between_the_hours_of",
+      "target": {
+        "type": "text",
+        "name": "between the hours of"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "to",
+      "target": {
+        "type": "text",
+        "name": "to"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "undefined_129",
+      "target": {
+        "type": "text",
+        "name": "undefined_129"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "undefined_130",
+      "target": {
+        "type": "text",
+        "name": "undefined_130"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "are_you_a_citizen_of_the_united_states_no_check_box",
+      "target": {
+        "type": "radio",
+        "name": "Are you a citizen of the United States? No check box"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "are_you_a_citizen_of_the_united_states_yes_check_box",
+      "target": {
+        "type": "radio",
+        "name": "Are you a citizen of the United States? Yes check box"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "birth_date_mmddyyyy",
+      "target": {
+        "type": "text",
+        "name": "Birth Date MMDDYYYY"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "check_this_box_to_receive_a_sample",
+      "target": {
+        "type": "checkbox",
+        "name": "CHECK THIS BOX TO RECEIVE A SAMPLE"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "dd",
+      "target": {
+        "type": "text",
+        "name": "DD"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "democratic_party",
+      "target": {
+        "type": "checkbox",
+        "name": "Democratic Party"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "email_address_optional_email_address_is_confidential",
+      "target": {
+        "type": "text",
+        "name": "Email Address Optional  Email Address is Confidential"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "enter_dl_or_id_number",
+      "target": {
+        "type": "text",
+        "name": "Enter DL or ID number"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "full_name_mailing_address_citystatezip_code_signature",
+      "target": {
+        "type": "text",
+        "name": "Full Name Mailing Address CityStateZip Code Signature"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "independent_american_party",
+      "target": {
+        "type": "checkbox",
+        "name": "Independent American Party"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "last_4_digits_of_you_social_security",
+      "target": {
+        "type": "text",
+        "name": "Last 4 digits of you Social Security #"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "last_name_first_name_middle_name_suffix",
+      "target": {
+        "type": "text",
+        "name": "Last Name First Name Middle Name Suffix"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "libertarian_party_of_nevada",
+      "target": {
+        "type": "checkbox",
+        "name": "Libertarian Party of Nevada"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "mm",
+      "target": {
+        "type": "text",
+        "name": "MM"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "military_overseas_or_military_spouse_or_dependent",
+      "target": {
+        "type": "checkbox",
+        "name": "Military Overseas or military spouse or dependent"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "nonpartisan_no_political_party",
+      "target": {
+        "type": "checkbox",
+        "name": "Nonpartisan No Political Party"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "other_party_write_in_below",
+      "target": {
+        "type": "checkbox",
+        "name": "Other Party  Write in below"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "place_of_birth_state_or_country",
+      "target": {
+        "type": "text",
+        "name": "Place of Birth State or Country"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "republican_party",
+      "target": {
+        "type": "checkbox",
+        "name": "Republican Party"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "telephone_number_optional",
+      "target": {
+        "type": "text",
+        "name": "Telephone Number Optional"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "us_citizen_overseas",
+      "target": {
+        "type": "checkbox",
+        "name": "US Citizen Overseas"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "yyyy",
+      "target": {
+        "type": "text",
+        "name": "YYYY"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "undefined",
+      "target": {
+        "type": "radio",
+        "name": "undefined"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "undefined_2",
+      "target": {
+        "type": "text",
+        "name": "undefined_2"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "return_address_name",
+      "target": {
+        "type": "text",
+        "name": "Return address name"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "return_address_line_2",
+      "target": {
+        "type": "text",
+        "name": "Return address, line 2"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "mail_to_address_line_1",
+      "target": {
+        "type": "text",
+        "name": "mail to, address line 1"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "mail_to_name",
+      "target": {
+        "type": "text",
+        "name": "mail to, name"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "return_address_line_1",
+      "target": {
+        "type": "text",
+        "name": "return address line 1"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    },
+    {
+      "id": "return_address_line_2_2",
+      "target": {
+        "type": "text",
+        "name": "return address line 2"
+      },
+      "fillPolicy": "never",
+      "note": "appendix, voter registration, good-cause, or absent-parent detail; never auto-completed"
+    }
+  ]
+}
