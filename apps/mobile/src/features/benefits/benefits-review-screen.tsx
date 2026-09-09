@@ -16,13 +16,22 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 
 import { AppButton, AppHeader, Card, ScrollScreen, uiText } from '@/components/hive-ui';
 import { HiveColors, Spacing } from '@/constants/theme';
+import { BenefitsDatePicker } from '@/features/benefits/benefits-date-picker';
 import {
   type BenefitsApplication,
   approveBenefitsApplication,
   benefitsDocumentUrl,
+  confirmBenefitsRenewalDeadline,
   fetchBenefitsApplication,
+  fetchBenefitsProgramRules,
+  fetchBenefitsRenewals,
   requiredQuestionsToAsk,
 } from '@/features/benefits/benefits-repository';
+import {
+  ruleDerivedDeadline,
+  ruleForProgram,
+  typicalPeriodLabel,
+} from '@/features/benefits/benefits-renewals';
 
 export default function BenefitsReviewScreen() {
   const router = useRouter();
@@ -32,6 +41,16 @@ export default function BenefitsReviewScreen() {
   const [application, setApplication] = useState<BenefitsApplication | null>(null);
   const [error, setError] = useState('');
   const [approving, setApproving] = useState(false);
+  // The post-approval deadline prompt. Shown once, right after approval, so the
+  // user can confirm the certification end that the renewal schedule will use.
+  // Skipping is safe: the renewal already exists with the rule-derived default.
+  const [deadlinePrompt, setDeadlinePrompt] = useState<{
+    renewalId: string;
+    program: string;
+    certMonths: number | null;
+    picked: Date;
+  } | null>(null);
+  const [confirmingDeadline, setConfirmingDeadline] = useState(false);
 
   useEffect(() => {
     // Nothing to fetch without an id; the screen renders its own message for
@@ -73,18 +92,75 @@ export default function BenefitsReviewScreen() {
     return [...byPage.entries()].sort(([a], [b]) => a - b);
   }, [application]);
 
+  /**
+   * After approval the server creates the renewal with a rule-derived deadline.
+   * Offer the user one question — when their certification ends — pre-filled
+   * with that default. Best-effort: if the renewal or the rules are not
+   * available, the renewal simply keeps its rule-derived default.
+   */
+  const promptForRenewalDeadline = useCallback(async (approved: BenefitsApplication) => {
+    try {
+      const [rules, renewals] = await Promise.all([
+        fetchBenefitsProgramRules(approved.form.program),
+        fetchBenefitsRenewals(),
+      ]);
+      const renewal = renewals.find(
+        (candidate) =>
+          candidate.program === approved.form.program &&
+          candidate.state === approved.form.state &&
+          (candidate.status === 'scheduled' || candidate.status === 'reminded'),
+      );
+      if (!renewal) return;
+      const rule = ruleForProgram(rules, approved.form.program, approved.form.state);
+      const base = approved.approvedAt ? new Date(approved.approvedAt) : new Date();
+      // Programs without a fixed certification period (certPeriodMonths null)
+      // keep the server's existing deadline; there is nothing to pre-fill.
+      const picked =
+        rule && rule.certPeriodMonths != null
+          ? ruleDerivedDeadline(base, rule.certPeriodMonths)
+          : new Date(renewal.renewalDueAt);
+      setDeadlinePrompt({
+        renewalId: renewal.id,
+        program: approved.form.program,
+        certMonths: rule?.certPeriodMonths ?? null,
+        picked,
+      });
+    } catch {
+      // The renewal exists with the rule-derived default; the prompt is optional.
+    }
+  }, []);
+
   const approve = useCallback(async () => {
     if (!application) return;
     setApproving(true);
     setError('');
     try {
-      setApplication(await approveBenefitsApplication(application.id));
+      const approved = await approveBenefitsApplication(application.id);
+      setApplication(approved);
+      if (approved.status === 'COMPLETED') {
+        void promptForRenewalDeadline(approved);
+      }
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : 'This application could not be approved.');
     } finally {
       setApproving(false);
     }
-  }, [application]);
+  }, [application, promptForRenewalDeadline]);
+
+  const confirmDeadline = useCallback(async () => {
+    if (!deadlinePrompt || confirmingDeadline) return;
+    setConfirmingDeadline(true);
+    setError('');
+    try {
+      const iso = deadlinePrompt.picked.toISOString();
+      await confirmBenefitsRenewalDeadline(deadlinePrompt.renewalId, iso, iso);
+      setDeadlinePrompt(null);
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : 'Could not save your deadline.');
+    } finally {
+      setConfirmingDeadline(false);
+    }
+  }, [confirmingDeadline, deadlinePrompt]);
 
   if (application === null) {
     const message = !applicationId
@@ -115,6 +191,33 @@ export default function BenefitsReviewScreen() {
           {application.form.state ? ` · ${application.form.state}` : ''} ·{' '}
           {application.form.formCode} · {application.form.pageCount} pages
         </Text>
+
+        {deadlinePrompt ? (
+          <Card>
+            <Text style={uiText.subtitle}>When does your certification end?</Text>
+            <Text style={uiText.muted}>
+              {deadlinePrompt.certMonths != null
+                ? typicalPeriodLabel(deadlinePrompt.program, deadlinePrompt.certMonths)
+                : 'Confirm the end of your certification period. We will remind you before it is time to renew.'}
+            </Text>
+            <BenefitsDatePicker
+              value={deadlinePrompt.picked}
+              minimumDate={new Date()}
+              onChange={(date) => setDeadlinePrompt({ ...deadlinePrompt, picked: date })}
+            />
+            <AppButton
+              title={confirmingDeadline ? 'Saving…' : 'Confirm deadline'}
+              onPress={() => void confirmDeadline()}
+              disabled={confirmingDeadline}
+            />
+            <AppButton
+              title="I'll do this later"
+              variant="plain"
+              onPress={() => setDeadlinePrompt(null)}
+              disabled={confirmingDeadline}
+            />
+          </Card>
+        ) : null}
 
         {outstanding.length > 0 ? (
           <Card style={styles.warning}>

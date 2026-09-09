@@ -530,6 +530,11 @@ func (s *Service) Approve(ctx context.Context, identity auth.Identity, applicati
 		"document_sha256", document.SHA256,
 	)
 
+	// Schedule the renewal reminder off the rule-derived certification period.
+	// This must never fail the approval: the flattened document is the record,
+	// and the reminder is auxiliary.
+	s.scheduleRenewal(ctx, userID, record, form, approvedAt)
+
 	return Application{
 		Record:      record,
 		Form:        form,

@@ -407,6 +407,8 @@ func preferencesModel(preferences db.Preferences) *model.AppPreferences {
 		ExpiringPantryNotificationsEnabled:   preferences.ExpiringPantryNotificationsEnabled,
 		WeeklyMealPlanNotificationsEnabled:   preferences.WeeklyMealPlanNotificationsEnabled,
 		ResourceReminderNotificationsEnabled: preferences.ResourceReminderNotificationsEnabled,
+		BenefitsRenewalNotificationsEnabled:  preferences.BenefitsRenewalNotificationsEnabled,
+		BenefitsRenewalDiscreetLockScreen:    preferences.BenefitsRenewalDiscreetLockScreen,
 		CreatedAt:                            db.FormatTime(preferences.CreatedAt),
 		UpdatedAt:                            db.FormatTime(preferences.UpdatedAt),
 	}

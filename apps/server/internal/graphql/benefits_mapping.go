@@ -441,3 +441,35 @@ func applicationStatusModel(status string) model.BenefitsApplicationStatus {
 	}
 	return model.BenefitsApplicationStatusDraft
 }
+
+// ---------------------------------------------------------------------------
+// Renewals
+// ---------------------------------------------------------------------------
+
+// benefitsRenewalModel converts a renewal row. daysRemaining is computed
+// server-side from the due date against now, so the client never does date
+// arithmetic on a deadline that matters.
+func benefitsRenewalModel(renewal db.BenefitsRenewal, now time.Time) *model.BenefitsRenewal {
+	return &model.BenefitsRenewal{
+		ID:                  renewal.ID,
+		Program:             renewal.Program,
+		State:               renewal.State,
+		FormID:              renewal.FormID,
+		CertificationEndsAt: renewal.CertificationEndsAt,
+		RenewalDueAt:        renewal.RenewalDueAt,
+		Source:              renewal.Source,
+		Status:              renewal.Status,
+		ReminderStage:       renewal.ReminderStage,
+		DaysRemaining:       benefits.DaysUntilRenewal(renewal.RenewalDueAt, now),
+	}
+}
+
+func benefitsProgramRuleModel(rule db.BenefitsProgramRule) *model.BenefitsProgramRule {
+	return &model.BenefitsProgramRule{
+		Program:          rule.Program,
+		State:            rule.State,
+		CertPeriodMonths: rule.CertPeriodMonths,
+		SourceCitation:   rule.SourceCitation,
+		Notes:            rule.Notes,
+	}
+}

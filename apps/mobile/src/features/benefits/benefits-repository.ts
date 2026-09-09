@@ -24,11 +24,17 @@ import {
   BenefitsFieldVocabularyDocument,
   BenefitsFormsDocument,
   BenefitsProfileDocument,
+  BenefitsProgramRulesDocument,
+  BenefitsRenewalsDocument,
+  ConfirmBenefitsRenewalDeadlineDocument,
   DeleteBenefitsApplicationDocument,
+  DismissBenefitsRenewalDocument,
   RefillBenefitsApplicationDocument,
   SaveBenefitsAnswersDocument,
   SaveBenefitsGroupDocument,
   StartBenefitsApplicationDocument,
+  StartBenefitsRenewalApplicationDocument,
+  UpdateBenefitsRenewalPreferencesDocument,
 } from "@/graphql/benefits-operations";
 
 export type {
@@ -38,6 +44,10 @@ export type {
   BenefitsForm,
   BenefitsMissingField,
   BenefitsProfileData,
+  BenefitsProgramRule,
+  BenefitsRenewal,
+  BenefitsRenewalSource,
+  BenefitsRenewalStatus,
 } from "@/features/benefits/benefits-types";
 export type { BenefitsAnswer } from "@/features/benefits/benefits-answers";
 
@@ -103,6 +113,67 @@ export async function approveBenefitsApplication(applicationId: string) {
 export async function deleteBenefitsApplication(applicationId: string) {
   const result = await graphqlClient.request(DeleteBenefitsApplicationDocument, { applicationId });
   return result.deleteBenefitsApplication;
+}
+
+/**
+ * Renewal tracking. The server owns deadlines, reminder stages, and the
+ * renewal schedule; the app only reads them, confirms them, starts a renewal
+ * application from them, or dismisses them.
+ */
+
+export async function fetchBenefitsRenewals() {
+  const result = await graphqlClient.request(BenefitsRenewalsDocument);
+  return result.benefitsRenewals;
+}
+
+export async function fetchBenefitsProgramRules(program?: string) {
+  const result = await graphqlClient.request(BenefitsProgramRulesDocument, { program });
+  return result.benefitsProgramRules;
+}
+
+/**
+ * Stores the user-confirmed certification end. Both timestamps are the date
+ * the user picked: certificationEndsAt is when their certification ends, and
+ * renewalDueAt is when action is needed (the server may nudge earlier based on
+ * reminder offsets).
+ */
+export async function confirmBenefitsRenewalDeadline(
+  renewalId: string,
+  renewalDueAt: string,
+  certificationEndsAt?: string | null,
+) {
+  const result = await graphqlClient.request(ConfirmBenefitsRenewalDeadlineDocument, {
+    renewalId,
+    renewalDueAt,
+    certificationEndsAt,
+  });
+  return result.confirmBenefitsRenewalDeadline;
+}
+
+/**
+ * Starts a renewal application from a renewal record. Like the first-time
+ * flow, the new application is pre-filled from the existing profile answers —
+ * one tap turns a reminder into a renewal draft.
+ */
+export async function startBenefitsRenewalApplication(renewalId: string) {
+  const result = await graphqlClient.request(StartBenefitsRenewalApplicationDocument, { renewalId });
+  return result.startBenefitsRenewalApplication;
+}
+
+export async function dismissBenefitsRenewal(renewalId: string) {
+  const result = await graphqlClient.request(DismissBenefitsRenewalDocument, { renewalId });
+  return result.dismissBenefitsRenewal;
+}
+
+export async function updateBenefitsRenewalPreferences(
+  renewalAlertsEnabled: boolean,
+  discreetLockScreen: boolean,
+) {
+  const result = await graphqlClient.request(UpdateBenefitsRenewalPreferencesDocument, {
+    renewalAlertsEnabled,
+    discreetLockScreen,
+  });
+  return result.updateBenefitsRenewalPreferences;
 }
 
 export {

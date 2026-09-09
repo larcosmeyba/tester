@@ -45,8 +45,12 @@ type Preferences struct {
 	ExpiringPantryNotificationsEnabled   bool
 	WeeklyMealPlanNotificationsEnabled   bool
 	ResourceReminderNotificationsEnabled bool
-	CreatedAt                            time.Time
-	UpdatedAt                            time.Time
+	// Benefits renewal alerts. Enabled by default; discreet lock-screen text
+	// (no program names) is also the default.
+	BenefitsRenewalNotificationsEnabled bool
+	BenefitsRenewalDiscreetLockScreen   bool
+	CreatedAt                           time.Time
+	UpdatedAt                           time.Time
 }
 
 type OnboardingState struct {
@@ -99,6 +103,8 @@ type PreferencesPatch struct {
 	ExpiringPantryNotificationsEnabled   *bool
 	WeeklyMealPlanNotificationsEnabled   *bool
 	ResourceReminderNotificationsEnabled *bool
+	BenefitsRenewalNotificationsEnabled  *bool
+	BenefitsRenewalDiscreetLockScreen    *bool
 }
 
 func (s *Store) UpsertUserByAuthSubject(ctx context.Context, authSubject string, email *string) (User, error) {
@@ -170,7 +176,9 @@ func (s *Store) EnsureViewer(ctx context.Context, authSubject string, email *str
 		ON CONFLICT (user_id) DO UPDATE SET user_id = EXCLUDED.user_id
 		RETURNING user_id, weekly_budget, preferred_finance_topics, preferred_resources, wants_gov_assistance, last_meal_plan_date,
 		          notifications_enabled, expiring_pantry_notifications_enabled, weekly_meal_plan_notifications_enabled,
-		          resource_reminder_notifications_enabled, created_at, updated_at
+		          resource_reminder_notifications_enabled,
+		          benefits_renewal_notifications_enabled, benefits_renewal_discreet_lockscreen,
+		          created_at, updated_at
 	`, user.ID))
 	if err != nil {
 		return Viewer{}, err
@@ -320,12 +328,31 @@ func (s *Store) UpdatePreferences(ctx context.Context, userID string, patch Pref
 		    expiring_pantry_notifications_enabled = COALESCE($8, expiring_pantry_notifications_enabled),
 		    weekly_meal_plan_notifications_enabled = COALESCE($9, weekly_meal_plan_notifications_enabled),
 		    resource_reminder_notifications_enabled = COALESCE($10, resource_reminder_notifications_enabled),
+		    benefits_renewal_notifications_enabled = COALESCE($11, benefits_renewal_notifications_enabled),
+		    benefits_renewal_discreet_lockscreen = COALESCE($12, benefits_renewal_discreet_lockscreen),
 		    updated_at = now()
 		WHERE user_id = $1
 		RETURNING user_id, weekly_budget, preferred_finance_topics, preferred_resources, wants_gov_assistance, last_meal_plan_date,
 		          notifications_enabled, expiring_pantry_notifications_enabled, weekly_meal_plan_notifications_enabled,
-		          resource_reminder_notifications_enabled, created_at, updated_at
-	`, userID, patch.WeeklyBudget, nullableStringSlice(patch.PreferredFinanceTopics), nullableStringSlice(patch.PreferredResources), patch.WantsGovAssistance, patch.LastMealPlanDate, patch.NotificationsEnabled, patch.ExpiringPantryNotificationsEnabled, patch.WeeklyMealPlanNotificationsEnabled, patch.ResourceReminderNotificationsEnabled)
+		          resource_reminder_notifications_enabled,
+		          benefits_renewal_notifications_enabled, benefits_renewal_discreet_lockscreen,
+		          created_at, updated_at
+	`, userID, patch.WeeklyBudget, nullableStringSlice(patch.PreferredFinanceTopics), nullableStringSlice(patch.PreferredResources), patch.WantsGovAssistance, patch.LastMealPlanDate, patch.NotificationsEnabled, patch.ExpiringPantryNotificationsEnabled, patch.WeeklyMealPlanNotificationsEnabled, patch.ResourceReminderNotificationsEnabled, patch.BenefitsRenewalNotificationsEnabled, patch.BenefitsRenewalDiscreetLockScreen)
+	return scanPreferences(row)
+}
+
+// Preferences returns one user's preferences, for callers that already know
+// the user id (the renewal sweep) rather than resolving a viewer from a token.
+func (s *Store) Preferences(ctx context.Context, userID string) (Preferences, error) {
+	row := s.pool.QueryRow(ctx, `
+		SELECT user_id, weekly_budget, preferred_finance_topics, preferred_resources, wants_gov_assistance, last_meal_plan_date,
+		       notifications_enabled, expiring_pantry_notifications_enabled, weekly_meal_plan_notifications_enabled,
+		       resource_reminder_notifications_enabled,
+		       benefits_renewal_notifications_enabled, benefits_renewal_discreet_lockscreen,
+		       created_at, updated_at
+		FROM preferences
+		WHERE user_id = $1
+	`, userID)
 	return scanPreferences(row)
 }
 
@@ -413,6 +440,8 @@ func scanPreferences(row scanner) (Preferences, error) {
 		&preferences.ExpiringPantryNotificationsEnabled,
 		&preferences.WeeklyMealPlanNotificationsEnabled,
 		&preferences.ResourceReminderNotificationsEnabled,
+		&preferences.BenefitsRenewalNotificationsEnabled,
+		&preferences.BenefitsRenewalDiscreetLockScreen,
 		&preferences.CreatedAt,
 		&preferences.UpdatedAt,
 	); err != nil {

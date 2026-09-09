@@ -14,6 +14,8 @@ export type Scalars = {
   Float: { input: number; output: number; }
   /** An arbitrary JSON object. Used only for the cost tier mix. */
   Map: { input: any; output: any; }
+  /** An RFC 3339 timestamp. */
+  Time: { input: any; output: any; }
 };
 
 /**
@@ -71,6 +73,8 @@ export type AllergyRequirementInput = {
 
 export type AppPreferences = {
   __typename?: 'AppPreferences';
+  benefitsRenewalDiscreetLockScreen: Scalars['Boolean']['output'];
+  benefitsRenewalNotificationsEnabled: Scalars['Boolean']['output'];
   createdAt: Scalars['String']['output'];
   expiringPantryNotificationsEnabled: Scalars['Boolean']['output'];
   lastMealPlanDate?: Maybe<Scalars['String']['output']>;
@@ -320,6 +324,42 @@ export type BenefitsProfile = {
   groups: Array<BenefitsGroup>;
   /** The field-path vocabulary these answers were recorded against. */
   vocabularyVersion: Scalars['Int']['output'];
+};
+
+/** Reference data: a typical certification period for a program, optionally per state. */
+export type BenefitsProgramRule = {
+  __typename?: 'BenefitsProgramRule';
+  /** Typical certification period in months. Null when the program has no fixed period (VA one-time claims, SSI redeterminations). */
+  certPeriodMonths?: Maybe<Scalars['Int']['output']>;
+  notes?: Maybe<Scalars['String']['output']>;
+  program: Scalars['String']['output'];
+  sourceCitation: Scalars['String']['output'];
+  /** A state code, or '*' for the national default. */
+  state: Scalars['String']['output'];
+};
+
+/**
+ * One scheduled renewal reminder. It keys off the final application and stores
+ * only program, state, form id and dates — no answers, no PII beyond the viewer
+ * it belongs to. Every date here is presented as "typical — confirm yours"
+ * until the user confirms it.
+ */
+export type BenefitsRenewal = {
+  __typename?: 'BenefitsRenewal';
+  certificationEndsAt?: Maybe<Scalars['Time']['output']>;
+  /** Whole days until the renewal is due, computed server-side. Negative when overdue. */
+  daysRemaining: Scalars['Int']['output'];
+  formId: Scalars['String']['output'];
+  id: Scalars['ID']['output'];
+  program: Scalars['String']['output'];
+  /** Which reminder offset has already been sent: 0, 1, 2 or 3. */
+  reminderStage: Scalars['Int']['output'];
+  renewalDueAt: Scalars['Time']['output'];
+  /** Where the deadline came from: 'rule-derived' or 'user-confirmed'. */
+  source: Scalars['String']['output'];
+  state: Scalars['String']['output'];
+  /** One of: scheduled, reminded, started, done, dismissed. */
+  status: Scalars['String']['output'];
 };
 
 export type BenefitsSkipReason =
@@ -774,11 +814,15 @@ export type Mutation = {
   /** Stops an import that has not finished. Already-finished imports are unchanged. */
   cancelRecipeImport: RecipeImport;
   completeOnboarding: Viewer;
+  /** Records the user's own renewal deadline. The stored deadline is explicit user data, not a guess. */
+  confirmBenefitsRenewalDeadline: BenefitsRenewal;
   deleteBenefitsApplication: Scalars['Boolean']['output'];
   deleteMealPlan: Scalars['Boolean']['output'];
   deletePantryItem: Scalars['Boolean']['output'];
   deletePushToken: Scalars['Boolean']['output'];
   deleteViewerData: Scalars['Boolean']['output'];
+  /** Drops a renewal reminder. */
+  dismissBenefitsRenewal: Scalars['Boolean']['output'];
   generateMealPlan: MealPlan;
   /** Choose My Recipes: selected recipes to a consolidated list, nothing saved. */
   groceryListFromRecipes: GroceryListPayload;
@@ -816,9 +860,13 @@ export type Mutation = {
   setMealPrepTaskDone: Scalars['Boolean']['output'];
   /** Starts a run against the current revision of a form and fills what it can. */
   startBenefitsApplication: BenefitsApplication;
+  /** Starts a fresh application on the renewal's form, pre-filled from the user's profile — the one-tap renewal. */
+  startBenefitsRenewalApplication: BenefitsApplication;
   /** Replaces one slot's recipe. keepBasket avoids re-pricing the whole week. */
   swapPlannedMeal: MealPlan;
   unsaveRecipe: Scalars['Boolean']['output'];
+  /** Sets the two renewal notification flags. */
+  updateBenefitsRenewalPreferences: Scalars['Boolean']['output'];
   updateHandle: Profile;
   updatePantryItem: PantryItem;
   updatePreferences: AppPreferences;
@@ -859,6 +907,13 @@ export type MutationCompleteOnboardingArgs = {
 };
 
 
+export type MutationConfirmBenefitsRenewalDeadlineArgs = {
+  certificationEndsAt?: InputMaybe<Scalars['Time']['input']>;
+  renewalDueAt: Scalars['Time']['input'];
+  renewalId: Scalars['ID']['input'];
+};
+
+
 export type MutationDeleteBenefitsApplicationArgs = {
   applicationId: Scalars['ID']['input'];
 };
@@ -876,6 +931,11 @@ export type MutationDeletePantryItemArgs = {
 
 export type MutationDeletePushTokenArgs = {
   token: Scalars['String']['input'];
+};
+
+
+export type MutationDismissBenefitsRenewalArgs = {
+  renewalId: Scalars['ID']['input'];
 };
 
 
@@ -975,6 +1035,11 @@ export type MutationStartBenefitsApplicationArgs = {
 };
 
 
+export type MutationStartBenefitsRenewalApplicationArgs = {
+  renewalId: Scalars['ID']['input'];
+};
+
+
 export type MutationSwapPlannedMealArgs = {
   input: SwapMealInput;
   planId: Scalars['ID']['input'];
@@ -983,6 +1048,12 @@ export type MutationSwapPlannedMealArgs = {
 
 export type MutationUnsaveRecipeArgs = {
   recipeId: Scalars['ID']['input'];
+};
+
+
+export type MutationUpdateBenefitsRenewalPreferencesArgs = {
+  discreetLockScreen: Scalars['Boolean']['input'];
+  renewalAlertsEnabled: Scalars['Boolean']['input'];
 };
 
 
@@ -1198,6 +1269,10 @@ export type Query = {
   benefitsForms: Array<BenefitsForm>;
   /** The viewer's reusable benefits profile. */
   benefitsProfile: BenefitsProfile;
+  /** Reference certification-period rules per program, optionally filtered by program. Reference data — the same rows for every user. */
+  benefitsProgramRules: Array<BenefitsProgramRule>;
+  /** The viewer's benefits renewal reminders, soonest first. */
+  benefitsRenewals: Array<BenefitsRenewal>;
   /** The plan the viewer is currently on, or null when they have none yet. */
   currentMealPlan?: Maybe<MealPlan>;
   /** The saved grocery list for a plan, or null before the plan is accepted. */
@@ -1245,6 +1320,11 @@ export type QueryBenefitsFormArgs = {
 export type QueryBenefitsFormsArgs = {
   program?: InputMaybe<Scalars['String']['input']>;
   state?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryBenefitsProgramRulesArgs = {
+  program?: InputMaybe<Scalars['String']['input']>;
 };
 
 

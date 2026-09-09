@@ -39,6 +39,10 @@ extend type Query {
   benefitsApplications: [BenefitsApplication!]!
   "Every question the profile can hold, so the app renders questions rather than hardcoding them."
   benefitsFieldVocabulary: [BenefitsFieldSpec!]!
+  "The viewer's benefits renewal reminders, soonest first."
+  benefitsRenewals: [BenefitsRenewal!]!
+  "Reference certification-period rules per program, optionally filtered by program. Reference data — the same rows for every user."
+  benefitsProgramRules(program: String): [BenefitsProgramRule!]!
 }
 
 extend type Mutation {
@@ -54,6 +58,56 @@ extend type Mutation {
   "Flattens the reviewed document. Refused while anything required is missing."
   approveBenefitsApplication(applicationId: ID!): BenefitsApplication!
   deleteBenefitsApplication(applicationId: ID!): Boolean!
+
+  "Records the user's own renewal deadline. The stored deadline is explicit user data, not a guess."
+  confirmBenefitsRenewalDeadline(renewalId: ID!, renewalDueAt: Time!, certificationEndsAt: Time): BenefitsRenewal!
+  "Starts a fresh application on the renewal's form, pre-filled from the user's profile — the one-tap renewal."
+  startBenefitsRenewalApplication(renewalId: ID!): BenefitsApplication!
+  "Drops a renewal reminder."
+  dismissBenefitsRenewal(renewalId: ID!): Boolean!
+  "Sets the two renewal notification flags."
+  updateBenefitsRenewalPreferences(renewalAlertsEnabled: Boolean!, discreetLockScreen: Boolean!): Boolean!
+}
+
+# ---------------------------------------------------------------------------
+# Renewals
+# ---------------------------------------------------------------------------
+
+"An RFC 3339 timestamp."
+scalar Time
+
+"""
+One scheduled renewal reminder. It keys off the final application and stores
+only program, state, form id and dates — no answers, no PII beyond the viewer
+it belongs to. Every date here is presented as "typical — confirm yours"
+until the user confirms it.
+"""
+type BenefitsRenewal {
+  id: ID!
+  program: String!
+  state: String!
+  formId: String!
+  certificationEndsAt: Time
+  renewalDueAt: Time!
+  "Where the deadline came from: 'rule-derived' or 'user-confirmed'."
+  source: String!
+  "One of: scheduled, reminded, started, done, dismissed."
+  status: String!
+  "Which reminder offset has already been sent: 0, 1, 2 or 3."
+  reminderStage: Int!
+  "Whole days until the renewal is due, computed server-side. Negative when overdue."
+  daysRemaining: Int!
+}
+
+"Reference data: a typical certification period for a program, optionally per state."
+type BenefitsProgramRule {
+  program: String!
+  "A state code, or '*' for the national default."
+  state: String!
+  "Typical certification period in months. Null when the program has no fixed period (VA one-time claims, SSI redeterminations)."
+  certPeriodMonths: Int
+  sourceCitation: String!
+  notes: String
 }
 
 # ---------------------------------------------------------------------------

@@ -10,6 +10,7 @@ import (
 	"strconv"
 	"sync"
 	"sync/atomic"
+	"time"
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
@@ -52,6 +53,8 @@ type ComplexityRoot struct {
 	}
 
 	AppPreferences struct {
+		BenefitsRenewalDiscreetLockScreen    func(childComplexity int) int
+		BenefitsRenewalNotificationsEnabled  func(childComplexity int) int
 		CreatedAt                            func(childComplexity int) int
 		ExpiringPantryNotificationsEnabled   func(childComplexity int) int
 		LastMealPlanDate                     func(childComplexity int) int
@@ -181,6 +184,27 @@ type ComplexityRoot struct {
 		Answers           func(childComplexity int) int
 		Groups            func(childComplexity int) int
 		VocabularyVersion func(childComplexity int) int
+	}
+
+	BenefitsProgramRule struct {
+		CertPeriodMonths func(childComplexity int) int
+		Notes            func(childComplexity int) int
+		Program          func(childComplexity int) int
+		SourceCitation   func(childComplexity int) int
+		State            func(childComplexity int) int
+	}
+
+	BenefitsRenewal struct {
+		CertificationEndsAt func(childComplexity int) int
+		DaysRemaining       func(childComplexity int) int
+		FormID              func(childComplexity int) int
+		ID                  func(childComplexity int) int
+		Program             func(childComplexity int) int
+		ReminderStage       func(childComplexity int) int
+		RenewalDueAt        func(childComplexity int) int
+		Source              func(childComplexity int) int
+		State               func(childComplexity int) int
+		Status              func(childComplexity int) int
 	}
 
 	BenefitsSkippedField struct {
@@ -359,42 +383,46 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		AcceptMealPlan             func(childComplexity int, planID string) int
-		AcceptRecipeImport         func(childComplexity int, importID string, input *model.AcceptRecipeImportInput) int
-		AddPantryItem              func(childComplexity int, input model.AddPantryItemInput) int
-		ApproveBenefitsApplication func(childComplexity int, applicationID string) int
-		CancelRecipeImport         func(childComplexity int, importID string) int
-		CompleteOnboarding         func(childComplexity int, input model.CompleteOnboardingInput) int
-		DeleteBenefitsApplication  func(childComplexity int, applicationID string) int
-		DeleteMealPlan             func(childComplexity int, planID string) int
-		DeletePantryItem           func(childComplexity int, id string) int
-		DeletePushToken            func(childComplexity int, token string) int
-		DeleteViewerData           func(childComplexity int) int
-		GenerateMealPlan           func(childComplexity int, input model.PlanRequestInput) int
-		GroceryListFromRecipes     func(childComplexity int, input model.GroceryListFromRecipesInput) int
-		ImportRecipeFromVideo      func(childComplexity int, input model.ImportRecipeFromVideoInput) int
-		MarkPantryItemUsed         func(childComplexity int, id string) int
-		MovePlannedMeal            func(childComplexity int, planID string, input model.MoveMealInput) int
-		RefillBenefitsApplication  func(childComplexity int, applicationID string) int
-		RegenerateDay              func(childComplexity int, planID string, day int) int
-		RegenerateMealPrepPlan     func(childComplexity int, planID string) int
-		RegisterPushToken          func(childComplexity int, input model.RegisterPushTokenInput) int
-		ReplaceMeal                func(childComplexity int, planID string, input model.ReplaceMealInput) int
-		SaveBenefitsAnswers        func(childComplexity int, input []*model.BenefitsAnswerInput) int
-		SaveBenefitsGroup          func(childComplexity int, input model.SaveBenefitsGroupInput) int
-		SaveMealPlan               func(childComplexity int, planID string) int
-		SaveMealProfile            func(childComplexity int, input model.MealProfileInput) int
-		SaveRecipe                 func(childComplexity int, recipeID string) int
-		SetGroceryItemChecked      func(childComplexity int, planID string, ingredientID string, checked bool) int
-		SetMealPrepTaskDone        func(childComplexity int, taskID string, done bool) int
-		StartBenefitsApplication   func(childComplexity int, formID string) int
-		SwapPlannedMeal            func(childComplexity int, planID string, input model.SwapMealInput) int
-		UnsaveRecipe               func(childComplexity int, recipeID string) int
-		UpdateHandle               func(childComplexity int, handle string) int
-		UpdatePantryItem           func(childComplexity int, id string, input model.UpdatePantryItemInput) int
-		UpdatePreferences          func(childComplexity int, input model.UpdatePreferencesInput) int
-		UpdateProfile              func(childComplexity int, input model.UpdateProfileInput) int
-		UpdateServings             func(childComplexity int, planID string, input model.UpdateServingsInput) int
+		AcceptMealPlan                   func(childComplexity int, planID string) int
+		AcceptRecipeImport               func(childComplexity int, importID string, input *model.AcceptRecipeImportInput) int
+		AddPantryItem                    func(childComplexity int, input model.AddPantryItemInput) int
+		ApproveBenefitsApplication       func(childComplexity int, applicationID string) int
+		CancelRecipeImport               func(childComplexity int, importID string) int
+		CompleteOnboarding               func(childComplexity int, input model.CompleteOnboardingInput) int
+		ConfirmBenefitsRenewalDeadline   func(childComplexity int, renewalID string, renewalDueAt time.Time, certificationEndsAt *time.Time) int
+		DeleteBenefitsApplication        func(childComplexity int, applicationID string) int
+		DeleteMealPlan                   func(childComplexity int, planID string) int
+		DeletePantryItem                 func(childComplexity int, id string) int
+		DeletePushToken                  func(childComplexity int, token string) int
+		DeleteViewerData                 func(childComplexity int) int
+		DismissBenefitsRenewal           func(childComplexity int, renewalID string) int
+		GenerateMealPlan                 func(childComplexity int, input model.PlanRequestInput) int
+		GroceryListFromRecipes           func(childComplexity int, input model.GroceryListFromRecipesInput) int
+		ImportRecipeFromVideo            func(childComplexity int, input model.ImportRecipeFromVideoInput) int
+		MarkPantryItemUsed               func(childComplexity int, id string) int
+		MovePlannedMeal                  func(childComplexity int, planID string, input model.MoveMealInput) int
+		RefillBenefitsApplication        func(childComplexity int, applicationID string) int
+		RegenerateDay                    func(childComplexity int, planID string, day int) int
+		RegenerateMealPrepPlan           func(childComplexity int, planID string) int
+		RegisterPushToken                func(childComplexity int, input model.RegisterPushTokenInput) int
+		ReplaceMeal                      func(childComplexity int, planID string, input model.ReplaceMealInput) int
+		SaveBenefitsAnswers              func(childComplexity int, input []*model.BenefitsAnswerInput) int
+		SaveBenefitsGroup                func(childComplexity int, input model.SaveBenefitsGroupInput) int
+		SaveMealPlan                     func(childComplexity int, planID string) int
+		SaveMealProfile                  func(childComplexity int, input model.MealProfileInput) int
+		SaveRecipe                       func(childComplexity int, recipeID string) int
+		SetGroceryItemChecked            func(childComplexity int, planID string, ingredientID string, checked bool) int
+		SetMealPrepTaskDone              func(childComplexity int, taskID string, done bool) int
+		StartBenefitsApplication         func(childComplexity int, formID string) int
+		StartBenefitsRenewalApplication  func(childComplexity int, renewalID string) int
+		SwapPlannedMeal                  func(childComplexity int, planID string, input model.SwapMealInput) int
+		UnsaveRecipe                     func(childComplexity int, recipeID string) int
+		UpdateBenefitsRenewalPreferences func(childComplexity int, renewalAlertsEnabled bool, discreetLockScreen bool) int
+		UpdateHandle                     func(childComplexity int, handle string) int
+		UpdatePantryItem                 func(childComplexity int, id string, input model.UpdatePantryItemInput) int
+		UpdatePreferences                func(childComplexity int, input model.UpdatePreferencesInput) int
+		UpdateProfile                    func(childComplexity int, input model.UpdateProfileInput) int
+		UpdateServings                   func(childComplexity int, planID string, input model.UpdateServingsInput) int
 	}
 
 	NutritionGoalSummary struct {
@@ -506,6 +534,8 @@ type ComplexityRoot struct {
 		BenefitsForm            func(childComplexity int, formID string) int
 		BenefitsForms           func(childComplexity int, state *string, program *string) int
 		BenefitsProfile         func(childComplexity int) int
+		BenefitsProgramRules    func(childComplexity int, program *string) int
+		BenefitsRenewals        func(childComplexity int) int
 		CurrentMealPlan         func(childComplexity int) int
 		GroceryList             func(childComplexity int, planID string) int
 		HandleAvailability      func(childComplexity int, handle string) int
@@ -624,6 +654,10 @@ type MutationResolver interface {
 	RefillBenefitsApplication(ctx context.Context, applicationID string) (*model.BenefitsApplication, error)
 	ApproveBenefitsApplication(ctx context.Context, applicationID string) (*model.BenefitsApplication, error)
 	DeleteBenefitsApplication(ctx context.Context, applicationID string) (bool, error)
+	ConfirmBenefitsRenewalDeadline(ctx context.Context, renewalID string, renewalDueAt time.Time, certificationEndsAt *time.Time) (*model.BenefitsRenewal, error)
+	StartBenefitsRenewalApplication(ctx context.Context, renewalID string) (*model.BenefitsApplication, error)
+	DismissBenefitsRenewal(ctx context.Context, renewalID string) (bool, error)
+	UpdateBenefitsRenewalPreferences(ctx context.Context, renewalAlertsEnabled bool, discreetLockScreen bool) (bool, error)
 	SaveMealProfile(ctx context.Context, input model.MealProfileInput) (*model.MealProfile, error)
 	ReplaceMeal(ctx context.Context, planID string, input model.ReplaceMealInput) (*model.MealPlan, error)
 	RegenerateDay(ctx context.Context, planID string, day int) (*model.MealPlan, error)
@@ -652,6 +686,8 @@ type QueryResolver interface {
 	BenefitsApplication(ctx context.Context, applicationID string) (*model.BenefitsApplication, error)
 	BenefitsApplications(ctx context.Context) ([]*model.BenefitsApplication, error)
 	BenefitsFieldVocabulary(ctx context.Context) ([]*model.BenefitsFieldSpec, error)
+	BenefitsRenewals(ctx context.Context) ([]*model.BenefitsRenewal, error)
+	BenefitsProgramRules(ctx context.Context, program *string) ([]*model.BenefitsProgramRule, error)
 	MealProfile(ctx context.Context) (*model.MealProfile, error)
 	PantryIngredientIds(ctx context.Context) ([]string, error)
 	MealPrepPlan(ctx context.Context, planID string) (*model.MealPrepPlan, error)
@@ -689,6 +725,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.AllergyRequirement.Strength(childComplexity), true
+
+	case "AppPreferences.benefitsRenewalDiscreetLockScreen":
+		if e.complexity.AppPreferences.BenefitsRenewalDiscreetLockScreen == nil {
+			break
+		}
+
+		return e.complexity.AppPreferences.BenefitsRenewalDiscreetLockScreen(childComplexity), true
+
+	case "AppPreferences.benefitsRenewalNotificationsEnabled":
+		if e.complexity.AppPreferences.BenefitsRenewalNotificationsEnabled == nil {
+			break
+		}
+
+		return e.complexity.AppPreferences.BenefitsRenewalNotificationsEnabled(childComplexity), true
 
 	case "AppPreferences.createdAt":
 		if e.complexity.AppPreferences.CreatedAt == nil {
@@ -1361,6 +1411,111 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.BenefitsProfile.VocabularyVersion(childComplexity), true
+
+	case "BenefitsProgramRule.certPeriodMonths":
+		if e.complexity.BenefitsProgramRule.CertPeriodMonths == nil {
+			break
+		}
+
+		return e.complexity.BenefitsProgramRule.CertPeriodMonths(childComplexity), true
+
+	case "BenefitsProgramRule.notes":
+		if e.complexity.BenefitsProgramRule.Notes == nil {
+			break
+		}
+
+		return e.complexity.BenefitsProgramRule.Notes(childComplexity), true
+
+	case "BenefitsProgramRule.program":
+		if e.complexity.BenefitsProgramRule.Program == nil {
+			break
+		}
+
+		return e.complexity.BenefitsProgramRule.Program(childComplexity), true
+
+	case "BenefitsProgramRule.sourceCitation":
+		if e.complexity.BenefitsProgramRule.SourceCitation == nil {
+			break
+		}
+
+		return e.complexity.BenefitsProgramRule.SourceCitation(childComplexity), true
+
+	case "BenefitsProgramRule.state":
+		if e.complexity.BenefitsProgramRule.State == nil {
+			break
+		}
+
+		return e.complexity.BenefitsProgramRule.State(childComplexity), true
+
+	case "BenefitsRenewal.certificationEndsAt":
+		if e.complexity.BenefitsRenewal.CertificationEndsAt == nil {
+			break
+		}
+
+		return e.complexity.BenefitsRenewal.CertificationEndsAt(childComplexity), true
+
+	case "BenefitsRenewal.daysRemaining":
+		if e.complexity.BenefitsRenewal.DaysRemaining == nil {
+			break
+		}
+
+		return e.complexity.BenefitsRenewal.DaysRemaining(childComplexity), true
+
+	case "BenefitsRenewal.formId":
+		if e.complexity.BenefitsRenewal.FormID == nil {
+			break
+		}
+
+		return e.complexity.BenefitsRenewal.FormID(childComplexity), true
+
+	case "BenefitsRenewal.id":
+		if e.complexity.BenefitsRenewal.ID == nil {
+			break
+		}
+
+		return e.complexity.BenefitsRenewal.ID(childComplexity), true
+
+	case "BenefitsRenewal.program":
+		if e.complexity.BenefitsRenewal.Program == nil {
+			break
+		}
+
+		return e.complexity.BenefitsRenewal.Program(childComplexity), true
+
+	case "BenefitsRenewal.reminderStage":
+		if e.complexity.BenefitsRenewal.ReminderStage == nil {
+			break
+		}
+
+		return e.complexity.BenefitsRenewal.ReminderStage(childComplexity), true
+
+	case "BenefitsRenewal.renewalDueAt":
+		if e.complexity.BenefitsRenewal.RenewalDueAt == nil {
+			break
+		}
+
+		return e.complexity.BenefitsRenewal.RenewalDueAt(childComplexity), true
+
+	case "BenefitsRenewal.source":
+		if e.complexity.BenefitsRenewal.Source == nil {
+			break
+		}
+
+		return e.complexity.BenefitsRenewal.Source(childComplexity), true
+
+	case "BenefitsRenewal.state":
+		if e.complexity.BenefitsRenewal.State == nil {
+			break
+		}
+
+		return e.complexity.BenefitsRenewal.State(childComplexity), true
+
+	case "BenefitsRenewal.status":
+		if e.complexity.BenefitsRenewal.Status == nil {
+			break
+		}
+
+		return e.complexity.BenefitsRenewal.Status(childComplexity), true
 
 	case "BenefitsSkippedField.fieldId":
 		if e.complexity.BenefitsSkippedField.FieldID == nil {
@@ -2239,6 +2394,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.CompleteOnboarding(childComplexity, args["input"].(model.CompleteOnboardingInput)), true
 
+	case "Mutation.confirmBenefitsRenewalDeadline":
+		if e.complexity.Mutation.ConfirmBenefitsRenewalDeadline == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_confirmBenefitsRenewalDeadline_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.ConfirmBenefitsRenewalDeadline(childComplexity, args["renewalId"].(string), args["renewalDueAt"].(time.Time), args["certificationEndsAt"].(*time.Time)), true
+
 	case "Mutation.deleteBenefitsApplication":
 		if e.complexity.Mutation.DeleteBenefitsApplication == nil {
 			break
@@ -2293,6 +2460,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.DeleteViewerData(childComplexity), true
+
+	case "Mutation.dismissBenefitsRenewal":
+		if e.complexity.Mutation.DismissBenefitsRenewal == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_dismissBenefitsRenewal_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DismissBenefitsRenewal(childComplexity, args["renewalId"].(string)), true
 
 	case "Mutation.generateMealPlan":
 		if e.complexity.Mutation.GenerateMealPlan == nil {
@@ -2510,6 +2689,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.StartBenefitsApplication(childComplexity, args["formId"].(string)), true
 
+	case "Mutation.startBenefitsRenewalApplication":
+		if e.complexity.Mutation.StartBenefitsRenewalApplication == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_startBenefitsRenewalApplication_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.StartBenefitsRenewalApplication(childComplexity, args["renewalId"].(string)), true
+
 	case "Mutation.swapPlannedMeal":
 		if e.complexity.Mutation.SwapPlannedMeal == nil {
 			break
@@ -2533,6 +2724,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.UnsaveRecipe(childComplexity, args["recipeId"].(string)), true
+
+	case "Mutation.updateBenefitsRenewalPreferences":
+		if e.complexity.Mutation.UpdateBenefitsRenewalPreferences == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateBenefitsRenewalPreferences_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateBenefitsRenewalPreferences(childComplexity, args["renewalAlertsEnabled"].(bool), args["discreetLockScreen"].(bool)), true
 
 	case "Mutation.updateHandle":
 		if e.complexity.Mutation.UpdateHandle == nil {
@@ -3175,6 +3378,25 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.BenefitsProfile(childComplexity), true
+
+	case "Query.benefitsProgramRules":
+		if e.complexity.Query.BenefitsProgramRules == nil {
+			break
+		}
+
+		args, err := ec.field_Query_benefitsProgramRules_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.BenefitsProgramRules(childComplexity, args["program"].(*string)), true
+
+	case "Query.benefitsRenewals":
+		if e.complexity.Query.BenefitsRenewals == nil {
+			break
+		}
+
+		return e.complexity.Query.BenefitsRenewals(childComplexity), true
 
 	case "Query.currentMealPlan":
 		if e.complexity.Query.CurrentMealPlan == nil {
@@ -3930,6 +4152,8 @@ type AppPreferences {
   expiringPantryNotificationsEnabled: Boolean!
   weeklyMealPlanNotificationsEnabled: Boolean!
   resourceReminderNotificationsEnabled: Boolean!
+  benefitsRenewalNotificationsEnabled: Boolean!
+  benefitsRenewalDiscreetLockScreen: Boolean!
   createdAt: String!
   updatedAt: String!
 }
@@ -4644,6 +4868,10 @@ extend type Query {
   benefitsApplications: [BenefitsApplication!]!
   "Every question the profile can hold, so the app renders questions rather than hardcoding them."
   benefitsFieldVocabulary: [BenefitsFieldSpec!]!
+  "The viewer's benefits renewal reminders, soonest first."
+  benefitsRenewals: [BenefitsRenewal!]!
+  "Reference certification-period rules per program, optionally filtered by program. Reference data — the same rows for every user."
+  benefitsProgramRules(program: String): [BenefitsProgramRule!]!
 }
 
 extend type Mutation {
@@ -4659,6 +4887,56 @@ extend type Mutation {
   "Flattens the reviewed document. Refused while anything required is missing."
   approveBenefitsApplication(applicationId: ID!): BenefitsApplication!
   deleteBenefitsApplication(applicationId: ID!): Boolean!
+
+  "Records the user's own renewal deadline. The stored deadline is explicit user data, not a guess."
+  confirmBenefitsRenewalDeadline(renewalId: ID!, renewalDueAt: Time!, certificationEndsAt: Time): BenefitsRenewal!
+  "Starts a fresh application on the renewal's form, pre-filled from the user's profile — the one-tap renewal."
+  startBenefitsRenewalApplication(renewalId: ID!): BenefitsApplication!
+  "Drops a renewal reminder."
+  dismissBenefitsRenewal(renewalId: ID!): Boolean!
+  "Sets the two renewal notification flags."
+  updateBenefitsRenewalPreferences(renewalAlertsEnabled: Boolean!, discreetLockScreen: Boolean!): Boolean!
+}
+
+# ---------------------------------------------------------------------------
+# Renewals
+# ---------------------------------------------------------------------------
+
+"An RFC 3339 timestamp."
+scalar Time
+
+"""
+One scheduled renewal reminder. It keys off the final application and stores
+only program, state, form id and dates — no answers, no PII beyond the viewer
+it belongs to. Every date here is presented as "typical — confirm yours"
+until the user confirms it.
+"""
+type BenefitsRenewal {
+  id: ID!
+  program: String!
+  state: String!
+  formId: String!
+  certificationEndsAt: Time
+  renewalDueAt: Time!
+  "Where the deadline came from: 'rule-derived' or 'user-confirmed'."
+  source: String!
+  "One of: scheduled, reminded, started, done, dismissed."
+  status: String!
+  "Which reminder offset has already been sent: 0, 1, 2 or 3."
+  reminderStage: Int!
+  "Whole days until the renewal is due, computed server-side. Negative when overdue."
+  daysRemaining: Int!
+}
+
+"Reference data: a typical certification period for a program, optionally per state."
+type BenefitsProgramRule {
+  program: String!
+  "A state code, or '*' for the national default."
+  state: String!
+  "Typical certification period in months. Null when the program has no fixed period (VA one-time claims, SSI redeterminations)."
+  certPeriodMonths: Int
+  sourceCitation: String!
+  notes: String
 }
 
 # ---------------------------------------------------------------------------
@@ -5332,6 +5610,39 @@ func (ec *executionContext) field_Mutation_completeOnboarding_args(ctx context.C
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_confirmBenefitsRenewalDeadline_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["renewalId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("renewalId"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["renewalId"] = arg0
+	var arg1 time.Time
+	if tmp, ok := rawArgs["renewalDueAt"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("renewalDueAt"))
+		arg1, err = ec.unmarshalNTime2timeᚐTime(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["renewalDueAt"] = arg1
+	var arg2 *time.Time
+	if tmp, ok := rawArgs["certificationEndsAt"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("certificationEndsAt"))
+		arg2, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["certificationEndsAt"] = arg2
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_deleteBenefitsApplication_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -5389,6 +5700,21 @@ func (ec *executionContext) field_Mutation_deletePushToken_args(ctx context.Cont
 		}
 	}
 	args["token"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_dismissBenefitsRenewal_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["renewalId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("renewalId"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["renewalId"] = arg0
 	return args, nil
 }
 
@@ -5716,6 +6042,21 @@ func (ec *executionContext) field_Mutation_startBenefitsApplication_args(ctx con
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_startBenefitsRenewalApplication_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["renewalId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("renewalId"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["renewalId"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_swapPlannedMeal_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -5752,6 +6093,30 @@ func (ec *executionContext) field_Mutation_unsaveRecipe_args(ctx context.Context
 		}
 	}
 	args["recipeId"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_updateBenefitsRenewalPreferences_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 bool
+	if tmp, ok := rawArgs["renewalAlertsEnabled"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("renewalAlertsEnabled"))
+		arg0, err = ec.unmarshalNBoolean2bool(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["renewalAlertsEnabled"] = arg0
+	var arg1 bool
+	if tmp, ok := rawArgs["discreetLockScreen"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("discreetLockScreen"))
+		arg1, err = ec.unmarshalNBoolean2bool(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["discreetLockScreen"] = arg1
 	return args, nil
 }
 
@@ -5914,6 +6279,21 @@ func (ec *executionContext) field_Query_benefitsForms_args(ctx context.Context, 
 		}
 	}
 	args["program"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_benefitsProgramRules_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *string
+	if tmp, ok := rawArgs["program"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("program"))
+		arg0, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["program"] = arg0
 	return args, nil
 }
 
@@ -6583,6 +6963,94 @@ func (ec *executionContext) _AppPreferences_resourceReminderNotificationsEnabled
 }
 
 func (ec *executionContext) fieldContext_AppPreferences_resourceReminderNotificationsEnabled(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AppPreferences",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AppPreferences_benefitsRenewalNotificationsEnabled(ctx context.Context, field graphql.CollectedField, obj *model.AppPreferences) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AppPreferences_benefitsRenewalNotificationsEnabled(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.BenefitsRenewalNotificationsEnabled, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AppPreferences_benefitsRenewalNotificationsEnabled(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "AppPreferences",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _AppPreferences_benefitsRenewalDiscreetLockScreen(ctx context.Context, field graphql.CollectedField, obj *model.AppPreferences) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_AppPreferences_benefitsRenewalDiscreetLockScreen(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.BenefitsRenewalDiscreetLockScreen, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_AppPreferences_benefitsRenewalDiscreetLockScreen(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "AppPreferences",
 		Field:      field,
@@ -10518,6 +10986,657 @@ func (ec *executionContext) fieldContext_BenefitsProfile_groups(_ context.Contex
 				return ec.fieldContext_BenefitsGroup_rows(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type BenefitsGroup", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BenefitsProgramRule_program(ctx context.Context, field graphql.CollectedField, obj *model.BenefitsProgramRule) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BenefitsProgramRule_program(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Program, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BenefitsProgramRule_program(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BenefitsProgramRule",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BenefitsProgramRule_state(ctx context.Context, field graphql.CollectedField, obj *model.BenefitsProgramRule) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BenefitsProgramRule_state(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.State, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BenefitsProgramRule_state(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BenefitsProgramRule",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BenefitsProgramRule_certPeriodMonths(ctx context.Context, field graphql.CollectedField, obj *model.BenefitsProgramRule) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BenefitsProgramRule_certPeriodMonths(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CertPeriodMonths, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*int)
+	fc.Result = res
+	return ec.marshalOInt2ᚖint(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BenefitsProgramRule_certPeriodMonths(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BenefitsProgramRule",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BenefitsProgramRule_sourceCitation(ctx context.Context, field graphql.CollectedField, obj *model.BenefitsProgramRule) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BenefitsProgramRule_sourceCitation(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SourceCitation, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BenefitsProgramRule_sourceCitation(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BenefitsProgramRule",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BenefitsProgramRule_notes(ctx context.Context, field graphql.CollectedField, obj *model.BenefitsProgramRule) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BenefitsProgramRule_notes(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Notes, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BenefitsProgramRule_notes(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BenefitsProgramRule",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BenefitsRenewal_id(ctx context.Context, field graphql.CollectedField, obj *model.BenefitsRenewal) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BenefitsRenewal_id(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BenefitsRenewal_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BenefitsRenewal",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BenefitsRenewal_program(ctx context.Context, field graphql.CollectedField, obj *model.BenefitsRenewal) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BenefitsRenewal_program(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Program, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BenefitsRenewal_program(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BenefitsRenewal",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BenefitsRenewal_state(ctx context.Context, field graphql.CollectedField, obj *model.BenefitsRenewal) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BenefitsRenewal_state(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.State, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BenefitsRenewal_state(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BenefitsRenewal",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BenefitsRenewal_formId(ctx context.Context, field graphql.CollectedField, obj *model.BenefitsRenewal) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BenefitsRenewal_formId(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.FormID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BenefitsRenewal_formId(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BenefitsRenewal",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BenefitsRenewal_certificationEndsAt(ctx context.Context, field graphql.CollectedField, obj *model.BenefitsRenewal) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BenefitsRenewal_certificationEndsAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CertificationEndsAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*time.Time)
+	fc.Result = res
+	return ec.marshalOTime2ᚖtimeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BenefitsRenewal_certificationEndsAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BenefitsRenewal",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BenefitsRenewal_renewalDueAt(ctx context.Context, field graphql.CollectedField, obj *model.BenefitsRenewal) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BenefitsRenewal_renewalDueAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.RenewalDueAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(time.Time)
+	fc.Result = res
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BenefitsRenewal_renewalDueAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BenefitsRenewal",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BenefitsRenewal_source(ctx context.Context, field graphql.CollectedField, obj *model.BenefitsRenewal) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BenefitsRenewal_source(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Source, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BenefitsRenewal_source(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BenefitsRenewal",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BenefitsRenewal_status(ctx context.Context, field graphql.CollectedField, obj *model.BenefitsRenewal) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BenefitsRenewal_status(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Status, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BenefitsRenewal_status(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BenefitsRenewal",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BenefitsRenewal_reminderStage(ctx context.Context, field graphql.CollectedField, obj *model.BenefitsRenewal) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BenefitsRenewal_reminderStage(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ReminderStage, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BenefitsRenewal_reminderStage(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BenefitsRenewal",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BenefitsRenewal_daysRemaining(ctx context.Context, field graphql.CollectedField, obj *model.BenefitsRenewal) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BenefitsRenewal_daysRemaining(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.DaysRemaining, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BenefitsRenewal_daysRemaining(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BenefitsRenewal",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
 		},
 	}
 	return fc, nil
@@ -15965,6 +17084,10 @@ func (ec *executionContext) fieldContext_Mutation_updatePreferences(ctx context.
 				return ec.fieldContext_AppPreferences_weeklyMealPlanNotificationsEnabled(ctx, field)
 			case "resourceReminderNotificationsEnabled":
 				return ec.fieldContext_AppPreferences_resourceReminderNotificationsEnabled(ctx, field)
+			case "benefitsRenewalNotificationsEnabled":
+				return ec.fieldContext_AppPreferences_benefitsRenewalNotificationsEnabled(ctx, field)
+			case "benefitsRenewalDiscreetLockScreen":
+				return ec.fieldContext_AppPreferences_benefitsRenewalDiscreetLockScreen(ctx, field)
 			case "createdAt":
 				return ec.fieldContext_AppPreferences_createdAt(ctx, field)
 			case "updatedAt":
@@ -17762,6 +18885,276 @@ func (ec *executionContext) fieldContext_Mutation_deleteBenefitsApplication(ctx 
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Mutation_deleteBenefitsApplication_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_confirmBenefitsRenewalDeadline(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_confirmBenefitsRenewalDeadline(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().ConfirmBenefitsRenewalDeadline(rctx, fc.Args["renewalId"].(string), fc.Args["renewalDueAt"].(time.Time), fc.Args["certificationEndsAt"].(*time.Time))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.BenefitsRenewal)
+	fc.Result = res
+	return ec.marshalNBenefitsRenewal2ᚖgithubᚗcomᚋhelpthehiveᚋserverᚋinternalᚋgraphqlᚋmodelᚐBenefitsRenewal(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_confirmBenefitsRenewalDeadline(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_BenefitsRenewal_id(ctx, field)
+			case "program":
+				return ec.fieldContext_BenefitsRenewal_program(ctx, field)
+			case "state":
+				return ec.fieldContext_BenefitsRenewal_state(ctx, field)
+			case "formId":
+				return ec.fieldContext_BenefitsRenewal_formId(ctx, field)
+			case "certificationEndsAt":
+				return ec.fieldContext_BenefitsRenewal_certificationEndsAt(ctx, field)
+			case "renewalDueAt":
+				return ec.fieldContext_BenefitsRenewal_renewalDueAt(ctx, field)
+			case "source":
+				return ec.fieldContext_BenefitsRenewal_source(ctx, field)
+			case "status":
+				return ec.fieldContext_BenefitsRenewal_status(ctx, field)
+			case "reminderStage":
+				return ec.fieldContext_BenefitsRenewal_reminderStage(ctx, field)
+			case "daysRemaining":
+				return ec.fieldContext_BenefitsRenewal_daysRemaining(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type BenefitsRenewal", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_confirmBenefitsRenewalDeadline_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_startBenefitsRenewalApplication(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_startBenefitsRenewalApplication(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().StartBenefitsRenewalApplication(rctx, fc.Args["renewalId"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.BenefitsApplication)
+	fc.Result = res
+	return ec.marshalNBenefitsApplication2ᚖgithubᚗcomᚋhelpthehiveᚋserverᚋinternalᚋgraphqlᚋmodelᚐBenefitsApplication(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_startBenefitsRenewalApplication(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_BenefitsApplication_id(ctx, field)
+			case "form":
+				return ec.fieldContext_BenefitsApplication_form(ctx, field)
+			case "status":
+				return ec.fieldContext_BenefitsApplication_status(ctx, field)
+			case "filledFields":
+				return ec.fieldContext_BenefitsApplication_filledFields(ctx, field)
+			case "missingFields":
+				return ec.fieldContext_BenefitsApplication_missingFields(ctx, field)
+			case "problems":
+				return ec.fieldContext_BenefitsApplication_problems(ctx, field)
+			case "skippedFields":
+				return ec.fieldContext_BenefitsApplication_skippedFields(ctx, field)
+			case "draftDocumentPath":
+				return ec.fieldContext_BenefitsApplication_draftDocumentPath(ctx, field)
+			case "finalDocumentPath":
+				return ec.fieldContext_BenefitsApplication_finalDocumentPath(ctx, field)
+			case "failureReason":
+				return ec.fieldContext_BenefitsApplication_failureReason(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_BenefitsApplication_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_BenefitsApplication_updatedAt(ctx, field)
+			case "approvedAt":
+				return ec.fieldContext_BenefitsApplication_approvedAt(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type BenefitsApplication", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_startBenefitsRenewalApplication_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_dismissBenefitsRenewal(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_dismissBenefitsRenewal(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().DismissBenefitsRenewal(rctx, fc.Args["renewalId"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_dismissBenefitsRenewal(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_dismissBenefitsRenewal_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_updateBenefitsRenewalPreferences(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_updateBenefitsRenewalPreferences(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UpdateBenefitsRenewalPreferences(rctx, fc.Args["renewalAlertsEnabled"].(bool), fc.Args["discreetLockScreen"].(bool))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_updateBenefitsRenewalPreferences(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_updateBenefitsRenewalPreferences_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -22982,6 +24375,139 @@ func (ec *executionContext) fieldContext_Query_benefitsFieldVocabulary(_ context
 	return fc, nil
 }
 
+func (ec *executionContext) _Query_benefitsRenewals(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_benefitsRenewals(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().BenefitsRenewals(rctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.BenefitsRenewal)
+	fc.Result = res
+	return ec.marshalNBenefitsRenewal2ᚕᚖgithubᚗcomᚋhelpthehiveᚋserverᚋinternalᚋgraphqlᚋmodelᚐBenefitsRenewalᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_benefitsRenewals(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_BenefitsRenewal_id(ctx, field)
+			case "program":
+				return ec.fieldContext_BenefitsRenewal_program(ctx, field)
+			case "state":
+				return ec.fieldContext_BenefitsRenewal_state(ctx, field)
+			case "formId":
+				return ec.fieldContext_BenefitsRenewal_formId(ctx, field)
+			case "certificationEndsAt":
+				return ec.fieldContext_BenefitsRenewal_certificationEndsAt(ctx, field)
+			case "renewalDueAt":
+				return ec.fieldContext_BenefitsRenewal_renewalDueAt(ctx, field)
+			case "source":
+				return ec.fieldContext_BenefitsRenewal_source(ctx, field)
+			case "status":
+				return ec.fieldContext_BenefitsRenewal_status(ctx, field)
+			case "reminderStage":
+				return ec.fieldContext_BenefitsRenewal_reminderStage(ctx, field)
+			case "daysRemaining":
+				return ec.fieldContext_BenefitsRenewal_daysRemaining(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type BenefitsRenewal", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_benefitsProgramRules(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_benefitsProgramRules(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().BenefitsProgramRules(rctx, fc.Args["program"].(*string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.BenefitsProgramRule)
+	fc.Result = res
+	return ec.marshalNBenefitsProgramRule2ᚕᚖgithubᚗcomᚋhelpthehiveᚋserverᚋinternalᚋgraphqlᚋmodelᚐBenefitsProgramRuleᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_benefitsProgramRules(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "program":
+				return ec.fieldContext_BenefitsProgramRule_program(ctx, field)
+			case "state":
+				return ec.fieldContext_BenefitsProgramRule_state(ctx, field)
+			case "certPeriodMonths":
+				return ec.fieldContext_BenefitsProgramRule_certPeriodMonths(ctx, field)
+			case "sourceCitation":
+				return ec.fieldContext_BenefitsProgramRule_sourceCitation(ctx, field)
+			case "notes":
+				return ec.fieldContext_BenefitsProgramRule_notes(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type BenefitsProgramRule", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_benefitsProgramRules_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Query_mealProfile(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Query_mealProfile(ctx, field)
 	if err != nil {
@@ -25505,6 +27031,10 @@ func (ec *executionContext) fieldContext_Viewer_preferences(_ context.Context, f
 				return ec.fieldContext_AppPreferences_weeklyMealPlanNotificationsEnabled(ctx, field)
 			case "resourceReminderNotificationsEnabled":
 				return ec.fieldContext_AppPreferences_resourceReminderNotificationsEnabled(ctx, field)
+			case "benefitsRenewalNotificationsEnabled":
+				return ec.fieldContext_AppPreferences_benefitsRenewalNotificationsEnabled(ctx, field)
+			case "benefitsRenewalDiscreetLockScreen":
+				return ec.fieldContext_AppPreferences_benefitsRenewalDiscreetLockScreen(ctx, field)
 			case "createdAt":
 				return ec.fieldContext_AppPreferences_createdAt(ctx, field)
 			case "updatedAt":
@@ -29220,6 +30750,16 @@ func (ec *executionContext) _AppPreferences(ctx context.Context, sel ast.Selecti
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		case "benefitsRenewalNotificationsEnabled":
+			out.Values[i] = ec._AppPreferences_benefitsRenewalNotificationsEnabled(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "benefitsRenewalDiscreetLockScreen":
+			out.Values[i] = ec._AppPreferences_benefitsRenewalDiscreetLockScreen(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		case "createdAt":
 			out.Values[i] = ec._AppPreferences_createdAt(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -29960,6 +31500,140 @@ func (ec *executionContext) _BenefitsProfile(ctx context.Context, sel ast.Select
 			}
 		case "groups":
 			out.Values[i] = ec._BenefitsProfile_groups(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var benefitsProgramRuleImplementors = []string{"BenefitsProgramRule"}
+
+func (ec *executionContext) _BenefitsProgramRule(ctx context.Context, sel ast.SelectionSet, obj *model.BenefitsProgramRule) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, benefitsProgramRuleImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("BenefitsProgramRule")
+		case "program":
+			out.Values[i] = ec._BenefitsProgramRule_program(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "state":
+			out.Values[i] = ec._BenefitsProgramRule_state(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "certPeriodMonths":
+			out.Values[i] = ec._BenefitsProgramRule_certPeriodMonths(ctx, field, obj)
+		case "sourceCitation":
+			out.Values[i] = ec._BenefitsProgramRule_sourceCitation(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "notes":
+			out.Values[i] = ec._BenefitsProgramRule_notes(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var benefitsRenewalImplementors = []string{"BenefitsRenewal"}
+
+func (ec *executionContext) _BenefitsRenewal(ctx context.Context, sel ast.SelectionSet, obj *model.BenefitsRenewal) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, benefitsRenewalImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("BenefitsRenewal")
+		case "id":
+			out.Values[i] = ec._BenefitsRenewal_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "program":
+			out.Values[i] = ec._BenefitsRenewal_program(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "state":
+			out.Values[i] = ec._BenefitsRenewal_state(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "formId":
+			out.Values[i] = ec._BenefitsRenewal_formId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "certificationEndsAt":
+			out.Values[i] = ec._BenefitsRenewal_certificationEndsAt(ctx, field, obj)
+		case "renewalDueAt":
+			out.Values[i] = ec._BenefitsRenewal_renewalDueAt(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "source":
+			out.Values[i] = ec._BenefitsRenewal_source(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "status":
+			out.Values[i] = ec._BenefitsRenewal_status(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "reminderStage":
+			out.Values[i] = ec._BenefitsRenewal_reminderStage(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "daysRemaining":
+			out.Values[i] = ec._BenefitsRenewal_daysRemaining(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
@@ -31388,6 +33062,34 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		case "confirmBenefitsRenewalDeadline":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_confirmBenefitsRenewalDeadline(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "startBenefitsRenewalApplication":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_startBenefitsRenewalApplication(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "dismissBenefitsRenewal":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_dismissBenefitsRenewal(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "updateBenefitsRenewalPreferences":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_updateBenefitsRenewalPreferences(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		case "saveMealProfile":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_saveMealProfile(ctx, field)
@@ -32455,6 +34157,50 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_benefitsFieldVocabulary(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "benefitsRenewals":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_benefitsRenewals(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "benefitsProgramRules":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_benefitsProgramRules(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&fs.Invalids, 1)
 				}
@@ -34016,6 +35762,118 @@ func (ec *executionContext) marshalNBenefitsProfile2ᚖgithubᚗcomᚋhelpthehiv
 		return graphql.Null
 	}
 	return ec._BenefitsProfile(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNBenefitsProgramRule2ᚕᚖgithubᚗcomᚋhelpthehiveᚋserverᚋinternalᚋgraphqlᚋmodelᚐBenefitsProgramRuleᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.BenefitsProgramRule) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNBenefitsProgramRule2ᚖgithubᚗcomᚋhelpthehiveᚋserverᚋinternalᚋgraphqlᚋmodelᚐBenefitsProgramRule(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNBenefitsProgramRule2ᚖgithubᚗcomᚋhelpthehiveᚋserverᚋinternalᚋgraphqlᚋmodelᚐBenefitsProgramRule(ctx context.Context, sel ast.SelectionSet, v *model.BenefitsProgramRule) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._BenefitsProgramRule(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNBenefitsRenewal2githubᚗcomᚋhelpthehiveᚋserverᚋinternalᚋgraphqlᚋmodelᚐBenefitsRenewal(ctx context.Context, sel ast.SelectionSet, v model.BenefitsRenewal) graphql.Marshaler {
+	return ec._BenefitsRenewal(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNBenefitsRenewal2ᚕᚖgithubᚗcomᚋhelpthehiveᚋserverᚋinternalᚋgraphqlᚋmodelᚐBenefitsRenewalᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.BenefitsRenewal) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNBenefitsRenewal2ᚖgithubᚗcomᚋhelpthehiveᚋserverᚋinternalᚋgraphqlᚋmodelᚐBenefitsRenewal(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNBenefitsRenewal2ᚖgithubᚗcomᚋhelpthehiveᚋserverᚋinternalᚋgraphqlᚋmodelᚐBenefitsRenewal(ctx context.Context, sel ast.SelectionSet, v *model.BenefitsRenewal) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._BenefitsRenewal(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNBenefitsSkipReason2githubᚗcomᚋhelpthehiveᚋserverᚋinternalᚋgraphqlᚋmodelᚐBenefitsSkipReason(ctx context.Context, v interface{}) (model.BenefitsSkipReason, error) {
@@ -35632,6 +37490,21 @@ func (ec *executionContext) unmarshalNSwapMealInput2githubᚗcomᚋhelpthehive�
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
+func (ec *executionContext) unmarshalNTime2timeᚐTime(ctx context.Context, v interface{}) (time.Time, error) {
+	res, err := graphql.UnmarshalTime(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNTime2timeᚐTime(ctx context.Context, sel ast.SelectionSet, v time.Time) graphql.Marshaler {
+	res := graphql.MarshalTime(v)
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+	}
+	return res
+}
+
 func (ec *executionContext) unmarshalNUpdatePantryItemInput2githubᚗcomᚋhelpthehiveᚋserverᚋinternalᚋgraphqlᚋmodelᚐUpdatePantryItemInput(ctx context.Context, v interface{}) (model.UpdatePantryItemInput, error) {
 	res, err := ec.unmarshalInputUpdatePantryItemInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -36294,6 +38167,22 @@ func (ec *executionContext) marshalOString2ᚖstring(ctx context.Context, sel as
 		return graphql.Null
 	}
 	res := graphql.MarshalString(*v)
+	return res
+}
+
+func (ec *executionContext) unmarshalOTime2ᚖtimeᚐTime(ctx context.Context, v interface{}) (*time.Time, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := graphql.UnmarshalTime(v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOTime2ᚖtimeᚐTime(ctx context.Context, sel ast.SelectionSet, v *time.Time) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	res := graphql.MarshalTime(*v)
 	return res
 }
 

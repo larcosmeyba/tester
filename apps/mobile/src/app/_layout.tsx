@@ -6,6 +6,7 @@ import { AuthProvider } from "@/auth/auth-context";
 import { AppStateProvider } from "@/state/app-state";
 import { MealPlanProvider } from "@/features/meals/meal-plan-context";
 import { PantryProvider } from "@/features/pantry/pantry-context";
+import { NotificationDeepLinkHandler } from "@/features/notifications/notification-deep-link-handler";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -19,6 +20,7 @@ export default function RootLayout() {
       <AppStateProvider>
         <PantryProvider>
           <MealPlanProvider>
+            <NotificationDeepLinkHandler />
             <Stack screenOptions={{ headerShown: false }}>
               <Stack.Screen name="index" />
               <Stack.Screen name="auth/verified" />
