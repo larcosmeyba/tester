@@ -35,9 +35,9 @@ import (
 	"time"
 
 	domain "github.com/helpthehive/server/internal/domain/benefits"
+	"github.com/helpthehive/server/internal/modules/benefits/aiprovider"
 	"github.com/helpthehive/server/internal/modules/benefits/assist"
 	"github.com/helpthehive/server/internal/modules/benefits/pdf"
-	"github.com/helpthehive/server/internal/modules/benefits/aiprovider"
 )
 
 func main() {

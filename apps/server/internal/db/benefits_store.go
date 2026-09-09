@@ -46,16 +46,16 @@ type BenefitsGroupRow struct {
 }
 
 type BenefitsApplication struct {
-	ID           string
-	UserID       string
-	FormID       string
-	FormVersion  string
-	FormRevision int
+	ID            string
+	UserID        string
+	FormID        string
+	FormVersion   string
+	FormRevision  int
 	Status        string
 	FailureReason string
-	CreatedAt    time.Time
-	UpdatedAt    time.Time
-	ApprovedAt   *time.Time
+	CreatedAt     time.Time
+	UpdatedAt     time.Time
+	ApprovedAt    *time.Time
 }
 
 // BenefitsApplicationField is the audit trail: which profile answer fed which

@@ -159,14 +159,14 @@ type TemplateRef struct {
 // an edit in place, so a completed PDF can always be reproduced from the exact
 // mapping that produced it.
 type FormMapping struct {
-	SchemaVersion     int          `json:"schemaVersion"`
-	ID                string       `json:"id"`
-	Jurisdiction      Jurisdiction `json:"jurisdiction"`
-	Program           string       `json:"program"`
-	FormCode          string       `json:"formCode"`
-	FormTitle         string       `json:"formTitle"`
-	FormVersion       string       `json:"formVersion"`
-	Revision          int          `json:"revision"`
+	SchemaVersion int          `json:"schemaVersion"`
+	ID            string       `json:"id"`
+	Jurisdiction  Jurisdiction `json:"jurisdiction"`
+	Program       string       `json:"program"`
+	FormCode      string       `json:"formCode"`
+	FormTitle     string       `json:"formTitle"`
+	FormVersion   string       `json:"formVersion"`
+	Revision      int          `json:"revision"`
 	// Status is active, deprecated or draft. Only an active mapping is used to
 	// start a new application; an existing run keeps the exact revision it was
 	// started on, whatever has happened since.

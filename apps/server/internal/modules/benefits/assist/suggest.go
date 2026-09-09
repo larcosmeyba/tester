@@ -8,8 +8,8 @@ import (
 	"strings"
 
 	domain "github.com/helpthehive/server/internal/domain/benefits"
-	"github.com/helpthehive/server/internal/modules/benefits/pdf"
 	"github.com/helpthehive/server/internal/modules/benefits/aiprovider"
+	"github.com/helpthehive/server/internal/modules/benefits/pdf"
 )
 
 // MaxSuggestionTokens caps the reply. A mapping draft for a long form is still

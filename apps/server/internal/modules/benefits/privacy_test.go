@@ -59,8 +59,8 @@ func TestProblemReasonsDoNotQuoteSensitiveValues(t *testing.T) {
 	}
 
 	mapping := &domain.FormMapping{
-		SchemaVersion:     domain.MappingSchemaVersion,
-		ID:                "t", FormVersion: "2026.01", Revision: 1, Status: "draft",
+		SchemaVersion: domain.MappingSchemaVersion,
+		ID:            "t", FormVersion: "2026.01", Revision: 1, Status: "draft",
 		VocabularyVersion: domain.VocabularyVersion,
 		Template:          domain.TemplateRef{Kind: domain.TemplateAcroForm, File: "t.pdf", SHA256: strings.Repeat("a", 64), PageCount: 1},
 		Fields: []domain.FieldMapping{{
