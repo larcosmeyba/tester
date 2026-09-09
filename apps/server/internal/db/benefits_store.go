@@ -51,7 +51,8 @@ type BenefitsApplication struct {
 	FormID       string
 	FormVersion  string
 	FormRevision int
-	Status       string
+	Status        string
+	FailureReason string
 	CreatedAt    time.Time
 	UpdatedAt    time.Time
 	ApprovedAt   *time.Time
@@ -262,14 +263,14 @@ func (s *Store) CreateBenefitsApplication(ctx context.Context, application Benef
 	row := s.pool.QueryRow(ctx, `
 		INSERT INTO benefits_applications (id, user_id, form_id, form_version, form_revision, status)
 		VALUES ($1, $2, $3, $4, $5, $6)
-		RETURNING id, user_id, form_id, form_version, form_revision, status, created_at, updated_at, approved_at
+		RETURNING id, user_id, form_id, form_version, form_revision, status, failure_reason, created_at, updated_at, approved_at
 	`, NewID(), application.UserID, application.FormID, application.FormVersion, application.FormRevision, application.Status)
 	return scanBenefitsApplication(row)
 }
 
 func (s *Store) BenefitsApplication(ctx context.Context, userID, applicationID string) (BenefitsApplication, error) {
 	row := s.pool.QueryRow(ctx, `
-		SELECT id, user_id, form_id, form_version, form_revision, status, created_at, updated_at, approved_at
+		SELECT id, user_id, form_id, form_version, form_revision, status, failure_reason, created_at, updated_at, approved_at
 		FROM benefits_applications
 		WHERE id = $1 AND user_id = $2
 	`, applicationID, userID)
@@ -278,7 +279,7 @@ func (s *Store) BenefitsApplication(ctx context.Context, userID, applicationID s
 
 func (s *Store) ListBenefitsApplications(ctx context.Context, userID string) ([]BenefitsApplication, error) {
 	rows, err := s.pool.Query(ctx, `
-		SELECT id, user_id, form_id, form_version, form_revision, status, created_at, updated_at, approved_at
+		SELECT id, user_id, form_id, form_version, form_revision, status, failure_reason, created_at, updated_at, approved_at
 		FROM benefits_applications
 		WHERE user_id = $1
 		ORDER BY updated_at DESC
@@ -302,7 +303,7 @@ func (s *Store) ListBenefitsApplications(ctx context.Context, userID string) ([]
 // SaveBenefitsApplicationOutcome records a run's status and its per-field audit
 // trail in one transaction, so an application's status can never disagree with
 // the fields that produced it.
-func (s *Store) SaveBenefitsApplicationOutcome(ctx context.Context, userID, applicationID, status string, approvedAt *time.Time, fields []BenefitsApplicationField) error {
+func (s *Store) SaveBenefitsApplicationOutcome(ctx context.Context, userID, applicationID, status, failureReason string, approvedAt *time.Time, fields []BenefitsApplicationField) error {
 	tx, err := s.pool.Begin(ctx)
 	if err != nil {
 		return err
@@ -311,9 +312,9 @@ func (s *Store) SaveBenefitsApplicationOutcome(ctx context.Context, userID, appl
 
 	tag, err := tx.Exec(ctx, `
 		UPDATE benefits_applications
-		SET status = $3, approved_at = $4, updated_at = now()
+		SET status = $3, failure_reason = $4, approved_at = $5, updated_at = now()
 		WHERE id = $1 AND user_id = $2
-	`, applicationID, userID, status, approvedAt)
+	`, applicationID, userID, status, failureReason, approvedAt)
 	if err != nil {
 		return err
 	}
@@ -337,13 +338,20 @@ func (s *Store) SaveBenefitsApplicationOutcome(ctx context.Context, userID, appl
 	return tx.Commit(ctx)
 }
 
-func (s *Store) BenefitsApplicationFields(ctx context.Context, applicationID string) ([]BenefitsApplicationField, error) {
+// BenefitsApplicationFields reads a run's audit trail.
+//
+// It takes the user id and joins on it even though every caller has already
+// established ownership. A predicate that is merely implied by the calling
+// order is one refactor away from not being there at all, and this table is
+// keyed only by application id.
+func (s *Store) BenefitsApplicationFields(ctx context.Context, userID, applicationID string) ([]BenefitsApplicationField, error) {
 	rows, err := s.pool.Query(ctx, `
-		SELECT field_id, outcome, field_path, value_source, page, detail, is_sensitive
-		FROM benefits_application_fields
-		WHERE application_id = $1
-		ORDER BY page, field_id
-	`, applicationID)
+		SELECT f.field_id, f.outcome, f.field_path, f.value_source, f.page, f.detail, f.is_sensitive
+		FROM benefits_application_fields f
+		JOIN benefits_applications a ON a.id = f.application_id
+		WHERE f.application_id = $1 AND a.user_id = $2
+		ORDER BY f.page, f.field_id
+	`, applicationID, userID)
 	if err != nil {
 		return nil, err
 	}
@@ -369,7 +377,7 @@ func (s *Store) SupersedeBenefitsApplications(ctx context.Context, userID, formI
 		UPDATE benefits_applications
 		SET status = 'superseded', updated_at = now()
 		WHERE user_id = $1 AND form_id = $2 AND id <> $3
-		  AND status IN ('draft', 'needs_input', 'ready_for_review')
+		  AND status IN ('draft', 'needs_information', 'ready_for_review', 'failed')
 	`, userID, formID, keepApplicationID)
 	return err
 }
@@ -469,8 +477,8 @@ func (s *Store) DeleteBenefitsDocument(ctx context.Context, documentID string) e
 func scanBenefitsApplication(row scanner) (BenefitsApplication, error) {
 	var application BenefitsApplication
 	err := row.Scan(&application.ID, &application.UserID, &application.FormID, &application.FormVersion,
-		&application.FormRevision, &application.Status, &application.CreatedAt, &application.UpdatedAt,
-		&application.ApprovedAt)
+		&application.FormRevision, &application.Status, &application.FailureReason,
+		&application.CreatedAt, &application.UpdatedAt, &application.ApprovedAt)
 	return application, err
 }
 

@@ -90,6 +90,7 @@ type ComplexityRoot struct {
 		ApprovedAt        func(childComplexity int) int
 		CreatedAt         func(childComplexity int) int
 		DraftDocumentPath func(childComplexity int) int
+		FailureReason     func(childComplexity int) int
 		FilledFields      func(childComplexity int) int
 		FinalDocumentPath func(childComplexity int) int
 		Form              func(childComplexity int) int
@@ -134,6 +135,7 @@ type ComplexityRoot struct {
 	BenefitsForm struct {
 		AgencyURL          func(childComplexity int) int
 		Country            func(childComplexity int) int
+		EffectiveDate      func(childComplexity int) int
 		FillableFieldCount func(childComplexity int) int
 		FormCode           func(childComplexity int) int
 		FormTitle          func(childComplexity int) int
@@ -143,8 +145,11 @@ type ComplexityRoot struct {
 		MappedFieldCount   func(childComplexity int) int
 		PageCount          func(childComplexity int) int
 		Program            func(childComplexity int) int
+		RetrievedAt        func(childComplexity int) int
 		Revision           func(childComplexity int) int
+		SourceURL          func(childComplexity int) int
 		State              func(childComplexity int) int
+		Status             func(childComplexity int) int
 		TemplateKind       func(childComplexity int) int
 	}
 
@@ -886,6 +891,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.BenefitsApplication.DraftDocumentPath(childComplexity), true
 
+	case "BenefitsApplication.failureReason":
+		if e.complexity.BenefitsApplication.FailureReason == nil {
+			break
+		}
+
+		return e.complexity.BenefitsApplication.FailureReason(childComplexity), true
+
 	case "BenefitsApplication.filledFields":
 		if e.complexity.BenefitsApplication.FilledFields == nil {
 			break
@@ -1110,6 +1122,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.BenefitsForm.Country(childComplexity), true
 
+	case "BenefitsForm.effectiveDate":
+		if e.complexity.BenefitsForm.EffectiveDate == nil {
+			break
+		}
+
+		return e.complexity.BenefitsForm.EffectiveDate(childComplexity), true
+
 	case "BenefitsForm.fillableFieldCount":
 		if e.complexity.BenefitsForm.FillableFieldCount == nil {
 			break
@@ -1173,6 +1192,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.BenefitsForm.Program(childComplexity), true
 
+	case "BenefitsForm.retrievedAt":
+		if e.complexity.BenefitsForm.RetrievedAt == nil {
+			break
+		}
+
+		return e.complexity.BenefitsForm.RetrievedAt(childComplexity), true
+
 	case "BenefitsForm.revision":
 		if e.complexity.BenefitsForm.Revision == nil {
 			break
@@ -1180,12 +1206,26 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.BenefitsForm.Revision(childComplexity), true
 
+	case "BenefitsForm.sourceUrl":
+		if e.complexity.BenefitsForm.SourceURL == nil {
+			break
+		}
+
+		return e.complexity.BenefitsForm.SourceURL(childComplexity), true
+
 	case "BenefitsForm.state":
 		if e.complexity.BenefitsForm.State == nil {
 			break
 		}
 
 		return e.complexity.BenefitsForm.State(childComplexity), true
+
+	case "BenefitsForm.status":
+		if e.complexity.BenefitsForm.Status == nil {
+			break
+		}
+
+		return e.complexity.BenefitsForm.Status(childComplexity), true
 
 	case "BenefitsForm.templateKind":
 		if e.complexity.BenefitsForm.TemplateKind == nil {
@@ -4560,6 +4600,12 @@ input ImportIngredientPatchInput {
 # Ownership is never a client concern. No benefits field accepts a user id; the
 # viewer is resolved from the verified JWT on every call, and anything the
 # viewer may not see is reported as NOT_FOUND rather than FORBIDDEN.
+#
+# Nothing in this API decides eligibility, and there is deliberately no field
+# through which it could. Help The Hive prepares a form from answers the
+# applicant gave; whether they qualify for a program is decided by the agency
+# that runs it, on the application they submit. Anything resembling a
+# prediction, a score or a likelihood belongs nowhere in this schema.
 # ---------------------------------------------------------------------------
 
 extend type Query {
@@ -4660,6 +4706,12 @@ type BenefitsFieldSpec {
 
 type BenefitsForm {
   id: ID!
+  """
+  Whether this form is offered to applicants. A form whose provenance has not
+  been confirmed against the agency loads and can be tested, but is never
+  offered: DRAFT and DEPRECATED forms do not appear in ` + "`" + `benefitsForms` + "`" + `.
+  """
+  status: BenefitsFormStatus!
   "Identifies the exact revision: id@version#revision."
   key: String!
   program: String!
@@ -4680,6 +4732,19 @@ type BenefitsForm {
   """
   mappedFieldCount: Int!
   fillableFieldCount: Int!
+
+  "The agency's own effective date for this version of the form, if it states one."
+  effectiveDate: String
+  "Where this exact PDF was downloaded from."
+  sourceUrl: String
+  "The day the PDF was downloaded, so 'is this still current?' is answerable."
+  retrievedAt: String
+}
+
+enum BenefitsFormStatus {
+  ACTIVE
+  DRAFT
+  DEPRECATED
 }
 
 # ---------------------------------------------------------------------------
@@ -4708,6 +4773,9 @@ type BenefitsApplication {
   draftDocumentPath: String
   "Path to the approved, flattened PDF. Null until the applicant approves."
   finalDocumentPath: String
+
+  "Why the run failed, when the status is FAILED. Never echoes an answer."
+  failureReason: String
 
   createdAt: String!
   updatedAt: String!
@@ -4835,11 +4903,22 @@ enum BenefitsTemplateKind {
   FLAT
 }
 
+"""
+Where a run has got to. A run is durable: it survives the app closing and is
+resumed rather than restarted.
+"""
 enum BenefitsApplicationStatus {
+  "Created, not yet filled."
   DRAFT
-  NEEDS_INPUT
+  "Filled as far as the profile allows. ` + "`" + `missingFields` + "`" + ` says what to ask for."
+  NEEDS_INFORMATION
+  "Nothing required is outstanding; awaiting the applicant's read-through."
   READY_FOR_REVIEW
-  APPROVED
+  "The applicant approved it and the PDF is flattened."
+  COMPLETED
+  "A fill or render failed. ` + "`" + `failureReason` + "`" + ` says why; refilling clears it."
+  FAILED
+  "Replaced by a newer run against the same form."
   SUPERSEDED
 }
 
@@ -7296,6 +7375,8 @@ func (ec *executionContext) fieldContext_BenefitsApplication_form(_ context.Cont
 			switch field.Name {
 			case "id":
 				return ec.fieldContext_BenefitsForm_id(ctx, field)
+			case "status":
+				return ec.fieldContext_BenefitsForm_status(ctx, field)
 			case "key":
 				return ec.fieldContext_BenefitsForm_key(ctx, field)
 			case "program":
@@ -7322,6 +7403,12 @@ func (ec *executionContext) fieldContext_BenefitsApplication_form(_ context.Cont
 				return ec.fieldContext_BenefitsForm_mappedFieldCount(ctx, field)
 			case "fillableFieldCount":
 				return ec.fieldContext_BenefitsForm_fillableFieldCount(ctx, field)
+			case "effectiveDate":
+				return ec.fieldContext_BenefitsForm_effectiveDate(ctx, field)
+			case "sourceUrl":
+				return ec.fieldContext_BenefitsForm_sourceUrl(ctx, field)
+			case "retrievedAt":
+				return ec.fieldContext_BenefitsForm_retrievedAt(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type BenefitsForm", field.Name)
 		},
@@ -7677,6 +7764,47 @@ func (ec *executionContext) _BenefitsApplication_finalDocumentPath(ctx context.C
 }
 
 func (ec *executionContext) fieldContext_BenefitsApplication_finalDocumentPath(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BenefitsApplication",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BenefitsApplication_failureReason(ctx context.Context, field graphql.CollectedField, obj *model.BenefitsApplication) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BenefitsApplication_failureReason(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.FailureReason, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BenefitsApplication_failureReason(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "BenefitsApplication",
 		Field:      field,
@@ -8774,6 +8902,50 @@ func (ec *executionContext) fieldContext_BenefitsForm_id(_ context.Context, fiel
 	return fc, nil
 }
 
+func (ec *executionContext) _BenefitsForm_status(ctx context.Context, field graphql.CollectedField, obj *model.BenefitsForm) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BenefitsForm_status(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Status, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(model.BenefitsFormStatus)
+	fc.Result = res
+	return ec.marshalNBenefitsFormStatus2githubᚗcomᚋhelpthehiveᚋserverᚋinternalᚋgraphqlᚋmodelᚐBenefitsFormStatus(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BenefitsForm_status(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BenefitsForm",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type BenefitsFormStatus does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _BenefitsForm_key(ctx context.Context, field graphql.CollectedField, obj *model.BenefitsForm) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_BenefitsForm_key(ctx, field)
 	if err != nil {
@@ -9335,6 +9507,129 @@ func (ec *executionContext) fieldContext_BenefitsForm_fillableFieldCount(_ conte
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BenefitsForm_effectiveDate(ctx context.Context, field graphql.CollectedField, obj *model.BenefitsForm) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BenefitsForm_effectiveDate(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.EffectiveDate, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BenefitsForm_effectiveDate(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BenefitsForm",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BenefitsForm_sourceUrl(ctx context.Context, field graphql.CollectedField, obj *model.BenefitsForm) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BenefitsForm_sourceUrl(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SourceURL, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BenefitsForm_sourceUrl(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BenefitsForm",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BenefitsForm_retrievedAt(ctx context.Context, field graphql.CollectedField, obj *model.BenefitsForm) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BenefitsForm_retrievedAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.RetrievedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BenefitsForm_retrievedAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BenefitsForm",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
 		},
 	}
 	return fc, nil
@@ -17196,6 +17491,8 @@ func (ec *executionContext) fieldContext_Mutation_startBenefitsApplication(ctx c
 				return ec.fieldContext_BenefitsApplication_draftDocumentPath(ctx, field)
 			case "finalDocumentPath":
 				return ec.fieldContext_BenefitsApplication_finalDocumentPath(ctx, field)
+			case "failureReason":
+				return ec.fieldContext_BenefitsApplication_failureReason(ctx, field)
 			case "createdAt":
 				return ec.fieldContext_BenefitsApplication_createdAt(ctx, field)
 			case "updatedAt":
@@ -17277,6 +17574,8 @@ func (ec *executionContext) fieldContext_Mutation_refillBenefitsApplication(ctx 
 				return ec.fieldContext_BenefitsApplication_draftDocumentPath(ctx, field)
 			case "finalDocumentPath":
 				return ec.fieldContext_BenefitsApplication_finalDocumentPath(ctx, field)
+			case "failureReason":
+				return ec.fieldContext_BenefitsApplication_failureReason(ctx, field)
 			case "createdAt":
 				return ec.fieldContext_BenefitsApplication_createdAt(ctx, field)
 			case "updatedAt":
@@ -17358,6 +17657,8 @@ func (ec *executionContext) fieldContext_Mutation_approveBenefitsApplication(ctx
 				return ec.fieldContext_BenefitsApplication_draftDocumentPath(ctx, field)
 			case "finalDocumentPath":
 				return ec.fieldContext_BenefitsApplication_finalDocumentPath(ctx, field)
+			case "failureReason":
+				return ec.fieldContext_BenefitsApplication_failureReason(ctx, field)
 			case "createdAt":
 				return ec.fieldContext_BenefitsApplication_createdAt(ctx, field)
 			case "updatedAt":
@@ -22208,6 +22509,8 @@ func (ec *executionContext) fieldContext_Query_benefitsForms(ctx context.Context
 			switch field.Name {
 			case "id":
 				return ec.fieldContext_BenefitsForm_id(ctx, field)
+			case "status":
+				return ec.fieldContext_BenefitsForm_status(ctx, field)
 			case "key":
 				return ec.fieldContext_BenefitsForm_key(ctx, field)
 			case "program":
@@ -22234,6 +22537,12 @@ func (ec *executionContext) fieldContext_Query_benefitsForms(ctx context.Context
 				return ec.fieldContext_BenefitsForm_mappedFieldCount(ctx, field)
 			case "fillableFieldCount":
 				return ec.fieldContext_BenefitsForm_fillableFieldCount(ctx, field)
+			case "effectiveDate":
+				return ec.fieldContext_BenefitsForm_effectiveDate(ctx, field)
+			case "sourceUrl":
+				return ec.fieldContext_BenefitsForm_sourceUrl(ctx, field)
+			case "retrievedAt":
+				return ec.fieldContext_BenefitsForm_retrievedAt(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type BenefitsForm", field.Name)
 		},
@@ -22290,6 +22599,8 @@ func (ec *executionContext) fieldContext_Query_benefitsForm(ctx context.Context,
 			switch field.Name {
 			case "id":
 				return ec.fieldContext_BenefitsForm_id(ctx, field)
+			case "status":
+				return ec.fieldContext_BenefitsForm_status(ctx, field)
 			case "key":
 				return ec.fieldContext_BenefitsForm_key(ctx, field)
 			case "program":
@@ -22316,6 +22627,12 @@ func (ec *executionContext) fieldContext_Query_benefitsForm(ctx context.Context,
 				return ec.fieldContext_BenefitsForm_mappedFieldCount(ctx, field)
 			case "fillableFieldCount":
 				return ec.fieldContext_BenefitsForm_fillableFieldCount(ctx, field)
+			case "effectiveDate":
+				return ec.fieldContext_BenefitsForm_effectiveDate(ctx, field)
+			case "sourceUrl":
+				return ec.fieldContext_BenefitsForm_sourceUrl(ctx, field)
+			case "retrievedAt":
+				return ec.fieldContext_BenefitsForm_retrievedAt(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type BenefitsForm", field.Name)
 		},
@@ -22388,6 +22705,8 @@ func (ec *executionContext) fieldContext_Query_benefitsApplication(ctx context.C
 				return ec.fieldContext_BenefitsApplication_draftDocumentPath(ctx, field)
 			case "finalDocumentPath":
 				return ec.fieldContext_BenefitsApplication_finalDocumentPath(ctx, field)
+			case "failureReason":
+				return ec.fieldContext_BenefitsApplication_failureReason(ctx, field)
 			case "createdAt":
 				return ec.fieldContext_BenefitsApplication_createdAt(ctx, field)
 			case "updatedAt":
@@ -22469,6 +22788,8 @@ func (ec *executionContext) fieldContext_Query_benefitsApplications(_ context.Co
 				return ec.fieldContext_BenefitsApplication_draftDocumentPath(ctx, field)
 			case "finalDocumentPath":
 				return ec.fieldContext_BenefitsApplication_finalDocumentPath(ctx, field)
+			case "failureReason":
+				return ec.fieldContext_BenefitsApplication_failureReason(ctx, field)
 			case "createdAt":
 				return ec.fieldContext_BenefitsApplication_createdAt(ctx, field)
 			case "updatedAt":
@@ -28983,6 +29304,8 @@ func (ec *executionContext) _BenefitsApplication(ctx context.Context, sel ast.Se
 			out.Values[i] = ec._BenefitsApplication_draftDocumentPath(ctx, field, obj)
 		case "finalDocumentPath":
 			out.Values[i] = ec._BenefitsApplication_finalDocumentPath(ctx, field, obj)
+		case "failureReason":
+			out.Values[i] = ec._BenefitsApplication_failureReason(ctx, field, obj)
 		case "createdAt":
 			out.Values[i] = ec._BenefitsApplication_createdAt(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -29229,6 +29552,11 @@ func (ec *executionContext) _BenefitsForm(ctx context.Context, sel ast.Selection
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		case "status":
+			out.Values[i] = ec._BenefitsForm_status(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		case "key":
 			out.Values[i] = ec._BenefitsForm_key(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -29288,6 +29616,12 @@ func (ec *executionContext) _BenefitsForm(ctx context.Context, sel ast.Selection
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		case "effectiveDate":
+			out.Values[i] = ec._BenefitsForm_effectiveDate(ctx, field, obj)
+		case "sourceUrl":
+			out.Values[i] = ec._BenefitsForm_sourceUrl(ctx, field, obj)
+		case "retrievedAt":
+			out.Values[i] = ec._BenefitsForm_retrievedAt(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -33352,6 +33686,16 @@ func (ec *executionContext) marshalNBenefitsForm2ᚖgithubᚗcomᚋhelpthehive�
 		return graphql.Null
 	}
 	return ec._BenefitsForm(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNBenefitsFormStatus2githubᚗcomᚋhelpthehiveᚋserverᚋinternalᚋgraphqlᚋmodelᚐBenefitsFormStatus(ctx context.Context, v interface{}) (model.BenefitsFormStatus, error) {
+	var res model.BenefitsFormStatus
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNBenefitsFormStatus2githubᚗcomᚋhelpthehiveᚋserverᚋinternalᚋgraphqlᚋmodelᚐBenefitsFormStatus(ctx context.Context, sel ast.SelectionSet, v model.BenefitsFormStatus) graphql.Marshaler {
+	return v
 }
 
 func (ec *executionContext) marshalNBenefitsGroup2ᚕᚖgithubᚗcomᚋhelpthehiveᚋserverᚋinternalᚋgraphqlᚋmodelᚐBenefitsGroupᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.BenefitsGroup) graphql.Marshaler {

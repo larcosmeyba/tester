@@ -21,6 +21,7 @@ func textMapping(fields ...FieldMapping) *FormMapping {
 		FormVersion:       "2026.01",
 		Revision:          1,
 		VocabularyVersion: VocabularyVersion,
+		Status:            "draft",
 		Template:          TemplateRef{Kind: TemplateAcroForm, File: "t.pdf", SHA256: strings.Repeat("a", 64), PageCount: 2},
 		Fields:            fields,
 	}

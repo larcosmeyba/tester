@@ -62,6 +62,10 @@ export default function BenefitsProgramsScreen() {
           Help The Hive fills in what it already knows and tells you exactly what is left. You
           review every answer, and you sign and submit the form yourself.
         </Text>
+        <Text style={uiText.muted}>
+          Whether you qualify for a program is decided by the agency that runs it, on the
+          application you send them. Help The Hive does not and cannot decide that.
+        </Text>
       </View>
 
       {error !== '' ? (

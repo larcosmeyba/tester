@@ -6,6 +6,7 @@
 fragment BenefitsFormFields on BenefitsForm {
   id
   key
+  status
   program
   country
   state
@@ -18,6 +19,9 @@ fragment BenefitsFormFields on BenefitsForm {
   agencyUrl
   mappedFieldCount
   fillableFieldCount
+  effectiveDate
+  sourceUrl
+  retrievedAt
 }
 
 fragment BenefitsApplicationFields on BenefitsApplication {
@@ -49,6 +53,7 @@ fragment BenefitsApplicationFields on BenefitsApplication {
   }
   problems { fieldId fieldPath reason }
   skippedFields { fieldId reason note }
+  failureReason
   draftDocumentPath
   finalDocumentPath
   createdAt

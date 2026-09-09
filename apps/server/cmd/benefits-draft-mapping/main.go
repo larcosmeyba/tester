@@ -13,8 +13,8 @@
 // The model is shown the blank form's structure and the field vocabulary, and
 // nothing else. No applicant data exists in this program.
 //
-//	MEAL_AI_PROVIDER=openai_compatible \
-//	MEAL_AI_BASE_URL=... MEAL_AI_MODEL=... MEAL_AI_API_KEY=... \
+//	BENEFITS_AI_PROVIDER=openai_compatible \
+//	BENEFITS_AI_BASE_URL=... BENEFITS_AI_MODEL=... BENEFITS_AI_API_KEY=... \
 //	go run ./cmd/benefits-draft-mapping \
 //	  -program SNAP -state CA -code "CF 285" -version 2026.01 \
 //	  -out forms/us/ca/snap/cf285/2026.01/mapping.draft.json \
@@ -37,7 +37,7 @@ import (
 	domain "github.com/helpthehive/server/internal/domain/benefits"
 	"github.com/helpthehive/server/internal/modules/benefits/assist"
 	"github.com/helpthehive/server/internal/modules/benefits/pdf"
-	"github.com/helpthehive/server/internal/modules/mealgen/provider"
+	"github.com/helpthehive/server/internal/modules/benefits/aiprovider"
 )
 
 func main() {
@@ -141,13 +141,13 @@ func main() {
 	report(os.Stderr, inventory, suggestions, *out)
 }
 
-// suggest asks the configured provider. With no provider configured this is not
+// suggest asks the configured aiprovider. With no provider configured this is not
 // a failure: it returns nothing, and the draft comes out as an empty skeleton
 // with every field listed for a person to map by hand. That is the honest
 // default, and the whole system works that way — the AI is a convenience for
 // whoever writes the mapping, never a dependency.
 func suggest(inventory pdf.Inventory) assist.Result {
-	aiProvider, err := provider.New(providerConfig())
+	aiProvider, err := aiprovider.New(providerConfig())
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "AI provider not usable (%v); writing an empty draft\n", err)
 		return assist.Result{Unmapped: fieldNames(inventory)}
@@ -158,7 +158,7 @@ func suggest(inventory pdf.Inventory) assist.Result {
 
 	result, err := assist.NewSuggester(aiProvider).Suggest(ctx, inventory)
 	if err != nil {
-		if !errors.Is(err, provider.ErrNoProvider) {
+		if !errors.Is(err, aiprovider.ErrNoProvider) {
 			fmt.Fprintf(os.Stderr, "no suggestions (%v); writing an empty draft\n", err)
 		}
 		return assist.Result{Unmapped: fieldNames(inventory)}
@@ -166,16 +166,9 @@ func suggest(inventory pdf.Inventory) assist.Result {
 	return result
 }
 
-// providerConfig reuses the meal system's provider settings (MEAL_AI_PROVIDER,
-// MEAL_AI_BASE_URL, MEAL_AI_MODEL, MEAL_AI_API_KEY) rather than introducing a
-// second set of keys.
-//
-// The variable names are a wart — they say MEAL on a benefits tool — but the
-// alternative was reaching into the meal provider package to add a constructor
-// while it is being refactored. Giving the provider package a way to read a
-// configurable prefix is the right fix, and belongs in that package.
-func providerConfig() provider.Config {
-	return provider.LoadConfig()
+// providerConfig reads the benefits system's own provider settings.
+func providerConfig() aiprovider.Config {
+	return aiprovider.LoadConfig()
 }
 
 func report(w io.Writer, inventory pdf.Inventory, result assist.Result, out string) {

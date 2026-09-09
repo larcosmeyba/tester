@@ -24,7 +24,7 @@ func missouriForm(t *testing.T) *Form {
 	if err != nil {
 		t.Fatalf("load forms: %v", err)
 	}
-	form, ok := registry.Current("us-mo-snap-im1ss")
+	form, ok := registry.Any("us-mo-snap-im1ss")
 	if !ok {
 		t.Skip("the Missouri form is not installed in this tree")
 	}

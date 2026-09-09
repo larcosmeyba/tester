@@ -1,6 +1,7 @@
 package benefits
 
 import (
+	"encoding/json"
 	"os"
 	"path/filepath"
 	"strings"
@@ -45,7 +46,7 @@ func TestRegistryFindsTheSampleFormByIdAndByState(t *testing.T) {
 		t.Fatalf("load forms: %v", err)
 	}
 
-	form, ok := registry.Current("us-xx-snap-hth-sample-1")
+	form, ok := registry.Any("us-xx-snap-hth-sample-1")
 	if !ok {
 		t.Fatal("the sample form was not found by id")
 	}
@@ -55,8 +56,14 @@ func TestRegistryFindsTheSampleFormByIdAndByState(t *testing.T) {
 	if _, ok := registry.ByKey(form.Key()); !ok {
 		t.Errorf("the form is not addressable by its exact revision key %q", form.Key())
 	}
-	if len(registry.List("XX", "SNAP")) == 0 {
-		t.Error("filtering by state and program found nothing")
+	// A draft mapping is never offered to an applicant. The sample form has no
+	// agency and the Missouri one has unconfirmed provenance, so neither is
+	// listed however it is filtered.
+	if listed := registry.List("XX", "SNAP"); len(listed) != 0 {
+		t.Errorf("a draft form must not be offered, got %d", len(listed))
+	}
+	if _, active := registry.Current("us-xx-snap-hth-sample-1"); active {
+		t.Error("Current must not return a draft mapping")
 	}
 	if len(registry.List("ZZ", "")) != 0 {
 		t.Error("filtering by a state with no forms should find nothing")
@@ -97,7 +104,9 @@ func TestATamperedTemplateIsRefused(t *testing.T) {
 
 func TestAMappingThatAddressesAMissingFieldIsRefused(t *testing.T) {
 	dir := copySampleForm(t)
-	rewriteMapping(t, dir, `"name": "lastName"`, `"name": "surname"`)
+	editMapping(t, dir, func(mapping map[string]any) {
+		field(t, mapping, "last_name")["target"].(map[string]any)["name"] = "surname"
+	})
 
 	_, err := LoadRegistry(filepath.Dir(dir))
 	if err == nil || !strings.Contains(err.Error(), "which this template does not have") {
@@ -107,7 +116,9 @@ func TestAMappingThatAddressesAMissingFieldIsRefused(t *testing.T) {
 
 func TestAMappingWithTheWrongFieldTypeIsRefused(t *testing.T) {
 	dir := copySampleForm(t)
-	rewriteMapping(t, dir, `"target": { "type": "text", "name": "lastName" }`, `"target": { "type": "checkbox", "name": "lastName" }`)
+	editMapping(t, dir, func(mapping map[string]any) {
+		field(t, mapping, "last_name")["target"].(map[string]any)["type"] = "checkbox"
+	})
 
 	_, err := LoadRegistry(filepath.Dir(dir))
 	if err == nil || !strings.Contains(err.Error(), "but the template has it as a text") {
@@ -117,13 +128,10 @@ func TestAMappingWithTheWrongFieldTypeIsRefused(t *testing.T) {
 
 func TestAMappingThatWritesAnImpossibleChoiceIsRefused(t *testing.T) {
 	dir := copySampleForm(t)
-	rewriteMapping(t, dir,
-		`{ "id": "state", "strength": "required",
-      "target": { "type": "dropdown", "name": "state" },
-      "source": { "fieldPath": "address.residential.state" } }`,
-		`{ "id": "state", "strength": "required",
-      "target": { "type": "dropdown", "name": "state" },
-      "source": { "constant": "ZZ" } }`)
+	editMapping(t, dir, func(mapping map[string]any) {
+		state := field(t, mapping, "state")
+		state["source"] = map[string]any{"constant": "ZZ"}
+	})
 
 	_, err := LoadRegistry(filepath.Dir(dir))
 	if err == nil || !strings.Contains(err.Error(), "only accepts") {
@@ -153,18 +161,41 @@ func copySampleForm(t *testing.T) string {
 	return dir
 }
 
-func rewriteMapping(t *testing.T, dir, old, replacement string) {
+// editMapping mutates a copied mapping through its JSON rather than by string
+// replacement, so reformatting the checked-in file cannot quietly turn one of
+// these tests into a no-op.
+func editMapping(t *testing.T, dir string, edit func(mapping map[string]any)) {
 	t.Helper()
 	path := filepath.Join(dir, MappingFileName)
+
 	data, err := os.ReadFile(path)
 	if err != nil {
 		t.Fatalf("read mapping: %v", err)
 	}
-	updated := strings.Replace(string(data), old, replacement, 1)
-	if updated == string(data) {
-		t.Fatalf("the mapping does not contain %q, so this test is not testing what it thinks", old)
+	var mapping map[string]any
+	if err := json.Unmarshal(data, &mapping); err != nil {
+		t.Fatalf("parse mapping: %v", err)
 	}
-	if err := os.WriteFile(path, []byte(updated), 0o600); err != nil {
+	edit(mapping)
+
+	updated, err := json.MarshalIndent(mapping, "", "  ")
+	if err != nil {
+		t.Fatalf("encode mapping: %v", err)
+	}
+	if err := os.WriteFile(path, updated, 0o600); err != nil {
 		t.Fatalf("write mapping: %v", err)
 	}
+}
+
+// field finds one mapping field by id so a test can break exactly it.
+func field(t *testing.T, mapping map[string]any, id string) map[string]any {
+	t.Helper()
+	for _, entry := range mapping["fields"].([]any) {
+		candidate := entry.(map[string]any)
+		if candidate["id"] == id {
+			return candidate
+		}
+	}
+	t.Fatalf("no field %q in the mapping", id)
+	return nil
 }

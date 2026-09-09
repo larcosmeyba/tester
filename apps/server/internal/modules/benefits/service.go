@@ -22,6 +22,26 @@ import (
 // a household's application sits on disk.
 const DraftRetention = 30 * 24 * time.Hour
 
+// Application states. A run is durable: it can be left, resumed, refilled and
+// finished later, and the app never has to start again because it closed.
+const (
+	// StatusDraft: created, not yet filled.
+	StatusDraft = "draft"
+	// StatusNeedsInformation: filled as far as the profile allows; the app must
+	// ask the questions in the run's missing fields.
+	StatusNeedsInformation = "needs_information"
+	// StatusReadyForReview: nothing required is outstanding; awaiting the
+	// applicant's own read-through.
+	StatusReadyForReview = "ready_for_review"
+	// StatusCompleted: the applicant approved it and the PDF is flattened.
+	StatusCompleted = "completed"
+	// StatusFailed: a fill or a render failed. The reason is stored with the
+	// run so it can be found later; refilling clears it.
+	StatusFailed = "failed"
+	// StatusSuperseded: replaced by a newer run against the same form.
+	StatusSuperseded = "superseded"
+)
+
 // Service is the benefits system's entry point.
 //
 // Every method resolves the viewer from the verified token and scopes its work
@@ -349,7 +369,7 @@ func (s *Service) StartApplication(ctx context.Context, identity auth.Identity, 
 		FormID:       form.Mapping.ID,
 		FormVersion:  form.Mapping.FormVersion,
 		FormRevision: form.Mapping.Revision,
-		Status:       "draft",
+		Status:       StatusDraft,
 	})
 	if err != nil {
 		return Application{}, err
@@ -378,7 +398,7 @@ func (s *Service) Refill(ctx context.Context, identity auth.Identity, applicatio
 	if err != nil {
 		return Application{}, err
 	}
-	if record.Status == "approved" {
+	if record.Status == StatusCompleted {
 		return Application{}, domain.ErrAlreadyApproved
 	}
 	form, err := s.formFor(record)
@@ -398,25 +418,31 @@ func (s *Service) fill(ctx context.Context, userID string, record db.BenefitsApp
 	}
 
 	resolution := domain.Resolve(profile, form.Mapping)
+
+	// A failure to render is recorded on the run rather than only returned.
+	// Otherwise an application that cannot be produced sits at whatever status
+	// it had before, the applicant is told nothing, and nobody can find it
+	// again to see why.
 	rendered, err := RenderDraft(form, resolution)
 	if err != nil {
-		return Application{}, fmt.Errorf("render draft: %w", err)
+		return s.recordFailure(ctx, userID, record, form, resolution, "draft", err)
 	}
 	resolution.Problems = append(resolution.Problems, rendered.Problems...)
 
 	document, err := s.saveDocument(ctx, userID, record.ID, "draft", rendered.Bytes, false)
 	if err != nil {
-		return Application{}, err
+		return s.recordFailure(ctx, userID, record, form, resolution, "draft", err)
 	}
 
-	status := "ready_for_review"
+	status := StatusReadyForReview
 	if resolution.NeedsInput() {
-		status = "needs_input"
+		status = StatusNeedsInformation
 	}
-	if err := s.store.SaveBenefitsApplicationOutcome(ctx, userID, record.ID, status, nil, auditFields(resolution)); err != nil {
+	if err := s.store.SaveBenefitsApplicationOutcome(ctx, userID, record.ID, status, "", nil, auditFields(resolution)); err != nil {
 		return Application{}, err
 	}
 	record.Status = status
+	record.FailureReason = ""
 
 	s.logger.Info("benefits application filled",
 		"application_id", record.ID,
@@ -455,7 +481,7 @@ func (s *Service) Approve(ctx context.Context, identity auth.Identity, applicati
 	if err != nil {
 		return Application{}, err
 	}
-	if record.Status == "approved" {
+	if record.Status == StatusCompleted {
 		return Application{}, domain.ErrAlreadyApproved
 	}
 	form, err := s.formFor(record)
@@ -474,6 +500,9 @@ func (s *Service) Approve(ctx context.Context, identity auth.Identity, applicati
 
 	rendered, err := RenderFinal(form, resolution)
 	if err != nil {
+		if _, failErr := s.recordFailure(ctx, userID, record, form, resolution, "final", err); failErr != nil {
+			return Application{}, failErr
+		}
 		return Application{}, fmt.Errorf("render final: %w", err)
 	}
 	if len(rendered.Problems) > 0 {
@@ -489,10 +518,10 @@ func (s *Service) Approve(ctx context.Context, identity auth.Identity, applicati
 	}
 
 	approvedAt := s.now().UTC()
-	if err := s.store.SaveBenefitsApplicationOutcome(ctx, userID, record.ID, "approved", &approvedAt, auditFields(resolution)); err != nil {
+	if err := s.store.SaveBenefitsApplicationOutcome(ctx, userID, record.ID, StatusCompleted, "", &approvedAt, auditFields(resolution)); err != nil {
 		return Application{}, err
 	}
-	record.Status = "approved"
+	record.Status = StatusCompleted
 	record.ApprovedAt = &approvedAt
 
 	s.logger.Info("benefits application approved",
@@ -551,7 +580,7 @@ func (s *Service) view(ctx context.Context, userID string, record db.BenefitsApp
 	if err != nil {
 		return Application{}, err
 	}
-	fields, err := s.store.BenefitsApplicationFields(ctx, record.ID)
+	fields, err := s.store.BenefitsApplicationFields(ctx, userID, record.ID)
 	if err != nil {
 		return Application{}, err
 	}
@@ -567,7 +596,7 @@ func (s *Service) view(ctx context.Context, userID string, record db.BenefitsApp
 	// An approved application is a record, not a live view: its resolution is
 	// deliberately left empty so the app cannot show today's profile as though
 	// it were what somebody signed.
-	if record.Status != "approved" {
+	if record.Status != StatusCompleted {
 		profile, err := s.loadProfile(ctx, userID)
 		if err != nil {
 			return Application{}, err
@@ -686,6 +715,40 @@ func (s *Service) saveDocument(ctx context.Context, userID, applicationID, kind 
 		document.PurgeAfter = &purgeAfter
 	}
 	return s.store.InsertBenefitsDocument(ctx, document)
+}
+
+// recordFailure marks a run failed and stores why, so an application that could
+// not be produced is visible rather than silently stuck.
+//
+// The reason is a message about the form, never about an answer: it says "this
+// value will not fit its box", not what the value was.
+func (s *Service) recordFailure(
+	ctx context.Context,
+	userID string,
+	record db.BenefitsApplication,
+	form *Form,
+	resolution domain.Resolution,
+	stage string,
+	cause error,
+) (Application, error) {
+	reason := fmt.Sprintf("%s document could not be produced: %v", stage, cause)
+
+	s.logger.Error("benefits application failed",
+		"application_id", record.ID, "form", form.Key(), "stage", stage, "error", cause)
+
+	if err := s.store.SaveBenefitsApplicationOutcome(
+		ctx, userID, record.ID, StatusFailed, reason, nil, auditFields(resolution)); err != nil {
+		return Application{}, err
+	}
+	record.Status = StatusFailed
+	record.FailureReason = reason
+
+	return Application{
+		Record:      record,
+		Form:        form,
+		Resolution:  resolution,
+		AuditFields: auditFields(resolution),
+	}, fmt.Errorf("%s: %w", reason, cause)
 }
 
 func (s *Service) formFor(record db.BenefitsApplication) (*Form, error) {

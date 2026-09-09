@@ -102,7 +102,7 @@ export default function BenefitsReviewScreen() {
     );
   }
 
-  const approved = application.status === 'APPROVED';
+  const approved = application.status === 'COMPLETED';
   const documentPath = approved ? application.finalDocumentPath : application.draftDocumentPath;
 
   return (
@@ -135,6 +135,17 @@ export default function BenefitsReviewScreen() {
                 router.push(`/resources/benefits-questionnaire?applicationId=${application.id}`)
               }
             />
+          </Card>
+        ) : null}
+
+        {application.status === 'FAILED' && application.failureReason ? (
+          <Card style={styles.warning}>
+            <Text style={uiText.subtitle}>This application could not be produced</Text>
+            <Text style={uiText.muted}>{application.failureReason}</Text>
+            <Text style={uiText.muted}>
+              Your answers are saved. Answering what is outstanding and trying again is usually
+              enough; if it is not, this is one for support.
+            </Text>
           </Card>
         ) : null}
 

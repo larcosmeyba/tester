@@ -21,6 +21,12 @@
 # Ownership is never a client concern. No benefits field accepts a user id; the
 # viewer is resolved from the verified JWT on every call, and anything the
 # viewer may not see is reported as NOT_FOUND rather than FORBIDDEN.
+#
+# Nothing in this API decides eligibility, and there is deliberately no field
+# through which it could. Help The Hive prepares a form from answers the
+# applicant gave; whether they qualify for a program is decided by the agency
+# that runs it, on the application they submit. Anything resembling a
+# prediction, a score or a likelihood belongs nowhere in this schema.
 # ---------------------------------------------------------------------------
 
 extend type Query {
@@ -121,6 +127,12 @@ type BenefitsFieldSpec {
 
 type BenefitsForm {
   id: ID!
+  """
+  Whether this form is offered to applicants. A form whose provenance has not
+  been confirmed against the agency loads and can be tested, but is never
+  offered: DRAFT and DEPRECATED forms do not appear in `benefitsForms`.
+  """
+  status: BenefitsFormStatus!
   "Identifies the exact revision: id@version#revision."
   key: String!
   program: String!
@@ -141,6 +153,19 @@ type BenefitsForm {
   """
   mappedFieldCount: Int!
   fillableFieldCount: Int!
+
+  "The agency's own effective date for this version of the form, if it states one."
+  effectiveDate: String
+  "Where this exact PDF was downloaded from."
+  sourceUrl: String
+  "The day the PDF was downloaded, so 'is this still current?' is answerable."
+  retrievedAt: String
+}
+
+enum BenefitsFormStatus {
+  ACTIVE
+  DRAFT
+  DEPRECATED
 }
 
 # ---------------------------------------------------------------------------
@@ -169,6 +194,9 @@ type BenefitsApplication {
   draftDocumentPath: String
   "Path to the approved, flattened PDF. Null until the applicant approves."
   finalDocumentPath: String
+
+  "Why the run failed, when the status is FAILED. Never echoes an answer."
+  failureReason: String
 
   createdAt: String!
   updatedAt: String!
@@ -296,11 +324,22 @@ enum BenefitsTemplateKind {
   FLAT
 }
 
+"""
+Where a run has got to. A run is durable: it survives the app closing and is
+resumed rather than restarted.
+"""
 enum BenefitsApplicationStatus {
+  "Created, not yet filled."
   DRAFT
-  NEEDS_INPUT
+  "Filled as far as the profile allows. `missingFields` says what to ask for."
+  NEEDS_INFORMATION
+  "Nothing required is outstanding; awaiting the applicant's read-through."
   READY_FOR_REVIEW
-  APPROVED
+  "The applicant approved it and the PDF is flattened."
+  COMPLETED
+  "A fill or render failed. `failureReason` says why; refilling clears it."
+  FAILED
+  "Replaced by a newer run against the same form."
   SUPERSEDED
 }
 

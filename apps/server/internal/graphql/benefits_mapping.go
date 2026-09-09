@@ -171,9 +171,22 @@ func benefitsFormModel(form *benefits.Form) *model.BenefitsForm {
 		Revision:     mapping.Revision,
 		PageCount:    form.Inventory.PageCount,
 		TemplateKind: templateKindModel(mapping.Template.Kind),
+		Status:       formStatusModel(mapping.Status),
 
 		MappedFieldCount:   mapped,
 		FillableFieldCount: fillable,
+	}
+	if mapping.EffectiveDate != "" {
+		date := mapping.EffectiveDate
+		out.EffectiveDate = &date
+	}
+	if mapping.Template.SourceURL != "" {
+		url := mapping.Template.SourceURL
+		out.SourceURL = &url
+	}
+	if mapping.Template.RetrievedAt != "" {
+		date := mapping.Template.RetrievedAt
+		out.RetrievedAt = &date
 	}
 	if mapping.Jurisdiction.State != "" {
 		state := mapping.Jurisdiction.State
@@ -198,6 +211,10 @@ func benefitsApplicationModel(application benefits.Application) *model.BenefitsA
 		SkippedFields: []*model.BenefitsSkippedField{},
 		CreatedAt:     db.FormatTime(record.CreatedAt),
 		UpdatedAt:     db.FormatTime(record.UpdatedAt),
+	}
+	if record.FailureReason != "" {
+		reason := record.FailureReason
+		out.FailureReason = &reason
 	}
 	if record.ApprovedAt != nil {
 		approved := db.FormatTime(*record.ApprovedAt)
@@ -399,15 +416,27 @@ func skipReasonModel(reason domain.SkipReason) model.BenefitsSkipReason {
 	return model.BenefitsSkipReasonPolicy
 }
 
+func formStatusModel(status string) model.BenefitsFormStatus {
+	switch status {
+	case "deprecated":
+		return model.BenefitsFormStatusDeprecated
+	case "draft":
+		return model.BenefitsFormStatusDraft
+	}
+	return model.BenefitsFormStatusActive
+}
+
 func applicationStatusModel(status string) model.BenefitsApplicationStatus {
 	switch status {
-	case "needs_input":
-		return model.BenefitsApplicationStatusNeedsInput
-	case "ready_for_review":
+	case benefits.StatusNeedsInformation:
+		return model.BenefitsApplicationStatusNeedsInformation
+	case benefits.StatusReadyForReview:
 		return model.BenefitsApplicationStatusReadyForReview
-	case "approved":
-		return model.BenefitsApplicationStatusApproved
-	case "superseded":
+	case benefits.StatusCompleted:
+		return model.BenefitsApplicationStatusCompleted
+	case benefits.StatusFailed:
+		return model.BenefitsApplicationStatusFailed
+	case benefits.StatusSuperseded:
 		return model.BenefitsApplicationStatusSuperseded
 	}
 	return model.BenefitsApplicationStatusDraft

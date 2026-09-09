@@ -121,9 +121,11 @@ type BenefitsApplication struct {
 	DraftDocumentPath *string `json:"draftDocumentPath,omitempty"`
 	// Path to the approved, flattened PDF. Null until the applicant approves.
 	FinalDocumentPath *string `json:"finalDocumentPath,omitempty"`
-	CreatedAt         string  `json:"createdAt"`
-	UpdatedAt         string  `json:"updatedAt"`
-	ApprovedAt        *string `json:"approvedAt,omitempty"`
+	// Why the run failed, when the status is FAILED. Never echoes an answer.
+	FailureReason *string `json:"failureReason,omitempty"`
+	CreatedAt     string  `json:"createdAt"`
+	UpdatedAt     string  `json:"updatedAt"`
+	ApprovedAt    *string `json:"approvedAt,omitempty"`
 }
 
 type BenefitsFieldProblem struct {
@@ -161,6 +163,10 @@ type BenefitsFilledField struct {
 
 type BenefitsForm struct {
 	ID string `json:"id"`
+	// Whether this form is offered to applicants. A form whose provenance has not
+	// been confirmed against the agency loads and can be tested, but is never
+	// offered: DRAFT and DEPRECATED forms do not appear in `benefitsForms`.
+	Status BenefitsFormStatus `json:"status"`
 	// Identifies the exact revision: id@version#revision.
 	Key          string               `json:"key"`
 	Program      string               `json:"program"`
@@ -179,6 +185,12 @@ type BenefitsForm struct {
 	// discover it. Signature fields are in neither count.
 	MappedFieldCount   int `json:"mappedFieldCount"`
 	FillableFieldCount int `json:"fillableFieldCount"`
+	// The agency's own effective date for this version of the form, if it states one.
+	EffectiveDate *string `json:"effectiveDate,omitempty"`
+	// Where this exact PDF was downloaded from.
+	SourceURL *string `json:"sourceUrl,omitempty"`
+	// The day the PDF was downloaded, so 'is this still current?' is answerable.
+	RetrievedAt *string `json:"retrievedAt,omitempty"`
 }
 
 type BenefitsGroup struct {
@@ -931,27 +943,37 @@ func (e BenefitsAnswerStatus) MarshalGQL(w io.Writer) {
 	fmt.Fprint(w, strconv.Quote(e.String()))
 }
 
+// Where a run has got to. A run is durable: it survives the app closing and is
+// resumed rather than restarted.
 type BenefitsApplicationStatus string
 
 const (
-	BenefitsApplicationStatusDraft          BenefitsApplicationStatus = "DRAFT"
-	BenefitsApplicationStatusNeedsInput     BenefitsApplicationStatus = "NEEDS_INPUT"
+	// Created, not yet filled.
+	BenefitsApplicationStatusDraft BenefitsApplicationStatus = "DRAFT"
+	// Filled as far as the profile allows. `missingFields` says what to ask for.
+	BenefitsApplicationStatusNeedsInformation BenefitsApplicationStatus = "NEEDS_INFORMATION"
+	// Nothing required is outstanding; awaiting the applicant's read-through.
 	BenefitsApplicationStatusReadyForReview BenefitsApplicationStatus = "READY_FOR_REVIEW"
-	BenefitsApplicationStatusApproved       BenefitsApplicationStatus = "APPROVED"
-	BenefitsApplicationStatusSuperseded     BenefitsApplicationStatus = "SUPERSEDED"
+	// The applicant approved it and the PDF is flattened.
+	BenefitsApplicationStatusCompleted BenefitsApplicationStatus = "COMPLETED"
+	// A fill or render failed. `failureReason` says why; refilling clears it.
+	BenefitsApplicationStatusFailed BenefitsApplicationStatus = "FAILED"
+	// Replaced by a newer run against the same form.
+	BenefitsApplicationStatusSuperseded BenefitsApplicationStatus = "SUPERSEDED"
 )
 
 var AllBenefitsApplicationStatus = []BenefitsApplicationStatus{
 	BenefitsApplicationStatusDraft,
-	BenefitsApplicationStatusNeedsInput,
+	BenefitsApplicationStatusNeedsInformation,
 	BenefitsApplicationStatusReadyForReview,
-	BenefitsApplicationStatusApproved,
+	BenefitsApplicationStatusCompleted,
+	BenefitsApplicationStatusFailed,
 	BenefitsApplicationStatusSuperseded,
 }
 
 func (e BenefitsApplicationStatus) IsValid() bool {
 	switch e {
-	case BenefitsApplicationStatusDraft, BenefitsApplicationStatusNeedsInput, BenefitsApplicationStatusReadyForReview, BenefitsApplicationStatusApproved, BenefitsApplicationStatusSuperseded:
+	case BenefitsApplicationStatusDraft, BenefitsApplicationStatusNeedsInformation, BenefitsApplicationStatusReadyForReview, BenefitsApplicationStatusCompleted, BenefitsApplicationStatusFailed, BenefitsApplicationStatusSuperseded:
 		return true
 	}
 	return false
@@ -1016,6 +1038,49 @@ func (e *BenefitsFieldStrength) UnmarshalGQL(v interface{}) error {
 }
 
 func (e BenefitsFieldStrength) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+type BenefitsFormStatus string
+
+const (
+	BenefitsFormStatusActive     BenefitsFormStatus = "ACTIVE"
+	BenefitsFormStatusDraft      BenefitsFormStatus = "DRAFT"
+	BenefitsFormStatusDeprecated BenefitsFormStatus = "DEPRECATED"
+)
+
+var AllBenefitsFormStatus = []BenefitsFormStatus{
+	BenefitsFormStatusActive,
+	BenefitsFormStatusDraft,
+	BenefitsFormStatusDeprecated,
+}
+
+func (e BenefitsFormStatus) IsValid() bool {
+	switch e {
+	case BenefitsFormStatusActive, BenefitsFormStatusDraft, BenefitsFormStatusDeprecated:
+		return true
+	}
+	return false
+}
+
+func (e BenefitsFormStatus) String() string {
+	return string(e)
+}
+
+func (e *BenefitsFormStatus) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = BenefitsFormStatus(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid BenefitsFormStatus", str)
+	}
+	return nil
+}
+
+func (e BenefitsFormStatus) MarshalGQL(w io.Writer) {
 	fmt.Fprint(w, strconv.Quote(e.String()))
 }
 

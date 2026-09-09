@@ -91,12 +91,20 @@ CREATE TABLE benefits_applications (
   form_id       TEXT NOT NULL,
   form_version  TEXT NOT NULL,
   form_revision INTEGER NOT NULL,
-  status        TEXT NOT NULL CHECK (status IN ('draft', 'needs_input', 'ready_for_review', 'approved', 'superseded')),
+  -- draft             just started, not yet filled
+  -- needs_information  filled as far as it can be; the app must ask for more
+  -- ready_for_review   everything required is present; awaiting the applicant
+  -- completed          the applicant approved it and the PDF is flattened
+  -- failed             a fill or render failed; the reason is on the run
+  -- superseded         replaced by a newer run against the same form
+  status        TEXT NOT NULL CHECK (status IN ('draft', 'needs_information', 'ready_for_review', 'completed', 'failed', 'superseded')),
+  -- Why a run failed, for the applicant and for support. Never a field value.
+  failure_reason TEXT NOT NULL DEFAULT '',
   created_at    TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at    TIMESTAMPTZ NOT NULL DEFAULT now(),
   approved_at   TIMESTAMPTZ,
-  CONSTRAINT benefits_applications_approved_check
-    CHECK ((status = 'approved') = (approved_at IS NOT NULL))
+  CONSTRAINT benefits_applications_completed_check
+    CHECK ((status = 'completed') = (approved_at IS NOT NULL))
 );
 
 CREATE INDEX benefits_applications_user_idx ON benefits_applications (user_id, updated_at DESC);

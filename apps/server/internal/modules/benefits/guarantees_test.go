@@ -72,6 +72,42 @@ func TestHelpTheHivesOwnFillCodeMakesNoNetworkCall(t *testing.T) {
 	}
 }
 
+// TestBenefitsDoesNotDependOnTheMealSystem keeps the two features separable.
+//
+// They are unrelated products that happen to share a server. Benefits borrowing
+// the meal system's AI provider meant the benefits work could not be reviewed
+// or merged without the meal refactor coming with it, and meant a change made
+// for meal planning could alter how a government form is mapped.
+func TestBenefitsDoesNotDependOnTheMealSystem(t *testing.T) {
+	// Direct imports, not the transitive closure. Every domain in this server
+	// goes through the one shared repository layer in internal/db, and that
+	// package necessarily knows about meals, pantry and the rest — reaching
+	// meal types that way is the architecture working, not a coupling. What
+	// must not happen is a benefits package naming a meal package itself.
+	foreign := []string{
+		"/internal/modules/meal", "/internal/domain/meals",
+		"/internal/modules/penny", "/internal/domain/penny",
+		"/internal/transcriber", "/internal/modules/recipes",
+	}
+
+	for _, entry := range []string{
+		"internal/domain/benefits",
+		"internal/modules/benefits",
+		"internal/modules/benefits/pdf",
+		"internal/modules/benefits/assist",
+		"internal/modules/benefits/secrets",
+		"internal/modules/benefits/aiprovider",
+	} {
+		for _, dependency := range importsOf(t, filepath.Join(moduleRoot(t), entry)) {
+			for _, unwanted := range foreign {
+				if strings.Contains(dependency, unwanted) {
+					t.Errorf("%s imports %s directly; the benefits system must be reviewable and mergeable on its own", entry, dependency)
+				}
+			}
+		}
+	}
+}
+
 // TestTheDomainHasNoDatabaseOrPDFDependency keeps the resolver — the part that
 // decides what a form will say — pure and therefore fully testable without a
 // database, a template or a network.

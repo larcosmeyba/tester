@@ -129,7 +129,10 @@ func (t Transform) Apply(in string, lookup PathLookup) (string, error) {
 	case OpDate:
 		parsed, err := time.Parse(time.DateOnly, in)
 		if err != nil {
-			return "", fmt.Errorf("date transform: %q is not a YYYY-MM-DD date", in)
+			// The value is described, never quoted. A transform failure ends up
+			// in the application's audit trail and in a log line, and this same
+			// path handles Social Security numbers.
+			return "", fmt.Errorf("date transform: the stored answer is not a YYYY-MM-DD date")
 		}
 		return parsed.Format(t.Layout), nil
 	case OpMoney:
@@ -166,7 +169,7 @@ func (t Transform) Apply(in string, lookup PathLookup) (string, error) {
 		case "false":
 			return t.No, nil
 		}
-		return "", fmt.Errorf("boolYesNo transform: %q is not a boolean", in)
+		return "", fmt.Errorf("boolYesNo transform: the stored answer is not a yes-or-no value")
 	case OpPad:
 		runes := []rune(in)
 		if len(runes) >= t.Length {

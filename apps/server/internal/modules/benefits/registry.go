@@ -162,9 +162,31 @@ func newerThan(candidate, current *domain.FormMapping) bool {
 
 // Current returns the active mapping for a form id — what a new application is
 // started against.
+//
+// A draft mapping is deliberately absent. A form whose provenance has not been
+// confirmed loads, validates and can be tested against, but no applicant is
+// offered it.
 func (r *Registry) Current(formID string) (*Form, bool) {
 	form, ok := r.byID[formID]
 	return form, ok
+}
+
+// Any returns a mapping by id whatever its status, preferring the active one.
+// Used by the form-onboarding tools and by tests, never to start an application.
+func (r *Registry) Any(formID string) (*Form, bool) {
+	if form, ok := r.byID[formID]; ok {
+		return form, true
+	}
+	var best *Form
+	for _, form := range r.byKey {
+		if form.Mapping.ID != formID {
+			continue
+		}
+		if best == nil || newerThan(form.Mapping, best.Mapping) {
+			best = form
+		}
+	}
+	return best, best != nil
 }
 
 // ByKey returns one exact revision. An existing application is always refilled
@@ -286,10 +308,14 @@ func verifyAgainstTemplate(form *Form) error {
 				add("field %q targets %q, which this template does not have", field.ID, field.Target.Name)
 				continue
 			}
-			if templateField.Type == pdf.FieldSignature {
-				// Belt and braces alongside fillPolicy "never": a signature is
-				// the applicant's, and no mapping may put anything in one.
-				add("field %q targets %q, which is a signature field; Help The Hive must not fill a signature", field.ID, field.Target.Name)
+			if templateField.IsAttestation() {
+				// Alongside fillPolicy "never": these boxes are the applicant's
+				// own act — signing, initialling, certifying, dating a
+				// signature — and Help The Hive does not perform them. A
+				// mapping that wants one filled has to say so explicitly, and
+				// there is deliberately no way to say so.
+				add("field %q targets %q, which this form uses as %s (%q); that is the applicant's to complete, so mark it fillPolicy \"never\"",
+					field.ID, field.Target.Name, templateField.Attestation, templateField.Label)
 				continue
 			}
 			if !templateField.Type.Fillable() {

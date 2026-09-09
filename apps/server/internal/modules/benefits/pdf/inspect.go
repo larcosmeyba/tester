@@ -71,7 +71,15 @@ type Field struct {
 	// LabelPlacement records whether the label was found to the left of the box
 	// or above it, so a reviewer can judge the guess.
 	LabelPlacement string
+	// Attestation is set when this box is the applicant's own to complete — a
+	// signature, initials, the date beside a signature, or a certification.
+	// A mapping that targets one is refused unless it declares fillPolicy
+	// "never".
+	Attestation AttestationKind
 }
+
+// IsAttestation reports whether this field must be left for the applicant.
+func (f Field) IsAttestation() bool { return f.Attestation != AttestationNone }
 
 // Pages lists the pages this field appears on, in order.
 func (f Field) Pages() []int {
@@ -120,54 +128,48 @@ func configuration() *model.Configuration {
 	return conf
 }
 
-// readContext parses a PDF into pdfcpu's object model. It validates and
-// optimises on the way in, which is what pdfcpu's own form operations expect;
-// skipping it leaves form edits working on an under-resolved object graph.
+// readContext parses a PDF into pdfcpu's object model, refusing anything this
+// engine cannot fill and repairing the one thing that is worth repairing.
 //
-// Real government PDFs need the second attempt more often than they should.
-// Several states publish forms produced through Microsoft Office, which stamps
-// custom keys into the document information dictionary — SharePoint author
-// fields and the like — with escapes a strict reader rejects. That metadata has
-// nothing to do with the form: New York's 28-page SNAP application and North
-// Carolina's 575-field one both read perfectly once it is out of the way. So a
-// validation failure is retried with the document info dropped, and only a
-// document that fails even then is reported as unreadable.
+// The steps are spelled out rather than left to pdfcpu's combined helper
+// because two of them need something interposed.
+//
+// Structure is checked straight after parsing, before optimisation, because
+// optimisation removes an AcroForm with an empty /Fields array — which is
+// exactly the shape of a pure XFA form, whose fields live in an XML payload
+// this engine cannot read. Check it afterwards and such a form looks like an
+// ordinary one with no fields, which would invite somebody to map coordinates
+// onto boxes that are not where they appear to be.
+//
+// Validation is retried with the document information dictionary dropped,
+// because several states publish forms produced through Microsoft Office, which
+// stamps custom SharePoint keys into it with escapes a strict reader rejects.
+// That dictionary holds a title and an author and affects no field: New York's
+// 28-page SNAP application and North Carolina's 575-field one both read
+// perfectly once it is out of the way.
 func readContext(rs io.ReadSeeker) (*model.Context, error) {
-	ctx, err := api.ReadValidateAndOptimize(rs, configuration())
-	if err == nil {
-		return ctx, nil
-	}
-	validationErr := err
-
-	if _, seekErr := rs.Seek(0, io.SeekStart); seekErr != nil {
-		return nil, fmt.Errorf("read pdf: %w", validationErr)
-	}
-	ctx, retryErr := readWithoutDocumentInfo(rs)
-	if retryErr != nil {
-		// The first error is the useful one: the retry only exists to get past
-		// broken metadata, so its failure says less about the document.
-		return nil, fmt.Errorf("read pdf: %w", validationErr)
-	}
-	return ctx, nil
-}
-
-// readWithoutDocumentInfo reads a PDF, empties its document information
-// dictionary, and only then validates.
-//
-// Dropping it is safe for what this engine does: the dictionary holds a title,
-// an author and whatever a word processor decided to stamp in, and none of it
-// affects a single form field. It is not, however, something to do silently to
-// a document that reads fine — hence the fallback rather than always.
-func readWithoutDocumentInfo(rs io.ReadSeeker) (*model.Context, error) {
 	ctx, err := api.ReadContext(rs, configuration())
 	if err != nil {
+		return nil, fmt.Errorf("read pdf: %w", err)
+	}
+	if err := checkStructureSupported(ctx); err != nil {
 		return nil, err
 	}
-	dropDocumentInfo(ctx)
+
 	if err := api.ValidateContext(ctx); err != nil {
-		return nil, err
+		validationErr := err
+		dropDocumentInfo(ctx)
+		if retryErr := api.ValidateContext(ctx); retryErr != nil {
+			// The first error is the useful one: the retry exists only to get
+			// past broken metadata, so its failure says less about the document.
+			return nil, fmt.Errorf("read pdf: %w", validationErr)
+		}
 	}
+
 	if err := api.OptimizeContext(ctx); err != nil {
+		return nil, fmt.Errorf("read pdf: %w", err)
+	}
+	if err := checkUsable(ctx); err != nil {
 		return nil, err
 	}
 	return ctx, nil
@@ -262,6 +264,7 @@ func inventoryFromContext(ctx *model.Context) (Inventory, error) {
 	for _, name := range order {
 		field := byName[name]
 		if len(field.Widgets) == 0 {
+			field.Attestation = classifyAttestation(field.Type, field.Name, "")
 			inventory.Fields = append(inventory.Fields, *field)
 			continue
 		}
@@ -272,6 +275,7 @@ func inventoryFromContext(ctx *model.Context) (Inventory, error) {
 			runsByPage[widget.Page] = runs
 		}
 		field.Label, field.LabelPlacement = LabelFor(runs, widget.Rect)
+		field.Attestation = classifyAttestation(field.Type, field.Name, field.Label)
 		inventory.Fields = append(inventory.Fields, *field)
 	}
 	return inventory, nil

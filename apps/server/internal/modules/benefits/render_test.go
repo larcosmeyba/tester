@@ -16,7 +16,7 @@ func sampleForm(t *testing.T) *Form {
 	if err != nil {
 		t.Fatalf("load forms: %v", err)
 	}
-	form, ok := registry.Current("us-xx-snap-hth-sample-1")
+	form, ok := registry.Any("us-xx-snap-hth-sample-1")
 	if !ok {
 		t.Fatal("the sample form is missing")
 	}
@@ -355,6 +355,47 @@ func TestADerivedValueIsReportedButNeverAskedAsAQuestion(t *testing.T) {
 	for _, missing := range domain.Resolve(answered, form.Mapping).Missing {
 		if missing.FieldPath == "income.monthly_gross_total" {
 			t.Error("once income is collected the total should be computed, not still outstanding")
+		}
+	}
+}
+
+// A value that cannot be written must be reported against its own field, with
+// the rest of the document still produced. Losing the whole application to one
+// bad box would be worse than an application with one box empty and a note
+// saying so.
+func TestOneUnwritableValueDoesNotCostTheWholeDocument(t *testing.T) {
+	form := sampleForm(t)
+	profile := completeProfile(t)
+
+	// A city name far longer than the box the form gives it.
+	set(t, profile, "address.residential.city",
+		domain.Text(strings.Repeat("Llanfairpwllgwyngyll", 12), domain.SourceUser))
+
+	resolution := domain.Resolve(profile, form.Mapping)
+	rendered, err := RenderDraft(form, resolution)
+	if err != nil {
+		t.Fatalf("one oversized value must not fail the whole render: %v", err)
+	}
+	if len(rendered.Bytes) == 0 {
+		t.Fatal("expected a document even with a field in difficulty")
+	}
+}
+
+// A render failure is reported as a problem carrying no answer, because that
+// reason is stored on the application and written to a log.
+func TestRenderProblemsDescribeTheBoxNotTheAnswer(t *testing.T) {
+	form := sampleForm(t)
+	profile := completeProfile(t)
+	set(t, profile, "applicant.ssn", domain.Text("123456789", domain.SourceUser))
+
+	resolution := domain.Resolve(profile, form.Mapping)
+	rendered, err := RenderDraft(form, resolution)
+	if err != nil {
+		t.Fatalf("render: %v", err)
+	}
+	for _, problem := range append(rendered.Problems, resolution.Problems...) {
+		if strings.Contains(problem.Reason, "123456789") {
+			t.Errorf("a problem quoted a Social Security number: %s", problem.Reason)
 		}
 	}
 }

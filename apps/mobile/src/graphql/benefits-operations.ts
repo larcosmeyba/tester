@@ -44,6 +44,7 @@ const FORM_FIELDS = `
   fragment BenefitsFormFields on BenefitsForm {
     id
     key
+    status
     program
     country
     state
@@ -56,6 +57,9 @@ const FORM_FIELDS = `
     agencyUrl
     mappedFieldCount
     fillableFieldCount
+    effectiveDate
+    sourceUrl
+    retrievedAt
   }
 `;
 
@@ -124,6 +128,7 @@ const APPLICATION_FIELDS = `
     }
     problems { fieldId fieldPath reason }
     skippedFields { fieldId reason note }
+    failureReason
     draftDocumentPath
     finalDocumentPath
     createdAt

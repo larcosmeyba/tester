@@ -10,14 +10,15 @@
   "formTitle": "Missouri Application for Food Stamp / SNAP Benefits",
   "formVersion": "2024.01",
   "revision": 1,
-  "status": "active",
+  "status": "draft",
   "vocabularyVersion": 1,
   "agencyUrl": "https://mydss.mo.gov/food-assistance",
   "template": {
     "kind": "acroform",
     "file": "template.pdf",
     "sha256": "e0dc719f4c1adc41e8222cba340dbcb417798e494a898a77b0963fe980ac56ca",
-    "pageCount": 12
+    "pageCount": 12,
+    "retrievedAt": "2026-09-08"
   },
   "requirements": [
     {
@@ -2673,5 +2674,6 @@
       "fillPolicy": "never",
       "note": "Signed and dated by the applicant. Help The Hive does not sign an application on anyone's behalf."
     }
-  ]
+  ],
+  "provenanceNote": "Supplied as a file rather than downloaded, so the exact agency URL this PDF came from is not known. Confirm it against Missouri DSS, set sourceUrl, and only then set status to active."
 }

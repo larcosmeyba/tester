@@ -13,3 +13,16 @@
 // agency, made in the applicant's name. That is why this package would rather
 // return "I do not know" than anything else.
 package benefits
+
+// One thing this package deliberately does not do: decide eligibility.
+//
+// There is no rule here that reads a household's income and concludes anything
+// about whether they qualify for a program. Every threshold in benefits law is
+// a matter of state rules, deductions and circumstances that change, and the
+// only body whose answer counts is the agency running the programme. Help The
+// Hive prepares a form; the agency decides.
+//
+// That boundary is worth holding even when a prediction would be easy. Telling
+// somebody they probably qualify, and being wrong, costs them a month of
+// waiting; telling them they probably do not, and being wrong, costs them the
+// application entirely.

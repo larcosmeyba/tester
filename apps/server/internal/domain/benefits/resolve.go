@@ -254,7 +254,9 @@ func parseCheckState(text string) (bool, error) {
 	case "false", "no", "off", "0", "":
 		return false, nil
 	}
-	return false, fmt.Errorf("%q is not a yes-or-no answer, so this box cannot be ticked either way", text)
+	// Described rather than quoted: this reason is stored on the application
+	// and written to a log, and the value it came from may be sensitive.
+	return false, fmt.Errorf("the answer is not a yes-or-no value, so this box cannot be ticked either way")
 }
 
 func labelFor(path FieldPath, field FieldMapping) string {

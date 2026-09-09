@@ -9,7 +9,7 @@ import (
 
 	domain "github.com/helpthehive/server/internal/domain/benefits"
 	"github.com/helpthehive/server/internal/modules/benefits/pdf"
-	"github.com/helpthehive/server/internal/modules/mealgen/provider"
+	"github.com/helpthehive/server/internal/modules/benefits/aiprovider"
 )
 
 // MaxSuggestionTokens caps the reply. A mapping draft for a long form is still
@@ -45,10 +45,10 @@ type Result struct {
 // Suggester proposes mappings. It holds a provider and nothing else — no store,
 // no profile, no way to reach applicant data.
 type Suggester struct {
-	provider provider.Provider
+	provider aiprovider.Provider
 }
 
-func NewSuggester(p provider.Provider) *Suggester {
+func NewSuggester(p aiprovider.Provider) *Suggester {
 	return &Suggester{provider: p}
 }
 
@@ -59,7 +59,7 @@ func NewSuggester(p provider.Provider) *Suggester {
 // parameter here through which applicant data could arrive.
 func (s *Suggester) Suggest(ctx context.Context, inventory pdf.Inventory) (Result, error) {
 	if s == nil || s.provider == nil {
-		return Result{}, provider.ErrNoProvider
+		return Result{}, aiprovider.ErrNoProvider
 	}
 	if len(inventory.Fields) == 0 {
 		return Result{}, fmt.Errorf("this form has no fields to map")
@@ -70,7 +70,7 @@ func (s *Suggester) Suggest(ctx context.Context, inventory pdf.Inventory) (Resul
 		return Result{}, err
 	}
 
-	response, err := s.provider.Complete(ctx, provider.Request{
+	response, err := s.provider.Complete(ctx, aiprovider.Request{
 		System:    systemPrompt,
 		User:      prompt,
 		MaxTokens: MaxSuggestionTokens,

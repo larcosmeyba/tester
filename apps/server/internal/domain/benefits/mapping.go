@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"strings"
+	"time"
 )
 
 // MappingSchemaVersion is the version of the mapping file format itself, as
@@ -132,11 +133,25 @@ type Jurisdiction struct {
 	State   string `json:"state,omitempty"`
 }
 
+// TemplateRef pins the exact document a mapping was written against, and
+// records where it came from.
+//
+// The hash is the load-bearing part. An agency reissuing a form under the same
+// filename moves every field on it, and a mapping applied to the new document
+// would fill an application that is wrong in ways nobody would notice until it
+// was rejected. A template that does not match its hash stops the server from
+// starting, and the fix is for a person to look at the new form.
 type TemplateRef struct {
 	Kind      TemplateKind `json:"kind"`
 	File      string       `json:"file"`
 	SHA256    string       `json:"sha256"`
 	PageCount int          `json:"pageCount"`
+	// SourceURL is where this exact PDF was downloaded from, so the next person
+	// can check the agency against what is checked in.
+	SourceURL string `json:"sourceUrl,omitempty"`
+	// RetrievedAt is the day it was downloaded, YYYY-MM-DD. Together with
+	// SourceURL it is what makes "is this still the current form?" answerable.
+	RetrievedAt string `json:"retrievedAt,omitempty"`
 }
 
 // FormMapping is one version of one government form. Mappings are append-only:
@@ -152,9 +167,22 @@ type FormMapping struct {
 	FormTitle         string       `json:"formTitle"`
 	FormVersion       string       `json:"formVersion"`
 	Revision          int          `json:"revision"`
-	Status            string       `json:"status"` // active | deprecated | draft
-	VocabularyVersion int          `json:"vocabularyVersion"`
-	AgencyURL         string       `json:"agencyUrl,omitempty"`
+	// Status is active, deprecated or draft. Only an active mapping is used to
+	// start a new application; an existing run keeps the exact revision it was
+	// started on, whatever has happened since.
+	Status            string `json:"status"`
+	VocabularyVersion int    `json:"vocabularyVersion"`
+	// EffectiveDate is the agency's own date for this version of the form,
+	// YYYY-MM-DD, when it states one.
+	EffectiveDate string `json:"effectiveDate,omitempty"`
+	// SupersededBy names the mapping that replaced this one, as
+	// id@version#revision. Set when Status is deprecated.
+	SupersededBy string `json:"supersededBy,omitempty"`
+	// AgencyURL is the program's page, as opposed to the PDF itself.
+	AgencyURL string `json:"agencyUrl,omitempty"`
+	// ProvenanceNote explains anything a reviewer needs to know about where
+	// this document came from — in practice, why a mapping is still draft.
+	ProvenanceNote string `json:"provenanceNote,omitempty"`
 
 	Template     TemplateRef    `json:"template"`
 	Requirements []Requirement  `json:"requirements,omitempty"`
@@ -228,6 +256,30 @@ func (m *FormMapping) Validate() error {
 	}
 	if len(m.Template.SHA256) != 64 {
 		add("template.sha256 must be a 64-character hex digest")
+	}
+	switch m.Status {
+	case "active", "deprecated", "draft":
+	default:
+		add("status must be active, deprecated or draft, got %q", m.Status)
+	}
+	if m.Status == "active" {
+		// Provenance is required of anything that will fill a real application.
+		// Without it there is no way to check whether the agency has since
+		// published a different form.
+		if strings.TrimSpace(m.Template.SourceURL) == "" {
+			add("an active mapping must record template.sourceUrl, the address this PDF was downloaded from")
+		}
+		if err := validateDate(m.Template.RetrievedAt); err != nil {
+			add("template.retrievedAt: %v", err)
+		}
+	}
+	if m.EffectiveDate != "" {
+		if err := validateDate(m.EffectiveDate); err != nil {
+			add("effectiveDate: %v", err)
+		}
+	}
+	if m.Status == "deprecated" && strings.TrimSpace(m.SupersededBy) == "" {
+		add("a deprecated mapping should name what replaced it in supersededBy")
 	}
 	if len(m.Fields) == 0 {
 		add("a mapping with no fields fills nothing")
@@ -396,6 +448,16 @@ func (m *FormMapping) validateValueMap(field FieldMapping, add func(string, ...a
 			add("field %q: valueMap does not cover %q, which %s can be", field.ID, want, field.Source.FieldPath)
 		}
 	}
+}
+
+func validateDate(value string) error {
+	if strings.TrimSpace(value) == "" {
+		return fmt.Errorf("required, as YYYY-MM-DD")
+	}
+	if _, err := time.Parse(time.DateOnly, strings.TrimSpace(value)); err != nil {
+		return fmt.Errorf("%q is not a YYYY-MM-DD date", value)
+	}
+	return nil
 }
 
 func targetKey(t Target) string {
