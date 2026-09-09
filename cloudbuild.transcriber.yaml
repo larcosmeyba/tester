@@ -60,16 +60,38 @@ steps:
           --set-env-vars=APP_ENV=production \
           --set-secrets='RECIPE_AI_API_KEY=${_AI_KEY_SECRET}:latest' \
           --set-secrets='IMPORT_SHARED_SECRET=${_SHARED_SECRET}:latest' \
+          --port=8080 \
+          --startup-probe='initialDelaySeconds=0,timeoutSeconds=3,periodSeconds=3,failureThreshold=10,httpGet.port=8080,httpGet.path=/readyz' \
+          --liveness-probe='initialDelaySeconds=10,timeoutSeconds=3,periodSeconds=10,failureThreshold=3,httpGet.port=8080,httpGet.path=/healthz' \
           --min-instances=1 --max-instances=1 \
-          --concurrency=4 --cpu=1 --memory=2Gi --timeout=600
+          --concurrency=4 --cpu=1 --memory=2Gi --timeout=600 \
+          --quiet
+
+  - id: verify
+    name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    waitFor: [deploy]
+    entrypoint: bash
+    args:
+      - -ceu
+      - |
+        # Internal ingress means Cloud Build cannot reach the service's HTTP
+        # endpoints directly. Confirm the revision is Ready; then, from inside
+        # the project, check GET /readyz returns 200 (503 means the recipe AI
+        # key is missing).
+        STATUS="$$(gcloud run services describe '${_SERVICE}' --project='$PROJECT_ID' --region='${_REGION}' --format='value(status.conditions[0].status)')"
+        test "$${STATUS}" = True
 
 substitutions:
-  _REGION: europe-west1
+  _REGION: us-central1
   _REPOSITORY: hth
   _SERVICE: hth-transcriber
+  # Set at submit time, e.g.:
+  #   helpthehive-dev-transcriber-run@<PROJECT_ID>.iam.gserviceaccount.com
   _SERVICE_ACCOUNT: ''
-  _AI_KEY_SECRET: recipe-ai-api-key
-  _SHARED_SECRET: import-shared-secret
+  # Secret names follow the helpthehive-{dev,prod}- convention. The secrets
+  # themselves must already exist; see docs/deployment/gcp.md.
+  _AI_KEY_SECRET: helpthehive-dev-recipe-ai-api-key
+  _SHARED_SECRET: helpthehive-dev-import-shared-secret
 
 options:
   logging: CLOUD_LOGGING_ONLY

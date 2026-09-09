@@ -1,0 +1,118 @@
+# The Penny agent service. Mirrors cloudbuild.transcriber.yaml, with the
+# repository root as the build context so paths match the other services.
+#
+# Penny is an internal-only Cloud Run service: the Go API is its only caller
+# (authenticated with the shared service token) and the mobile app never
+# reaches it directly. Submit manually; scripts/deploy-gcp.sh knows this
+# service as `penny`.
+steps:
+  - id: test
+    name: python:3.12-slim
+    waitFor: ['-']
+    entrypoint: bash
+    args:
+      - -ceu
+      - |
+        cd apps/penny && pip install --no-cache-dir --quiet . pytest pytest-asyncio httpx
+        # Unit tests only. The evals/ suite needs a live provider key and is
+        # run separately, not as part of the build.
+        python -m pytest -q tests
+
+  - id: cache-pull
+    name: gcr.io/cloud-builders/docker
+    entrypoint: bash
+    waitFor: ['-']
+    args:
+      - -ceu
+      - |
+        docker pull '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/penny:buildcache' || true
+
+  - id: build
+    name: gcr.io/cloud-builders/docker
+    env: [DOCKER_BUILDKIT=1]
+    waitFor: [cache-pull]
+    args:
+      - build
+      - --file=Dockerfile.penny
+      - --cache-from=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/penny:buildcache
+      - --build-arg=BUILDKIT_INLINE_CACHE=1
+      - --tag=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/penny:$BUILD_ID
+      - --tag=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/penny:buildcache
+      - .
+
+  - id: push
+    name: gcr.io/cloud-builders/docker
+    entrypoint: bash
+    waitFor: [test, build]
+    args:
+      - -ceu
+      - |
+        docker push '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/penny:$BUILD_ID'
+        docker push '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/penny:buildcache'
+
+  - id: deploy
+    name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    waitFor: [push]
+    entrypoint: bash
+    args:
+      - -ceu
+      - |
+        ENV_VARS="PENNY_ENV=production,PENNY_PROVIDER=${_PENNY_PROVIDER},PENNY_MODEL=${_PENNY_MODEL}"
+        if [[ -n "${_BACKEND_URL}" ]]; then
+          ENV_VARS="$${ENV_VARS},PENNY_BACKEND_URL=${_BACKEND_URL}"
+        fi
+        if [[ -n "${_PENNY_BASE_URL}" ]]; then
+          ENV_VARS="$${ENV_VARS},PENNY_BASE_URL=${_PENNY_BASE_URL}"
+        fi
+        gcloud run deploy '${_SERVICE}' \
+          --project='$PROJECT_ID' \
+          --region='${_REGION}' \
+          --image='${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/penny:$BUILD_ID' \
+          --service-account='${_SERVICE_ACCOUNT}' \
+          --ingress=internal \
+          --no-allow-unauthenticated \
+          --set-env-vars="$${ENV_VARS}" \
+          --set-secrets='PENNY_SERVICE_TOKEN=${_SERVICE_TOKEN_SECRET}:latest' \
+          --set-secrets='PENNY_API_KEY=${_API_KEY_SECRET}:latest' \
+          --port=8080 \
+          --startup-probe='initialDelaySeconds=0,timeoutSeconds=3,periodSeconds=3,failureThreshold=10,httpGet.port=8080,httpGet.path=/health' \
+          --liveness-probe='initialDelaySeconds=10,timeoutSeconds=3,periodSeconds=10,failureThreshold=3,httpGet.port=8080,httpGet.path=/health' \
+          --min-instances=0 --max-instances=4 \
+          --concurrency=10 --cpu=1 --memory=1Gi --timeout=300 \
+          --quiet
+
+  - id: verify
+    name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    waitFor: [deploy]
+    entrypoint: bash
+    args:
+      - -ceu
+      - |
+        # Internal ingress means Cloud Build cannot reach the service's HTTP
+        # endpoints directly. Confirm the revision is Ready; then, from inside
+        # the project (a VM or the API service), check GET /health/detailed
+        # reports "database_access": false.
+        STATUS="$$(gcloud run services describe '${_SERVICE}' --project='$PROJECT_ID' --region='${_REGION}' --format='value(status.conditions[0].status)')"
+        test "$${STATUS}" = True
+
+substitutions:
+  _REGION: us-central1
+  _REPOSITORY: hth
+  _SERVICE: hth-penny
+  # Set at submit time, e.g.:
+  #   helpthehive-dev-penny-run@<PROJECT_ID>.iam.gserviceaccount.com
+  _SERVICE_ACCOUNT: ''
+  # The Go API's internal URL. Leave empty only if the API is not deployed
+  # yet; Penny then falls back to PENNY_BACKEND_URL's compiled default.
+  _BACKEND_URL: ''
+  _PENNY_PROVIDER: anthropic
+  _PENNY_MODEL: claude-sonnet-5
+  # Only needed when _PENNY_PROVIDER is openai_compatible.
+  _PENNY_BASE_URL: ''
+  # Secret names follow the helpthehive-{dev,prod}- convention. The secrets
+  # themselves must already exist; see docs/deployment/gcp.md.
+  _SERVICE_TOKEN_SECRET: helpthehive-dev-penny-service-token
+  _API_KEY_SECRET: helpthehive-dev-penny-api-key
+
+options:
+  logging: CLOUD_LOGGING_ONLY
