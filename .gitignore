@@ -64,6 +64,11 @@ apps/mobile/android/local.properties
 # Points at this machine's node binary; each developer generates their own.
 apps/mobile/ios/.xcode.env.local
 
+# Firebase Android config. Required for FCM push in production builds; attached
+# via `eas credentials` (Android -> production profile), never committed.
+# See docs/android-fcm-setup.md.
+apps/mobile/android/app/google-services.json
+
 # Go build cache
 apps/server/.gocache/
 

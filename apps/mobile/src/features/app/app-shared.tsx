@@ -245,7 +245,7 @@ export const sharedStyles = StyleSheet.create({
   },
   videoHero: {
     height: 220,
-    backgroundColor: '#252529',
+    backgroundColor: HiveColors.ink,
     alignItems: 'center',
     justifyContent: 'center',
   },

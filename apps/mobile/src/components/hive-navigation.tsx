@@ -6,11 +6,11 @@
  * rebuilt here — and using it on Android too keeps the two platforms looking
  * like the same product, which the migration brief asks for.
  */
-import { Platform, Pressable, StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
+import { Pressable, StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { HiveIcon, type HiveIconName } from '@/components/hive-ui';
-import { HiveColors } from '@/constants/theme';
+import { HiveColors, Shadows } from '@/constants/theme';
 
 export type TabItem = { label: string; icon: HiveIconName };
 
@@ -144,16 +144,7 @@ const styles = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: HiveColors.border,
     paddingHorizontal: 6,
-    ...Platform.select({
-      ios: {
-        shadowColor: '#000',
-        shadowOpacity: 0.1,
-        shadowRadius: 16,
-        shadowOffset: { width: 0, height: 6 },
-      },
-      android: { elevation: 12 },
-      default: {},
-    }),
+    ...Shadows.soft,
   },
   tabButton: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 2, paddingVertical: 6 },
   tabIcon: {
@@ -181,16 +172,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 13,
     borderRadius: 30,
-    ...Platform.select({
-      ios: {
-        shadowColor: HiveColors.green,
-        shadowOpacity: 0.35,
-        shadowRadius: 8,
-        shadowOffset: { width: 0, height: 4 },
-      },
-      android: { elevation: 6 },
-      default: {},
-    }),
+    // Geometry comes from the shared soft shadow; the green tint is intentional.
+    ...Shadows.soft,
+    shadowColor: HiveColors.green,
   },
   pillGreen: { backgroundColor: HiveColors.green },
   pillLight: { backgroundColor: HiveColors.white, borderWidth: 1.5, borderColor: HiveColors.green },

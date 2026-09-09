@@ -189,7 +189,7 @@ const styles = StyleSheet.create({
     borderWidth: 22,
     borderTopColor: HiveColors.greenDark,
     borderRightColor: HiveColors.green,
-    borderBottomColor: '#9CD39D',
+    borderBottomColor: HiveColors.greenSoft,
     borderLeftColor: HiveColors.card,
     alignItems: 'center',
     justifyContent: 'center',

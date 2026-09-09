@@ -32,6 +32,8 @@ type MealPlanContextValue = {
    */
   planStartDate: Date;
   isGenerating: boolean;
+  /** True while the current plan is being fetched (initial load included). */
+  isLoadingPlan: boolean;
   error: unknown;
 
   /** Recipes chosen by hand in Choose My Recipes. */
@@ -60,6 +62,9 @@ export function MealPlanProvider({ children }: { children: ReactNode }) {
   const [plan, setPlan] = useState<MealPlan | null>(null);
   const [planStartDate, setPlanStartDate] = useState<Date>(() => startOfToday());
   const [isGenerating, setIsGenerating] = useState(false);
+  // Starts true: the plan screen mounts and loads immediately, and the screen
+  // must show a spinner — not the "no plan" CTA — until that first load lands.
+  const [isLoadingPlan, setIsLoadingPlan] = useState(true);
   const [error, setError] = useState<unknown>(null);
   const [selectedRecipeIds, setSelectedRecipeIds] = useState<string[]>([]);
 
@@ -97,11 +102,14 @@ export function MealPlanProvider({ children }: { children: ReactNode }) {
   );
 
   const loadCurrent = useCallback(async () => {
+    setIsLoadingPlan(true);
     setError(null);
     try {
       setPlan(await mealPlanService.getCurrent());
     } catch (caught) {
       setError(caught);
+    } finally {
+      setIsLoadingPlan(false);
     }
   }, []);
 
@@ -152,6 +160,7 @@ export function MealPlanProvider({ children }: { children: ReactNode }) {
       plan,
       planStartDate,
       isGenerating,
+      isLoadingPlan,
       error,
       selectedRecipeIds,
       toggleRecipe,
@@ -169,6 +178,7 @@ export function MealPlanProvider({ children }: { children: ReactNode }) {
       plan,
       planStartDate,
       isGenerating,
+      isLoadingPlan,
       error,
       selectedRecipeIds,
       toggleRecipe,

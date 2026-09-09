@@ -15,7 +15,8 @@
     },
     "production": {
       "autoIncrement": true,
-      "environment": "production"
+      "environment": "production",
+      "preInstall": "node ./scripts/check-android-fcm.js"
     }
   },
   "submit": {

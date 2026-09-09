@@ -40,7 +40,7 @@ export function AccountScreen({ nav }: { nav: Navigation }) {
 
   return (
     <ScrollScreen>
-      <AppHeader title="My Account" onBack={nav.back} right={<Pressable onPress={() => nav.push('settings')} style={styles.iconButtonPlain}><HiveIcon name="gear" size={18} /></Pressable>} />
+      <AppHeader title="My Account" onBack={nav.back} right={<Pressable accessibilityRole="button" accessibilityLabel="Settings" onPress={() => nav.push('settings')} style={styles.iconButtonPlain}><HiveIcon name="gear" size={18} /></Pressable>} />
       <View style={styles.accountHeader}>
         <AvatarButton imageUri={app.profile.profileImageUri} onPress={() => nav.push('editProfile')} size={58} />
         <View style={sharedStyles.flexOne}>

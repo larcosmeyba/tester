@@ -411,7 +411,7 @@ const styles = StyleSheet.create({
   videoThumb: {
     height: 92,
     borderRadius: 12,
-    backgroundColor: '#252529',
+    backgroundColor: HiveColors.ink,
     alignItems: 'center',
     justifyContent: 'center',
   },

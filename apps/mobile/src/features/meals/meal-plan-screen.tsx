@@ -16,14 +16,14 @@
  */
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'expo-router';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import { AppButton, AvatarButton, HiveIcon, uiText } from '@/components/hive-ui';
+import { AppButton, AppHeader, EmptyState, HiveIcon, uiText } from '@/components/hive-ui';
 import { AlertBanner, ComingSoonCard } from '@/components/hive-cards';
 import { WeekCalendarStrip, addDays, isSameDay, startOfWeek } from '@/components/hive-calendar';
 import { InstacartButton } from '@/components/hive-instacart';
 import { FLOATING_TAB_BAR_HEIGHT, useFloatingTabBarSpace } from '@/components/hive-navigation';
-import { HiveColors, Radii } from '@/constants/theme';
+import { HiveColors, MealAccents, Radii } from '@/constants/theme';
 import { useAppState } from '@/state/app-state';
 import { PRICING_NOTICE } from '@/features/meals/pricing-notice';
 import { useMealPlan } from '@/features/meals/meal-plan-context';
@@ -32,18 +32,10 @@ import { isWithinBudget, type MealSlot, type PlannedMeal } from '@/features/meal
 import { mealTypesInPlan, planDayCount } from '@/features/meals/move-meal';
 import { describeError } from '@/services/api-error';
 
-/** Accent per meal category, echoing the reference app's colour-coded cards. */
-const MEAL_ACCENTS: Record<string, string> = {
-  breakfast: '#F0A81E',
-  lunch: '#3887FF',
-  dinner: '#1F8C38',
-  snack: '#8E5BD8',
-};
-
 export function MealPlanScreen() {
   const router = useRouter();
   const app = useAppState();
-  const { plan, planStartDate, error, loadCurrent, moveMeal, clearError } = useMealPlan();
+  const { plan, planStartDate, error, isLoadingPlan, loadCurrent, moveMeal, clearError } = useMealPlan();
 
   const [selectedDate, setSelectedDate] = useState(() => new Date());
   /** The meal the user picked up, waiting for a destination slot. */
@@ -95,73 +87,83 @@ export function MealPlanScreen() {
 
   return (
     <View style={styles.screen}>
-      <View style={styles.header}>
-        <View style={styles.headerSpacer} />
-        <Text style={styles.headerTitle}>Meals for the Week</Text>
-        <AvatarButton imageUri={app.profile.profileImageUri} onPress={() => router.push('/account')} />
-      </View>
+      <AppHeader
+        title="Meals for the Week"
+        onAvatar={() => router.push('/account')}
+        profileImageUri={app.profile.profileImageUri}
+      />
 
       <WeekCalendarStrip selectedDate={selectedDate} onSelectDate={setSelectedDate} />
       <View style={styles.divider} />
 
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-        {error ? <PlanError error={error} onRetry={() => { clearError(); void loadCurrent(); }} /> : null}
-
-        {!plan ? (
-          <AlertBanner
-            emoji="🐝"
-            title="Time to plan this week's meals!"
-            subtitle="Tap to generate a fresh meal plan with Penny."
-            onPress={() => router.push('/meals/questionnaire')}
-            style={styles.block}
-          />
-        ) : null}
-
-        <Text style={styles.dayLabel}>{dayLabel}</Text>
-
-        {plan && mealTypes.length > 0 && selectedDay ? (
+        {isLoadingPlan && !plan ? (
+          <View style={styles.loadingWrap} accessibilityRole="progressbar">
+            <ActivityIndicator size="large" color={HiveColors.green} />
+          </View>
+        ) : (
           <>
-            {movingSlot ? (
-              <View style={styles.movingBanner}>
-                <Text style={uiText.body}>Pick a slot to move this meal to.</Text>
-                <Pressable onPress={() => setMovingSlot(null)} accessibilityRole="button">
-                  <Text style={styles.cancelText}>Cancel</Text>
-                </Pressable>
-              </View>
+            {error ? <PlanError error={error} onRetry={() => { clearError(); void loadCurrent(); }} /> : null}
+
+            {!plan ? (
+              <AlertBanner
+                emoji="🐝"
+                title="Time to plan this week's meals!"
+                subtitle="Tap to generate a fresh meal plan with Penny."
+                onPress={() => router.push('/meals/questionnaire')}
+                style={styles.block}
+              />
             ) : null}
 
-            {mealTypes.map((mealType) => {
-              const slot: MealSlot = { day: selectedDay, mealType };
-              const meal = mealsForDay.find((candidate) => candidate.slot.mealType === mealType);
-              const isMoving = movingSlot?.day === slot.day && movingSlot?.mealType === slot.mealType;
-              return (
-                <MealRow
-                  key={mealType}
-                  mealType={mealType}
-                  meal={meal}
-                  isMoving={isMoving}
-                  isTarget={Boolean(movingSlot) && !isMoving}
-                  onPress={() => handleSlotPress(slot, meal)}
-                />
-              );
-            })}
+            <Text style={styles.dayLabel}>{dayLabel}</Text>
+
+            {plan && mealTypes.length > 0 && selectedDay ? (
+              <>
+                {movingSlot ? (
+                  <View style={styles.movingBanner}>
+                    <Text style={uiText.body}>Pick a slot to move this meal to.</Text>
+                    <Pressable onPress={() => setMovingSlot(null)} accessibilityRole="button">
+                      <Text style={styles.cancelText}>Cancel</Text>
+                    </Pressable>
+                  </View>
+                ) : null}
+
+                {mealTypes.map((mealType) => {
+                  const slot: MealSlot = { day: selectedDay, mealType };
+                  const meal = mealsForDay.find((candidate) => candidate.slot.mealType === mealType);
+                  const isMoving = movingSlot?.day === slot.day && movingSlot?.mealType === slot.mealType;
+                  return (
+                    <MealRow
+                      key={mealType}
+                      mealType={mealType}
+                      meal={meal}
+                      isMoving={isMoving}
+                      isTarget={Boolean(movingSlot) && !isMoving}
+                      onPress={() => handleSlotPress(slot, meal)}
+                    />
+                  );
+                })}
+              </>
+            ) : (
+              <EmptyState
+                icon="fork"
+                title="No meals planned for this day"
+                actionLabel={plan ? undefined : 'Build a Meal Plan'}
+                onAction={plan ? undefined : () => router.push('/meals/questionnaire')}
+              />
+            )}
+
+            {plan ? <PlanSummary plan={plan} /> : null}
+
+            <Text style={styles.sectionTitle}>Deals for you this week</Text>
+            <ComingSoonCard
+              icon="cart"
+              title="Coming Soon"
+              subtitle="Personalized deals based on your meal plan — launching soon!"
+              style={styles.block}
+            />
           </>
-        ) : (
-          <EmptyDay
-            hasPlan={Boolean(plan)}
-            onBuild={() => router.push('/meals/questionnaire')}
-          />
         )}
-
-        {plan ? <PlanSummary plan={plan} /> : null}
-
-        <Text style={styles.sectionTitle}>Deals for you this week</Text>
-        <ComingSoonCard
-          icon="cart"
-          title="Coming Soon"
-          subtitle="Personalized deals based on your meal plan — launching soon!"
-          style={styles.block}
-        />
       </ScrollView>
 
       <View style={[styles.shopBar, { bottom: barSpace + 12 }]}>
@@ -194,7 +196,7 @@ function MealRow({
   isTarget: boolean;
   onPress: () => void;
 }) {
-  const accent = MEAL_ACCENTS[mealType] ?? HiveColors.green;
+  const accent = MealAccents[mealType] ?? HiveColors.green;
 
   return (
     <View style={styles.mealBlock}>
@@ -248,20 +250,6 @@ function MealRow({
   );
 }
 
-function EmptyDay({ hasPlan, onBuild }: { hasPlan: boolean; onBuild: () => void }) {
-  return (
-    <View style={styles.empty}>
-      <HiveIcon name="fork" size={32} color={HiveColors.border} />
-      <Text style={styles.emptyText}>No meals planned for this day</Text>
-      {!hasPlan ? (
-        <Pressable accessibilityRole="button" onPress={onBuild} style={styles.emptyButton}>
-          <Text style={styles.emptyButtonText}>Build a Meal Plan</Text>
-        </Pressable>
-      ) : null}
-    </View>
-  );
-}
-
 /** Cost range, budget standing and Penny's summary — kept from the newer app. */
 function PlanSummary({ plan }: { plan: NonNullable<ReturnType<typeof useMealPlan>['plan']> }) {
   const withinBudget = isWithinBudget(plan);
@@ -301,18 +289,10 @@ export { addDays, isSameDay, startOfWeek };
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: HiveColors.white },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingTop: 8,
-    paddingBottom: 4,
-  },
-  headerSpacer: { width: 38 },
-  headerTitle: { flex: 1, textAlign: 'center', color: HiveColors.text, fontSize: 20, fontWeight: '700' },
   divider: { height: StyleSheet.hairlineWidth, backgroundColor: HiveColors.border },
   content: { paddingBottom: FLOATING_TAB_BAR_HEIGHT + 150 },
   block: { marginHorizontal: 20, marginBottom: 16 },
+  loadingWrap: { alignItems: 'center', justifyContent: 'center', paddingVertical: 64 },
 
   dayLabel: {
     color: HiveColors.text,
@@ -364,16 +344,6 @@ const styles = StyleSheet.create({
   metaRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   meta: { color: HiveColors.textSecondary, fontSize: 12 },
   mealEmpty: { color: HiveColors.textSecondary, fontSize: 14 },
-
-  empty: { alignItems: 'center', gap: 14, paddingVertical: 40 },
-  emptyText: { color: HiveColors.textSecondary, fontSize: 15, fontWeight: '600' },
-  emptyButton: {
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 10,
-    backgroundColor: HiveColors.green,
-  },
-  emptyButtonText: { color: HiveColors.white, fontSize: 14, fontWeight: '600' },
 
   summary: {
     marginHorizontal: 20,
