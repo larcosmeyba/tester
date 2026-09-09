@@ -1,0 +1,452 @@
+{
+  "schemaVersion": 1,
+  "id": "us-nm-veterans-dvs-1",
+  "jurisdiction": {
+    "country": "US",
+    "state": "NM"
+  },
+  "program": "VETERANS",
+  "formCode": "dvs-1",
+  "formTitle": "New Mexico Veteran Tax Exemption Application (DVS-1)",
+  "formVersion": "2025.03",
+  "revision": 1,
+  "status": "draft",
+  "vocabularyVersion": 1,
+  "agencyUrl": "https://www.dvs.nm.gov/benefits/",
+  "template": {
+    "kind": "acroform",
+    "file": "template.pdf",
+    "sha256": "a9cd744fcb43a715f1d38150a192452d27f9c9027d9645053793ea6572bc4d7f",
+    "pageCount": 3,
+    "retrievedAt": "2026-09-09",
+    "sourceUrl": "https://www.dvs.nm.gov/benefits/"
+  },
+  "requirements": [],
+  "provenanceNote": "Template pinned by sha256; source is the NM Department of Veterans Services benefits page catalog entry for form DVS-1. Form version 2025.03 from the March 2025 revision.",
+  "fields": [
+    {
+      "id": "applicant_information",
+      "target": {
+        "type": "radio",
+        "name": "Applicant Information"
+      },
+      "fillPolicy": "never",
+      "note": "exemption/application classification; no vocabulary equivalent"
+    },
+    {
+      "id": "marriage_information",
+      "target": {
+        "type": "radio",
+        "name": "Marriage Information"
+      },
+      "fillPolicy": "never",
+      "note": "exemption/application classification; no vocabulary equivalent"
+    },
+    {
+      "id": "name",
+      "target": {
+        "type": "text",
+        "name": "Name"
+      },
+      "fillPolicy": "never",
+      "note": "veteran/service detail; no vocabulary equivalent"
+    },
+    {
+      "id": "branch_of_service",
+      "target": {
+        "type": "text",
+        "name": "Branch of Service"
+      },
+      "fillPolicy": "never",
+      "note": "veteran/service detail; no vocabulary equivalent"
+    },
+    {
+      "id": "date",
+      "target": {
+        "type": "text",
+        "name": "Date"
+      },
+      "fillPolicy": "never",
+      "note": "signature-associated date; never auto-completed"
+    },
+    {
+      "id": "date_awarded",
+      "target": {
+        "type": "text",
+        "name": "Date Awarded"
+      },
+      "fillPolicy": "never",
+      "note": "veteran/service detail; no vocabulary equivalent"
+    },
+    {
+      "id": "date_of_residency",
+      "target": {
+        "type": "text",
+        "name": "Date of Residency"
+      },
+      "fillPolicy": "never",
+      "note": "veteran/service detail; no vocabulary equivalent"
+    },
+    {
+      "id": "date_of_veterans_death",
+      "target": {
+        "type": "text",
+        "name": "Date of Veterans Death"
+      },
+      "fillPolicy": "never",
+      "note": "veteran/service detail; no vocabulary equivalent"
+    },
+    {
+      "id": "date_2",
+      "target": {
+        "type": "text",
+        "name": "Date_2"
+      },
+      "fillPolicy": "never",
+      "note": "signature-associated date; never auto-completed"
+    },
+    {
+      "id": "disability_percentage",
+      "target": {
+        "type": "text",
+        "name": "Disability Percentage"
+      },
+      "fillPolicy": "never",
+      "note": "veteran/service detail; no vocabulary equivalent"
+    },
+    {
+      "id": "disabled_veteran_tax_exemption",
+      "target": {
+        "type": "checkbox",
+        "name": "Disabled Veteran Tax Exemption"
+      },
+      "fillPolicy": "never",
+      "note": "exemption/application classification; no vocabulary equivalent"
+    },
+    {
+      "id": "email_address",
+      "target": {
+        "type": "text",
+        "name": "Email Address"
+      },
+      "source": {
+        "fieldPath": "contact.email"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "lower"
+        }
+      ],
+      "strength": "preferred",
+      "note": "email address"
+    },
+    {
+      "id": "female",
+      "target": {
+        "type": "checkbox",
+        "name": "Female"
+      },
+      "source": {
+        "fieldPath": "applicant.sex"
+      },
+      "valueMap": {
+        "female": "true",
+        "male": "false",
+        "other": "false",
+        "decline_to_state": "false"
+      },
+      "strength": "preferred",
+      "note": "sex: female"
+    },
+    {
+      "id": "intersex",
+      "target": {
+        "type": "checkbox",
+        "name": "Intersex"
+      },
+      "fillPolicy": "never",
+      "note": "sex: intersex; the canonical \"other\" choice cannot be mapped to a specific identity"
+    },
+    {
+      "id": "last_first_and_middle",
+      "target": {
+        "type": "text",
+        "name": "Last, First and Middle"
+      },
+      "source": {
+        "fieldPath": "applicant.last_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "join",
+          "with": "applicant.first_name",
+          "sep": ", "
+        },
+        {
+          "op": "join",
+          "with": "applicant.middle_name",
+          "sep": " "
+        }
+      ],
+      "strength": "required"
+    },
+    {
+      "id": "mailing_address_if_different_than_residence",
+      "target": {
+        "type": "text",
+        "name": "Mailing Address If different than residence"
+      },
+      "source": {
+        "fieldPath": "address.mailing.street1"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "join",
+          "with": "address.mailing.street2",
+          "sep": " "
+        },
+        {
+          "op": "join",
+          "with": "address.mailing.city",
+          "sep": ", "
+        },
+        {
+          "op": "join",
+          "with": "address.mailing.state",
+          "sep": " "
+        },
+        {
+          "op": "join",
+          "with": "address.mailing.postal_code",
+          "sep": " "
+        }
+      ],
+      "strength": "preferred"
+    },
+    {
+      "id": "male",
+      "target": {
+        "type": "checkbox",
+        "name": "Male"
+      },
+      "source": {
+        "fieldPath": "applicant.sex"
+      },
+      "valueMap": {
+        "female": "false",
+        "male": "true",
+        "other": "false",
+        "decline_to_state": "false"
+      },
+      "strength": "preferred",
+      "note": "sex: male"
+    },
+    {
+      "id": "non_binary",
+      "target": {
+        "type": "checkbox",
+        "name": "Non_binary"
+      },
+      "fillPolicy": "never",
+      "note": "sex: non-binary; the canonical \"other\" choice cannot be mapped to a specific identity"
+    },
+    {
+      "id": "other",
+      "target": {
+        "type": "checkbox",
+        "name": "Other"
+      },
+      "fillPolicy": "never",
+      "note": "sex: other; the canonical \"other\" choice cannot be mapped to a specific identity"
+    },
+    {
+      "id": "other_race",
+      "target": {
+        "type": "text",
+        "name": "Other Race"
+      },
+      "fillPolicy": "never",
+      "note": "race detail; no vocabulary equivalent"
+    },
+    {
+      "id": "other_race_check",
+      "target": {
+        "type": "checkbox",
+        "name": "Other Race Check"
+      },
+      "fillPolicy": "never",
+      "note": "race detail; no vocabulary equivalent"
+    },
+    {
+      "id": "phone",
+      "target": {
+        "type": "text",
+        "name": "Phone"
+      },
+      "source": {
+        "fieldPath": "contact.phone_primary"
+      },
+      "transforms": [
+        {
+          "op": "phone",
+          "style": "dashed"
+        }
+      ],
+      "strength": "preferred",
+      "note": "phone number"
+    },
+    {
+      "id": "place_of_veterans_death",
+      "target": {
+        "type": "text",
+        "name": "Place of Veterans Death"
+      },
+      "fillPolicy": "never",
+      "note": "veteran/service detail; no vocabulary equivalent"
+    },
+    {
+      "id": "race_1",
+      "target": {
+        "type": "checkbox",
+        "name": "Race 1"
+      },
+      "fillPolicy": "never",
+      "note": "race; no vocabulary equivalent"
+    },
+    {
+      "id": "race_2",
+      "target": {
+        "type": "checkbox",
+        "name": "Race 2"
+      },
+      "fillPolicy": "never",
+      "note": "race; no vocabulary equivalent"
+    },
+    {
+      "id": "race_3",
+      "target": {
+        "type": "checkbox",
+        "name": "Race 3"
+      },
+      "fillPolicy": "never",
+      "note": "race; no vocabulary equivalent"
+    },
+    {
+      "id": "race_4",
+      "target": {
+        "type": "checkbox",
+        "name": "Race 4"
+      },
+      "fillPolicy": "never",
+      "note": "race; no vocabulary equivalent"
+    },
+    {
+      "id": "race_5",
+      "target": {
+        "type": "checkbox",
+        "name": "Race 5"
+      },
+      "fillPolicy": "never",
+      "note": "race; no vocabulary equivalent"
+    },
+    {
+      "id": "race_6",
+      "target": {
+        "type": "checkbox",
+        "name": "Race 6"
+      },
+      "fillPolicy": "never",
+      "note": "race; no vocabulary equivalent"
+    },
+    {
+      "id": "race_7",
+      "target": {
+        "type": "checkbox",
+        "name": "Race 7"
+      },
+      "fillPolicy": "never",
+      "note": "race; no vocabulary equivalent"
+    },
+    {
+      "id": "residence_number_street_city_state_zip",
+      "target": {
+        "type": "text",
+        "name": "Residence Number  Street City State Zip"
+      },
+      "source": {
+        "fieldPath": "address.residential.street1"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "join",
+          "with": "address.residential.street2",
+          "sep": " "
+        },
+        {
+          "op": "join",
+          "with": "address.residential.city",
+          "sep": ", "
+        },
+        {
+          "op": "join",
+          "with": "address.residential.state",
+          "sep": " "
+        },
+        {
+          "op": "join",
+          "with": "address.residential.postal_code",
+          "sep": " "
+        }
+      ],
+      "strength": "preferred"
+    },
+    {
+      "id": "ssn",
+      "target": {
+        "type": "text",
+        "name": "SSN"
+      },
+      "source": {
+        "fieldPath": "applicant.ssn"
+      },
+      "transforms": [
+        {
+          "op": "ssn",
+          "style": "full"
+        }
+      ],
+      "strength": "preferred",
+      "note": "applicant SSN"
+    },
+    {
+      "id": "veteran_tax_exemtion",
+      "target": {
+        "type": "checkbox",
+        "name": "Veteran Tax Exemtion"
+      },
+      "fillPolicy": "never",
+      "note": "exemption/application classification; no vocabulary equivalent"
+    },
+    {
+      "id": "veterans_claim_number",
+      "target": {
+        "type": "text",
+        "name": "Veterans Claim Number"
+      },
+      "fillPolicy": "never",
+      "note": "veteran/service detail; no vocabulary equivalent"
+    }
+  ]
+}

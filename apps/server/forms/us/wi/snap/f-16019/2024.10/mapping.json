@@ -1,0 +1,5291 @@
+{
+  "schemaVersion": 1,
+  "id": "us-wi-snap-f-16019",
+  "jurisdiction": {
+    "country": "US",
+    "state": "WI"
+  },
+  "program": "SNAP",
+  "formCode": "f-16019",
+  "formTitle": "Wisconsin FoodShare Application",
+  "formVersion": "2024.10",
+  "revision": 1,
+  "status": "draft",
+  "vocabularyVersion": 1,
+  "agencyUrl": "https://www.dhs.wisconsin.gov/foodshare",
+  "template": {
+    "kind": "acroform",
+    "file": "template.pdf",
+    "sha256": "34073bdba6b510229ad3eb4c451b8c82bc7dec05e23dada1681cc54185a474df",
+    "pageCount": 19,
+    "retrievedAt": "2026-09-09",
+    "sourceUrl": "https://www.dhs.wisconsin.gov/forms/f16019.pdf"
+  },
+  "requirements": [],
+  "provenanceNote": "Template pinned by sha256; official source URL and check date from the Government Forms Master Index (Wisconsin SNAP row). The printed form footer reads \"F-16019 (10/2024)\".",
+  "fields": [
+    {
+      "id": "1974_taa_w2_foodshare_employment_and_training_fset_or_anothe",
+      "target": {
+        "type": "radio",
+        "name": "1974 TAA W2 FoodShare Employment and Training FSET or another employment and training program"
+      },
+      "fillPolicy": "never",
+      "note": "no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "child_support_is_anyone_in_your_household_courtordered_to_pa",
+      "target": {
+        "type": "radio",
+        "name": "Child Support Is anyone in your household courtordered to pay child support"
+      },
+      "fillPolicy": "never",
+      "note": "no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "description_such_as_name_of_bank_or_financial_institution_in",
+      "target": {
+        "type": "text",
+        "name": "Description such as name of bank or financial institution include other type of asset here"
+      },
+      "fillPolicy": "never",
+      "note": "typed asset row; rows cannot be matched to the account list positionally",
+      "transforms": []
+    },
+    {
+      "id": "description_such_as_name_of_bank_or_financial_institution_in_2",
+      "target": {
+        "type": "text",
+        "name": "Description such as name of bank or financial institution include other type of asset here_2"
+      },
+      "fillPolicy": "never",
+      "note": "typed asset row; rows cannot be matched to the account list positionally",
+      "transforms": []
+    },
+    {
+      "id": "description_such_as_name_of_bank_or_financial_institution_in_3",
+      "target": {
+        "type": "text",
+        "name": "Description such as name of bank or financial institution include other type of asset here_3"
+      },
+      "fillPolicy": "never",
+      "note": "typed asset row; rows cannot be matched to the account list positionally",
+      "transforms": []
+    },
+    {
+      "id": "description_such_as_name_of_bank_or_financial_institution_in_4",
+      "target": {
+        "type": "text",
+        "name": "Description such as name of bank or financial institution include other type of asset here_4"
+      },
+      "fillPolicy": "never",
+      "note": "typed asset row; rows cannot be matched to the account list positionally",
+      "transforms": []
+    },
+    {
+      "id": "description_such_as_name_of_bank_or_financial_institution_in_5",
+      "target": {
+        "type": "text",
+        "name": "Description such as name of bank or financial institution include other type of asset here_5"
+      },
+      "fillPolicy": "never",
+      "note": "typed asset row; rows cannot be matched to the account list positionally",
+      "transforms": []
+    },
+    {
+      "id": "description_such_as_name_of_bank_or_financial_institution_in_6",
+      "target": {
+        "type": "text",
+        "name": "Description such as name of bank or financial institution include other type of asset here_6"
+      },
+      "fillPolicy": "never",
+      "note": "typed asset row; rows cannot be matched to the account list positionally",
+      "transforms": []
+    },
+    {
+      "id": "do_you_have_a_separate_mailing_address_that_is_different_fro",
+      "target": {
+        "type": "radio",
+        "name": "Do you have a separate mailing address that is different from where you are living"
+      },
+      "source": {
+        "fieldPath": "address.mailing.same_as_residential"
+      },
+      "valueMap": {
+        "true": "No_12",
+        "false": "Yes_12"
+      },
+      "strength": "preferred",
+      "note": "has a separate mailing address",
+      "transforms": []
+    },
+    {
+      "id": "does_this_person_get_tips_or_compensation_other_than_their_h",
+      "target": {
+        "type": "radio",
+        "name": "Does this person get tips or compensation other than their hourly wages or salary"
+      },
+      "fillPolicy": "never",
+      "note": "no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "does_this_person_get_tips_or_compensation_other_than_their_h_2",
+      "target": {
+        "type": "radio",
+        "name": "Does this person get tips or compensation other than their hourly wages or salary_2"
+      },
+      "fillPolicy": "never",
+      "note": "no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "enrolled_in_wisconsin_works_w2_or_other_tanffunded_program_u",
+      "target": {
+        "type": "radio",
+        "name": "Enrolled in Wisconsin Works W2 or other TANFfunded program under Title IV of the Social Security Act"
+      },
+      "fillPolicy": "never",
+      "note": "no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "has_the_business_had_a_significant_change_in_income_or_expen",
+      "target": {
+        "type": "radio",
+        "name": "Has the business had a significant change in income or expenses since last filing taxes"
+      },
+      "fillPolicy": "never",
+      "note": "no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "how_many_hours_per_month_does_this_person_work_for_this_busi",
+      "target": {
+        "type": "text",
+        "name": "How many hours per month does this person work for this business?"
+      },
+      "fillPolicy": "never",
+      "note": "no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "is_the_student_a_single_parent_caring_for_a_child_less_than_",
+      "target": {
+        "type": "radio",
+        "name": "Is the student a single parent caring for a child less than 12 years of age and attending school full time"
+      },
+      "fillPolicy": "never",
+      "note": "no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "is_the_student_caring_for_a_child_612_years_old_and_adequate",
+      "target": {
+        "type": "radio",
+        "name": "Is the student caring for a child 612 years old and adequate childcare is not available"
+      },
+      "fillPolicy": "never",
+      "note": "no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "is_the_student_participating_in_a_federally_or_statefunded_w",
+      "target": {
+        "type": "radio",
+        "name": "Is the student participating in a federally or statefunded work study program"
+      },
+      "fillPolicy": "never",
+      "note": "no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "is_the_student_unable_to_work_due_to_a_temporary_or_permanen",
+      "target": {
+        "type": "text",
+        "name": "Is the student unable to work due to a temporary or permanent disability"
+      },
+      "fillPolicy": "never",
+      "note": "no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "name_of_person_who_is_unable_to_work_first_middle_initial_la",
+      "target": {
+        "type": "text",
+        "name": "Name of Person Who is Unable to Work First Middle Initial Last"
+      },
+      "fillPolicy": "never",
+      "note": "no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "on_average_how_many_hours_per_month_does_this_person_work_fo",
+      "target": {
+        "type": "text",
+        "name": "On average how many hours per month does this person work for this business"
+      },
+      "fillPolicy": "never",
+      "note": "no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "shelter_costs_does_anyone_in_the_household_have_shelter_cost",
+      "target": {
+        "type": "radio",
+        "name": "Shelter Costs Does anyone in the household have shelter costs rent mortgage property taxes"
+      },
+      "fillPolicy": "never",
+      "note": "no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "special_assessment_or_taxes_for_things_like_sidewalk_or_stre",
+      "target": {
+        "type": "checkbox",
+        "name": "Special Assessment or Taxes for Things Like Sidewalk or Street Repair"
+      },
+      "fillPolicy": "never",
+      "note": "no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "used_for_heat",
+      "target": {
+        "type": "radio",
+        "name": "Used for Heat"
+      },
+      "fillPolicy": "never",
+      "note": "per-fuel heat source; a single household boolean cannot answer per-fuel questions",
+      "transforms": []
+    },
+    {
+      "id": "used_for_heat_2",
+      "target": {
+        "type": "radio",
+        "name": "Used for Heat_2"
+      },
+      "fillPolicy": "never",
+      "note": "per-fuel heat source; a single household boolean cannot answer per-fuel questions",
+      "transforms": []
+    },
+    {
+      "id": "city",
+      "target": {
+        "type": "text",
+        "name": "City"
+      },
+      "source": {
+        "fieldPath": "address.residential.city"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "strength": "required",
+      "note": "residential city"
+    },
+    {
+      "id": "date_signed_mmddyyyy",
+      "target": {
+        "type": "text",
+        "name": "Date Signed mmddyyyy"
+      },
+      "fillPolicy": "never",
+      "note": "signature-associated date; never auto-completed",
+      "transforms": []
+    },
+    {
+      "id": "name_applicant_first_middle_last",
+      "target": {
+        "type": "text",
+        "name": "Name - Applicant First Middle Last"
+      },
+      "source": {
+        "fieldPath": "applicant.first_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "join",
+          "with": "applicant.middle_name",
+          "sep": " "
+        },
+        {
+          "op": "join",
+          "with": "applicant.last_name",
+          "sep": " "
+        },
+        {
+          "op": "join",
+          "with": "applicant.suffix",
+          "sep": " "
+        },
+        {
+          "op": "trim"
+        }
+      ],
+      "strength": "required"
+    },
+    {
+      "id": "state",
+      "target": {
+        "type": "text",
+        "name": "State"
+      },
+      "source": {
+        "fieldPath": "address.residential.state"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "upper"
+        }
+      ],
+      "strength": "required",
+      "note": "residential state"
+    },
+    {
+      "id": "street_address",
+      "target": {
+        "type": "text",
+        "name": "Street Address"
+      },
+      "source": {
+        "fieldPath": "address.residential.street1"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "strength": "required",
+      "note": "residential street address"
+    },
+    {
+      "id": "zip_code",
+      "target": {
+        "type": "text",
+        "name": "Zip Code"
+      },
+      "source": {
+        "fieldPath": "address.residential.postal_code"
+      },
+      "transforms": [
+        {
+          "op": "digits"
+        },
+        {
+          "op": "truncate",
+          "max": 5
+        }
+      ],
+      "strength": "required",
+      "note": "residential ZIP"
+    },
+    {
+      "id": "air_conditioning_surcharge",
+      "target": {
+        "type": "checkbox",
+        "name": "Air conditioning surcharge"
+      },
+      "fillPolicy": "never",
+      "note": "pays A/C surcharge; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "city_2",
+      "target": {
+        "type": "text",
+        "name": "City_2"
+      },
+      "source": {
+        "fieldPath": "address.residential.city"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "strength": "required",
+      "note": "residential city"
+    },
+    {
+      "id": "coal",
+      "target": {
+        "type": "checkbox",
+        "name": "Coal"
+      },
+      "fillPolicy": "never",
+      "note": "pays coal; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "electric",
+      "target": {
+        "type": "checkbox",
+        "name": "Electric"
+      },
+      "source": {
+        "fieldPath": "utilities.pays_electricity"
+      },
+      "valueMap": {
+        "true": "true",
+        "false": "false"
+      },
+      "strength": "preferred",
+      "note": "pays for electric",
+      "transforms": []
+    },
+    {
+      "id": "foodshare_benefits",
+      "target": {
+        "type": "radio",
+        "name": "FoodShare Benefits"
+      },
+      "fillPolicy": "never",
+      "note": "benefits receipt is a vocabulary list of programs; it cannot answer a yes/no radio",
+      "transforms": []
+    },
+    {
+      "id": "fuel_oil_kerosene",
+      "target": {
+        "type": "checkbox",
+        "name": "Fuel oil/kerosene"
+      },
+      "fillPolicy": "never",
+      "note": "pays fuel oil/kerosene; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "gas_natural",
+      "target": {
+        "type": "checkbox",
+        "name": "Gas natural"
+      },
+      "source": {
+        "fieldPath": "utilities.pays_gas"
+      },
+      "valueMap": {
+        "true": "true",
+        "false": "false"
+      },
+      "strength": "preferred",
+      "note": "pays for natural gas",
+      "transforms": []
+    },
+    {
+      "id": "heat_included_in_rent",
+      "target": {
+        "type": "radio",
+        "name": "Heat Included in Rent"
+      },
+      "fillPolicy": "never",
+      "note": "heat included in rent; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "liquid_propane_gas",
+      "target": {
+        "type": "checkbox",
+        "name": "Liquid propane gas"
+      },
+      "fillPolicy": "never",
+      "note": "pays liquid propane gas; kept separate from pays_gas so one answer cannot misstate the other fuel",
+      "transforms": []
+    },
+    {
+      "id": "migrant_or_seasonal_farm_worker",
+      "target": {
+        "type": "radio",
+        "name": "Migrant or Seasonal Farm Worker"
+      },
+      "fillPolicy": "never",
+      "note": "migrant/seasonal farmworker; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "name_applicant_first_middle_last_2",
+      "target": {
+        "type": "text",
+        "name": "Name - Applicant First Middle Last_2"
+      },
+      "source": {
+        "fieldPath": "applicant.first_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "join",
+          "with": "applicant.middle_name",
+          "sep": " "
+        },
+        {
+          "op": "join",
+          "with": "applicant.last_name",
+          "sep": " "
+        },
+        {
+          "op": "join",
+          "with": "applicant.suffix",
+          "sep": " "
+        },
+        {
+          "op": "trim"
+        }
+      ],
+      "strength": "required"
+    },
+    {
+      "id": "other",
+      "target": {
+        "type": "checkbox",
+        "name": "Other"
+      },
+      "fillPolicy": "never",
+      "note": "pays other utility; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "phone",
+      "target": {
+        "type": "checkbox",
+        "name": "Phone"
+      },
+      "source": {
+        "fieldPath": "utilities.pays_phone"
+      },
+      "valueMap": {
+        "true": "true",
+        "false": "false"
+      },
+      "strength": "preferred",
+      "note": "pays for phone",
+      "transforms": []
+    },
+    {
+      "id": "snap_food_stamps",
+      "target": {
+        "type": "radio",
+        "name": "SNAP, Food Stamps"
+      },
+      "fillPolicy": "never",
+      "note": "out-of-state SNAP receipt this month; the currently_receiving question is Wisconsin-specific",
+      "transforms": []
+    },
+    {
+      "id": "sewer",
+      "target": {
+        "type": "checkbox",
+        "name": "Sewer"
+      },
+      "source": {
+        "fieldPath": "utilities.pays_water_sewer"
+      },
+      "valueMap": {
+        "true": "true",
+        "false": "false"
+      },
+      "strength": "preferred",
+      "note": "pays for sewer",
+      "transforms": []
+    },
+    {
+      "id": "shelter_or_domestic_violence_victim",
+      "target": {
+        "type": "radio",
+        "name": "Shelter or Domestic Violence Victim"
+      },
+      "fillPolicy": "never",
+      "note": "domestic-violence shelter; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "state_2",
+      "target": {
+        "type": "text",
+        "name": "State_2"
+      },
+      "source": {
+        "fieldPath": "address.residential.state"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "upper"
+        }
+      ],
+      "strength": "required",
+      "note": "residential state"
+    },
+    {
+      "id": "street_address_2",
+      "target": {
+        "type": "text",
+        "name": "Street Address_2"
+      },
+      "source": {
+        "fieldPath": "address.residential.street1"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "strength": "required",
+      "note": "residential street address"
+    },
+    {
+      "id": "trash_removal",
+      "target": {
+        "type": "checkbox",
+        "name": "Trash removal"
+      },
+      "source": {
+        "fieldPath": "utilities.pays_trash"
+      },
+      "valueMap": {
+        "true": "true",
+        "false": "false"
+      },
+      "strength": "preferred",
+      "note": "pays for trash removal",
+      "transforms": []
+    },
+    {
+      "id": "water",
+      "target": {
+        "type": "checkbox",
+        "name": "Water"
+      },
+      "source": {
+        "fieldPath": "utilities.pays_water_sewer"
+      },
+      "valueMap": {
+        "true": "true",
+        "false": "false"
+      },
+      "strength": "preferred",
+      "note": "pays for water",
+      "transforms": []
+    },
+    {
+      "id": "wood",
+      "target": {
+        "type": "checkbox",
+        "name": "Wood"
+      },
+      "fillPolicy": "never",
+      "note": "pays wood; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "zip_code_2",
+      "target": {
+        "type": "text",
+        "name": "Zip Code_2"
+      },
+      "source": {
+        "fieldPath": "address.residential.postal_code"
+      },
+      "transforms": [
+        {
+          "op": "digits"
+        },
+        {
+          "op": "truncate",
+          "max": 5
+        }
+      ],
+      "strength": "required",
+      "note": "residential ZIP"
+    },
+    {
+      "id": "fill_5",
+      "target": {
+        "type": "text",
+        "name": "fill_5"
+      },
+      "source": {
+        "fieldPath": "income.monthly_gross_total"
+      },
+      "transforms": [
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "strength": "preferred",
+      "note": "priority: total gross income expected this month"
+    },
+    {
+      "id": "fill_6",
+      "target": {
+        "type": "text",
+        "name": "fill_6"
+      },
+      "fillPolicy": "never",
+      "note": "priority: total available assets; the vocabulary has no household cash/bank total",
+      "transforms": []
+    },
+    {
+      "id": "fill_7",
+      "target": {
+        "type": "text",
+        "name": "fill_7"
+      },
+      "source": {
+        "fieldPath": "housing.total_shelter_monthly"
+      },
+      "transforms": [
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "strength": "preferred",
+      "note": "priority: total housing cost this month"
+    },
+    {
+      "id": "are_you_currently_homeless",
+      "target": {
+        "type": "radio",
+        "name": "Are you currently homeless"
+      },
+      "source": {
+        "fieldPath": "address.residential.is_homeless"
+      },
+      "valueMap": {
+        "true": "Yes_13",
+        "false": "No_13"
+      },
+      "strength": "preferred",
+      "note": "currently homeless",
+      "transforms": []
+    },
+    {
+      "id": "cell",
+      "target": {
+        "type": "checkbox",
+        "name": "Cell"
+      },
+      "source": {
+        "fieldPath": "contact.phone_primary_type"
+      },
+      "valueMap": {
+        "mobile": "true",
+        "home": "false",
+        "work": "false",
+        "message": "false"
+      },
+      "strength": "preferred",
+      "note": "phone type: cell",
+      "transforms": []
+    },
+    {
+      "id": "city_3",
+      "target": {
+        "type": "text",
+        "name": "City_3"
+      },
+      "source": {
+        "fieldPath": "address.mailing.city"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "strength": "preferred",
+      "note": "mailing city"
+    },
+    {
+      "id": "contact_time_and_method",
+      "target": {
+        "type": "text",
+        "name": "Contact Time and Method"
+      },
+      "fillPolicy": "never",
+      "note": "preferred contact time; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "date_of_birth_mmddyyyy",
+      "target": {
+        "type": "text",
+        "name": "Date of Birth mmddyyyy"
+      },
+      "source": {
+        "fieldPath": "applicant.date_of_birth"
+      },
+      "transforms": [
+        {
+          "op": "date",
+          "layout": "01/02/2006"
+        }
+      ],
+      "strength": "required",
+      "note": "applicant date of birth"
+    },
+    {
+      "id": "divorced",
+      "target": {
+        "type": "checkbox",
+        "name": "Divorced"
+      },
+      "source": {
+        "fieldPath": "applicant.marital_status"
+      },
+      "valueMap": {
+        "single": "false",
+        "married": "false",
+        "domestic_partnership": "false",
+        "separated": "false",
+        "divorced": "true",
+        "widowed": "false"
+      },
+      "strength": "preferred",
+      "note": "applicant marital status: divorced",
+      "transforms": []
+    },
+    {
+      "id": "email_access",
+      "target": {
+        "type": "checkbox",
+        "name": "Email  ACCESS"
+      },
+      "source": {
+        "fieldPath": "contact.preferred_contact_method"
+      },
+      "valueMap": {
+        "phone": "false",
+        "text": "false",
+        "email": "true",
+        "mail": "false"
+      },
+      "strength": "preferred",
+      "note": "letters by email",
+      "transforms": []
+    },
+    {
+      "id": "family",
+      "target": {
+        "type": "checkbox",
+        "name": "Family"
+      },
+      "fillPolicy": "never",
+      "note": "secondary phone owner; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "hispanic_or_latinoa",
+      "target": {
+        "type": "checkbox",
+        "name": "Hispanic or Latinoa"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "home",
+      "target": {
+        "type": "checkbox",
+        "name": "Home"
+      },
+      "source": {
+        "fieldPath": "contact.phone_primary_type"
+      },
+      "valueMap": {
+        "mobile": "false",
+        "home": "true",
+        "work": "false",
+        "message": "false"
+      },
+      "strength": "preferred",
+      "note": "phone type: home",
+      "transforms": []
+    },
+    {
+      "id": "how_would_you_like_to_get_your_letters",
+      "target": {
+        "type": "text",
+        "name": "How would you like to get your letters"
+      },
+      "source": {
+        "fieldPath": "contact.email"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "lower"
+        }
+      ],
+      "strength": "preferred",
+      "note": "email address"
+    },
+    {
+      "id": "i_dont_know",
+      "target": {
+        "type": "checkbox",
+        "name": "I dont know"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "i_prefer_not_to_answer",
+      "target": {
+        "type": "checkbox",
+        "name": "I prefer not to answer"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "mailing_address",
+      "target": {
+        "type": "text",
+        "name": "Mailing Address"
+      },
+      "source": {
+        "fieldPath": "address.mailing.street1"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "strength": "preferred",
+      "note": "mailing street address"
+    },
+    {
+      "id": "married",
+      "target": {
+        "type": "checkbox",
+        "name": "Married"
+      },
+      "source": {
+        "fieldPath": "applicant.marital_status"
+      },
+      "valueMap": {
+        "single": "false",
+        "married": "true",
+        "domestic_partnership": "false",
+        "separated": "false",
+        "divorced": "false",
+        "widowed": "false"
+      },
+      "strength": "preferred",
+      "note": "applicant marital status: married",
+      "transforms": []
+    },
+    {
+      "id": "not_hispanic_or_latinoa",
+      "target": {
+        "type": "checkbox",
+        "name": "Not Hispanic or Latinoa"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "other_phone_number",
+      "target": {
+        "type": "text",
+        "name": "Other Phone Number"
+      },
+      "source": {
+        "fieldPath": "contact.phone_secondary"
+      },
+      "transforms": [
+        {
+          "op": "phone",
+          "style": "dashed"
+        }
+      ],
+      "strength": "preferred",
+      "note": "other phone number"
+    },
+    {
+      "id": "other_2",
+      "target": {
+        "type": "checkbox",
+        "name": "Other_2"
+      },
+      "fillPolicy": "never",
+      "note": "secondary phone owner; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "phone_number",
+      "target": {
+        "type": "text",
+        "name": "Phone Number"
+      },
+      "source": {
+        "fieldPath": "contact.phone_primary"
+      },
+      "transforms": [
+        {
+          "op": "phone",
+          "style": "dashed"
+        }
+      ],
+      "strength": "preferred",
+      "note": "phone number"
+    },
+    {
+      "id": "postal_mail",
+      "target": {
+        "type": "checkbox",
+        "name": "Postal Mail"
+      },
+      "source": {
+        "fieldPath": "contact.preferred_contact_method"
+      },
+      "valueMap": {
+        "phone": "false",
+        "text": "false",
+        "email": "false",
+        "mail": "true"
+      },
+      "strength": "preferred",
+      "note": "letters by postal mail",
+      "transforms": []
+    },
+    {
+      "id": "self",
+      "target": {
+        "type": "checkbox",
+        "name": "Self"
+      },
+      "fillPolicy": "never",
+      "note": "secondary phone owner; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "sex_female",
+      "target": {
+        "type": "checkbox",
+        "name": "Sex - Female"
+      },
+      "source": {
+        "fieldPath": "applicant.sex"
+      },
+      "valueMap": {
+        "female": "true",
+        "male": "false",
+        "other": "false",
+        "decline_to_state": "false"
+      },
+      "strength": "preferred",
+      "note": "applicant sex: female",
+      "transforms": []
+    },
+    {
+      "id": "sex_male",
+      "target": {
+        "type": "checkbox",
+        "name": "Sex - Male"
+      },
+      "source": {
+        "fieldPath": "applicant.sex"
+      },
+      "valueMap": {
+        "female": "false",
+        "male": "true",
+        "other": "false",
+        "decline_to_state": "false"
+      },
+      "strength": "preferred",
+      "note": "applicant sex: male",
+      "transforms": []
+    },
+    {
+      "id": "single",
+      "target": {
+        "type": "checkbox",
+        "name": "Single"
+      },
+      "source": {
+        "fieldPath": "applicant.marital_status"
+      },
+      "valueMap": {
+        "single": "true",
+        "married": "false",
+        "domestic_partnership": "false",
+        "separated": "false",
+        "divorced": "false",
+        "widowed": "false"
+      },
+      "strength": "preferred",
+      "note": "applicant marital status: single",
+      "transforms": []
+    },
+    {
+      "id": "social_security_number",
+      "target": {
+        "type": "text",
+        "name": "Social Security Number"
+      },
+      "source": {
+        "fieldPath": "applicant.ssn"
+      },
+      "transforms": [
+        {
+          "op": "ssn",
+          "style": "full"
+        }
+      ],
+      "strength": "preferred",
+      "note": "applicant SSN"
+    },
+    {
+      "id": "state_3",
+      "target": {
+        "type": "text",
+        "name": "State_3"
+      },
+      "source": {
+        "fieldPath": "address.mailing.state"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "upper"
+        }
+      ],
+      "strength": "preferred",
+      "note": "mailing state"
+    },
+    {
+      "id": "street_address_3",
+      "target": {
+        "type": "text",
+        "name": "Street Address_3"
+      },
+      "source": {
+        "fieldPath": "address.mailing.street1"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "strength": "preferred",
+      "note": "mailing street address (line 2)"
+    },
+    {
+      "id": "u_s_citizen",
+      "target": {
+        "type": "radio",
+        "name": "U.S. Citizen"
+      },
+      "source": {
+        "fieldPath": "applicant.is_us_citizen"
+      },
+      "valueMap": {
+        "true": "Yes_14",
+        "false": "No_14"
+      },
+      "strength": "preferred",
+      "note": "applicant US citizen",
+      "transforms": []
+    },
+    {
+      "id": "what_is_this_persons_name",
+      "target": {
+        "type": "text",
+        "name": "What is this persons name"
+      },
+      "fillPolicy": "never",
+      "note": "secondary phone owner name; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "work",
+      "target": {
+        "type": "checkbox",
+        "name": "Work"
+      },
+      "source": {
+        "fieldPath": "contact.phone_primary_type"
+      },
+      "valueMap": {
+        "mobile": "false",
+        "home": "false",
+        "work": "true",
+        "message": "false"
+      },
+      "strength": "preferred",
+      "note": "phone type: work",
+      "transforms": []
+    },
+    {
+      "id": "zip_code_3",
+      "target": {
+        "type": "text",
+        "name": "Zip Code_3"
+      },
+      "source": {
+        "fieldPath": "address.mailing.postal_code"
+      },
+      "transforms": [
+        {
+          "op": "digits"
+        },
+        {
+          "op": "truncate",
+          "max": 5
+        }
+      ],
+      "strength": "preferred",
+      "note": "mailing ZIP"
+    },
+    {
+      "id": "american_indianalaska_native",
+      "target": {
+        "type": "checkbox",
+        "name": "American IndianAlaska Native"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "american_indianalaska_native_2",
+      "target": {
+        "type": "checkbox",
+        "name": "American IndianAlaska Native_2"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "asian",
+      "target": {
+        "type": "checkbox",
+        "name": "Asian"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "asian_2",
+      "target": {
+        "type": "checkbox",
+        "name": "Asian_2"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "blackafrican_american",
+      "target": {
+        "type": "checkbox",
+        "name": "BlackAfrican American"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "blackafrican_american_2",
+      "target": {
+        "type": "checkbox",
+        "name": "BlackAfrican American_2"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "date_of_birth_mmddyyyy_2",
+      "target": {
+        "type": "text",
+        "name": "Date of Birth mmddyyyy_2"
+      },
+      "source": {
+        "fieldPath": "household.members[].date_of_birth"
+      },
+      "transforms": [
+        {
+          "op": "date",
+          "layout": "01/02/2006"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 0
+      },
+      "strength": "preferred",
+      "note": "household member 1 date of birth"
+    },
+    {
+      "id": "date_of_birth_mmddyyyy_3",
+      "target": {
+        "type": "text",
+        "name": "Date of Birth mmddyyyy_3"
+      },
+      "source": {
+        "fieldPath": "household.members[].date_of_birth"
+      },
+      "transforms": [
+        {
+          "op": "date",
+          "layout": "01/02/2006"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 1
+      },
+      "strength": "preferred",
+      "note": "household member 2 date of birth"
+    },
+    {
+      "id": "divorced_2",
+      "target": {
+        "type": "checkbox",
+        "name": "Divorced_2"
+      },
+      "fillPolicy": "never",
+      "note": "household member 1 marital status (divorced); vocabulary v1 does not collect member marital status",
+      "transforms": []
+    },
+    {
+      "id": "divorced_3",
+      "target": {
+        "type": "checkbox",
+        "name": "Divorced_3"
+      },
+      "fillPolicy": "never",
+      "note": "household member 2 marital status (divorced); vocabulary v1 does not collect member marital status",
+      "transforms": []
+    },
+    {
+      "id": "does_this_person_want_foodshare",
+      "target": {
+        "type": "radio",
+        "name": "Does this person want FoodShare"
+      },
+      "source": {
+        "fieldPath": "household.members[].is_applying"
+      },
+      "valueMap": {
+        "true": "Yes_15",
+        "false": "No_15"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 0
+      },
+      "strength": "preferred",
+      "note": "household member 1 wants FoodShare",
+      "transforms": []
+    },
+    {
+      "id": "does_this_person_want_foodshare_2",
+      "target": {
+        "type": "radio",
+        "name": "Does this person want FoodShare_2"
+      },
+      "source": {
+        "fieldPath": "household.members[].is_applying"
+      },
+      "valueMap": {
+        "true": "Yes_17",
+        "false": "No_17"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 1
+      },
+      "strength": "preferred",
+      "note": "household member 2 wants FoodShare",
+      "transforms": []
+    },
+    {
+      "id": "eat_meals",
+      "target": {
+        "type": "radio",
+        "name": "Eat Meals"
+      },
+      "fillPolicy": "never",
+      "note": "meal-sharing/care arrangement; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "hispanic_or_latinoa_2",
+      "target": {
+        "type": "checkbox",
+        "name": "Hispanic or Latinoa_2"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "hispanic_or_latinoa_3",
+      "target": {
+        "type": "checkbox",
+        "name": "Hispanic or Latinoa_3"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "i_dont_know_2",
+      "target": {
+        "type": "checkbox",
+        "name": "I dont know_2"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "i_dont_know_3",
+      "target": {
+        "type": "checkbox",
+        "name": "I dont know_3"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "i_dont_know_4",
+      "target": {
+        "type": "checkbox",
+        "name": "I dont know_4"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "i_dont_know_5",
+      "target": {
+        "type": "checkbox",
+        "name": "I dont know_5"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "i_prefer_not_to_answer_2",
+      "target": {
+        "type": "checkbox",
+        "name": "I prefer not to answer_2"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "i_prefer_not_to_answer_3",
+      "target": {
+        "type": "checkbox",
+        "name": "I prefer not to answer_3"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "i_prefer_not_to_answer_4",
+      "target": {
+        "type": "checkbox",
+        "name": "I prefer not to answer_4"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "i_prefer_not_to_answer_5",
+      "target": {
+        "type": "checkbox",
+        "name": "I prefer not to answer_5"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "married_2",
+      "target": {
+        "type": "checkbox",
+        "name": "Married_2"
+      },
+      "fillPolicy": "never",
+      "note": "household member 1 marital status (married); vocabulary v1 does not collect member marital status",
+      "transforms": []
+    },
+    {
+      "id": "married_3",
+      "target": {
+        "type": "checkbox",
+        "name": "Married_3"
+      },
+      "fillPolicy": "never",
+      "note": "household member 2 marital status (married); vocabulary v1 does not collect member marital status",
+      "transforms": []
+    },
+    {
+      "id": "name_first_middle_initial_last",
+      "target": {
+        "type": "text",
+        "name": "Name First Middle Initial Last"
+      },
+      "source": {
+        "fieldPath": "household.members[].first_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "join",
+          "with": "household.members[].last_name",
+          "sep": " "
+        },
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 0
+      },
+      "strength": "preferred",
+      "note": "household member 1 first, middle initial, last name"
+    },
+    {
+      "id": "name_first_middle_initial_last_2",
+      "target": {
+        "type": "text",
+        "name": "Name First Middle Initial Last_2"
+      },
+      "source": {
+        "fieldPath": "household.members[].first_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "join",
+          "with": "household.members[].last_name",
+          "sep": " "
+        },
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 1
+      },
+      "strength": "preferred",
+      "note": "household member 2 first, middle initial, last name"
+    },
+    {
+      "id": "native_hawaiianpacific_islander",
+      "target": {
+        "type": "checkbox",
+        "name": "Native HawaiianPacific Islander"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "native_hawaiianpacific_islander_2",
+      "target": {
+        "type": "checkbox",
+        "name": "Native HawaiianPacific Islander_2"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "not_hispanic_or_latinoa_2",
+      "target": {
+        "type": "checkbox",
+        "name": "Not Hispanic or Latinoa_2"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "not_hispanic_or_latinoa_3",
+      "target": {
+        "type": "checkbox",
+        "name": "Not Hispanic or Latinoa_3"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "other_3",
+      "target": {
+        "type": "checkbox",
+        "name": "Other_3"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "other_4",
+      "target": {
+        "type": "checkbox",
+        "name": "Other_4"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "primary_language_spoken_in_your_home",
+      "target": {
+        "type": "text",
+        "name": "Primary language spoken in your home"
+      },
+      "source": {
+        "fieldPath": "applicant.preferred_language"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "strength": "preferred",
+      "note": "primary language spoken at home"
+    },
+    {
+      "id": "provide_care",
+      "target": {
+        "type": "radio",
+        "name": "Provide Care"
+      },
+      "fillPolicy": "never",
+      "note": "meal-sharing/care arrangement; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "relationship_to_applicant",
+      "target": {
+        "type": "text",
+        "name": "Relationship to Applicant"
+      },
+      "source": {
+        "fieldPath": "household.members[].relationship"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "valueMap": {
+        "self": "Self",
+        "spouse": "Spouse",
+        "domestic_partner": "Domestic partner",
+        "child": "Child",
+        "stepchild": "Stepchild",
+        "foster_child": "Foster child",
+        "parent": "Parent",
+        "stepparent": "Stepparent",
+        "grandparent": "Grandparent",
+        "grandchild": "Grandchild",
+        "sibling": "Sibling",
+        "other_relative": "Other relative",
+        "unrelated": "Unrelated"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 0
+      },
+      "strength": "preferred",
+      "note": "household member 1 relationship to applicant"
+    },
+    {
+      "id": "sex_female_2",
+      "target": {
+        "type": "checkbox",
+        "name": "Sex - Female_2"
+      },
+      "source": {
+        "fieldPath": "household.members[].sex"
+      },
+      "valueMap": {
+        "female": "true",
+        "male": "false",
+        "other": "false",
+        "decline_to_state": "false"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 0
+      },
+      "strength": "preferred",
+      "note": "household member 1 sex: female",
+      "transforms": []
+    },
+    {
+      "id": "sex_female_3",
+      "target": {
+        "type": "checkbox",
+        "name": "Sex - Female_3"
+      },
+      "source": {
+        "fieldPath": "household.members[].sex"
+      },
+      "valueMap": {
+        "female": "true",
+        "male": "false",
+        "other": "false",
+        "decline_to_state": "false"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 1
+      },
+      "strength": "preferred",
+      "note": "household member 2 sex: female",
+      "transforms": []
+    },
+    {
+      "id": "sex_male_3",
+      "target": {
+        "type": "checkbox",
+        "name": "Sex - Male_3"
+      },
+      "source": {
+        "fieldPath": "household.members[].sex"
+      },
+      "valueMap": {
+        "female": "false",
+        "male": "true",
+        "other": "false",
+        "decline_to_state": "false"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 1
+      },
+      "strength": "preferred",
+      "note": "household member 2 sex: male",
+      "transforms": []
+    },
+    {
+      "id": "sex_male_2",
+      "target": {
+        "type": "checkbox",
+        "name": "Sex Male_2"
+      },
+      "source": {
+        "fieldPath": "household.members[].sex"
+      },
+      "valueMap": {
+        "female": "false",
+        "male": "true",
+        "other": "false",
+        "decline_to_state": "false"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 0
+      },
+      "strength": "preferred",
+      "note": "household member 1 sex: male",
+      "transforms": []
+    },
+    {
+      "id": "single_2",
+      "target": {
+        "type": "checkbox",
+        "name": "Single_2"
+      },
+      "fillPolicy": "never",
+      "note": "household member 1 marital status (single); vocabulary v1 does not collect member marital status",
+      "transforms": []
+    },
+    {
+      "id": "single_3",
+      "target": {
+        "type": "checkbox",
+        "name": "Single_3"
+      },
+      "fillPolicy": "never",
+      "note": "household member 2 marital status (single); vocabulary v1 does not collect member marital status",
+      "transforms": []
+    },
+    {
+      "id": "social_security_number_2",
+      "target": {
+        "type": "text",
+        "name": "Social Security Number_2"
+      },
+      "source": {
+        "fieldPath": "household.members[].ssn"
+      },
+      "transforms": [
+        {
+          "op": "ssn",
+          "style": "full"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 0
+      },
+      "strength": "preferred",
+      "note": "household member 1 SSN"
+    },
+    {
+      "id": "social_security_number_3",
+      "target": {
+        "type": "text",
+        "name": "Social Security Number_3"
+      },
+      "source": {
+        "fieldPath": "household.members[].ssn"
+      },
+      "transforms": [
+        {
+          "op": "ssn",
+          "style": "full"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 1
+      },
+      "strength": "preferred",
+      "note": "household member 2 SSN"
+    },
+    {
+      "id": "us_citizen",
+      "target": {
+        "type": "radio",
+        "name": "US Citizen"
+      },
+      "source": {
+        "fieldPath": "household.members[].is_us_citizen"
+      },
+      "valueMap": {
+        "true": "Yes_15",
+        "false": "No_15"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 0
+      },
+      "strength": "preferred",
+      "note": "household member 1 US citizen",
+      "transforms": []
+    },
+    {
+      "id": "us_citizen_2",
+      "target": {
+        "type": "radio",
+        "name": "US Citizen_2"
+      },
+      "source": {
+        "fieldPath": "household.members[].is_us_citizen"
+      },
+      "valueMap": {
+        "true": "Yes_16",
+        "false": "No_16"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 1
+      },
+      "strength": "preferred",
+      "note": "household member 2 US citizen",
+      "transforms": []
+    },
+    {
+      "id": "what_language_do_you_want_foodshare_letters_printed_in",
+      "target": {
+        "type": "text",
+        "name": "What language do you want FoodShare letters printed in"
+      },
+      "fillPolicy": "never",
+      "note": "no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "white",
+      "target": {
+        "type": "checkbox",
+        "name": "White"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "white_2",
+      "target": {
+        "type": "checkbox",
+        "name": "White_2"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "american_indianalaska_native_3",
+      "target": {
+        "type": "checkbox",
+        "name": "American IndianAlaska Native_3"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "american_indianalaska_native_4",
+      "target": {
+        "type": "checkbox",
+        "name": "American IndianAlaska Native_4"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "american_indianalaska_native_5",
+      "target": {
+        "type": "checkbox",
+        "name": "American IndianAlaska Native_5"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "asian_3",
+      "target": {
+        "type": "checkbox",
+        "name": "Asian_3"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "asian_4",
+      "target": {
+        "type": "checkbox",
+        "name": "Asian_4"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "asian_5",
+      "target": {
+        "type": "checkbox",
+        "name": "Asian_5"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "blackafrican_american_3",
+      "target": {
+        "type": "checkbox",
+        "name": "BlackAfrican American_3"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "blackafrican_american_4",
+      "target": {
+        "type": "checkbox",
+        "name": "BlackAfrican American_4"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "blackafrican_american_5",
+      "target": {
+        "type": "checkbox",
+        "name": "BlackAfrican American_5"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "date_of_birth_mmddyyyy_4",
+      "target": {
+        "type": "text",
+        "name": "Date of Birth mmddyyyy_4"
+      },
+      "source": {
+        "fieldPath": "household.members[].date_of_birth"
+      },
+      "transforms": [
+        {
+          "op": "date",
+          "layout": "01/02/2006"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 2
+      },
+      "strength": "preferred",
+      "note": "household member 3 date of birth"
+    },
+    {
+      "id": "date_of_birth_mmddyyyy_5",
+      "target": {
+        "type": "text",
+        "name": "Date of Birth mmddyyyy_5"
+      },
+      "source": {
+        "fieldPath": "household.members[].date_of_birth"
+      },
+      "transforms": [
+        {
+          "op": "date",
+          "layout": "01/02/2006"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 3
+      },
+      "strength": "preferred",
+      "note": "household member 4 date of birth"
+    },
+    {
+      "id": "divorced_4",
+      "target": {
+        "type": "checkbox",
+        "name": "Divorced_4"
+      },
+      "fillPolicy": "never",
+      "note": "household member 3 marital status (divorced); vocabulary v1 does not collect member marital status",
+      "transforms": []
+    },
+    {
+      "id": "divorced_5",
+      "target": {
+        "type": "checkbox",
+        "name": "Divorced_5"
+      },
+      "fillPolicy": "never",
+      "note": "household member 4 marital status (divorced); vocabulary v1 does not collect member marital status",
+      "transforms": []
+    },
+    {
+      "id": "does_this_person_want_foodshare_3",
+      "target": {
+        "type": "radio",
+        "name": "Does this person want FoodShare_3"
+      },
+      "source": {
+        "fieldPath": "household.members[].is_applying"
+      },
+      "valueMap": {
+        "true": "Yes_19",
+        "false": "No_19"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 2
+      },
+      "strength": "preferred",
+      "note": "household member 3 wants FoodShare",
+      "transforms": []
+    },
+    {
+      "id": "does_this_person_want_foodshare_4",
+      "target": {
+        "type": "radio",
+        "name": "Does this person want FoodShare_4"
+      },
+      "source": {
+        "fieldPath": "household.members[].is_applying"
+      },
+      "valueMap": {
+        "true": "Yes_21",
+        "false": "No_21"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 3
+      },
+      "strength": "preferred",
+      "note": "household member 4 wants FoodShare",
+      "transforms": []
+    },
+    {
+      "id": "hispanic_or_latinoa_4",
+      "target": {
+        "type": "checkbox",
+        "name": "Hispanic or Latinoa_4"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "hispanic_or_latinoa_5",
+      "target": {
+        "type": "checkbox",
+        "name": "Hispanic or Latinoa_5"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "i_dont_know_10",
+      "target": {
+        "type": "checkbox",
+        "name": "I dont know_10"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "i_dont_know_6",
+      "target": {
+        "type": "checkbox",
+        "name": "I dont know_6"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "i_dont_know_7",
+      "target": {
+        "type": "checkbox",
+        "name": "I dont know_7"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "i_dont_know_8",
+      "target": {
+        "type": "checkbox",
+        "name": "I dont know_8"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "i_dont_know_9",
+      "target": {
+        "type": "checkbox",
+        "name": "I dont know_9"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "i_prefer_not_to_answer_10",
+      "target": {
+        "type": "checkbox",
+        "name": "I prefer not to answer_10"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "i_prefer_not_to_answer_6",
+      "target": {
+        "type": "checkbox",
+        "name": "I prefer not to answer_6"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "i_prefer_not_to_answer_7",
+      "target": {
+        "type": "checkbox",
+        "name": "I prefer not to answer_7"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "i_prefer_not_to_answer_8",
+      "target": {
+        "type": "checkbox",
+        "name": "I prefer not to answer_8"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "i_prefer_not_to_answer_9",
+      "target": {
+        "type": "checkbox",
+        "name": "I prefer not to answer_9"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "married_4",
+      "target": {
+        "type": "checkbox",
+        "name": "Married_4"
+      },
+      "fillPolicy": "never",
+      "note": "household member 3 marital status (married); vocabulary v1 does not collect member marital status",
+      "transforms": []
+    },
+    {
+      "id": "married_5",
+      "target": {
+        "type": "checkbox",
+        "name": "Married_5"
+      },
+      "fillPolicy": "never",
+      "note": "household member 4 marital status (married); vocabulary v1 does not collect member marital status",
+      "transforms": []
+    },
+    {
+      "id": "meals_with_person_1",
+      "target": {
+        "type": "radio",
+        "name": "Meals with Person_1"
+      },
+      "fillPolicy": "never",
+      "note": "meal-sharing/care arrangement; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "meals_with_person_2",
+      "target": {
+        "type": "radio",
+        "name": "Meals with Person_2"
+      },
+      "fillPolicy": "never",
+      "note": "meal-sharing/care arrangement; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "meals_with_person_3",
+      "target": {
+        "type": "radio",
+        "name": "Meals with Person_3"
+      },
+      "fillPolicy": "never",
+      "note": "meal-sharing/care arrangement; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "name_first_middle_initial_last_3",
+      "target": {
+        "type": "text",
+        "name": "Name First Middle Initial Last_3"
+      },
+      "source": {
+        "fieldPath": "household.members[].first_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "join",
+          "with": "household.members[].last_name",
+          "sep": " "
+        },
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 2
+      },
+      "strength": "preferred",
+      "note": "household member 3 first, middle initial, last name"
+    },
+    {
+      "id": "name_first_middle_initial_last_4",
+      "target": {
+        "type": "text",
+        "name": "Name First Middle Initial Last_4"
+      },
+      "source": {
+        "fieldPath": "household.members[].first_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "join",
+          "with": "household.members[].last_name",
+          "sep": " "
+        },
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 3
+      },
+      "strength": "preferred",
+      "note": "household member 4 first, middle initial, last name"
+    },
+    {
+      "id": "native_hawaiianpacific_islander_3",
+      "target": {
+        "type": "checkbox",
+        "name": "Native HawaiianPacific Islander_3"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "native_hawaiianpacific_islander_4",
+      "target": {
+        "type": "checkbox",
+        "name": "Native HawaiianPacific Islander_4"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "native_hawaiianpacific_islander_5",
+      "target": {
+        "type": "checkbox",
+        "name": "Native HawaiianPacific Islander_5"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "not_hispanic_or_latinoa_4",
+      "target": {
+        "type": "checkbox",
+        "name": "Not Hispanic or Latinoa_4"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "not_hispanic_or_latinoa_5",
+      "target": {
+        "type": "checkbox",
+        "name": "Not Hispanic or Latinoa_5"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "other_5",
+      "target": {
+        "type": "checkbox",
+        "name": "Other_5"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "other_6",
+      "target": {
+        "type": "checkbox",
+        "name": "Other_6"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "other_7",
+      "target": {
+        "type": "checkbox",
+        "name": "Other_7"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "provide_care_2",
+      "target": {
+        "type": "radio",
+        "name": "Provide Care_2"
+      },
+      "fillPolicy": "never",
+      "note": "meal-sharing/care arrangement; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "provide_care_3",
+      "target": {
+        "type": "radio",
+        "name": "Provide Care_3"
+      },
+      "fillPolicy": "never",
+      "note": "meal-sharing/care arrangement; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "provide_care_4",
+      "target": {
+        "type": "radio",
+        "name": "Provide Care_4"
+      },
+      "fillPolicy": "never",
+      "note": "meal-sharing/care arrangement; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "relationship_to_applicant_2",
+      "target": {
+        "type": "text",
+        "name": "Relationship to Applicant_2"
+      },
+      "source": {
+        "fieldPath": "household.members[].relationship"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "valueMap": {
+        "self": "Self",
+        "spouse": "Spouse",
+        "domestic_partner": "Domestic partner",
+        "child": "Child",
+        "stepchild": "Stepchild",
+        "foster_child": "Foster child",
+        "parent": "Parent",
+        "stepparent": "Stepparent",
+        "grandparent": "Grandparent",
+        "grandchild": "Grandchild",
+        "sibling": "Sibling",
+        "other_relative": "Other relative",
+        "unrelated": "Unrelated"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 1
+      },
+      "strength": "preferred",
+      "note": "household member 2 relationship to applicant"
+    },
+    {
+      "id": "relationship_to_applicant_3",
+      "target": {
+        "type": "text",
+        "name": "Relationship to Applicant_3"
+      },
+      "source": {
+        "fieldPath": "household.members[].relationship"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "valueMap": {
+        "self": "Self",
+        "spouse": "Spouse",
+        "domestic_partner": "Domestic partner",
+        "child": "Child",
+        "stepchild": "Stepchild",
+        "foster_child": "Foster child",
+        "parent": "Parent",
+        "stepparent": "Stepparent",
+        "grandparent": "Grandparent",
+        "grandchild": "Grandchild",
+        "sibling": "Sibling",
+        "other_relative": "Other relative",
+        "unrelated": "Unrelated"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 2
+      },
+      "strength": "preferred",
+      "note": "household member 3 relationship to applicant"
+    },
+    {
+      "id": "relationship_to_applicant_4",
+      "target": {
+        "type": "text",
+        "name": "Relationship to Applicant_4"
+      },
+      "source": {
+        "fieldPath": "household.members[].relationship"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "valueMap": {
+        "self": "Self",
+        "spouse": "Spouse",
+        "domestic_partner": "Domestic partner",
+        "child": "Child",
+        "stepchild": "Stepchild",
+        "foster_child": "Foster child",
+        "parent": "Parent",
+        "stepparent": "Stepparent",
+        "grandparent": "Grandparent",
+        "grandchild": "Grandchild",
+        "sibling": "Sibling",
+        "other_relative": "Other relative",
+        "unrelated": "Unrelated"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 3
+      },
+      "strength": "preferred",
+      "note": "household member 4 relationship to applicant"
+    },
+    {
+      "id": "sex_female_4",
+      "target": {
+        "type": "checkbox",
+        "name": "Sex - Female_4"
+      },
+      "source": {
+        "fieldPath": "household.members[].sex"
+      },
+      "valueMap": {
+        "female": "true",
+        "male": "false",
+        "other": "false",
+        "decline_to_state": "false"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 2
+      },
+      "strength": "preferred",
+      "note": "household member 3 sex: female",
+      "transforms": []
+    },
+    {
+      "id": "sex_female_5",
+      "target": {
+        "type": "checkbox",
+        "name": "Sex - Female_5"
+      },
+      "source": {
+        "fieldPath": "household.members[].sex"
+      },
+      "valueMap": {
+        "female": "true",
+        "male": "false",
+        "other": "false",
+        "decline_to_state": "false"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 3
+      },
+      "strength": "preferred",
+      "note": "household member 4 sex: female",
+      "transforms": []
+    },
+    {
+      "id": "sex_male_4",
+      "target": {
+        "type": "checkbox",
+        "name": "Sex - Male_4"
+      },
+      "source": {
+        "fieldPath": "household.members[].sex"
+      },
+      "valueMap": {
+        "female": "false",
+        "male": "true",
+        "other": "false",
+        "decline_to_state": "false"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 2
+      },
+      "strength": "preferred",
+      "note": "household member 3 sex: male",
+      "transforms": []
+    },
+    {
+      "id": "sex_male_5",
+      "target": {
+        "type": "checkbox",
+        "name": "Sex - Male_5"
+      },
+      "source": {
+        "fieldPath": "household.members[].sex"
+      },
+      "valueMap": {
+        "female": "false",
+        "male": "true",
+        "other": "false",
+        "decline_to_state": "false"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 3
+      },
+      "strength": "preferred",
+      "note": "household member 4 sex: male",
+      "transforms": []
+    },
+    {
+      "id": "single_4",
+      "target": {
+        "type": "checkbox",
+        "name": "Single_4"
+      },
+      "fillPolicy": "never",
+      "note": "household member 3 marital status (single); vocabulary v1 does not collect member marital status",
+      "transforms": []
+    },
+    {
+      "id": "single_5",
+      "target": {
+        "type": "checkbox",
+        "name": "Single_5"
+      },
+      "fillPolicy": "never",
+      "note": "household member 4 marital status (single); vocabulary v1 does not collect member marital status",
+      "transforms": []
+    },
+    {
+      "id": "social_security_number_4",
+      "target": {
+        "type": "text",
+        "name": "Social Security Number_4"
+      },
+      "source": {
+        "fieldPath": "household.members[].ssn"
+      },
+      "transforms": [
+        {
+          "op": "ssn",
+          "style": "full"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 2
+      },
+      "strength": "preferred",
+      "note": "household member 3 SSN"
+    },
+    {
+      "id": "social_security_number_5",
+      "target": {
+        "type": "text",
+        "name": "Social Security Number_5"
+      },
+      "source": {
+        "fieldPath": "household.members[].ssn"
+      },
+      "transforms": [
+        {
+          "op": "ssn",
+          "style": "full"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 3
+      },
+      "strength": "preferred",
+      "note": "household member 4 SSN"
+    },
+    {
+      "id": "us_citizen_3",
+      "target": {
+        "type": "radio",
+        "name": "US Citizen_3"
+      },
+      "source": {
+        "fieldPath": "household.members[].is_us_citizen"
+      },
+      "valueMap": {
+        "true": "Yes_16",
+        "false": "No_16"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 2
+      },
+      "strength": "preferred",
+      "note": "household member 3 US citizen",
+      "transforms": []
+    },
+    {
+      "id": "us_citizen_4",
+      "target": {
+        "type": "radio",
+        "name": "US Citizen_4"
+      },
+      "source": {
+        "fieldPath": "household.members[].is_us_citizen"
+      },
+      "valueMap": {
+        "true": "Yes_16",
+        "false": "No_16"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 3
+      },
+      "strength": "preferred",
+      "note": "household member 4 US citizen",
+      "transforms": []
+    },
+    {
+      "id": "white_3",
+      "target": {
+        "type": "checkbox",
+        "name": "White_3"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "white_4",
+      "target": {
+        "type": "checkbox",
+        "name": "White_4"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "white_5",
+      "target": {
+        "type": "checkbox",
+        "name": "White_5"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "full_time",
+      "target": {
+        "type": "checkbox",
+        "name": "Full time"
+      },
+      "fillPolicy": "never",
+      "note": "student detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "half_time_or_more",
+      "target": {
+        "type": "checkbox",
+        "name": "Half time or more"
+      },
+      "fillPolicy": "never",
+      "note": "student detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "is_the_student_caring_for_a_child_younger_than_6_years_old",
+      "target": {
+        "type": "radio",
+        "name": "Is the student caring for a child younger than 6 years old"
+      },
+      "fillPolicy": "never",
+      "note": "student detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "is_the_student_employed_at_least_20_hours_per_week",
+      "target": {
+        "type": "radio",
+        "name": "Is the student employed at least 20 hours per week"
+      },
+      "fillPolicy": "never",
+      "note": "student detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "is_the_student_self_employed",
+      "target": {
+        "type": "radio",
+        "name": "Is the student self-employed?"
+      },
+      "fillPolicy": "never",
+      "note": "student detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "is_the_student_working_in_a_paid_on_the_job_training_program",
+      "target": {
+        "type": "radio",
+        "name": "Is the student working in a paid on the job training program"
+      },
+      "fillPolicy": "never",
+      "note": "student detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "languages_esolesl_and_workforce_development",
+      "target": {
+        "type": "radio",
+        "name": "Languages ESOLESL and workforce development"
+      },
+      "fillPolicy": "never",
+      "note": "student detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "less_than_half_time",
+      "target": {
+        "type": "checkbox",
+        "name": "Less than half time"
+      },
+      "fillPolicy": "never",
+      "note": "student detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "name_of_school",
+      "target": {
+        "type": "text",
+        "name": "Name of school"
+      },
+      "fillPolicy": "never",
+      "note": "student detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "other_8",
+      "target": {
+        "type": "checkbox",
+        "name": "Other_8"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "student_unable_to_work_due_to_disability",
+      "target": {
+        "type": "radio",
+        "name": "Student unable to work due to disability"
+      },
+      "fillPolicy": "never",
+      "note": "student detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "college_or_university",
+      "target": {
+        "type": "radio",
+        "name": "college or university"
+      },
+      "fillPolicy": "never",
+      "note": "student detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "date_of_conviction",
+      "target": {
+        "type": "text",
+        "name": "Date of Conviction"
+      },
+      "fillPolicy": "never",
+      "note": "screening person name/date; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "date_of_determination_mmddyyyy",
+      "target": {
+        "type": "text",
+        "name": "Date of Determination mmddyyyy"
+      },
+      "fillPolicy": "never",
+      "note": "screening person name/date; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "date_of_disability_determination_mmddyyyy",
+      "target": {
+        "type": "text",
+        "name": "Date of Disability Determination mmddyyyy"
+      },
+      "fillPolicy": "never",
+      "note": "screening person name/date; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "name_of_person_who_is_disabled_first_middle_initial_last",
+      "target": {
+        "type": "text",
+        "name": "Name of Person Who is Disabled First Middle Initial Last"
+      },
+      "fillPolicy": "never",
+      "note": "screening person name/date; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "name_of_person_s_1",
+      "target": {
+        "type": "text",
+        "name": "Name of Person(s)_1"
+      },
+      "fillPolicy": "never",
+      "note": "no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "name_of_person_s_2",
+      "target": {
+        "type": "text",
+        "name": "Name of Person(s)_2"
+      },
+      "fillPolicy": "never",
+      "note": "no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "name_of_person_s_3",
+      "target": {
+        "type": "text",
+        "name": "Name of Person(s)_3"
+      },
+      "fillPolicy": "never",
+      "note": "no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "name_of_person_s_4",
+      "target": {
+        "type": "text",
+        "name": "Name of Person(s)_4"
+      },
+      "fillPolicy": "never",
+      "note": "no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "name_of_person_s_5",
+      "target": {
+        "type": "text",
+        "name": "Name of Person(s)_5"
+      },
+      "fillPolicy": "never",
+      "note": "no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "name_of_person_s_6",
+      "target": {
+        "type": "text",
+        "name": "Name of Person(s)_6"
+      },
+      "fillPolicy": "never",
+      "note": "no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "name_of_person_s_7",
+      "target": {
+        "type": "text",
+        "name": "Name of Person(s)_7"
+      },
+      "fillPolicy": "never",
+      "note": "no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "name_of_person_s_8",
+      "target": {
+        "type": "text",
+        "name": "Name of Person(s)_8"
+      },
+      "fillPolicy": "never",
+      "note": "no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "section_5_1",
+      "target": {
+        "type": "radio",
+        "name": "Section 5_1"
+      },
+      "fillPolicy": "never",
+      "note": "disability/veteran/drug screening; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "section_5_10",
+      "target": {
+        "type": "radio",
+        "name": "Section 5_10"
+      },
+      "fillPolicy": "never",
+      "note": "disability/veteran/drug screening; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "section_5_2",
+      "target": {
+        "type": "radio",
+        "name": "Section 5_2"
+      },
+      "fillPolicy": "never",
+      "note": "disability/veteran/drug screening; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "section_5_3",
+      "target": {
+        "type": "radio",
+        "name": "Section 5_3"
+      },
+      "fillPolicy": "never",
+      "note": "disability/veteran/drug screening; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "section_5_4",
+      "target": {
+        "type": "radio",
+        "name": "Section 5_4"
+      },
+      "fillPolicy": "never",
+      "note": "disability/veteran/drug screening; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "section_5_5",
+      "target": {
+        "type": "radio",
+        "name": "Section 5_5"
+      },
+      "fillPolicy": "never",
+      "note": "disability/veteran/drug screening; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "section_5_6",
+      "target": {
+        "type": "radio",
+        "name": "Section 5_6"
+      },
+      "fillPolicy": "never",
+      "note": "disability/veteran/drug screening; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "section_5_7",
+      "target": {
+        "type": "radio",
+        "name": "Section 5_7"
+      },
+      "fillPolicy": "never",
+      "note": "disability/veteran/drug screening; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "section_5_8",
+      "target": {
+        "type": "radio",
+        "name": "Section 5_8"
+      },
+      "fillPolicy": "never",
+      "note": "disability/veteran/drug screening; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "section_5_9",
+      "target": {
+        "type": "radio",
+        "name": "Section 5_9"
+      },
+      "fillPolicy": "never",
+      "note": "disability/veteran/drug screening; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "biweekly_every_other_week",
+      "target": {
+        "type": "checkbox",
+        "name": "Biweekly Every other week"
+      },
+      "fillPolicy": "never",
+      "note": "job detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "current_value_cash",
+      "target": {
+        "type": "text",
+        "name": "Current Value Cash"
+      },
+      "fillPolicy": "never",
+      "note": "typed asset row; rows cannot be matched to the account list positionally",
+      "transforms": []
+    },
+    {
+      "id": "current_value_checking_account",
+      "target": {
+        "type": "text",
+        "name": "Current Value Checking Account"
+      },
+      "fillPolicy": "never",
+      "note": "typed asset row; rows cannot be matched to the account list positionally",
+      "transforms": []
+    },
+    {
+      "id": "current_value_other_type_of_asset",
+      "target": {
+        "type": "text",
+        "name": "Current Value Other Type of Asset"
+      },
+      "fillPolicy": "never",
+      "note": "typed asset row; rows cannot be matched to the account list positionally",
+      "transforms": []
+    },
+    {
+      "id": "current_value_other_type_of_asset_2",
+      "target": {
+        "type": "text",
+        "name": "Current Value Other Type of Asset_2"
+      },
+      "fillPolicy": "never",
+      "note": "typed asset row; rows cannot be matched to the account list positionally",
+      "transforms": []
+    },
+    {
+      "id": "current_value_other_type_of_asset_3",
+      "target": {
+        "type": "text",
+        "name": "Current Value Other Type of Asset_3"
+      },
+      "fillPolicy": "never",
+      "note": "typed asset row; rows cannot be matched to the account list positionally",
+      "transforms": []
+    },
+    {
+      "id": "current_value_savings_account",
+      "target": {
+        "type": "text",
+        "name": "Current Value Savings Account"
+      },
+      "fillPolicy": "never",
+      "note": "typed asset row; rows cannot be matched to the account list positionally",
+      "transforms": []
+    },
+    {
+      "id": "date_employment_began_mmddyyyy",
+      "target": {
+        "type": "text",
+        "name": "Date Employment Began mmddyyyy"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].start_date"
+      },
+      "transforms": [
+        {
+          "op": "date",
+          "layout": "01/02/2006"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 0
+      },
+      "strength": "preferred",
+      "note": "job 1 employment began"
+    },
+    {
+      "id": "employer_address",
+      "target": {
+        "type": "text",
+        "name": "Employer Address"
+      },
+      "fillPolicy": "never",
+      "note": "job detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "employer_name",
+      "target": {
+        "type": "text",
+        "name": "Employer Name"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].employer_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 0
+      },
+      "strength": "preferred",
+      "note": "job 1 employer name"
+    },
+    {
+      "id": "gross_earnings",
+      "target": {
+        "type": "text",
+        "name": "Gross Earnings"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].pay_rate"
+      },
+      "transforms": [
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 0
+      },
+      "strength": "preferred",
+      "note": "job 1 gross earnings per pay period"
+    },
+    {
+      "id": "household_member_working",
+      "target": {
+        "type": "radio",
+        "name": "Household member working?"
+      },
+      "fillPolicy": "never",
+      "note": "household employment indicator; the vocabulary models jobs as a list, not a yes/no",
+      "transforms": []
+    },
+    {
+      "id": "migrant_worker",
+      "target": {
+        "type": "radio",
+        "name": "Migrant worker?"
+      },
+      "fillPolicy": "never",
+      "note": "migrant worker; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "name_of_the_ownerscash",
+      "target": {
+        "type": "text",
+        "name": "Name of the OwnersCash"
+      },
+      "fillPolicy": "never",
+      "note": "typed asset row; rows cannot be matched to the account list positionally",
+      "transforms": []
+    },
+    {
+      "id": "name_of_the_ownerschecking_account",
+      "target": {
+        "type": "text",
+        "name": "Name of the OwnersChecking Account"
+      },
+      "fillPolicy": "never",
+      "note": "typed asset row; rows cannot be matched to the account list positionally",
+      "transforms": []
+    },
+    {
+      "id": "name_of_the_ownersother_type_of_asset",
+      "target": {
+        "type": "text",
+        "name": "Name of the OwnersOther Type of Asset"
+      },
+      "fillPolicy": "never",
+      "note": "typed asset row; rows cannot be matched to the account list positionally",
+      "transforms": []
+    },
+    {
+      "id": "name_of_the_ownersother_type_of_asset_2",
+      "target": {
+        "type": "text",
+        "name": "Name of the OwnersOther Type of Asset_2"
+      },
+      "fillPolicy": "never",
+      "note": "typed asset row; rows cannot be matched to the account list positionally",
+      "transforms": []
+    },
+    {
+      "id": "name_of_the_ownersother_type_of_asset_3",
+      "target": {
+        "type": "text",
+        "name": "Name of the OwnersOther Type of Asset_3"
+      },
+      "fillPolicy": "never",
+      "note": "typed asset row; rows cannot be matched to the account list positionally",
+      "transforms": []
+    },
+    {
+      "id": "name_of_the_ownerssavings_account",
+      "target": {
+        "type": "text",
+        "name": "Name of the OwnersSavings Account"
+      },
+      "fillPolicy": "never",
+      "note": "typed asset row; rows cannot be matched to the account list positionally",
+      "transforms": []
+    },
+    {
+      "id": "name_of_the_person_working",
+      "target": {
+        "type": "text",
+        "name": "Name of the person working"
+      },
+      "fillPolicy": "never",
+      "note": "job detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "number_of_hours_per_paycheck",
+      "target": {
+        "type": "text",
+        "name": "Number of hours per paycheck"
+      },
+      "fillPolicy": "never",
+      "note": "job detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "once_per_month",
+      "target": {
+        "type": "checkbox",
+        "name": "Once per Month"
+      },
+      "fillPolicy": "never",
+      "note": "job detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "other_pay_frequency",
+      "target": {
+        "type": "text",
+        "name": "Other Pay Frequency"
+      },
+      "fillPolicy": "never",
+      "note": "job detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "other_provide_details",
+      "target": {
+        "type": "checkbox",
+        "name": "Other provide details"
+      },
+      "fillPolicy": "never",
+      "note": "job detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "semimonthly_two_times_per_month",
+      "target": {
+        "type": "checkbox",
+        "name": "SemiMonthly Two times per month"
+      },
+      "fillPolicy": "never",
+      "note": "job detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "weekly",
+      "target": {
+        "type": "checkbox",
+        "name": "Weekly"
+      },
+      "fillPolicy": "never",
+      "note": "job detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "amount_of_salary",
+      "target": {
+        "type": "text",
+        "name": "Amount of salary"
+      },
+      "fillPolicy": "never",
+      "note": "job detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "amount_of_salary_2",
+      "target": {
+        "type": "text",
+        "name": "Amount of salary_2"
+      },
+      "fillPolicy": "never",
+      "note": "job detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "amount_per_hour",
+      "target": {
+        "type": "text",
+        "name": "Amount per hour"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].pay_rate"
+      },
+      "transforms": [
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 1
+      },
+      "strength": "preferred",
+      "note": "job 2 pay per hour"
+    },
+    {
+      "id": "amount_per_hour_2",
+      "target": {
+        "type": "text",
+        "name": "Amount per hour_2"
+      },
+      "fillPolicy": "never",
+      "note": "no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "biweekly_every_other_week_2",
+      "target": {
+        "type": "checkbox",
+        "name": "Biweekly Every other week_2"
+      },
+      "fillPolicy": "never",
+      "note": "job detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "date_employment_began_mmddyyyy_2",
+      "target": {
+        "type": "text",
+        "name": "Date Employment Began mmddyyyy_2"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].start_date"
+      },
+      "transforms": [
+        {
+          "op": "date",
+          "layout": "01/02/2006"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 1
+      },
+      "strength": "preferred",
+      "note": "job 2 employment began"
+    },
+    {
+      "id": "date_the_job_ended_mmddyyyy",
+      "target": {
+        "type": "text",
+        "name": "Date the Job Ended mmddyyyy"
+      },
+      "fillPolicy": "never",
+      "note": "job detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "employer_address_2",
+      "target": {
+        "type": "text",
+        "name": "Employer Address_2"
+      },
+      "fillPolicy": "never",
+      "note": "job detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "employer_name_and_address",
+      "target": {
+        "type": "text",
+        "name": "Employer Name and Address"
+      },
+      "fillPolicy": "never",
+      "note": "job detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "employer_name_2",
+      "target": {
+        "type": "text",
+        "name": "Employer Name_2"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].employer_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 1
+      },
+      "strength": "preferred",
+      "note": "job 2 employer name"
+    },
+    {
+      "id": "fired",
+      "target": {
+        "type": "checkbox",
+        "name": "Fired"
+      },
+      "fillPolicy": "never",
+      "note": "job detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "gross_earnings_2",
+      "target": {
+        "type": "text",
+        "name": "Gross Earnings_2"
+      },
+      "fillPolicy": "never",
+      "note": "job 2 gross earnings per pay period; the hourly pay rate is mapped from \"Amount per hour\"",
+      "transforms": []
+    },
+    {
+      "id": "has_anyone_in_your_household_recently_ended_employment",
+      "target": {
+        "type": "radio",
+        "name": "Has anyone in your household recently ended employment"
+      },
+      "fillPolicy": "never",
+      "note": "job detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "has_this_person_applied_for_unemployment_insurance",
+      "target": {
+        "type": "radio",
+        "name": "Has this person applied for unemployment insurance"
+      },
+      "fillPolicy": "never",
+      "note": "job detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "how_much_per_pay_period",
+      "target": {
+        "type": "text",
+        "name": "How much per pay period?"
+      },
+      "fillPolicy": "never",
+      "note": "job detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "how_much_per_pay_period_2",
+      "target": {
+        "type": "text",
+        "name": "How much per pay period?_2"
+      },
+      "fillPolicy": "never",
+      "note": "no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "is_this_person_paid_a_salary",
+      "target": {
+        "type": "radio",
+        "name": "Is this person paid a salary"
+      },
+      "fillPolicy": "never",
+      "note": "job detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "is_this_person_paid_a_salary_2",
+      "target": {
+        "type": "radio",
+        "name": "Is this person paid a salary_2"
+      },
+      "fillPolicy": "never",
+      "note": "job detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "is_this_person_paid_hourly",
+      "target": {
+        "type": "radio",
+        "name": "Is this person paid hourly"
+      },
+      "fillPolicy": "never",
+      "note": "pay-type detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "is_this_person_paid_hourly_2",
+      "target": {
+        "type": "radio",
+        "name": "Is this person paid hourly_2"
+      },
+      "fillPolicy": "never",
+      "note": "pay-type detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "laid_off",
+      "target": {
+        "type": "checkbox",
+        "name": "Laid off"
+      },
+      "fillPolicy": "never",
+      "note": "job detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "name_of_person_who_lost_employment_first_middle_initial_last",
+      "target": {
+        "type": "text",
+        "name": "Name of Person Who Lost Employment First Middle Initial Last"
+      },
+      "fillPolicy": "never",
+      "note": "job detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "name_of_person_working",
+      "target": {
+        "type": "text",
+        "name": "Name of Person Working"
+      },
+      "fillPolicy": "never",
+      "note": "job detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "number_of_hours_per_paycheck_2",
+      "target": {
+        "type": "text",
+        "name": "Number of hours per paycheck_2"
+      },
+      "fillPolicy": "never",
+      "note": "job detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "once_per_month_2",
+      "target": {
+        "type": "checkbox",
+        "name": "Once per Month_2"
+      },
+      "fillPolicy": "never",
+      "note": "job detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "other_reason",
+      "target": {
+        "type": "text",
+        "name": "Other Reason"
+      },
+      "fillPolicy": "never",
+      "note": "job detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "other_10",
+      "target": {
+        "type": "checkbox",
+        "name": "Other_10"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "other_9",
+      "target": {
+        "type": "checkbox",
+        "name": "Other_9"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "quit",
+      "target": {
+        "type": "checkbox",
+        "name": "Quit"
+      },
+      "fillPolicy": "never",
+      "note": "job detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "semimonthly_two_times_per_month_2",
+      "target": {
+        "type": "checkbox",
+        "name": "SemiMonthly Two times per month_2"
+      },
+      "fillPolicy": "never",
+      "note": "job detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "unemployment_insurance",
+      "target": {
+        "type": "text",
+        "name": "Unemployment Insurance"
+      },
+      "fillPolicy": "never",
+      "note": "job detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "weekly_2",
+      "target": {
+        "type": "checkbox",
+        "name": "Weekly_2"
+      },
+      "fillPolicy": "never",
+      "note": "job detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "business_name",
+      "target": {
+        "type": "text",
+        "name": "Business Name"
+      },
+      "fillPolicy": "never",
+      "note": "self-employment business detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "business_ownership_type",
+      "target": {
+        "type": "text",
+        "name": "Business Ownership Type"
+      },
+      "fillPolicy": "never",
+      "note": "self-employment business detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "business_type_farming_home_day_care",
+      "target": {
+        "type": "text",
+        "name": "Business Type farming home day care"
+      },
+      "fillPolicy": "never",
+      "note": "self-employment business detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "city_4",
+      "target": {
+        "type": "text",
+        "name": "City_4"
+      },
+      "fillPolicy": "never",
+      "note": "self-employment business detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "corporation",
+      "target": {
+        "type": "checkbox",
+        "name": "Corporation"
+      },
+      "fillPolicy": "never",
+      "note": "self-employment business detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "date_business_started",
+      "target": {
+        "type": "text",
+        "name": "Date Business Started"
+      },
+      "fillPolicy": "never",
+      "note": "self-employment business detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "date_started",
+      "target": {
+        "type": "text",
+        "name": "Date Started"
+      },
+      "fillPolicy": "never",
+      "note": "self-employment business detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "done_in_exchange_for_goods_services_or_food",
+      "target": {
+        "type": "text",
+        "name": "Done in exchange for goods, services, or food"
+      },
+      "fillPolicy": "never",
+      "note": "self-employment business detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "gross_business_income",
+      "target": {
+        "type": "text",
+        "name": "Gross business income"
+      },
+      "fillPolicy": "never",
+      "note": "self-employment business detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "how_many_hours_each_month",
+      "target": {
+        "type": "text",
+        "name": "How many hours each month"
+      },
+      "fillPolicy": "never",
+      "note": "self-employment business detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "i_dont_know_11",
+      "target": {
+        "type": "checkbox",
+        "name": "I Dont Know"
+      },
+      "fillPolicy": "never",
+      "note": "self-employment business detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "if_yes_for_what_tax_year_did_the_business_last_file_taxes",
+      "target": {
+        "type": "radio",
+        "name": "If yes for what tax year did the business last file taxes"
+      },
+      "fillPolicy": "never",
+      "note": "self-employment business detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "is_anyone_in_your_household_selfemployed",
+      "target": {
+        "type": "radio",
+        "name": "Is anyone in your household selfemployed"
+      },
+      "source": {
+        "fieldPath": "employment.is_self_employed"
+      },
+      "valueMap": {
+        "true": "Yes_44",
+        "false": "No_47"
+      },
+      "strength": "preferred",
+      "note": "anyone in the household is self-employed",
+      "transforms": []
+    },
+    {
+      "id": "name_of_person_or_organization",
+      "target": {
+        "type": "text",
+        "name": "Name of Person or Organization"
+      },
+      "fillPolicy": "never",
+      "note": "self-employment business detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "name_of_the_selfemployed_person",
+      "target": {
+        "type": "text",
+        "name": "Name of the SelfEmployed Person"
+      },
+      "fillPolicy": "never",
+      "note": "self-employment business detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "other_11",
+      "target": {
+        "type": "checkbox",
+        "name": "Other_11"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "partnership",
+      "target": {
+        "type": "checkbox",
+        "name": "Partnership"
+      },
+      "fillPolicy": "never",
+      "note": "self-employment business detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "phone_number_2",
+      "target": {
+        "type": "text",
+        "name": "Phone Number_2"
+      },
+      "fillPolicy": "never",
+      "note": "self-employment business detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "phone_number_3",
+      "target": {
+        "type": "text",
+        "name": "Phone Number_3"
+      },
+      "fillPolicy": "never",
+      "note": "self-employment business detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "s_corporation",
+      "target": {
+        "type": "checkbox",
+        "name": "S Corporation"
+      },
+      "fillPolicy": "never",
+      "note": "self-employment business detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "sole_proprietorship",
+      "target": {
+        "type": "checkbox",
+        "name": "Sole Proprietorship"
+      },
+      "fillPolicy": "never",
+      "note": "self-employment business detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "state_4",
+      "target": {
+        "type": "text",
+        "name": "State_4"
+      },
+      "fillPolicy": "never",
+      "note": "self-employment business detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "street_address_4",
+      "target": {
+        "type": "text",
+        "name": "Street Address_4"
+      },
+      "fillPolicy": "never",
+      "note": "self-employment business detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "street_address_5",
+      "target": {
+        "type": "text",
+        "name": "Street Address_5"
+      },
+      "fillPolicy": "never",
+      "note": "self-employment business detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "tax_year_business_last_file_taxes",
+      "target": {
+        "type": "text",
+        "name": "Tax year business last file taxes"
+      },
+      "fillPolicy": "never",
+      "note": "self-employment business detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "zip_code_4",
+      "target": {
+        "type": "text",
+        "name": "Zip Code_4"
+      },
+      "fillPolicy": "never",
+      "note": "self-employment business detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "alimony_child_support",
+      "target": {
+        "type": "radio",
+        "name": "Alimony/Child Support"
+      },
+      "fillPolicy": "never",
+      "note": "typed other-income row; income rows cannot be matched to typed rows positionally",
+      "transforms": []
+    },
+    {
+      "id": "amount",
+      "target": {
+        "type": "text",
+        "name": "Amount"
+      },
+      "source": {
+        "fieldPath": "expenses.childcare[].monthly_amount"
+      },
+      "transforms": [
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "expenses.childcare",
+        "index": 0
+      },
+      "strength": "preferred",
+      "note": "dependent care amount (first care expense)"
+    },
+    {
+      "id": "biweekly_every_other_week_3",
+      "target": {
+        "type": "checkbox",
+        "name": "Biweekly Every other week_3"
+      },
+      "fillPolicy": "never",
+      "note": "typed other-income row; income rows cannot be matched to typed rows positionally",
+      "transforms": []
+    },
+    {
+      "id": "city_5",
+      "target": {
+        "type": "text",
+        "name": "City_5"
+      },
+      "fillPolicy": "never",
+      "note": "dependent-care/child-support/volunteer detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "date_started_2",
+      "target": {
+        "type": "text",
+        "name": "Date Started_2"
+      },
+      "fillPolicy": "never",
+      "note": "dependent-care/child-support/volunteer detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "dependent_care",
+      "target": {
+        "type": "radio",
+        "name": "Dependent Care"
+      },
+      "fillPolicy": "never",
+      "note": "dependent-care/child-support/volunteer detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "disability_sick_pay",
+      "target": {
+        "type": "radio",
+        "name": "Disability/Sick Pay"
+      },
+      "fillPolicy": "never",
+      "note": "typed other-income row; income rows cannot be matched to typed rows positionally",
+      "transforms": []
+    },
+    {
+      "id": "does_anyone_in_your_household_get_other_income",
+      "target": {
+        "type": "radio",
+        "name": "Does anyone in your household get other income"
+      },
+      "fillPolicy": "never",
+      "note": "typed other-income row; income rows cannot be matched to typed rows positionally",
+      "transforms": []
+    },
+    {
+      "id": "foster_care_payments",
+      "target": {
+        "type": "radio",
+        "name": "Foster Care Payments"
+      },
+      "fillPolicy": "never",
+      "note": "typed other-income row; income rows cannot be matched to typed rows positionally",
+      "transforms": []
+    },
+    {
+      "id": "how_many_hours_each_month_do_you_volunteer",
+      "target": {
+        "type": "text",
+        "name": "How many hours each month do you volunteer"
+      },
+      "fillPolicy": "never",
+      "note": "dependent-care/child-support/volunteer detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "interest_dividends",
+      "target": {
+        "type": "radio",
+        "name": "Interest/Dividends"
+      },
+      "fillPolicy": "never",
+      "note": "typed other-income row; income rows cannot be matched to typed rows positionally",
+      "transforms": []
+    },
+    {
+      "id": "kinship_care_payments",
+      "target": {
+        "type": "radio",
+        "name": "Kinship Care Payments"
+      },
+      "fillPolicy": "never",
+      "note": "typed other-income row; income rows cannot be matched to typed rows positionally",
+      "transforms": []
+    },
+    {
+      "id": "name_of_person_paying_for_childadult_care",
+      "target": {
+        "type": "text",
+        "name": "Name of Person Paying for ChildAdult Care"
+      },
+      "fillPolicy": "never",
+      "note": "dependent-care/child-support/volunteer detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "name_of_person_who_gets_this_incomeyes_no",
+      "target": {
+        "type": "text",
+        "name": "Name of Person Who Gets This IncomeYes No"
+      },
+      "fillPolicy": "never",
+      "note": "typed other-income row; income rows cannot be matched to typed rows positionally",
+      "transforms": []
+    },
+    {
+      "id": "name_of_person_who_gets_this_incomeyes_no_10",
+      "target": {
+        "type": "text",
+        "name": "Name of Person Who Gets This IncomeYes No_10"
+      },
+      "fillPolicy": "never",
+      "note": "no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "name_of_person_who_gets_this_incomeyes_no_2",
+      "target": {
+        "type": "text",
+        "name": "Name of Person Who Gets This IncomeYes No_2"
+      },
+      "fillPolicy": "never",
+      "note": "no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "name_of_person_who_gets_this_incomeyes_no_3",
+      "target": {
+        "type": "text",
+        "name": "Name of Person Who Gets This IncomeYes No_3"
+      },
+      "fillPolicy": "never",
+      "note": "no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "name_of_person_who_gets_this_incomeyes_no_4",
+      "target": {
+        "type": "text",
+        "name": "Name of Person Who Gets This IncomeYes No_4"
+      },
+      "fillPolicy": "never",
+      "note": "no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "name_of_person_who_gets_this_incomeyes_no_5",
+      "target": {
+        "type": "text",
+        "name": "Name of Person Who Gets This IncomeYes No_5"
+      },
+      "fillPolicy": "never",
+      "note": "no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "name_of_person_who_gets_this_incomeyes_no_6",
+      "target": {
+        "type": "text",
+        "name": "Name of Person Who Gets This IncomeYes No_6"
+      },
+      "fillPolicy": "never",
+      "note": "no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "name_of_person_who_gets_this_incomeyes_no_7",
+      "target": {
+        "type": "text",
+        "name": "Name of Person Who Gets This IncomeYes No_7"
+      },
+      "fillPolicy": "never",
+      "note": "no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "name_of_person_who_gets_this_incomeyes_no_8",
+      "target": {
+        "type": "text",
+        "name": "Name of Person Who Gets This IncomeYes No_8"
+      },
+      "fillPolicy": "never",
+      "note": "no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "name_of_person_who_gets_this_incomeyes_no_9",
+      "target": {
+        "type": "text",
+        "name": "Name of Person Who Gets This IncomeYes No_9"
+      },
+      "fillPolicy": "never",
+      "note": "no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "name_of_who_is_getting_the_money",
+      "target": {
+        "type": "text",
+        "name": "Name of Who is Getting the Money"
+      },
+      "fillPolicy": "never",
+      "note": "dependent-care/child-support/volunteer detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "name_of_who_is_paying_the_child_support",
+      "target": {
+        "type": "text",
+        "name": "Name of Who is Paying the Child Support"
+      },
+      "fillPolicy": "never",
+      "note": "dependent-care/child-support/volunteer detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "name_of_the_child_or_adult_being_cared_for",
+      "target": {
+        "type": "text",
+        "name": "Name of the Child or Adult Being Cared For"
+      },
+      "fillPolicy": "never",
+      "note": "dependent-care/child-support/volunteer detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "name_of_the_child_the_support_is_being_paid_for",
+      "target": {
+        "type": "text",
+        "name": "Name of the Child the Support is Being Paid For"
+      },
+      "fillPolicy": "never",
+      "note": "dependent-care/child-support/volunteer detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "once_per_month_3",
+      "target": {
+        "type": "checkbox",
+        "name": "Once per Month_3"
+      },
+      "fillPolicy": "never",
+      "note": "typed other-income row; income rows cannot be matched to typed rows positionally",
+      "transforms": []
+    },
+    {
+      "id": "other_income",
+      "target": {
+        "type": "radio",
+        "name": "Other Income"
+      },
+      "fillPolicy": "never",
+      "note": "typed other-income row; income rows cannot be matched to typed rows positionally",
+      "transforms": []
+    },
+    {
+      "id": "other_pay_frequency_2",
+      "target": {
+        "type": "text",
+        "name": "Other Pay Frequency_2"
+      },
+      "fillPolicy": "never",
+      "note": "typed other-income row; income rows cannot be matched to typed rows positionally",
+      "transforms": []
+    },
+    {
+      "id": "other_please_specify",
+      "target": {
+        "type": "checkbox",
+        "name": "Other please specify"
+      },
+      "fillPolicy": "never",
+      "note": "typed other-income row; income rows cannot be matched to typed rows positionally",
+      "transforms": []
+    },
+    {
+      "id": "other_12",
+      "target": {
+        "type": "text",
+        "name": "Other_12"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "ssi",
+      "target": {
+        "type": "radio",
+        "name": "SSI"
+      },
+      "fillPolicy": "never",
+      "note": "typed other-income row; income rows cannot be matched to typed rows positionally",
+      "transforms": []
+    },
+    {
+      "id": "semimonthly_two_times_per_month_3",
+      "target": {
+        "type": "checkbox",
+        "name": "SemiMonthly Two times per month_3"
+      },
+      "fillPolicy": "never",
+      "note": "typed other-income row; income rows cannot be matched to typed rows positionally",
+      "transforms": []
+    },
+    {
+      "id": "social_security",
+      "target": {
+        "type": "radio",
+        "name": "Social Security"
+      },
+      "fillPolicy": "never",
+      "note": "typed other-income row; income rows cannot be matched to typed rows positionally",
+      "transforms": []
+    },
+    {
+      "id": "state_5",
+      "target": {
+        "type": "text",
+        "name": "State_5"
+      },
+      "fillPolicy": "never",
+      "note": "dependent-care/child-support/volunteer detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "veterans_benefits",
+      "target": {
+        "type": "radio",
+        "name": "Veterans' Benefits"
+      },
+      "fillPolicy": "never",
+      "note": "typed other-income row; income rows cannot be matched to typed rows positionally",
+      "transforms": []
+    },
+    {
+      "id": "weekly_3",
+      "target": {
+        "type": "checkbox",
+        "name": "Weekly_3"
+      },
+      "fillPolicy": "never",
+      "note": "typed other-income row; income rows cannot be matched to typed rows positionally",
+      "transforms": []
+    },
+    {
+      "id": "who_is_being_paid_to_provide_this_childadult_care",
+      "target": {
+        "type": "text",
+        "name": "Who is Being Paid to Provide This ChildAdult Care"
+      },
+      "fillPolicy": "never",
+      "note": "dependent-care/child-support/volunteer detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "workers_unemployment_compensation",
+      "target": {
+        "type": "radio",
+        "name": "Workers/Unemployment Compensation"
+      },
+      "fillPolicy": "never",
+      "note": "typed other-income row; income rows cannot be matched to typed rows positionally",
+      "transforms": []
+    },
+    {
+      "id": "zip_code_5",
+      "target": {
+        "type": "text",
+        "name": "Zip Code_5"
+      },
+      "fillPolicy": "never",
+      "note": "dependent-care/child-support/volunteer detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "fill_27",
+      "target": {
+        "type": "text",
+        "name": "fill_27"
+      },
+      "fillPolicy": "never",
+      "note": "typed other-income row; income rows cannot be matched to typed rows positionally",
+      "transforms": []
+    },
+    {
+      "id": "fill_28",
+      "target": {
+        "type": "text",
+        "name": "fill_28"
+      },
+      "fillPolicy": "never",
+      "note": "typed other-income row; income rows cannot be matched to typed rows positionally",
+      "transforms": []
+    },
+    {
+      "id": "fill_29",
+      "target": {
+        "type": "text",
+        "name": "fill_29"
+      },
+      "fillPolicy": "never",
+      "note": "typed other-income row; income rows cannot be matched to typed rows positionally",
+      "transforms": []
+    },
+    {
+      "id": "fill_30",
+      "target": {
+        "type": "text",
+        "name": "fill_30"
+      },
+      "fillPolicy": "never",
+      "note": "typed other-income row; income rows cannot be matched to typed rows positionally",
+      "transforms": []
+    },
+    {
+      "id": "fill_31",
+      "target": {
+        "type": "text",
+        "name": "fill_31"
+      },
+      "fillPolicy": "never",
+      "note": "typed other-income row; income rows cannot be matched to typed rows positionally",
+      "transforms": []
+    },
+    {
+      "id": "fill_32",
+      "target": {
+        "type": "text",
+        "name": "fill_32"
+      },
+      "fillPolicy": "never",
+      "note": "typed other-income row; income rows cannot be matched to typed rows positionally",
+      "transforms": []
+    },
+    {
+      "id": "fill_33",
+      "target": {
+        "type": "text",
+        "name": "fill_33"
+      },
+      "fillPolicy": "never",
+      "note": "typed other-income row; income rows cannot be matched to typed rows positionally",
+      "transforms": []
+    },
+    {
+      "id": "fill_34",
+      "target": {
+        "type": "text",
+        "name": "fill_34"
+      },
+      "fillPolicy": "never",
+      "note": "typed other-income row; income rows cannot be matched to typed rows positionally",
+      "transforms": []
+    },
+    {
+      "id": "fill_35",
+      "target": {
+        "type": "text",
+        "name": "fill_35"
+      },
+      "fillPolicy": "never",
+      "note": "typed other-income row; income rows cannot be matched to typed rows positionally",
+      "transforms": []
+    },
+    {
+      "id": "fill_36",
+      "target": {
+        "type": "text",
+        "name": "fill_36"
+      },
+      "fillPolicy": "never",
+      "note": "typed other-income row; income rows cannot be matched to typed rows positionally",
+      "transforms": []
+    },
+    {
+      "id": "air_conditioning_surcharge_2",
+      "target": {
+        "type": "checkbox",
+        "name": "Air conditioning surcharge_2"
+      },
+      "fillPolicy": "never",
+      "note": "pays A/C surcharge; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "amount_2",
+      "target": {
+        "type": "text",
+        "name": "Amount_2"
+      },
+      "fillPolicy": "never",
+      "note": "typed medical expense; medical rows cannot be matched to typed rows positionally",
+      "transforms": []
+    },
+    {
+      "id": "biweekly_every_other_week_4",
+      "target": {
+        "type": "checkbox",
+        "name": "Biweekly Every other week_4"
+      },
+      "fillPolicy": "never",
+      "note": "dependent-care/child-support/volunteer detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "biweekly_every_other_week_5",
+      "target": {
+        "type": "checkbox",
+        "name": "Biweekly Every other week_5"
+      },
+      "fillPolicy": "never",
+      "note": "typed medical expense; medical rows cannot be matched to typed rows positionally",
+      "transforms": []
+    },
+    {
+      "id": "coal_for_heat",
+      "target": {
+        "type": "radio",
+        "name": "Coal for heat?"
+      },
+      "fillPolicy": "never",
+      "note": "per-fuel heat source; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "coal_paid",
+      "target": {
+        "type": "radio",
+        "name": "Coal paid?"
+      },
+      "fillPolicy": "never",
+      "note": "pays coal; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "copayment",
+      "target": {
+        "type": "checkbox",
+        "name": "Copayment"
+      },
+      "fillPolicy": "never",
+      "note": "typed medical expense; medical rows cannot be matched to typed rows positionally",
+      "transforms": []
+    },
+    {
+      "id": "does_anyone_in_the_household_pay_for_utilities",
+      "target": {
+        "type": "radio",
+        "name": "Does anyone in the household pay for utilities"
+      },
+      "fillPolicy": "never",
+      "note": "utility indicator; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "electric_for_heat",
+      "target": {
+        "type": "radio",
+        "name": "Electric for heat?"
+      },
+      "fillPolicy": "never",
+      "note": "per-fuel heat source; a single household boolean cannot answer per-fuel questions",
+      "transforms": []
+    },
+    {
+      "id": "electric_paid",
+      "target": {
+        "type": "radio",
+        "name": "Electric paid?"
+      },
+      "source": {
+        "fieldPath": "utilities.pays_electricity"
+      },
+      "valueMap": {
+        "true": "Yes_65",
+        "false": "No_68"
+      },
+      "strength": "preferred",
+      "note": "pays for electric",
+      "transforms": []
+    },
+    {
+      "id": "energy_assistance",
+      "target": {
+        "type": "radio",
+        "name": "Energy Assistance"
+      },
+      "source": {
+        "fieldPath": "utilities.received_liheap_last_12mo"
+      },
+      "valueMap": {
+        "true": "Yes_71",
+        "false": "No_74"
+      },
+      "strength": "preferred",
+      "note": "gets energy assistance (WHEAP/LIHEAP)",
+      "transforms": []
+    },
+    {
+      "id": "fuel_oil_kerosene_for_heat",
+      "target": {
+        "type": "radio",
+        "name": "Fuel Oil/Kerosene for heat?"
+      },
+      "fillPolicy": "never",
+      "note": "per-fuel heat source; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "fuel_oil_kerosene_paid",
+      "target": {
+        "type": "radio",
+        "name": "Fuel Oil/Kerosene paid?"
+      },
+      "fillPolicy": "never",
+      "note": "pays fuel oil/kerosene; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "gas_for_heat",
+      "target": {
+        "type": "radio",
+        "name": "Gas for heat?"
+      },
+      "fillPolicy": "never",
+      "note": "per-fuel heat source; a single household boolean cannot answer per-fuel questions",
+      "transforms": []
+    },
+    {
+      "id": "gas_paid",
+      "target": {
+        "type": "radio",
+        "name": "Gas paid?"
+      },
+      "source": {
+        "fieldPath": "utilities.pays_gas"
+      },
+      "valueMap": {
+        "true": "Yes_64",
+        "false": "No_67"
+      },
+      "strength": "preferred",
+      "note": "pays for gas (natural)",
+      "transforms": []
+    },
+    {
+      "id": "homeowners_insurance",
+      "target": {
+        "type": "checkbox",
+        "name": "Homeowners Insurance"
+      },
+      "fillPolicy": "never",
+      "note": "shelter cost type; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "housing_assistance",
+      "target": {
+        "type": "radio",
+        "name": "Housing Assistance"
+      },
+      "source": {
+        "fieldPath": "housing.is_subsidized"
+      },
+      "valueMap": {
+        "true": "Yes_70",
+        "false": "No_73"
+      },
+      "strength": "preferred",
+      "note": "gets housing assistance (Section 8/subsidized)",
+      "transforms": []
+    },
+    {
+      "id": "if_renting_is_heat_included_in_the_rent",
+      "target": {
+        "type": "radio",
+        "name": "If renting is heat included in the rent"
+      },
+      "fillPolicy": "never",
+      "note": "utility indicator; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "insurance_premium",
+      "target": {
+        "type": "checkbox",
+        "name": "Insurance Premium"
+      },
+      "fillPolicy": "never",
+      "note": "typed medical expense; medical rows cannot be matched to typed rows positionally",
+      "transforms": []
+    },
+    {
+      "id": "liquid_propane_gas_for_heat",
+      "target": {
+        "type": "radio",
+        "name": "Liquid Propane Gas for heat?"
+      },
+      "fillPolicy": "never",
+      "note": "per-fuel heat source; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "liquid_propane_gas_paid",
+      "target": {
+        "type": "radio",
+        "name": "Liquid Propane Gas paid?"
+      },
+      "fillPolicy": "never",
+      "note": "pays liquid propane gas; kept separate from pays_gas so one answer cannot misstate the other fuel",
+      "transforms": []
+    },
+    {
+      "id": "medical_bills",
+      "target": {
+        "type": "checkbox",
+        "name": "Medical Bills"
+      },
+      "fillPolicy": "never",
+      "note": "typed medical expense; medical rows cannot be matched to typed rows positionally",
+      "transforms": []
+    },
+    {
+      "id": "medical_expenses",
+      "target": {
+        "type": "radio",
+        "name": "Medical Expenses"
+      },
+      "fillPolicy": "never",
+      "note": "typed medical expense; medical rows cannot be matched to typed rows positionally",
+      "transforms": []
+    },
+    {
+      "id": "mobile_home_loan_payment",
+      "target": {
+        "type": "checkbox",
+        "name": "Mobile home loan payment"
+      },
+      "fillPolicy": "never",
+      "note": "shelter cost type; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "monthly_cost",
+      "target": {
+        "type": "text",
+        "name": "Monthly Cost"
+      },
+      "source": {
+        "fieldPath": "housing.total_shelter_monthly"
+      },
+      "transforms": [
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "strength": "preferred",
+      "note": "total monthly shelter cost"
+    },
+    {
+      "id": "mortgage",
+      "target": {
+        "type": "checkbox",
+        "name": "Mortgage"
+      },
+      "fillPolicy": "never",
+      "note": "shelter cost type; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "name_of_person_with_medical_expenserow1",
+      "target": {
+        "type": "text",
+        "name": "Name of Person with Medical ExpenseRow1"
+      },
+      "fillPolicy": "never",
+      "note": "no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "name_of_person_with_medical_expenserow2",
+      "target": {
+        "type": "text",
+        "name": "Name of Person with Medical ExpenseRow2"
+      },
+      "fillPolicy": "never",
+      "note": "no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "name_of_person_with_medical_expenserow3",
+      "target": {
+        "type": "text",
+        "name": "Name of Person with Medical ExpenseRow3"
+      },
+      "fillPolicy": "never",
+      "note": "no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "name_of_person_with_medical_expenserow4",
+      "target": {
+        "type": "text",
+        "name": "Name of Person with Medical ExpenseRow4"
+      },
+      "fillPolicy": "never",
+      "note": "no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "name_of_person_with_medical_expenserow5",
+      "target": {
+        "type": "text",
+        "name": "Name of Person with Medical ExpenseRow5"
+      },
+      "fillPolicy": "never",
+      "note": "no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "name_of_person_with_medical_expenserow6",
+      "target": {
+        "type": "text",
+        "name": "Name of Person with Medical ExpenseRow6"
+      },
+      "fillPolicy": "never",
+      "note": "no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "name_of_person_with_shelter_costs",
+      "target": {
+        "type": "text",
+        "name": "Name of Person with Shelter Costs"
+      },
+      "fillPolicy": "never",
+      "note": "shelter cost type; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "once_per_month_4",
+      "target": {
+        "type": "checkbox",
+        "name": "Once per Month_4"
+      },
+      "fillPolicy": "never",
+      "note": "dependent-care/child-support/volunteer detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "once_per_month_5",
+      "target": {
+        "type": "checkbox",
+        "name": "Once per Month_5"
+      },
+      "fillPolicy": "never",
+      "note": "typed medical expense; medical rows cannot be matched to typed rows positionally",
+      "transforms": []
+    },
+    {
+      "id": "other_medical_expense",
+      "target": {
+        "type": "checkbox",
+        "name": "Other Medical Expense"
+      },
+      "fillPolicy": "never",
+      "note": "typed medical expense; medical rows cannot be matched to typed rows positionally",
+      "transforms": []
+    },
+    {
+      "id": "other_medical_expense_2",
+      "target": {
+        "type": "checkbox",
+        "name": "Other Medical Expense_2"
+      },
+      "fillPolicy": "never",
+      "note": "no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "other_pay_frequency_3",
+      "target": {
+        "type": "text",
+        "name": "Other Pay Frequency_3"
+      },
+      "fillPolicy": "never",
+      "note": "dependent-care/child-support/volunteer detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "other_pay_frequency_4",
+      "target": {
+        "type": "text",
+        "name": "Other Pay Frequency_4"
+      },
+      "fillPolicy": "never",
+      "note": "typed medical expense; medical rows cannot be matched to typed rows positionally",
+      "transforms": []
+    },
+    {
+      "id": "other_paid_utilities",
+      "target": {
+        "type": "text",
+        "name": "Other paid utilities"
+      },
+      "fillPolicy": "never",
+      "note": "other paid utilities; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "other_please_specify_2",
+      "target": {
+        "type": "checkbox",
+        "name": "Other please specify_2"
+      },
+      "fillPolicy": "never",
+      "note": "dependent-care/child-support/volunteer detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "other_please_specify_3",
+      "target": {
+        "type": "checkbox",
+        "name": "Other please specify_3"
+      },
+      "fillPolicy": "never",
+      "note": "typed medical expense; medical rows cannot be matched to typed rows positionally",
+      "transforms": []
+    },
+    {
+      "id": "other_15",
+      "target": {
+        "type": "checkbox",
+        "name": "Other_15"
+      },
+      "fillPolicy": "never",
+      "note": "pays other utility; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "phone_2",
+      "target": {
+        "type": "checkbox",
+        "name": "Phone_2"
+      },
+      "source": {
+        "fieldPath": "utilities.pays_phone"
+      },
+      "valueMap": {
+        "true": "true",
+        "false": "false"
+      },
+      "strength": "preferred",
+      "note": "pays for phone",
+      "transforms": []
+    },
+    {
+      "id": "prescriptions",
+      "target": {
+        "type": "checkbox",
+        "name": "Prescriptions"
+      },
+      "fillPolicy": "never",
+      "note": "typed medical expense; medical rows cannot be matched to typed rows positionally",
+      "transforms": []
+    },
+    {
+      "id": "property_tax",
+      "target": {
+        "type": "checkbox",
+        "name": "Property Tax"
+      },
+      "fillPolicy": "never",
+      "note": "shelter cost type; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "rentlot_rent",
+      "target": {
+        "type": "checkbox",
+        "name": "RentLot Rent"
+      },
+      "fillPolicy": "never",
+      "note": "shelter cost type; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "semimonthly_two_times_per_month_4",
+      "target": {
+        "type": "checkbox",
+        "name": "SemiMonthly Two times per month_4"
+      },
+      "fillPolicy": "never",
+      "note": "dependent-care/child-support/volunteer detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "semimonthly_two_times_per_month_5",
+      "target": {
+        "type": "checkbox",
+        "name": "Semimonthly Two times per month"
+      },
+      "fillPolicy": "never",
+      "note": "no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "sewer_2",
+      "target": {
+        "type": "checkbox",
+        "name": "Sewer_2"
+      },
+      "source": {
+        "fieldPath": "utilities.pays_water_sewer"
+      },
+      "strength": "preferred",
+      "note": "pays for sewer",
+      "transforms": []
+    },
+    {
+      "id": "trash_removal_2",
+      "target": {
+        "type": "checkbox",
+        "name": "Trash removal_2"
+      },
+      "source": {
+        "fieldPath": "utilities.pays_trash"
+      },
+      "strength": "preferred",
+      "note": "pays for trash removal",
+      "transforms": []
+    },
+    {
+      "id": "water_2",
+      "target": {
+        "type": "checkbox",
+        "name": "Water_2"
+      },
+      "source": {
+        "fieldPath": "utilities.pays_water_sewer"
+      },
+      "strength": "preferred",
+      "note": "pays for water",
+      "transforms": []
+    },
+    {
+      "id": "weekly_4",
+      "target": {
+        "type": "checkbox",
+        "name": "Weekly_4"
+      },
+      "fillPolicy": "never",
+      "note": "dependent-care/child-support/volunteer detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "weekly_5",
+      "target": {
+        "type": "checkbox",
+        "name": "Weekly_5"
+      },
+      "fillPolicy": "never",
+      "note": "typed medical expense; medical rows cannot be matched to typed rows positionally",
+      "transforms": []
+    },
+    {
+      "id": "wood_for_heat",
+      "target": {
+        "type": "radio",
+        "name": "Wood for heat?"
+      },
+      "fillPolicy": "never",
+      "note": "per-fuel heat source; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "wood_paid",
+      "target": {
+        "type": "radio",
+        "name": "Wood paid?"
+      },
+      "fillPolicy": "never",
+      "note": "pays wood; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "fill_24",
+      "target": {
+        "type": "text",
+        "name": "fill_24"
+      },
+      "fillPolicy": "never",
+      "note": "typed medical expense; medical rows cannot be matched to typed rows positionally",
+      "transforms": []
+    },
+    {
+      "id": "fill_25",
+      "target": {
+        "type": "text",
+        "name": "fill_25"
+      },
+      "fillPolicy": "never",
+      "note": "typed medical expense; medical rows cannot be matched to typed rows positionally",
+      "transforms": []
+    },
+    {
+      "id": "fill_26",
+      "target": {
+        "type": "text",
+        "name": "fill_26"
+      },
+      "fillPolicy": "never",
+      "note": "typed medical expense; medical rows cannot be matched to typed rows positionally",
+      "transforms": []
+    },
+    {
+      "id": "fill_27_2",
+      "target": {
+        "type": "text",
+        "name": "fill_27_2"
+      },
+      "fillPolicy": "never",
+      "note": "typed medical expense; medical rows cannot be matched to typed rows positionally",
+      "transforms": []
+    },
+    {
+      "id": "fill_28_2",
+      "target": {
+        "type": "text",
+        "name": "fill_28_2"
+      },
+      "fillPolicy": "never",
+      "note": "typed medical expense; medical rows cannot be matched to typed rows positionally",
+      "transforms": []
+    },
+    {
+      "id": "fill_29_2",
+      "target": {
+        "type": "text",
+        "name": "fill_29_2"
+      },
+      "fillPolicy": "never",
+      "note": "typed medical expense; medical rows cannot be matched to typed rows positionally",
+      "transforms": []
+    }
+  ]
+}

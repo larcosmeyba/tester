@@ -1,0 +1,3554 @@
+{
+  "schemaVersion": 1,
+  "id": "us-nc-snap-dss-8207",
+  "jurisdiction": {
+    "country": "US",
+    "state": "NC"
+  },
+  "program": "SNAP",
+  "formCode": "DSS-8207",
+  "formTitle": "Application for Food and Nutrition Services",
+  "formVersion": "2024.10",
+  "revision": 1,
+  "status": "draft",
+  "vocabularyVersion": 1,
+  "agencyUrl": "https://www.ncdhhs.gov",
+  "template": {
+    "kind": "acroform",
+    "file": "template.pdf",
+    "sha256": "5d8f5624b1189a546ae55b5b43d4f93aa14b0adc430c40e9ea6b5e6fc9bbe1bf",
+    "pageCount": 10,
+    "sourceUrl": "https://policies.ncdhhs.gov/wp-content/uploads/DSS-8207-FNS-App_10.2024.pdf",
+    "retrievedAt": "2026-09-09"
+  },
+  "requirements": [
+    {
+      "fieldPath": "applicant.first_name",
+      "strength": "required"
+    },
+    {
+      "fieldPath": "applicant.last_name",
+      "strength": "required"
+    },
+    {
+      "fieldPath": "applicant.date_of_birth",
+      "strength": "required"
+    },
+    {
+      "fieldPath": "address.residential.street1",
+      "strength": "required",
+      "unless": {
+        "fieldPath": "address.residential.is_homeless",
+        "equals": true
+      }
+    },
+    {
+      "fieldPath": "address.residential.city",
+      "strength": "required",
+      "unless": {
+        "fieldPath": "address.residential.is_homeless",
+        "equals": true
+      }
+    },
+    {
+      "fieldPath": "address.residential.state",
+      "strength": "required",
+      "unless": {
+        "fieldPath": "address.residential.is_homeless",
+        "equals": true
+      }
+    },
+    {
+      "fieldPath": "address.residential.postal_code",
+      "strength": "required",
+      "unless": {
+        "fieldPath": "address.residential.is_homeless",
+        "equals": true
+      }
+    },
+    {
+      "fieldPath": "contact.phone_primary",
+      "strength": "preferred"
+    }
+  ],
+  "fields": [
+    {
+      "id": "nc_first_name",
+      "target": {
+        "type": "text",
+        "name": "Text1"
+      },
+      "source": {
+        "fieldPath": "applicant.first_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ]
+    },
+    {
+      "id": "nc_middle_name",
+      "target": {
+        "type": "text",
+        "name": "Text2"
+      },
+      "source": {
+        "fieldPath": "applicant.middle_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ]
+    },
+    {
+      "id": "nc_last_name",
+      "target": {
+        "type": "text",
+        "name": "First Name Middle Initial Last Name"
+      },
+      "source": {
+        "fieldPath": "applicant.last_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ]
+    },
+    {
+      "id": "nc_res_street",
+      "target": {
+        "type": "text",
+        "name": "Text3"
+      },
+      "source": {
+        "fieldPath": "address.residential.street1"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ]
+    },
+    {
+      "id": "nc_res_city",
+      "target": {
+        "type": "text",
+        "name": "Text4"
+      },
+      "source": {
+        "fieldPath": "address.residential.city"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ]
+    },
+    {
+      "id": "nc_res_state",
+      "target": {
+        "type": "text",
+        "name": "Text5"
+      },
+      "source": {
+        "fieldPath": "address.residential.state"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "upper"
+        }
+      ]
+    },
+    {
+      "id": "nc_res_zip",
+      "target": {
+        "type": "text",
+        "name": "Text6"
+      },
+      "source": {
+        "fieldPath": "address.residential.postal_code"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ]
+    },
+    {
+      "id": "nc_mail_street",
+      "target": {
+        "type": "text",
+        "name": "Text7"
+      },
+      "source": {
+        "fieldPath": "address.mailing.street1"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ]
+    },
+    {
+      "id": "nc_mail_city",
+      "target": {
+        "type": "text",
+        "name": "Text8"
+      },
+      "source": {
+        "fieldPath": "address.mailing.city"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ]
+    },
+    {
+      "id": "nc_mail_state",
+      "target": {
+        "type": "text",
+        "name": "Text9"
+      },
+      "source": {
+        "fieldPath": "address.mailing.state"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "upper"
+        }
+      ]
+    },
+    {
+      "id": "nc_mail_zip",
+      "target": {
+        "type": "text",
+        "name": "Text10"
+      },
+      "source": {
+        "fieldPath": "address.mailing.postal_code"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ]
+    },
+    {
+      "id": "nc_phone_home",
+      "target": {
+        "type": "text",
+        "name": "Home Phone"
+      },
+      "source": {
+        "fieldPath": "contact.phone_primary"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "phone",
+          "style": "dashed"
+        }
+      ]
+    },
+    {
+      "id": "nc_phone_cell",
+      "target": {
+        "type": "text",
+        "name": "Cell Phone"
+      },
+      "source": {
+        "fieldPath": "contact.phone_secondary"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "phone",
+          "style": "dashed"
+        }
+      ]
+    },
+    {
+      "id": "nc_language",
+      "target": {
+        "type": "text",
+        "name": "Language you speak"
+      },
+      "source": {
+        "fieldPath": "applicant.preferred_language"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ]
+    },
+    {
+      "id": "nc_email",
+      "target": {
+        "type": "text",
+        "name": "Email Address voluntary"
+      },
+      "source": {
+        "fieldPath": "contact.email"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "lower"
+        }
+      ]
+    },
+    {
+      "id": "nc_dob",
+      "target": {
+        "type": "text",
+        "name": "Birth DateSelf"
+      },
+      "source": {
+        "fieldPath": "applicant.date_of_birth"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "date",
+          "layout": "01/02/2006"
+        }
+      ]
+    },
+    {
+      "id": "nc_ssn",
+      "target": {
+        "type": "text",
+        "name": "Optional Social Security Number see belowSelf"
+      },
+      "source": {
+        "fieldPath": "applicant.ssn"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "ssn",
+          "style": "full"
+        }
+      ]
+    },
+    {
+      "id": "nc_citizen",
+      "target": {
+        "type": "text",
+        "name": "Optional US Citizen YesNo see belowSelf"
+      },
+      "source": {
+        "fieldPath": "applicant.is_us_citizen"
+      },
+      "valueMap": {
+        "true": "Yes",
+        "false": "No"
+      }
+    },
+    {
+      "id": "nc_m0_first",
+      "target": {
+        "type": "text",
+        "name": "First Middle Initial  Last NameRow2"
+      },
+      "source": {
+        "fieldPath": "household.members[].first_name"
+      },
+      "transforms": [
+        {
+          "op": "split",
+          "sep": " ",
+          "index": 0
+        },
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 0
+      },
+      "note": "Roster row 2 is household member 1 (Self is the applicant)."
+    },
+    {
+      "id": "nc_m0_dob",
+      "target": {
+        "type": "text",
+        "name": "Birth DateRow2"
+      },
+      "source": {
+        "fieldPath": "household.members[].date_of_birth"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "date",
+          "layout": "01/02/2006"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 0
+      }
+    },
+    {
+      "id": "nc_m0_ssn",
+      "target": {
+        "type": "text",
+        "name": "Optional Social Security Number see belowRow2"
+      },
+      "source": {
+        "fieldPath": "household.members[].ssn"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "ssn",
+          "style": "full"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 0
+      }
+    },
+    {
+      "id": "nc_m0_citizen",
+      "target": {
+        "type": "text",
+        "name": "Optional US Citizen YesNo see belowRow2"
+      },
+      "source": {
+        "fieldPath": "household.members[].is_us_citizen"
+      },
+      "valueMap": {
+        "true": "Yes",
+        "false": "No"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 0
+      }
+    },
+    {
+      "id": "nc_m0_applying",
+      "target": {
+        "type": "text",
+        "name": "Applying for Benefits YesNoRow2"
+      },
+      "source": {
+        "fieldPath": "household.members[].is_applying"
+      },
+      "valueMap": {
+        "true": "Yes",
+        "false": "No"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 0
+      }
+    },
+    {
+      "id": "nc_m0_cook",
+      "target": {
+        "type": "text",
+        "name": "Buy  Cook Together YesNoRow2"
+      },
+      "source": {
+        "fieldPath": "household.members[].buys_and_prepares_food_together"
+      },
+      "valueMap": {
+        "true": "Yes",
+        "false": "No"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 0
+      }
+    },
+    {
+      "id": "nc_m1_first",
+      "target": {
+        "type": "text",
+        "name": "First Middle Initial  Last NameRow3"
+      },
+      "source": {
+        "fieldPath": "household.members[].first_name"
+      },
+      "transforms": [
+        {
+          "op": "split",
+          "sep": " ",
+          "index": 0
+        },
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 1
+      },
+      "note": "Roster row 3 is household member 2 (Self is the applicant)."
+    },
+    {
+      "id": "nc_m1_dob",
+      "target": {
+        "type": "text",
+        "name": "Birth DateRow3"
+      },
+      "source": {
+        "fieldPath": "household.members[].date_of_birth"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "date",
+          "layout": "01/02/2006"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 1
+      }
+    },
+    {
+      "id": "nc_m1_ssn",
+      "target": {
+        "type": "text",
+        "name": "Optional Social Security Number see belowRow3"
+      },
+      "source": {
+        "fieldPath": "household.members[].ssn"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "ssn",
+          "style": "full"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 1
+      }
+    },
+    {
+      "id": "nc_m1_citizen",
+      "target": {
+        "type": "text",
+        "name": "Optional US Citizen YesNo see belowRow3"
+      },
+      "source": {
+        "fieldPath": "household.members[].is_us_citizen"
+      },
+      "valueMap": {
+        "true": "Yes",
+        "false": "No"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 1
+      }
+    },
+    {
+      "id": "nc_m1_applying",
+      "target": {
+        "type": "text",
+        "name": "Applying for Benefits YesNoRow3"
+      },
+      "source": {
+        "fieldPath": "household.members[].is_applying"
+      },
+      "valueMap": {
+        "true": "Yes",
+        "false": "No"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 1
+      }
+    },
+    {
+      "id": "nc_m1_cook",
+      "target": {
+        "type": "text",
+        "name": "Buy  Cook Together YesNoRow3"
+      },
+      "source": {
+        "fieldPath": "household.members[].buys_and_prepares_food_together"
+      },
+      "valueMap": {
+        "true": "Yes",
+        "false": "No"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 1
+      }
+    },
+    {
+      "id": "nc_m2_first",
+      "target": {
+        "type": "text",
+        "name": "First Middle Initial  Last NameRow4"
+      },
+      "source": {
+        "fieldPath": "household.members[].first_name"
+      },
+      "transforms": [
+        {
+          "op": "split",
+          "sep": " ",
+          "index": 0
+        },
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 2
+      },
+      "note": "Roster row 4 is household member 3 (Self is the applicant)."
+    },
+    {
+      "id": "nc_m2_dob",
+      "target": {
+        "type": "text",
+        "name": "Birth DateRow4"
+      },
+      "source": {
+        "fieldPath": "household.members[].date_of_birth"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "date",
+          "layout": "01/02/2006"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 2
+      }
+    },
+    {
+      "id": "nc_m2_ssn",
+      "target": {
+        "type": "text",
+        "name": "Optional Social Security Number see belowRow4"
+      },
+      "source": {
+        "fieldPath": "household.members[].ssn"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "ssn",
+          "style": "full"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 2
+      }
+    },
+    {
+      "id": "nc_m2_citizen",
+      "target": {
+        "type": "text",
+        "name": "Optional US Citizen YesNo see belowRow4"
+      },
+      "source": {
+        "fieldPath": "household.members[].is_us_citizen"
+      },
+      "valueMap": {
+        "true": "Yes",
+        "false": "No"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 2
+      }
+    },
+    {
+      "id": "nc_m2_applying",
+      "target": {
+        "type": "text",
+        "name": "Applying for Benefits YesNoRow4"
+      },
+      "source": {
+        "fieldPath": "household.members[].is_applying"
+      },
+      "valueMap": {
+        "true": "Yes",
+        "false": "No"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 2
+      }
+    },
+    {
+      "id": "nc_m2_cook",
+      "target": {
+        "type": "text",
+        "name": "Buy  Cook Together YesNoRow4"
+      },
+      "source": {
+        "fieldPath": "household.members[].buys_and_prepares_food_together"
+      },
+      "valueMap": {
+        "true": "Yes",
+        "false": "No"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 2
+      }
+    },
+    {
+      "id": "nc_m3_first",
+      "target": {
+        "type": "text",
+        "name": "First Middle Initial  Last NameRow5"
+      },
+      "source": {
+        "fieldPath": "household.members[].first_name"
+      },
+      "transforms": [
+        {
+          "op": "split",
+          "sep": " ",
+          "index": 0
+        },
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 3
+      },
+      "note": "Roster row 5 is household member 4 (Self is the applicant)."
+    },
+    {
+      "id": "nc_m3_dob",
+      "target": {
+        "type": "text",
+        "name": "Birth DateRow5"
+      },
+      "source": {
+        "fieldPath": "household.members[].date_of_birth"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "date",
+          "layout": "01/02/2006"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 3
+      }
+    },
+    {
+      "id": "nc_m3_ssn",
+      "target": {
+        "type": "text",
+        "name": "Optional Social Security Number see belowRow5"
+      },
+      "source": {
+        "fieldPath": "household.members[].ssn"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "ssn",
+          "style": "full"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 3
+      }
+    },
+    {
+      "id": "nc_m3_citizen",
+      "target": {
+        "type": "text",
+        "name": "Optional US Citizen YesNo see belowRow5"
+      },
+      "source": {
+        "fieldPath": "household.members[].is_us_citizen"
+      },
+      "valueMap": {
+        "true": "Yes",
+        "false": "No"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 3
+      }
+    },
+    {
+      "id": "nc_m3_applying",
+      "target": {
+        "type": "text",
+        "name": "Applying for Benefits YesNoRow5"
+      },
+      "source": {
+        "fieldPath": "household.members[].is_applying"
+      },
+      "valueMap": {
+        "true": "Yes",
+        "false": "No"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 3
+      }
+    },
+    {
+      "id": "nc_m3_cook",
+      "target": {
+        "type": "text",
+        "name": "Buy  Cook Together YesNoRow5"
+      },
+      "source": {
+        "fieldPath": "household.members[].buys_and_prepares_food_together"
+      },
+      "valueMap": {
+        "true": "Yes",
+        "false": "No"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 3
+      }
+    },
+    {
+      "id": "nc_m4_first",
+      "target": {
+        "type": "text",
+        "name": "First Middle Initial  Last NameRow6"
+      },
+      "source": {
+        "fieldPath": "household.members[].first_name"
+      },
+      "transforms": [
+        {
+          "op": "split",
+          "sep": " ",
+          "index": 0
+        },
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 4
+      },
+      "note": "Roster row 6 is household member 5 (Self is the applicant)."
+    },
+    {
+      "id": "nc_m4_dob",
+      "target": {
+        "type": "text",
+        "name": "Birth DateRow6"
+      },
+      "source": {
+        "fieldPath": "household.members[].date_of_birth"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "date",
+          "layout": "01/02/2006"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 4
+      }
+    },
+    {
+      "id": "nc_m4_ssn",
+      "target": {
+        "type": "text",
+        "name": "Optional Social Security Number see belowRow6"
+      },
+      "source": {
+        "fieldPath": "household.members[].ssn"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "ssn",
+          "style": "full"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 4
+      }
+    },
+    {
+      "id": "nc_m4_citizen",
+      "target": {
+        "type": "text",
+        "name": "Optional US Citizen YesNo see belowRow6"
+      },
+      "source": {
+        "fieldPath": "household.members[].is_us_citizen"
+      },
+      "valueMap": {
+        "true": "Yes",
+        "false": "No"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 4
+      }
+    },
+    {
+      "id": "nc_m4_applying",
+      "target": {
+        "type": "text",
+        "name": "Applying for Benefits YesNoRow6"
+      },
+      "source": {
+        "fieldPath": "household.members[].is_applying"
+      },
+      "valueMap": {
+        "true": "Yes",
+        "false": "No"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 4
+      }
+    },
+    {
+      "id": "nc_m4_cook",
+      "target": {
+        "type": "text",
+        "name": "Buy  Cook Together YesNoRow6"
+      },
+      "source": {
+        "fieldPath": "household.members[].buys_and_prepares_food_together"
+      },
+      "valueMap": {
+        "true": "Yes",
+        "false": "No"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 4
+      }
+    },
+    {
+      "id": "nc_m5_first",
+      "target": {
+        "type": "text",
+        "name": "First Middle Initial  Last NameRow7"
+      },
+      "source": {
+        "fieldPath": "household.members[].first_name"
+      },
+      "transforms": [
+        {
+          "op": "split",
+          "sep": " ",
+          "index": 0
+        },
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 5
+      },
+      "note": "Roster row 7 is household member 6 (Self is the applicant)."
+    },
+    {
+      "id": "nc_m5_dob",
+      "target": {
+        "type": "text",
+        "name": "Birth DateRow7"
+      },
+      "source": {
+        "fieldPath": "household.members[].date_of_birth"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "date",
+          "layout": "01/02/2006"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 5
+      }
+    },
+    {
+      "id": "nc_m5_ssn",
+      "target": {
+        "type": "text",
+        "name": "Optional Social Security Number see belowRow7"
+      },
+      "source": {
+        "fieldPath": "household.members[].ssn"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "ssn",
+          "style": "full"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 5
+      }
+    },
+    {
+      "id": "nc_m5_citizen",
+      "target": {
+        "type": "text",
+        "name": "Optional US Citizen YesNo see belowRow7"
+      },
+      "source": {
+        "fieldPath": "household.members[].is_us_citizen"
+      },
+      "valueMap": {
+        "true": "Yes",
+        "false": "No"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 5
+      }
+    },
+    {
+      "id": "nc_m5_applying",
+      "target": {
+        "type": "text",
+        "name": "Applying for Benefits YesNoRow7"
+      },
+      "source": {
+        "fieldPath": "household.members[].is_applying"
+      },
+      "valueMap": {
+        "true": "Yes",
+        "false": "No"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 5
+      }
+    },
+    {
+      "id": "nc_m5_cook",
+      "target": {
+        "type": "text",
+        "name": "Buy  Cook Together YesNoRow7"
+      },
+      "source": {
+        "fieldPath": "household.members[].buys_and_prepares_food_together"
+      },
+      "valueMap": {
+        "true": "Yes",
+        "false": "No"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 5
+      }
+    },
+    {
+      "id": "nc_m6_first",
+      "target": {
+        "type": "text",
+        "name": "First Middle Initial  Last NameRow8"
+      },
+      "source": {
+        "fieldPath": "household.members[].first_name"
+      },
+      "transforms": [
+        {
+          "op": "split",
+          "sep": " ",
+          "index": 0
+        },
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 6
+      },
+      "note": "Roster row 8 is household member 7 (Self is the applicant)."
+    },
+    {
+      "id": "nc_m6_dob",
+      "target": {
+        "type": "text",
+        "name": "Birth DateRow8"
+      },
+      "source": {
+        "fieldPath": "household.members[].date_of_birth"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "date",
+          "layout": "01/02/2006"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 6
+      }
+    },
+    {
+      "id": "nc_m6_ssn",
+      "target": {
+        "type": "text",
+        "name": "Optional Social Security Number see belowRow8"
+      },
+      "source": {
+        "fieldPath": "household.members[].ssn"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "ssn",
+          "style": "full"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 6
+      }
+    },
+    {
+      "id": "nc_m6_citizen",
+      "target": {
+        "type": "text",
+        "name": "Optional US Citizen YesNo see belowRow8"
+      },
+      "source": {
+        "fieldPath": "household.members[].is_us_citizen"
+      },
+      "valueMap": {
+        "true": "Yes",
+        "false": "No"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 6
+      }
+    },
+    {
+      "id": "nc_m6_applying",
+      "target": {
+        "type": "text",
+        "name": "Applying for Benefits YesNoRow8"
+      },
+      "source": {
+        "fieldPath": "household.members[].is_applying"
+      },
+      "valueMap": {
+        "true": "Yes",
+        "false": "No"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 6
+      }
+    },
+    {
+      "id": "nc_m6_cook",
+      "target": {
+        "type": "text",
+        "name": "Buy  Cook Together YesNoRow8"
+      },
+      "source": {
+        "fieldPath": "household.members[].buys_and_prepares_food_together"
+      },
+      "valueMap": {
+        "true": "Yes",
+        "false": "No"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 6
+      }
+    },
+    {
+      "id": "nc_homeless",
+      "target": {
+        "type": "checkbox",
+        "name": "Homeless which means that you lack a fixed and regular nighttime sleeping arrangement  WeI live in a"
+      },
+      "source": {
+        "fieldPath": "address.residential.is_homeless"
+      }
+    },
+    {
+      "id": "nc_subsidized",
+      "target": {
+        "type": "radio",
+        "name": "Do you receive Section 8 or HUD Assistance"
+      },
+      "source": {
+        "fieldPath": "housing.is_subsidized"
+      },
+      "valueMap": {
+        "true": "Yes_25",
+        "false": "No_17"
+      }
+    },
+    {
+      "id": "nc_util_total",
+      "target": {
+        "type": "text",
+        "name": "AmountWhat is the total monthly utility cost heat electricity LPNatural Gas WaterSewage GarbageTrash TelephoneCell Phone and Utility Excess Public Housing"
+      },
+      "source": {
+        "fieldPath": "utilities.monthly_total"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ]
+    },
+    {
+      "id": "nc_pays_elec",
+      "target": {
+        "type": "checkbox",
+        "name": "Electricity"
+      },
+      "source": {
+        "fieldPath": "utilities.pays_electricity"
+      }
+    },
+    {
+      "id": "nc_pays_gas",
+      "target": {
+        "type": "checkbox",
+        "name": "LPNatural Gas"
+      },
+      "source": {
+        "fieldPath": "utilities.pays_gas"
+      }
+    },
+    {
+      "id": "nc_pays_water",
+      "target": {
+        "type": "checkbox",
+        "name": "WaterSewage"
+      },
+      "source": {
+        "fieldPath": "utilities.pays_water_sewer"
+      }
+    },
+    {
+      "id": "nc_pays_trash",
+      "target": {
+        "type": "checkbox",
+        "name": "GarbageTrash"
+      },
+      "source": {
+        "fieldPath": "utilities.pays_trash"
+      }
+    },
+    {
+      "id": "nc_pays_phone",
+      "target": {
+        "type": "checkbox",
+        "name": "TelephoneCell Phone"
+      },
+      "source": {
+        "fieldPath": "utilities.pays_phone"
+      }
+    },
+    {
+      "id": "nc_rent",
+      "target": {
+        "type": "text",
+        "name": "Amount BilledRent or Mortgage"
+      },
+      "source": {
+        "fieldPath": "housing.rent_monthly"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "note": "Form combines rent and mortgage on one line; profile splits them."
+    },
+    {
+      "id": "nc_prop_tax",
+      "target": {
+        "type": "text",
+        "name": "Amount BilledProperty Taxes If not included in mortgage"
+      },
+      "source": {
+        "fieldPath": "housing.property_tax_monthly"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ]
+    },
+    {
+      "id": "nc_home_ins",
+      "target": {
+        "type": "text",
+        "name": "Amount BilledHomeowners Insurance If not included in mortgage"
+      },
+      "source": {
+        "fieldPath": "housing.home_insurance_monthly"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ]
+    },
+    {
+      "id": "nc_income_total",
+      "target": {
+        "type": "text",
+        "name": "AmountWhat is the households total countable monthly gross income"
+      },
+      "source": {
+        "fieldPath": "income.monthly_gross_total"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "note": "Household-level total; profile may compute this instead."
+    },
+    {
+      "id": "nc_src0_kind",
+      "target": {
+        "type": "text",
+        "name": "Type of MoneyRow1"
+      },
+      "source": {
+        "fieldPath": "income.sources[].kind"
+      },
+      "valueMap": {
+        "wages": "Wages",
+        "salary": "Salary",
+        "self_employment": "Self Employment",
+        "social_security": "Social Security",
+        "ssi": "SSI",
+        "ssdi": "SSDI",
+        "unemployment": "Unemployment",
+        "child_support": "Child Support",
+        "alimony": "Alimony",
+        "pension": "Pension",
+        "retirement": "Retirement",
+        "veterans_benefits": "Veterans Benefits",
+        "workers_comp": "Workers Comp",
+        "disability": "Disability",
+        "rental_income": "Rental Income",
+        "other": "Other"
+      },
+      "repeat": {
+        "over": "income.sources",
+        "index": 0
+      },
+      "note": "Page 6 unearned-income row 1."
+    },
+    {
+      "id": "nc_src0_member",
+      "target": {
+        "type": "text",
+        "name": "Who Gets the MoneyRow1"
+      },
+      "source": {
+        "fieldPath": "income.sources[].member_ref"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "income.sources",
+        "index": 0
+      }
+    },
+    {
+      "id": "nc_src0_payer",
+      "target": {
+        "type": "text",
+        "name": "Who Gives the MoneyRow1"
+      },
+      "source": {
+        "fieldPath": "income.sources[].payer"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "income.sources",
+        "index": 0
+      }
+    },
+    {
+      "id": "nc_src0_amount",
+      "target": {
+        "type": "text",
+        "name": "How MuchRow1"
+      },
+      "source": {
+        "fieldPath": "income.sources[].gross_amount"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "income.sources",
+        "index": 0
+      }
+    },
+    {
+      "id": "nc_src0_freq",
+      "target": {
+        "type": "text",
+        "name": "How OftenRow1"
+      },
+      "source": {
+        "fieldPath": "income.sources[].frequency"
+      },
+      "valueMap": {
+        "hourly": "Hourly",
+        "daily": "Daily",
+        "weekly": "Weekly",
+        "biweekly": "Biweekly",
+        "semimonthly": "Semimonthly",
+        "monthly": "Monthly",
+        "quarterly": "Quarterly",
+        "annually": "Annually",
+        "one_time": "One Time"
+      },
+      "repeat": {
+        "over": "income.sources",
+        "index": 0
+      }
+    },
+    {
+      "id": "nc_src1_kind",
+      "target": {
+        "type": "text",
+        "name": "Type of MoneyRow2"
+      },
+      "source": {
+        "fieldPath": "income.sources[].kind"
+      },
+      "valueMap": {
+        "wages": "Wages",
+        "salary": "Salary",
+        "self_employment": "Self Employment",
+        "social_security": "Social Security",
+        "ssi": "SSI",
+        "ssdi": "SSDI",
+        "unemployment": "Unemployment",
+        "child_support": "Child Support",
+        "alimony": "Alimony",
+        "pension": "Pension",
+        "retirement": "Retirement",
+        "veterans_benefits": "Veterans Benefits",
+        "workers_comp": "Workers Comp",
+        "disability": "Disability",
+        "rental_income": "Rental Income",
+        "other": "Other"
+      },
+      "repeat": {
+        "over": "income.sources",
+        "index": 1
+      },
+      "note": "Page 6 unearned-income row 2."
+    },
+    {
+      "id": "nc_src1_member",
+      "target": {
+        "type": "text",
+        "name": "Who Gets the MoneyRow2"
+      },
+      "source": {
+        "fieldPath": "income.sources[].member_ref"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "income.sources",
+        "index": 1
+      }
+    },
+    {
+      "id": "nc_src1_payer",
+      "target": {
+        "type": "text",
+        "name": "Who Gives the MoneyRow2"
+      },
+      "source": {
+        "fieldPath": "income.sources[].payer"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "income.sources",
+        "index": 1
+      }
+    },
+    {
+      "id": "nc_src1_amount",
+      "target": {
+        "type": "text",
+        "name": "How MuchRow2"
+      },
+      "source": {
+        "fieldPath": "income.sources[].gross_amount"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "income.sources",
+        "index": 1
+      }
+    },
+    {
+      "id": "nc_src1_freq",
+      "target": {
+        "type": "text",
+        "name": "How OftenRow2"
+      },
+      "source": {
+        "fieldPath": "income.sources[].frequency"
+      },
+      "valueMap": {
+        "hourly": "Hourly",
+        "daily": "Daily",
+        "weekly": "Weekly",
+        "biweekly": "Biweekly",
+        "semimonthly": "Semimonthly",
+        "monthly": "Monthly",
+        "quarterly": "Quarterly",
+        "annually": "Annually",
+        "one_time": "One Time"
+      },
+      "repeat": {
+        "over": "income.sources",
+        "index": 1
+      }
+    },
+    {
+      "id": "nc_src2_kind",
+      "target": {
+        "type": "text",
+        "name": "Type of MoneyRow3"
+      },
+      "source": {
+        "fieldPath": "income.sources[].kind"
+      },
+      "valueMap": {
+        "wages": "Wages",
+        "salary": "Salary",
+        "self_employment": "Self Employment",
+        "social_security": "Social Security",
+        "ssi": "SSI",
+        "ssdi": "SSDI",
+        "unemployment": "Unemployment",
+        "child_support": "Child Support",
+        "alimony": "Alimony",
+        "pension": "Pension",
+        "retirement": "Retirement",
+        "veterans_benefits": "Veterans Benefits",
+        "workers_comp": "Workers Comp",
+        "disability": "Disability",
+        "rental_income": "Rental Income",
+        "other": "Other"
+      },
+      "repeat": {
+        "over": "income.sources",
+        "index": 2
+      },
+      "note": "Page 6 unearned-income row 3."
+    },
+    {
+      "id": "nc_src2_member",
+      "target": {
+        "type": "text",
+        "name": "Who Gets the MoneyRow3"
+      },
+      "source": {
+        "fieldPath": "income.sources[].member_ref"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "income.sources",
+        "index": 2
+      }
+    },
+    {
+      "id": "nc_src2_payer",
+      "target": {
+        "type": "text",
+        "name": "Who Gives the MoneyRow3"
+      },
+      "source": {
+        "fieldPath": "income.sources[].payer"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "income.sources",
+        "index": 2
+      }
+    },
+    {
+      "id": "nc_src2_amount",
+      "target": {
+        "type": "text",
+        "name": "How MuchRow3"
+      },
+      "source": {
+        "fieldPath": "income.sources[].gross_amount"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "income.sources",
+        "index": 2
+      }
+    },
+    {
+      "id": "nc_src2_freq",
+      "target": {
+        "type": "text",
+        "name": "How OftenRow3"
+      },
+      "source": {
+        "fieldPath": "income.sources[].frequency"
+      },
+      "valueMap": {
+        "hourly": "Hourly",
+        "daily": "Daily",
+        "weekly": "Weekly",
+        "biweekly": "Biweekly",
+        "semimonthly": "Semimonthly",
+        "monthly": "Monthly",
+        "quarterly": "Quarterly",
+        "annually": "Annually",
+        "one_time": "One Time"
+      },
+      "repeat": {
+        "over": "income.sources",
+        "index": 2
+      }
+    },
+    {
+      "id": "nc_src3_kind",
+      "target": {
+        "type": "text",
+        "name": "Type of MoneyRow4"
+      },
+      "source": {
+        "fieldPath": "income.sources[].kind"
+      },
+      "valueMap": {
+        "wages": "Wages",
+        "salary": "Salary",
+        "self_employment": "Self Employment",
+        "social_security": "Social Security",
+        "ssi": "SSI",
+        "ssdi": "SSDI",
+        "unemployment": "Unemployment",
+        "child_support": "Child Support",
+        "alimony": "Alimony",
+        "pension": "Pension",
+        "retirement": "Retirement",
+        "veterans_benefits": "Veterans Benefits",
+        "workers_comp": "Workers Comp",
+        "disability": "Disability",
+        "rental_income": "Rental Income",
+        "other": "Other"
+      },
+      "repeat": {
+        "over": "income.sources",
+        "index": 3
+      },
+      "note": "Page 6 unearned-income row 4."
+    },
+    {
+      "id": "nc_src3_member",
+      "target": {
+        "type": "text",
+        "name": "Who Gets the MoneyRow4"
+      },
+      "source": {
+        "fieldPath": "income.sources[].member_ref"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "income.sources",
+        "index": 3
+      }
+    },
+    {
+      "id": "nc_src3_payer",
+      "target": {
+        "type": "text",
+        "name": "Who Gives the MoneyRow4"
+      },
+      "source": {
+        "fieldPath": "income.sources[].payer"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "income.sources",
+        "index": 3
+      }
+    },
+    {
+      "id": "nc_src3_amount",
+      "target": {
+        "type": "text",
+        "name": "How MuchRow4"
+      },
+      "source": {
+        "fieldPath": "income.sources[].gross_amount"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "income.sources",
+        "index": 3
+      }
+    },
+    {
+      "id": "nc_src3_freq",
+      "target": {
+        "type": "text",
+        "name": "How OftenRow4"
+      },
+      "source": {
+        "fieldPath": "income.sources[].frequency"
+      },
+      "valueMap": {
+        "hourly": "Hourly",
+        "daily": "Daily",
+        "weekly": "Weekly",
+        "biweekly": "Biweekly",
+        "semimonthly": "Semimonthly",
+        "monthly": "Monthly",
+        "quarterly": "Quarterly",
+        "annually": "Annually",
+        "one_time": "One Time"
+      },
+      "repeat": {
+        "over": "income.sources",
+        "index": 3
+      }
+    },
+    {
+      "id": "nc_job0_member",
+      "target": {
+        "type": "text",
+        "name": "NameRow1"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].member_ref"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 0
+      },
+      "note": "Page 4 current-employment row 1."
+    },
+    {
+      "id": "nc_job0_employer",
+      "target": {
+        "type": "text",
+        "name": "Employer Name Address Phone Number if AvailableRow1"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].employer_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 0
+      }
+    },
+    {
+      "id": "nc_job0_start",
+      "target": {
+        "type": "text",
+        "name": "Start DateRow1"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].start_date"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "date",
+          "layout": "01/02/2006"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 0
+      }
+    },
+    {
+      "id": "nc_job0_pay",
+      "target": {
+        "type": "text",
+        "name": "Gross Pay Pay Before TaxesRow1"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].pay_rate"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 0
+      }
+    },
+    {
+      "id": "nc_job0_freq",
+      "target": {
+        "type": "text",
+        "name": "How Often is Pay ReceivedRow1"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].pay_frequency"
+      },
+      "valueMap": {
+        "hourly": "Hourly",
+        "daily": "Daily",
+        "weekly": "Weekly",
+        "biweekly": "Biweekly",
+        "semimonthly": "Semimonthly",
+        "monthly": "Monthly",
+        "quarterly": "Quarterly",
+        "annually": "Annually",
+        "one_time": "One Time"
+      },
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 0
+      }
+    },
+    {
+      "id": "nc_job0_hours",
+      "target": {
+        "type": "text",
+        "name": "Hours Per WeekRow1"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].hours_per_week"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 0
+      }
+    },
+    {
+      "id": "nc_job1_member",
+      "target": {
+        "type": "text",
+        "name": "NameRow2"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].member_ref"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 1
+      },
+      "note": "Page 4 current-employment row 2."
+    },
+    {
+      "id": "nc_job1_employer",
+      "target": {
+        "type": "text",
+        "name": "Employer Name Address Phone Number if AvailableRow2"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].employer_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 1
+      }
+    },
+    {
+      "id": "nc_job1_start",
+      "target": {
+        "type": "text",
+        "name": "Start DateRow2"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].start_date"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "date",
+          "layout": "01/02/2006"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 1
+      }
+    },
+    {
+      "id": "nc_job1_pay",
+      "target": {
+        "type": "text",
+        "name": "Gross Pay Pay Before TaxesRow2"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].pay_rate"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 1
+      }
+    },
+    {
+      "id": "nc_job1_freq",
+      "target": {
+        "type": "text",
+        "name": "How Often is Pay ReceivedRow2"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].pay_frequency"
+      },
+      "valueMap": {
+        "hourly": "Hourly",
+        "daily": "Daily",
+        "weekly": "Weekly",
+        "biweekly": "Biweekly",
+        "semimonthly": "Semimonthly",
+        "monthly": "Monthly",
+        "quarterly": "Quarterly",
+        "annually": "Annually",
+        "one_time": "One Time"
+      },
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 1
+      }
+    },
+    {
+      "id": "nc_job1_hours",
+      "target": {
+        "type": "text",
+        "name": "Hours Per WeekRow2"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].hours_per_week"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 1
+      }
+    },
+    {
+      "id": "nc_job2_member",
+      "target": {
+        "type": "text",
+        "name": "NameRow3"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].member_ref"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 2
+      },
+      "note": "Page 4 current-employment row 3."
+    },
+    {
+      "id": "nc_job2_employer",
+      "target": {
+        "type": "text",
+        "name": "Employer Name Address Phone Number if AvailableRow3"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].employer_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 2
+      }
+    },
+    {
+      "id": "nc_job2_start",
+      "target": {
+        "type": "text",
+        "name": "Start DateRow3"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].start_date"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "date",
+          "layout": "01/02/2006"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 2
+      }
+    },
+    {
+      "id": "nc_job2_pay",
+      "target": {
+        "type": "text",
+        "name": "Gross Pay Pay Before TaxesRow3"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].pay_rate"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 2
+      }
+    },
+    {
+      "id": "nc_job2_freq",
+      "target": {
+        "type": "text",
+        "name": "How Often is Pay ReceivedRow3"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].pay_frequency"
+      },
+      "valueMap": {
+        "hourly": "Hourly",
+        "daily": "Daily",
+        "weekly": "Weekly",
+        "biweekly": "Biweekly",
+        "semimonthly": "Semimonthly",
+        "monthly": "Monthly",
+        "quarterly": "Quarterly",
+        "annually": "Annually",
+        "one_time": "One Time"
+      },
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 2
+      }
+    },
+    {
+      "id": "nc_job2_hours",
+      "target": {
+        "type": "text",
+        "name": "Hours Per WeekRow3"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].hours_per_week"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 2
+      }
+    },
+    {
+      "id": "nc_se3_member",
+      "target": {
+        "type": "text",
+        "name": "NameRow1_2"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].member_ref"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 3
+      },
+      "note": "Page 4 self-employment row 1."
+    },
+    {
+      "id": "nc_se3_business",
+      "target": {
+        "type": "text",
+        "name": "Business NameRow1"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].employer_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 3
+      }
+    },
+    {
+      "id": "nc_se3_start",
+      "target": {
+        "type": "text",
+        "name": "Start DateRow1_2"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].start_date"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "date",
+          "layout": "01/02/2006"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 3
+      }
+    },
+    {
+      "id": "nc_se3_income",
+      "target": {
+        "type": "text",
+        "name": "Gross Monthly IncomeRow1"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].pay_rate"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 3
+      },
+      "note": "Form labels this column monthly income."
+    },
+    {
+      "id": "nc_se3_hours",
+      "target": {
+        "type": "text",
+        "name": "Hours Per WeekRow1_2"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].hours_per_week"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 3
+      }
+    },
+    {
+      "id": "nc_se4_member",
+      "target": {
+        "type": "text",
+        "name": "NameRow2_2"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].member_ref"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 4
+      },
+      "note": "Page 4 self-employment row 2."
+    },
+    {
+      "id": "nc_se4_business",
+      "target": {
+        "type": "text",
+        "name": "Business NameRow2"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].employer_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 4
+      }
+    },
+    {
+      "id": "nc_se4_start",
+      "target": {
+        "type": "text",
+        "name": "Start DateRow2_2"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].start_date"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "date",
+          "layout": "01/02/2006"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 4
+      }
+    },
+    {
+      "id": "nc_se4_income",
+      "target": {
+        "type": "text",
+        "name": "Gross Monthly IncomeRow2"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].pay_rate"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 4
+      },
+      "note": "Form labels this column monthly income."
+    },
+    {
+      "id": "nc_se4_hours",
+      "target": {
+        "type": "text",
+        "name": "Hours Per WeekRow2_2"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].hours_per_week"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 4
+      }
+    },
+    {
+      "id": "nc_new5_member",
+      "target": {
+        "type": "text",
+        "name": "NameRow1_3"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].member_ref"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 5
+      },
+      "note": "Page 5 new-job row 1."
+    },
+    {
+      "id": "nc_new5_employer",
+      "target": {
+        "type": "text",
+        "name": "Employer Name Address Phone Number If AvailableRow1"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].employer_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 5
+      }
+    },
+    {
+      "id": "nc_new5_start",
+      "target": {
+        "type": "text",
+        "name": "Start DateRow1_3"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].start_date"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "date",
+          "layout": "01/02/2006"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 5
+      }
+    },
+    {
+      "id": "nc_new5_pay",
+      "target": {
+        "type": "text",
+        "name": "Gross Pay Pay Before TaxesRow1_2"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].pay_rate"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 5
+      }
+    },
+    {
+      "id": "nc_new5_freq",
+      "target": {
+        "type": "text",
+        "name": "How Often is Pay ReceivedRow1_2"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].pay_frequency"
+      },
+      "valueMap": {
+        "hourly": "Hourly",
+        "daily": "Daily",
+        "weekly": "Weekly",
+        "biweekly": "Biweekly",
+        "semimonthly": "Semimonthly",
+        "monthly": "Monthly",
+        "quarterly": "Quarterly",
+        "annually": "Annually",
+        "one_time": "One Time"
+      },
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 5
+      }
+    },
+    {
+      "id": "nc_new5_hours",
+      "target": {
+        "type": "text",
+        "name": "Hours Per WeekRow1_3"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].hours_per_week"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 5
+      }
+    },
+    {
+      "id": "nc_new6_member",
+      "target": {
+        "type": "text",
+        "name": "NameRow2_3"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].member_ref"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 6
+      },
+      "note": "Page 5 new-job row 2."
+    },
+    {
+      "id": "nc_new6_employer",
+      "target": {
+        "type": "text",
+        "name": "Employer Name Address Phone Number If AvailableRow2"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].employer_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 6
+      }
+    },
+    {
+      "id": "nc_new6_start",
+      "target": {
+        "type": "text",
+        "name": "Start DateRow2_3"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].start_date"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "date",
+          "layout": "01/02/2006"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 6
+      }
+    },
+    {
+      "id": "nc_new6_pay",
+      "target": {
+        "type": "text",
+        "name": "Gross Pay Pay Before TaxesRow2_2"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].pay_rate"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 6
+      }
+    },
+    {
+      "id": "nc_new6_freq",
+      "target": {
+        "type": "text",
+        "name": "How Often is Pay ReceivedRow2_2"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].pay_frequency"
+      },
+      "valueMap": {
+        "hourly": "Hourly",
+        "daily": "Daily",
+        "weekly": "Weekly",
+        "biweekly": "Biweekly",
+        "semimonthly": "Semimonthly",
+        "monthly": "Monthly",
+        "quarterly": "Quarterly",
+        "annually": "Annually",
+        "one_time": "One Time"
+      },
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 6
+      }
+    },
+    {
+      "id": "nc_new6_hours",
+      "target": {
+        "type": "text",
+        "name": "Hours Per WeekRow2_3"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].hours_per_week"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 6
+      }
+    },
+    {
+      "id": "nc_new7_member",
+      "target": {
+        "type": "text",
+        "name": "NameRow3_3"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].member_ref"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 7
+      },
+      "note": "Page 5 new-job row 3."
+    },
+    {
+      "id": "nc_new7_employer",
+      "target": {
+        "type": "text",
+        "name": "Employer Name Address Phone Number If AvailableRow3"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].employer_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 7
+      }
+    },
+    {
+      "id": "nc_new7_start",
+      "target": {
+        "type": "text",
+        "name": "Start DateRow3_3"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].start_date"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "date",
+          "layout": "01/02/2006"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 7
+      }
+    },
+    {
+      "id": "nc_new7_pay",
+      "target": {
+        "type": "text",
+        "name": "Gross Pay Pay Before TaxesRow3_2"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].pay_rate"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 7
+      }
+    },
+    {
+      "id": "nc_new7_freq",
+      "target": {
+        "type": "text",
+        "name": "How Often is Pay ReceivedRow3_2"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].pay_frequency"
+      },
+      "valueMap": {
+        "hourly": "Hourly",
+        "daily": "Daily",
+        "weekly": "Weekly",
+        "biweekly": "Biweekly",
+        "semimonthly": "Semimonthly",
+        "monthly": "Monthly",
+        "quarterly": "Quarterly",
+        "annually": "Annually",
+        "one_time": "One Time"
+      },
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 7
+      }
+    },
+    {
+      "id": "nc_new7_hours",
+      "target": {
+        "type": "text",
+        "name": "Hours Per WeekRow3_3"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].hours_per_week"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 7
+      }
+    },
+    {
+      "id": "nc_stop8_member",
+      "target": {
+        "type": "text",
+        "name": "NameRow1_4"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].member_ref"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 8
+      },
+      "note": "Page 5 stopped-working row 1."
+    },
+    {
+      "id": "nc_stop8_employer",
+      "target": {
+        "type": "text",
+        "name": "Employer Name Address Phone Number if AvailableRow1_2"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].employer_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 8
+      }
+    },
+    {
+      "id": "nc_stop8_end",
+      "target": {
+        "type": "text",
+        "name": "End DateRow1"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].end_date"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "date",
+          "layout": "01/02/2006"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 8
+      }
+    },
+    {
+      "id": "nc_stop9_member",
+      "target": {
+        "type": "text",
+        "name": "NameRow2_4"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].member_ref"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 9
+      },
+      "note": "Page 5 stopped-working row 2."
+    },
+    {
+      "id": "nc_stop9_employer",
+      "target": {
+        "type": "text",
+        "name": "Employer Name Address Phone Number if AvailableRow2_2"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].employer_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 9
+      }
+    },
+    {
+      "id": "nc_stop9_end",
+      "target": {
+        "type": "text",
+        "name": "End DateRow2"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].end_date"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "date",
+          "layout": "01/02/2006"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 9
+      }
+    },
+    {
+      "id": "nc_stop10_member",
+      "target": {
+        "type": "text",
+        "name": "NameRow3_4"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].member_ref"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 10
+      },
+      "note": "Page 5 stopped-working row 3."
+    },
+    {
+      "id": "nc_stop10_employer",
+      "target": {
+        "type": "text",
+        "name": "Employer Name Address Phone Number if AvailableRow3_2"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].employer_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 10
+      }
+    },
+    {
+      "id": "nc_stop10_end",
+      "target": {
+        "type": "text",
+        "name": "End DateRow3"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].end_date"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "date",
+          "layout": "01/02/2006"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 10
+      }
+    },
+    {
+      "id": "nc_cc0_provider",
+      "target": {
+        "type": "text",
+        "name": "Name Address Phone Number of Care Provider or BabysitterRow1"
+      },
+      "source": {
+        "fieldPath": "expenses.childcare[].provider_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "expenses.childcare",
+        "index": 0
+      },
+      "note": "Page 7 dependent-care row 1."
+    },
+    {
+      "id": "nc_cc0_member",
+      "target": {
+        "type": "text",
+        "name": "Who Gets the CareRow1"
+      },
+      "source": {
+        "fieldPath": "expenses.childcare[].member_ref"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "expenses.childcare",
+        "index": 0
+      }
+    },
+    {
+      "id": "nc_cc0_amount",
+      "target": {
+        "type": "text",
+        "name": "How Much is PaidRow1"
+      },
+      "source": {
+        "fieldPath": "expenses.childcare[].monthly_amount"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "expenses.childcare",
+        "index": 0
+      },
+      "note": "Form does not say monthly; profile treats as monthly."
+    },
+    {
+      "id": "nc_cc0_reason",
+      "target": {
+        "type": "text",
+        "name": "Why is Care NeededRow1"
+      },
+      "source": {
+        "fieldPath": "expenses.childcare[].reason"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "expenses.childcare",
+        "index": 0
+      }
+    },
+    {
+      "id": "nc_cc1_provider",
+      "target": {
+        "type": "text",
+        "name": "Name Address Phone Number of Care Provider or BabysitterRow2"
+      },
+      "source": {
+        "fieldPath": "expenses.childcare[].provider_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "expenses.childcare",
+        "index": 1
+      },
+      "note": "Page 7 dependent-care row 2."
+    },
+    {
+      "id": "nc_cc1_member",
+      "target": {
+        "type": "text",
+        "name": "Who Gets the CareRow2"
+      },
+      "source": {
+        "fieldPath": "expenses.childcare[].member_ref"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "expenses.childcare",
+        "index": 1
+      }
+    },
+    {
+      "id": "nc_cc1_amount",
+      "target": {
+        "type": "text",
+        "name": "How Much is PaidRow2"
+      },
+      "source": {
+        "fieldPath": "expenses.childcare[].monthly_amount"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "expenses.childcare",
+        "index": 1
+      },
+      "note": "Form does not say monthly; profile treats as monthly."
+    },
+    {
+      "id": "nc_cc1_reason",
+      "target": {
+        "type": "text",
+        "name": "Why is Care NeededRow2"
+      },
+      "source": {
+        "fieldPath": "expenses.childcare[].reason"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "expenses.childcare",
+        "index": 1
+      }
+    },
+    {
+      "id": "nc_cc2_provider",
+      "target": {
+        "type": "text",
+        "name": "Name Address Phone Number of Care Provider or BabysitterRow3"
+      },
+      "source": {
+        "fieldPath": "expenses.childcare[].provider_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "expenses.childcare",
+        "index": 2
+      },
+      "note": "Page 7 dependent-care row 3."
+    },
+    {
+      "id": "nc_cc2_member",
+      "target": {
+        "type": "text",
+        "name": "Who Gets the CareRow3"
+      },
+      "source": {
+        "fieldPath": "expenses.childcare[].member_ref"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "expenses.childcare",
+        "index": 2
+      }
+    },
+    {
+      "id": "nc_cc2_amount",
+      "target": {
+        "type": "text",
+        "name": "How Much is PaidRow3"
+      },
+      "source": {
+        "fieldPath": "expenses.childcare[].monthly_amount"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "expenses.childcare",
+        "index": 2
+      },
+      "note": "Form does not say monthly; profile treats as monthly."
+    },
+    {
+      "id": "nc_cc2_reason",
+      "target": {
+        "type": "text",
+        "name": "Why is Care NeededRow3"
+      },
+      "source": {
+        "fieldPath": "expenses.childcare[].reason"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "expenses.childcare",
+        "index": 2
+      }
+    },
+    {
+      "id": "nc_med0_kind",
+      "target": {
+        "type": "text",
+        "name": "Type of ExpenseRow1"
+      },
+      "source": {
+        "fieldPath": "expenses.medical[].kind"
+      },
+      "valueMap": {
+        "prescription": "Prescription",
+        "doctor_visit": "Doctor Visit",
+        "dental": "Dental",
+        "vision": "Vision",
+        "hospital": "Hospital",
+        "insurance_premium": "Insurance Premium",
+        "transportation": "Transportation",
+        "other": "Other"
+      },
+      "repeat": {
+        "over": "expenses.medical",
+        "index": 0
+      },
+      "note": "Page 7 medical-expense row 1."
+    },
+    {
+      "id": "nc_med0_amount",
+      "target": {
+        "type": "text",
+        "name": "Amount PaidRow1_3"
+      },
+      "source": {
+        "fieldPath": "expenses.medical[].monthly_amount"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "expenses.medical",
+        "index": 0
+      },
+      "note": "Form does not say monthly; profile treats as monthly."
+    },
+    {
+      "id": "nc_med1_kind",
+      "target": {
+        "type": "text",
+        "name": "Type of ExpenseRow2"
+      },
+      "source": {
+        "fieldPath": "expenses.medical[].kind"
+      },
+      "valueMap": {
+        "prescription": "Prescription",
+        "doctor_visit": "Doctor Visit",
+        "dental": "Dental",
+        "vision": "Vision",
+        "hospital": "Hospital",
+        "insurance_premium": "Insurance Premium",
+        "transportation": "Transportation",
+        "other": "Other"
+      },
+      "repeat": {
+        "over": "expenses.medical",
+        "index": 1
+      },
+      "note": "Page 7 medical-expense row 2."
+    },
+    {
+      "id": "nc_med1_amount",
+      "target": {
+        "type": "text",
+        "name": "Amount PaidRow2_3"
+      },
+      "source": {
+        "fieldPath": "expenses.medical[].monthly_amount"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "expenses.medical",
+        "index": 1
+      },
+      "note": "Form does not say monthly; profile treats as monthly."
+    },
+    {
+      "id": "nc_acct0_bank",
+      "target": {
+        "type": "text",
+        "name": "Business Name and Account NumberChecking andor Savings Acct"
+      },
+      "source": {
+        "fieldPath": "resources.accounts[].institution"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "resources.accounts",
+        "index": 0
+      },
+      "note": "Page 8 asset row: Checking andor Savings Acct."
+    },
+    {
+      "id": "nc_acct0_bal",
+      "target": {
+        "type": "text",
+        "name": "Value or WorthChecking andor Savings Acct"
+      },
+      "source": {
+        "fieldPath": "resources.accounts[].balance"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "resources.accounts",
+        "index": 0
+      }
+    },
+    {
+      "id": "nc_acct1_bank",
+      "target": {
+        "type": "text",
+        "name": "Business Name and Account NumberCertificates of Deposit CDs"
+      },
+      "source": {
+        "fieldPath": "resources.accounts[].institution"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "resources.accounts",
+        "index": 1
+      },
+      "note": "Page 8 asset row: Certificates of Deposit CDs."
+    },
+    {
+      "id": "nc_acct1_bal",
+      "target": {
+        "type": "text",
+        "name": "Value or WorthCertificates of Deposit CDs"
+      },
+      "source": {
+        "fieldPath": "resources.accounts[].balance"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "resources.accounts",
+        "index": 1
+      }
+    },
+    {
+      "id": "nc_acct2_bank",
+      "target": {
+        "type": "text",
+        "name": "Business Name and Account NumberRetirement Accounts"
+      },
+      "source": {
+        "fieldPath": "resources.accounts[].institution"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "resources.accounts",
+        "index": 2
+      },
+      "note": "Page 8 asset row: Retirement Accounts."
+    },
+    {
+      "id": "nc_acct2_bal",
+      "target": {
+        "type": "text",
+        "name": "Value or WorthRetirement Accounts"
+      },
+      "source": {
+        "fieldPath": "resources.accounts[].balance"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "resources.accounts",
+        "index": 2
+      }
+    },
+    {
+      "id": "nc_sig",
+      "target": {
+        "type": "text",
+        "name": "Your Signature or Authorized Representative"
+      },
+      "fillPolicy": "never",
+      "note": "Applicant/authorized-representative signature; never filled by the app."
+    },
+    {
+      "id": "nc_sig_date",
+      "target": {
+        "type": "text",
+        "name": "Date Signed"
+      },
+      "fillPolicy": "never",
+      "note": "Attestation date; never filled by the app."
+    }
+  ],
+  "provenanceNote": "DSS-8207 (10-2024). The household roster Self row maps to the applicant; rows 2-8 map to household.members[0..6]. Yes/No write-in boxes take the words 'Yes'/'No'. Skipped as unsupported: total cash on hand (no profile field), stopped-work pay details, age/sex combined box, office-use and signature blocks."
+}

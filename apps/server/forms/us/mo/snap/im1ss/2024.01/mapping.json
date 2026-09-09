@@ -10,7 +10,7 @@
   "formTitle": "Missouri Application for Food Stamp / SNAP Benefits",
   "formVersion": "2024.01",
   "revision": 1,
-  "status": "draft",
+  "status": "active",
   "vocabularyVersion": 1,
   "agencyUrl": "https://mydss.mo.gov/food-assistance",
   "template": {
@@ -18,7 +18,8 @@
     "file": "template.pdf",
     "sha256": "e0dc719f4c1adc41e8222cba340dbcb417798e494a898a77b0963fe980ac56ca",
     "pageCount": 12,
-    "retrievedAt": "2026-09-08"
+    "retrievedAt": "2026-08-29",
+    "sourceUrl": "https://dssmanuals.mo.gov/wp-content/uploads/2022/06/snap-application.pdf"
   },
   "requirements": [
     {
@@ -2306,13 +2307,13 @@
       "note": "The profile holds child support as a monthly figure, so the frequency beside it is stated rather than asked."
     },
     {
-      "id": "childcare0_provider",
+      "id": "childcare0_receiver",
       "target": {
         "type": "text",
         "name": "cac Name of who receives care.0"
       },
       "source": {
-        "fieldPath": "expenses.childcare[].provider_name"
+        "fieldPath": "expenses.childcare[].member_ref"
       },
       "transforms": [
         {
@@ -2322,7 +2323,8 @@
       "repeat": {
         "over": "expenses.childcare",
         "index": 0
-      }
+      },
+      "note": "Corrected 2026-09-08: the form asks for the name of the household member receiving care (the child), which is member_ref, not the care provider. The form has no provider column."
     },
     {
       "id": "childcare0_amount",
@@ -2411,13 +2413,13 @@
       "note": "Medical costs are held per month in the profile."
     },
     {
-      "id": "childcare1_provider",
+      "id": "childcare1_receiver",
       "target": {
         "type": "text",
         "name": "cac Name of who receives care.1"
       },
       "source": {
-        "fieldPath": "expenses.childcare[].provider_name"
+        "fieldPath": "expenses.childcare[].member_ref"
       },
       "transforms": [
         {
@@ -2427,7 +2429,8 @@
       "repeat": {
         "over": "expenses.childcare",
         "index": 1
-      }
+      },
+      "note": "Corrected 2026-09-08: the form asks for the name of the household member receiving care (the child), which is member_ref, not the care provider. The form has no provider column."
     },
     {
       "id": "childcare1_amount",
@@ -2516,13 +2519,13 @@
       "note": "Medical costs are held per month in the profile."
     },
     {
-      "id": "childcare2_provider",
+      "id": "childcare2_receiver",
       "target": {
         "type": "text",
         "name": "cac Name of who receives care.2"
       },
       "source": {
-        "fieldPath": "expenses.childcare[].provider_name"
+        "fieldPath": "expenses.childcare[].member_ref"
       },
       "transforms": [
         {
@@ -2532,7 +2535,8 @@
       "repeat": {
         "over": "expenses.childcare",
         "index": 2
-      }
+      },
+      "note": "Corrected 2026-09-08: the form asks for the name of the household member receiving care (the child), which is member_ref, not the care provider. The form has no provider column."
     },
     {
       "id": "childcare2_amount",
@@ -2673,7 +2677,783 @@
       },
       "fillPolicy": "never",
       "note": "Signed and dated by the applicant. Help The Hive does not sign an application on anyone's behalf."
+    },
+    {
+      "id": "home_language",
+      "target": {
+        "type": "text",
+        "name": "What is the language spoken most often in your home"
+      },
+      "source": {
+        "fieldPath": "applicant.preferred_language"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ]
+    },
+    {
+      "id": "expedited_screen_2",
+      "target": {
+        "type": "checkbox",
+        "name": "Is your households combined monthly gross income and cash on hand or money in checking and savings accounts less than the combined cost of rent mortgage and utilities"
+      },
+      "fillPolicy": "never",
+      "note": "An expedited-service screening question. It turns on computed household totals (income and cash versus shelter costs) that the profile does not hold as answered figures, so the applicant answers it."
+    },
+    {
+      "id": "expedited_screen_3",
+      "target": {
+        "type": "checkbox",
+        "name": "Is anyone in your household a migrant or seasonal farm worker whose income has stopped and has less than 100 in cash and bank accounts"
+      },
+      "fillPolicy": "never",
+      "note": "Migrant/seasonal farm worker status and the cash-on-hand threshold are not in the profile vocabulary, so the applicant answers it."
+    },
+    {
+      "id": "waswork0_first",
+      "target": {
+        "type": "text",
+        "name": "was working first name.0"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].member_ref"
+      },
+      "transforms": [
+        {
+          "op": "split",
+          "sep": " ",
+          "index": 0
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 0
+      },
+      "note": "Ended/reduced job row mapped to employment.jobs[] so every column of the row reads the same job record. Name split assumes \"First Last\" order; a middle name would land in the last-name box, so the applicant should review."
+    },
+    {
+      "id": "waswork0_last",
+      "target": {
+        "type": "text",
+        "name": "was working last name.0"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].member_ref"
+      },
+      "transforms": [
+        {
+          "op": "split",
+          "sep": " ",
+          "index": 1
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 0
+      },
+      "note": "Ended/reduced job row mapped to employment.jobs[] so every column of the row reads the same job record. Name split assumes \"First Last\" order; a middle name would land in the last-name box, so the applicant should review."
+    },
+    {
+      "id": "waswork0_employer",
+      "target": {
+        "type": "text",
+        "name": "was working employer name.0"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].employer_name"
+      },
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 0
+      },
+      "note": "Ended/reduced job row mapped to employment.jobs[] so every column of the row reads the same job record."
+    },
+    {
+      "id": "waswork0_employer_phone",
+      "target": {
+        "type": "text",
+        "name": "was working employer phone number.0"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].employer_phone"
+      },
+      "transforms": [
+        {
+          "op": "phone",
+          "style": "dashed"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 0
+      },
+      "note": "Ended/reduced job row mapped to employment.jobs[] so every column of the row reads the same job record."
+    },
+    {
+      "id": "waswork0_final_pay_date",
+      "target": {
+        "type": "text",
+        "name": "was working date of final paycheck.0"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].end_date"
+      },
+      "transforms": [
+        {
+          "op": "date",
+          "layout": "01/02/2006"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 0
+      },
+      "note": "Ended/reduced job row mapped to employment.jobs[] so every column of the row reads the same job record."
+    },
+    {
+      "id": "waswork1_first",
+      "target": {
+        "type": "text",
+        "name": "was working first name.1"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].member_ref"
+      },
+      "transforms": [
+        {
+          "op": "split",
+          "sep": " ",
+          "index": 0
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 1
+      },
+      "note": "Ended/reduced job row mapped to employment.jobs[] so every column of the row reads the same job record. Name split assumes \"First Last\" order; a middle name would land in the last-name box, so the applicant should review."
+    },
+    {
+      "id": "waswork1_last",
+      "target": {
+        "type": "text",
+        "name": "was working last name.1"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].member_ref"
+      },
+      "transforms": [
+        {
+          "op": "split",
+          "sep": " ",
+          "index": 1
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 1
+      },
+      "note": "Ended/reduced job row mapped to employment.jobs[] so every column of the row reads the same job record. Name split assumes \"First Last\" order; a middle name would land in the last-name box, so the applicant should review."
+    },
+    {
+      "id": "waswork1_employer",
+      "target": {
+        "type": "text",
+        "name": "was working employer name.1"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].employer_name"
+      },
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 1
+      },
+      "note": "Ended/reduced job row mapped to employment.jobs[] so every column of the row reads the same job record."
+    },
+    {
+      "id": "waswork1_employer_phone",
+      "target": {
+        "type": "text",
+        "name": "was working employer phone number.1"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].employer_phone"
+      },
+      "transforms": [
+        {
+          "op": "phone",
+          "style": "dashed"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 1
+      },
+      "note": "Ended/reduced job row mapped to employment.jobs[] so every column of the row reads the same job record."
+    },
+    {
+      "id": "waswork1_final_pay_date",
+      "target": {
+        "type": "text",
+        "name": "was working date of final paycheck.1"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].end_date"
+      },
+      "transforms": [
+        {
+          "op": "date",
+          "layout": "01/02/2006"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 1
+      },
+      "note": "Ended/reduced job row mapped to employment.jobs[] so every column of the row reads the same job record."
+    },
+    {
+      "id": "ik0_first",
+      "target": {
+        "type": "text",
+        "name": "ik First Name.0"
+      },
+      "source": {
+        "fieldPath": "income.sources[].member_ref"
+      },
+      "transforms": [
+        {
+          "op": "split",
+          "sep": " ",
+          "index": 0
+        }
+      ],
+      "repeat": {
+        "over": "income.sources",
+        "index": 0
+      },
+      "note": "The profile holds one name per income source and the form wants it in two boxes, so it is split on the first space. A single-name answer leaves the last-name box blank. Name split assumes \"First Last\" order; a middle name would land in the last-name box, so the applicant should review."
+    },
+    {
+      "id": "ik0_last",
+      "target": {
+        "type": "text",
+        "name": "ik Last Name.0"
+      },
+      "source": {
+        "fieldPath": "income.sources[].member_ref"
+      },
+      "transforms": [
+        {
+          "op": "split",
+          "sep": " ",
+          "index": 1
+        }
+      ],
+      "repeat": {
+        "over": "income.sources",
+        "index": 0
+      },
+      "note": "The profile holds one name per income source and the form wants it in two boxes, so it is split on the first space. A single-name answer leaves the last-name box blank. Name split assumes \"First Last\" order; a middle name would land in the last-name box, so the applicant should review."
+    },
+    {
+      "id": "ik1_first",
+      "target": {
+        "type": "text",
+        "name": "ik First Name.1"
+      },
+      "source": {
+        "fieldPath": "income.sources[].member_ref"
+      },
+      "transforms": [
+        {
+          "op": "split",
+          "sep": " ",
+          "index": 0
+        }
+      ],
+      "repeat": {
+        "over": "income.sources",
+        "index": 1
+      },
+      "note": "The profile holds one name per income source and the form wants it in two boxes, so it is split on the first space. A single-name answer leaves the last-name box blank. Name split assumes \"First Last\" order; a middle name would land in the last-name box, so the applicant should review."
+    },
+    {
+      "id": "ik1_last",
+      "target": {
+        "type": "text",
+        "name": "ik Last Name.1"
+      },
+      "source": {
+        "fieldPath": "income.sources[].member_ref"
+      },
+      "transforms": [
+        {
+          "op": "split",
+          "sep": " ",
+          "index": 1
+        }
+      ],
+      "repeat": {
+        "over": "income.sources",
+        "index": 1
+      },
+      "note": "The profile holds one name per income source and the form wants it in two boxes, so it is split on the first space. A single-name answer leaves the last-name box blank. Name split assumes \"First Last\" order; a middle name would land in the last-name box, so the applicant should review."
+    },
+    {
+      "id": "ik2_first",
+      "target": {
+        "type": "text",
+        "name": "ik First Name.2"
+      },
+      "source": {
+        "fieldPath": "income.sources[].member_ref"
+      },
+      "transforms": [
+        {
+          "op": "split",
+          "sep": " ",
+          "index": 0
+        }
+      ],
+      "repeat": {
+        "over": "income.sources",
+        "index": 2
+      },
+      "note": "The profile holds one name per income source and the form wants it in two boxes, so it is split on the first space. A single-name answer leaves the last-name box blank. Name split assumes \"First Last\" order; a middle name would land in the last-name box, so the applicant should review."
+    },
+    {
+      "id": "ik2_last",
+      "target": {
+        "type": "text",
+        "name": "ik Last Name.2"
+      },
+      "source": {
+        "fieldPath": "income.sources[].member_ref"
+      },
+      "transforms": [
+        {
+          "op": "split",
+          "sep": " ",
+          "index": 1
+        }
+      ],
+      "repeat": {
+        "over": "income.sources",
+        "index": 2
+      },
+      "note": "The profile holds one name per income source and the form wants it in two boxes, so it is split on the first space. A single-name answer leaves the last-name box blank. Name split assumes \"First Last\" order; a middle name would land in the last-name box, so the applicant should review."
+    },
+    {
+      "id": "exp_rent_amount",
+      "target": {
+        "type": "text",
+        "name": "e Amount per month you pay.0"
+      },
+      "source": {
+        "fieldPath": "housing.rent_monthly"
+      },
+      "transforms": [
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "note": "Row 0 of the expense table is Rent."
+    },
+    {
+      "id": "exp_mortgage_amount",
+      "target": {
+        "type": "text",
+        "name": "e Amount per month you pay.1"
+      },
+      "source": {
+        "fieldPath": "housing.mortgage_monthly"
+      },
+      "transforms": [
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "note": "Row 1 of the expense table is House Payment (mortgage)."
+    },
+    {
+      "id": "exp_insurance_amount",
+      "target": {
+        "type": "text",
+        "name": "e Amount per month you pay.9"
+      },
+      "source": {
+        "fieldPath": "housing.home_insurance_monthly"
+      },
+      "transforms": [
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "note": "Row 9 of the expense table is Homeowners Insurance."
+    },
+    {
+      "id": "exp_tax_amount",
+      "target": {
+        "type": "text",
+        "name": "e Amount per month you pay.10"
+      },
+      "source": {
+        "fieldPath": "housing.property_tax_monthly"
+      },
+      "transforms": [
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "note": "Row 10 of the expense table is Property Taxes."
+    },
+    {
+      "id": "pays_sewer",
+      "target": {
+        "type": "checkbox",
+        "name": "Sewer"
+      },
+      "source": {
+        "fieldPath": "utilities.pays_water_sewer"
+      },
+      "note": "Water and sewer share one vocabulary answer, so both boxes read it."
+    },
+    {
+      "id": "medical3_billed_first",
+      "target": {
+        "type": "text",
+        "name": "disabled 60 First Name.3"
+      },
+      "source": {
+        "fieldPath": "expenses.medical[].member_ref"
+      },
+      "transforms": [
+        {
+          "op": "split",
+          "sep": " ",
+          "index": 0
+        }
+      ],
+      "repeat": {
+        "over": "expenses.medical",
+        "index": 3
+      },
+      "note": "The profile holds one name per income source and the form wants it in two boxes, so it is split on the first space. A single-name answer leaves the last-name box blank. Name split assumes \"First Last\" order; a middle name would land in the last-name box, so the applicant should review."
+    },
+    {
+      "id": "medical3_billed_last",
+      "target": {
+        "type": "text",
+        "name": "disabled 60 Last Name.3"
+      },
+      "source": {
+        "fieldPath": "expenses.medical[].member_ref"
+      },
+      "transforms": [
+        {
+          "op": "split",
+          "sep": " ",
+          "index": 1
+        }
+      ],
+      "repeat": {
+        "over": "expenses.medical",
+        "index": 3
+      },
+      "note": "The profile holds one name per income source and the form wants it in two boxes, so it is split on the first space. A single-name answer leaves the last-name box blank. Name split assumes \"First Last\" order; a middle name would land in the last-name box, so the applicant should review."
+    },
+    {
+      "id": "medical4_billed_first",
+      "target": {
+        "type": "text",
+        "name": "disabled 60 First Name.4"
+      },
+      "source": {
+        "fieldPath": "expenses.medical[].member_ref"
+      },
+      "transforms": [
+        {
+          "op": "split",
+          "sep": " ",
+          "index": 0
+        }
+      ],
+      "repeat": {
+        "over": "expenses.medical",
+        "index": 4
+      },
+      "note": "The profile holds one name per income source and the form wants it in two boxes, so it is split on the first space. A single-name answer leaves the last-name box blank. Name split assumes \"First Last\" order; a middle name would land in the last-name box, so the applicant should review."
+    },
+    {
+      "id": "medical4_billed_last",
+      "target": {
+        "type": "text",
+        "name": "disabled 60 Last Name.4"
+      },
+      "source": {
+        "fieldPath": "expenses.medical[].member_ref"
+      },
+      "transforms": [
+        {
+          "op": "split",
+          "sep": " ",
+          "index": 1
+        }
+      ],
+      "repeat": {
+        "over": "expenses.medical",
+        "index": 4
+      },
+      "note": "The profile holds one name per income source and the form wants it in two boxes, so it is split on the first space. A single-name answer leaves the last-name box blank. Name split assumes \"First Last\" order; a middle name would land in the last-name box, so the applicant should review."
+    },
+    {
+      "id": "medical3_kind",
+      "target": {
+        "type": "text",
+        "name": "disabled 60 Expense type.3"
+      },
+      "source": {
+        "fieldPath": "expenses.medical[].kind"
+      },
+      "valueMap": {
+        "premium": "Insurance premium",
+        "prescription": "Prescription",
+        "doctor": "Doctor",
+        "dental": "Dental",
+        "vision": "Vision",
+        "transportation": "Transportation",
+        "medical_equipment": "Medical equipment",
+        "other": "Other"
+      },
+      "repeat": {
+        "over": "expenses.medical",
+        "index": 3
+      }
+    },
+    {
+      "id": "medical3_amount",
+      "target": {
+        "type": "text",
+        "name": "disabled 60 Amount paid.3"
+      },
+      "source": {
+        "fieldPath": "expenses.medical[].monthly_amount"
+      },
+      "transforms": [
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "expenses.medical",
+        "index": 3
+      }
+    },
+    {
+      "id": "medical3_freq",
+      "target": {
+        "type": "text",
+        "name": "disabled 60 How often billed.3"
+      },
+      "source": {
+        "constant": "Monthly"
+      },
+      "note": "Medical costs are held per month in the profile."
+    },
+    {
+      "id": "medical4_kind",
+      "target": {
+        "type": "text",
+        "name": "disabled 60 Expense type.4"
+      },
+      "source": {
+        "fieldPath": "expenses.medical[].kind"
+      },
+      "valueMap": {
+        "premium": "Insurance premium",
+        "prescription": "Prescription",
+        "doctor": "Doctor",
+        "dental": "Dental",
+        "vision": "Vision",
+        "transportation": "Transportation",
+        "medical_equipment": "Medical equipment",
+        "other": "Other"
+      },
+      "repeat": {
+        "over": "expenses.medical",
+        "index": 4
+      }
+    },
+    {
+      "id": "medical4_amount",
+      "target": {
+        "type": "text",
+        "name": "disabled 60 Amount paid.4"
+      },
+      "source": {
+        "fieldPath": "expenses.medical[].monthly_amount"
+      },
+      "transforms": [
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "expenses.medical",
+        "index": 4
+      }
+    },
+    {
+      "id": "medical4_freq",
+      "target": {
+        "type": "text",
+        "name": "disabled 60 How often billed.4"
+      },
+      "source": {
+        "constant": "Monthly"
+      },
+      "note": "Medical costs are held per month in the profile."
+    },
+    {
+      "id": "medical2_billed_first",
+      "target": {
+        "type": "text",
+        "name": "disabled 60 First Name.2"
+      },
+      "source": {
+        "fieldPath": "expenses.medical[].member_ref"
+      },
+      "transforms": [
+        {
+          "op": "split",
+          "sep": " ",
+          "index": 0
+        }
+      ],
+      "repeat": {
+        "over": "expenses.medical",
+        "index": 2
+      },
+      "note": "Name split assumes \"First Last\" order; a middle name would land in the last-name box, so the applicant should review."
+    },
+    {
+      "id": "medical2_billed_last",
+      "target": {
+        "type": "text",
+        "name": "disabled 60 Last Name.2"
+      },
+      "source": {
+        "fieldPath": "expenses.medical[].member_ref"
+      },
+      "transforms": [
+        {
+          "op": "split",
+          "sep": " ",
+          "index": 1
+        }
+      ],
+      "repeat": {
+        "over": "expenses.medical",
+        "index": 2
+      },
+      "note": "Name split assumes \"First Last\" order; a middle name would land in the last-name box, so the applicant should review."
+    },
+    {
+      "id": "medical0_billed_first",
+      "target": {
+        "type": "text",
+        "name": "disabled 60 First Name.0"
+      },
+      "source": {
+        "fieldPath": "expenses.medical[].member_ref"
+      },
+      "transforms": [
+        {
+          "op": "split",
+          "sep": " ",
+          "index": 0
+        }
+      ],
+      "repeat": {
+        "over": "expenses.medical",
+        "index": 0
+      },
+      "note": "Name split assumes \"First Last\" order; a middle name would land in the last-name box, so the applicant should review."
+    },
+    {
+      "id": "medical0_billed_last",
+      "target": {
+        "type": "text",
+        "name": "disabled 60 Last Name.0"
+      },
+      "source": {
+        "fieldPath": "expenses.medical[].member_ref"
+      },
+      "transforms": [
+        {
+          "op": "split",
+          "sep": " ",
+          "index": 1
+        }
+      ],
+      "repeat": {
+        "over": "expenses.medical",
+        "index": 0
+      },
+      "note": "Name split assumes \"First Last\" order; a middle name would land in the last-name box, so the applicant should review."
+    },
+    {
+      "id": "medical1_billed_first",
+      "target": {
+        "type": "text",
+        "name": "disabled 60 First Name.1"
+      },
+      "source": {
+        "fieldPath": "expenses.medical[].member_ref"
+      },
+      "transforms": [
+        {
+          "op": "split",
+          "sep": " ",
+          "index": 0
+        }
+      ],
+      "repeat": {
+        "over": "expenses.medical",
+        "index": 1
+      },
+      "note": "Name split assumes \"First Last\" order; a middle name would land in the last-name box, so the applicant should review."
+    },
+    {
+      "id": "medical1_billed_last",
+      "target": {
+        "type": "text",
+        "name": "disabled 60 Last Name.1"
+      },
+      "source": {
+        "fieldPath": "expenses.medical[].member_ref"
+      },
+      "transforms": [
+        {
+          "op": "split",
+          "sep": " ",
+          "index": 1
+        }
+      ],
+      "repeat": {
+        "over": "expenses.medical",
+        "index": 1
+      },
+      "note": "Name split assumes \"First Last\" order; a middle name would land in the last-name box, so the applicant should review."
     }
   ],
-  "provenanceNote": "Supplied as a file rather than downloaded, so the exact agency URL this PDF came from is not known. Confirm it against Missouri DSS, set sourceUrl, and only then set status to active."
+  "provenanceNote": "Template pinned by sha256; official source URL and check date from the Government Forms Master Index (Missouri SNAP row). The form footer reads 'MO 886-0460 (09-2026)' / 'FS-1 (09-2026)'; the mapping keeps formCode IM-1SSL / formVersion 2024.01 from the original onboarding."
 }
