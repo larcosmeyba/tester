@@ -117,6 +117,10 @@ func run(logger *slog.Logger) error {
 		return err
 	}
 
+	// Enforce the draft retention policy. Without this the purge exists on
+	// paper only: every abandoned application stays in storage for good.
+	benefitsService.StartRetentionSweep(ctx)
+
 	// Penny is off unless an agent is configured, and Help The Hive runs
 	// correctly with her off: the chat reports itself unavailable and nothing
 	// else changes. A half-configured Penny is a start-up failure rather than a

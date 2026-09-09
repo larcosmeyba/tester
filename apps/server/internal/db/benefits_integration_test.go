@@ -5,6 +5,7 @@ import (
 	"errors"
 	"os"
 	"testing"
+	"time"
 
 	"github.com/jackc/pgx/v5"
 )
@@ -279,5 +280,127 @@ func TestDeletingAUserRemovesTheirBenefitsData(t *testing.T) {
 	}
 	if _, err := store.BenefitsApplication(ctx, user, application.ID); !errors.Is(err, pgx.ErrNoRows) {
 		t.Errorf("the application outlived the account: %v", err)
+	}
+}
+
+// Retention. A draft benefits application is a household roster and an income
+// statement; keeping one past its usefulness is a liability with no upside, and
+// a retention policy is only real if something enforces it.
+func TestExpiredDraftsAreFoundAndFinalsAreLeftAlone(t *testing.T) {
+	store, ctx := benefitsTestStore(t)
+	user := benefitsTestUser(t, store, ctx, "benefits-retention")
+
+	if err := store.EnsureBenefitsProfile(ctx, user, 1); err != nil {
+		t.Fatalf("EnsureBenefitsProfile: %v", err)
+	}
+	application, err := store.CreateBenefitsApplication(ctx, BenefitsApplication{
+		UserID: user, FormID: "us-xx-snap", FormVersion: "2026.01", FormRevision: 1, Status: "draft",
+	})
+	if err != nil {
+		t.Fatalf("CreateBenefitsApplication: %v", err)
+	}
+
+	now := time.Now().UTC()
+	lapsed := now.Add(-time.Hour)
+	future := now.Add(30 * 24 * time.Hour)
+
+	expiredDraft, err := store.InsertBenefitsDocument(ctx, BenefitsDocument{
+		ApplicationID: application.ID, UserID: user, Kind: "draft",
+		StorageKey: user + "/" + application.ID + "/draft.pdf",
+		SHA256:     "a", ByteSize: 1, PurgeAfter: &lapsed,
+	})
+	if err != nil {
+		t.Fatalf("InsertBenefitsDocument(expired draft): %v", err)
+	}
+	liveDraft, err := store.InsertBenefitsDocument(ctx, BenefitsDocument{
+		ApplicationID: application.ID, UserID: user, Kind: "draft",
+		StorageKey: user + "/" + application.ID + "/draft-live.pdf",
+		SHA256:     "b", ByteSize: 1, PurgeAfter: &future,
+	})
+	if err != nil {
+		t.Fatalf("InsertBenefitsDocument(live draft): %v", err)
+	}
+	// A final document has no purge date: it is the record of what the person
+	// actually submitted, and it is not ours to throw away.
+	final, err := store.InsertBenefitsDocument(ctx, BenefitsDocument{
+		ApplicationID: application.ID, UserID: user, Kind: "final",
+		StorageKey: user + "/" + application.ID + "/final.pdf",
+		SHA256:     "c", ByteSize: 1,
+	})
+	if err != nil {
+		t.Fatalf("InsertBenefitsDocument(final): %v", err)
+	}
+
+	expired, err := store.ExpiredBenefitsDocuments(ctx, now, 100)
+	if err != nil {
+		t.Fatalf("ExpiredBenefitsDocuments: %v", err)
+	}
+
+	found := map[string]bool{}
+	for _, document := range expired {
+		found[document.ID] = true
+	}
+	if !found[expiredDraft.ID] {
+		t.Error("the lapsed draft was not offered for deletion; the retention policy would never run")
+	}
+	if found[liveDraft.ID] {
+		t.Error("a draft still inside its retention window was offered for deletion")
+	}
+	if found[final.ID] {
+		t.Error("a final document was offered for deletion; it is the record of what was filed")
+	}
+
+	// Deleting it removes the row, and the sweeper deletes the bytes alongside.
+	if err := store.DeleteBenefitsDocument(ctx, expiredDraft.ID); err != nil {
+		t.Fatalf("DeleteBenefitsDocument: %v", err)
+	}
+	remaining, err := store.ExpiredBenefitsDocuments(ctx, now, 100)
+	if err != nil {
+		t.Fatalf("ExpiredBenefitsDocuments(after): %v", err)
+	}
+	for _, document := range remaining {
+		if document.ID == expiredDraft.ID {
+			t.Fatal("the expired draft is still listed after being deleted")
+		}
+	}
+}
+
+// Every document belongs to exactly one user, and the sweep must not reach
+// across that line either.
+func TestDocumentsAreScopedToTheirOwner(t *testing.T) {
+	store, ctx := benefitsTestStore(t)
+	owner := benefitsTestUser(t, store, ctx, "benefits-doc-owner")
+	stranger := benefitsTestUser(t, store, ctx, "benefits-doc-stranger")
+
+	if err := store.EnsureBenefitsProfile(ctx, owner, 1); err != nil {
+		t.Fatalf("EnsureBenefitsProfile: %v", err)
+	}
+	application, err := store.CreateBenefitsApplication(ctx, BenefitsApplication{
+		UserID: owner, FormID: "us-xx-snap", FormVersion: "2026.01", FormRevision: 1, Status: "draft",
+	})
+	if err != nil {
+		t.Fatalf("CreateBenefitsApplication: %v", err)
+	}
+	if _, err := store.InsertBenefitsDocument(ctx, BenefitsDocument{
+		ApplicationID: application.ID, UserID: owner, Kind: "final",
+		StorageKey: owner + "/" + application.ID + "/final.pdf", SHA256: "d", ByteSize: 1,
+	}); err != nil {
+		t.Fatalf("InsertBenefitsDocument: %v", err)
+	}
+
+	mine, err := store.BenefitsDocumentsForUser(ctx, owner)
+	if err != nil || len(mine) == 0 {
+		t.Fatalf("the owner cannot see their own document (%d, %v)", len(mine), err)
+	}
+	theirs, err := store.BenefitsDocumentsForUser(ctx, stranger)
+	if err != nil {
+		t.Fatalf("BenefitsDocumentsForUser(stranger): %v", err)
+	}
+	if len(theirs) != 0 {
+		t.Fatalf("a stranger can see %d of somebody else's benefits documents", len(theirs))
+	}
+
+	if _, err := store.LatestBenefitsDocument(ctx, stranger, application.ID, "final"); !errors.Is(err, pgx.ErrNoRows) {
+		t.Fatalf("a stranger reading another user's document must get no rows, got %v", err)
 	}
 }
