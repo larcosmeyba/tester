@@ -166,7 +166,7 @@ export function AppHeader({
     <View style={styles.header}>
       <View style={styles.headerSide}>
         {onBack ? (
-          <Pressable accessibilityRole="button" onPress={onBack} style={styles.iconButton}>
+          <Pressable accessibilityRole="button" accessibilityLabel="Back" onPress={onBack} style={styles.iconButton}>
             <HiveIcon name="back" size={18} />
           </Pressable>
         ) : null}
@@ -181,15 +181,15 @@ export function AppHeader({
       </View>
       <View style={[styles.headerSide, styles.headerRight]}>
         {right}
-        {onAvatar ? <AvatarButton imageUri={profileImageUri} onPress={onAvatar} size={34} /> : null}
+        {onAvatar ? <AvatarButton imageUri={profileImageUri} onPress={onAvatar} size={34} accessibilityLabel="View account" /> : null}
       </View>
     </View>
   );
 }
 
-export function AvatarButton({ imageUri, onPress, size = 38 }: { imageUri?: string; onPress: PressHandler; size?: number }) {
+export function AvatarButton({ imageUri, onPress, size = 38, accessibilityLabel }: { imageUri?: string; onPress: PressHandler; size?: number; accessibilityLabel?: string }) {
   return (
-    <Pressable accessibilityRole="button" onPress={onPress} style={({ pressed }) => [pressed && styles.pressed]}>
+    <Pressable accessibilityRole="button" accessibilityLabel={accessibilityLabel} onPress={onPress} style={({ pressed }) => [pressed && styles.pressed]}>
       {imageUri ? (
         <Image source={{ uri: imageUri }} style={[styles.avatarImage, { width: size, height: size, borderRadius: size / 2 }]} />
       ) : (
@@ -215,16 +215,20 @@ export function AppButton({
   variant = 'primary',
   disabled = false,
   icon,
+  imageSource,
   style,
 }: {
   title: string;
   onPress: PressHandler;
-  variant?: 'primary' | 'secondary' | 'plain' | 'danger' | 'dark';
+  variant?: 'primary' | 'secondary' | 'plain' | 'danger' | 'dark' | 'social';
   disabled?: boolean;
   icon?: HiveIconName;
+  /** Leading image for the `social` variant (e.g. the Google "G" logo). */
+  imageSource?: ImageSourcePropType;
   style?: StyleProp<ViewStyle>;
 }) {
   const isPrimary = variant === 'primary';
+  const isSocial = variant === 'social';
   return (
     <Pressable
       accessibilityRole="button"
@@ -237,6 +241,7 @@ export function AppButton({
         variant === 'plain' && styles.buttonPlain,
         variant === 'danger' && styles.buttonDanger,
         variant === 'dark' && styles.buttonDark,
+        isSocial && styles.buttonSocial,
         disabled && styles.disabled,
         pressed && !disabled && styles.pressed,
         style,
@@ -256,6 +261,7 @@ export function AppButton({
           pointerEvents="none"
         />
       ) : null}
+      {isSocial && imageSource ? <AppLogo source={imageSource} size={22} /> : null}
       {icon ? <HiveIcon name={icon} size={18} color={isPrimary || variant === 'danger' || variant === 'dark' ? HiveColors.white : HiveColors.green} /> : null}
       <Text
         style={[
@@ -264,6 +270,7 @@ export function AppButton({
           variant === 'secondary' && styles.buttonTextSecondary,
           variant === 'plain' && styles.buttonTextPlain,
           (variant === 'danger' || variant === 'dark') && styles.buttonTextPrimary,
+          isSocial && styles.buttonTextSocial,
         ]}
         numberOfLines={2}>
         {title}
@@ -317,7 +324,7 @@ export function AppTextField({
           value={value}
           onChangeText={onChangeText}
           placeholder={placeholder}
-          placeholderTextColor="#9AA0A6"
+          placeholderTextColor={HiveColors.placeholder}
           secureTextEntry={secureTextEntry}
           keyboardType={keyboardType}
           autoCapitalize={autoCapitalize ?? (keyboardType === 'email-address' ? 'none' : undefined)}
@@ -545,10 +552,15 @@ export function EmptyState({
   title,
   subtitle,
   icon = 'box',
+  actionLabel,
+  onAction,
 }: {
   title: string;
   subtitle?: string;
   icon?: HiveIconName;
+  /** Optional call-to-action rendered as a button under the copy. */
+  actionLabel?: string;
+  onAction?: PressHandler;
 }) {
   return (
     <View style={styles.emptyState}>
@@ -557,6 +569,11 @@ export function EmptyState({
       </View>
       <Text style={styles.emptyTitle}>{title}</Text>
       {subtitle ? <Text style={styles.emptySubtitle}>{subtitle}</Text> : null}
+      {actionLabel && onAction ? (
+        <View style={styles.emptyAction}>
+          <AppButton title={actionLabel} onPress={onAction} />
+        </View>
+      ) : null}
     </View>
   );
 }
@@ -720,7 +737,12 @@ const styles = StyleSheet.create({
     backgroundColor: HiveColors.danger,
   },
   buttonDark: {
-    backgroundColor: '#212126',
+    backgroundColor: HiveColors.ink,
+  },
+  buttonSocial: {
+    backgroundColor: HiveColors.white,
+    borderWidth: 1.5,
+    borderColor: HiveColors.border,
   },
   buttonText: {
     fontSize: 16,
@@ -737,6 +759,9 @@ const styles = StyleSheet.create({
   },
   buttonTextPlain: {
     color: HiveColors.green,
+  },
+  buttonTextSocial: {
+    color: HiveColors.text,
   },
   disabled: {
     opacity: 0.45,
@@ -917,6 +942,7 @@ const styles = StyleSheet.create({
     backgroundColor: HiveColors.card,
     paddingHorizontal: 14,
     paddingVertical: 7,
+    minHeight: 44,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -1066,5 +1092,9 @@ const styles = StyleSheet.create({
     fontSize: 13,
     lineHeight: 18,
     textAlign: 'center',
+  },
+  emptyAction: {
+    marginTop: 8,
+    alignSelf: 'stretch',
   },
 });

@@ -205,7 +205,7 @@ export function OnboardingScreen({ nav }: { nav: Navigation }) {
       <OnboardingShell {...shellProps} current={6}>
         <Text style={styles.stepTitle}>Upload a profile picture</Text>
         <Text style={styles.stepSubtitle}>Add a photo so Penny can greet you personally.</Text>
-        <Pressable onPress={pickImage} style={styles.photoPicker}>
+        <Pressable onPress={pickImage} style={styles.photoPicker} accessibilityRole="button" accessibilityLabel="Choose profile photo">
           {profileImageUri ? <AvatarButton imageUri={profileImageUri} size={130} onPress={pickImage} /> : <HiveIcon name="camera" size={38} color={HiveColors.green} />}
           {!profileImageUri ? <Text style={sharedStyles.helperText}>Tap to choose</Text> : null}
         </Pressable>

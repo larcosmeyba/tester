@@ -22,7 +22,7 @@ import {
 } from 'react-native';
 
 import { HiveIcon, type HiveIconName } from '@/components/hive-ui';
-import { HiveColors, Radii } from '@/constants/theme';
+import { HiveColors, Radii, Shadows } from '@/constants/theme';
 
 type PressHandler = () => void;
 
@@ -36,6 +36,7 @@ export const ActionGradients = {
   pantry: ['#3887FF', '#0061EB'],
   resources: ['#1F8C38', '#146629'],
   finance: ['#1B5E20', '#2E8B3A'],
+  ebt: ['#1F5220', '#2E6B2E'],
 } as const;
 
 export type ActionGradient = keyof typeof ActionGradients;
@@ -356,18 +357,15 @@ const styles = StyleSheet.create({
 
   // --- Full-width gradient row (QuickActionRow) ---
   rowShadow: {
-    borderRadius: 16,
-    shadowOpacity: 0.3,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 3 },
-    elevation: 4,
+    ...Shadows.soft,
+    borderRadius: Radii.lg,
   },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 14,
     padding: 14,
-    borderRadius: 16,
+    borderRadius: Radii.lg,
   },
   rowIcon: {
     width: 50,
@@ -385,15 +383,12 @@ const styles = StyleSheet.create({
   // --- Half-width gradient card (SmallActionCard) ---
   cardShadow: {
     flex: 1,
-    borderRadius: 14,
-    shadowOpacity: 0.25,
-    shadowRadius: 5,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 3,
+    ...Shadows.soft,
+    borderRadius: Radii.lg,
   },
   card: {
     minHeight: 90,
-    borderRadius: 14,
+    borderRadius: Radii.lg,
     padding: 12,
     gap: 8,
     alignItems: 'flex-start',
@@ -416,7 +411,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 14,
     padding: 16,
-    borderRadius: 16,
+    borderRadius: Radii.lg,
     backgroundColor: HiveColors.card,
     borderWidth: 1,
     borderColor: HiveColors.border,
@@ -426,7 +421,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 14,
     padding: 16,
-    borderRadius: 16,
+    borderRadius: Radii.lg,
     backgroundColor: HiveColors.greenLight,
     borderWidth: 1,
     borderColor: 'rgba(27,94,32,0.3)',
@@ -454,7 +449,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 14,
     padding: 14,
-    borderRadius: 14,
+    borderRadius: Radii.lg,
     backgroundColor: HiveColors.card,
     borderWidth: 1,
     borderColor: HiveColors.border,
@@ -514,7 +509,7 @@ const styles = StyleSheet.create({
     minHeight: 56,
     paddingHorizontal: 14,
     paddingVertical: 12,
-    borderRadius: 14,
+    borderRadius: Radii.lg,
     backgroundColor: HiveColors.card,
   },
   hubFeatureLabel: { flex: 1, color: HiveColors.text, fontSize: 15, fontWeight: '500' },
@@ -526,19 +521,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 14,
     padding: 14,
-    borderRadius: 16,
-    backgroundColor: '#FFF0CC',
+    borderRadius: Radii.lg,
+    backgroundColor: HiveColors.warningBg,
     borderWidth: 1,
-    borderColor: 'rgba(255,165,0,0.4)',
+    borderColor: `${HiveColors.warning}66`,
   },
   alertCircle: {
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: 'rgba(255,165,0,0.15)',
+    backgroundColor: `${HiveColors.warning}26`,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  alertTitle: { color: '#8C4700', fontSize: 15, fontWeight: '700' },
-  alertSubtitle: { color: '#8C5900', fontSize: 13, lineHeight: 18 },
+  alertTitle: { color: HiveColors.warningText, fontSize: 15, fontWeight: '700' },
+  alertSubtitle: { color: HiveColors.warningText, fontSize: 13, lineHeight: 18 },
 });

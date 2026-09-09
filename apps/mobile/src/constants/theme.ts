@@ -30,13 +30,19 @@ export const BrandColors = {
 
 /**
  * Compatibility palette for existing screens.
- * New components should use `useTheme()` so color intent remains themeable.
+ *
+ * This is the canonical color layer: new code reads these tokens (or the
+ * semantic `Colors` roles via `useTheme()`), never raw hex. A few tints that
+ * used to be hardcoded in screens live here with names so they stay
+ * discoverable: `ink`, `placeholder`, `greenSoft`, `blueSoft`.
  */
 export const HiveColors = {
   green: BrandColors.primaryGreen,
   greenMid: BrandColors.midGreen,
   greenDark: BrandColors.darkGreen,
   greenLight: BrandColors.lightGreen,
+  /** Light green tint — budget donut ring. */
+  greenSoft: '#9CD39D',
   border: BrandColors.border,
   card: BrandColors.surface,
   yellow: BrandColors.primaryYellow,
@@ -44,10 +50,16 @@ export const HiveColors = {
   yellowLight: BrandColors.lightYellow,
   cream: BrandColors.cream,
   blue: BrandColors.infoBlue,
+  /** Pale blue-grey tint — auth result icon circle. */
+  blueSoft: '#F1F7FB',
   text: BrandColors.darkText,
   textSecondary: BrandColors.secondaryText,
   white: BrandColors.white,
   black: '#000000',
+  /** Near-black surface — video thumbs/hero, Penny suggestion cards, dark buttons. */
+  ink: '#232629',
+  /** Input placeholder text. */
+  placeholder: '#9AA0A6',
   warningBg: '#FFF0CC',
   warningText: '#8C4700',
   warning: BrandColors.warningOrange,
@@ -57,6 +69,17 @@ export const HiveColors = {
   purple: '#3E2495',
   orange: BrandColors.warningOrange,
 } as const;
+
+/**
+ * Accent per meal category, echoing the reference app's colour-coded cards.
+ * Kept here (exact Xcode values) so screens never hardcode hex.
+ */
+export const MealAccents: Record<string, string> = {
+  breakfast: '#F0A81E',
+  lunch: '#3887FF',
+  dinner: '#1F8C38',
+  snack: '#8E5BD8',
+};
 
 const brandTheme = {
   text: BrandColors.darkText,
@@ -76,13 +99,46 @@ const brandTheme = {
   info: BrandColors.infoBlue,
 } as const;
 
-export type AppTheme = typeof brandTheme;
+/** Semantic theme roles. Widened to `string` so both the light and dark
+ * palettes satisfy it (the light object stays `as const` for exact values). */
+export type AppTheme = {
+  [K in keyof typeof brandTheme]: string;
+};
 
-// One light brand palette, matching the Xcode app. Keeping both scheme keys behind
-// semantic roles prevents components from depending on that implementation detail.
+/**
+ * Real dark palette, derived from the brand greens and neutrals: near-black
+ * green-tinted surfaces, lightened greens/reds/blues so status colors keep
+ * their meaning on dark backgrounds. `useTheme()` switches on the device
+ * scheme, so dark-mode devices now get a dark UI instead of a silent light one.
+ *
+ * Note: most screens still read the static `HiveColors` tokens, which are
+ * light-mode values. Full dark-mode coverage means migrating screens to
+ * `useTheme()`; this palette makes that migration correct on day one.
+ */
+const darkTheme: AppTheme = {
+  text: '#E9EDE9',
+  textSecondary: '#A7B3A7',
+  textInverse: '#101510',
+  background: '#101510',
+  backgroundElement: '#1A211A',
+  backgroundSelected: '#24402A',
+  border: '#2C362C',
+  primary: '#63B267',
+  primaryPressed: '#4A8F4E',
+  primarySubtle: '#1E3524',
+  brand: '#63B267',
+  success: '#63B267',
+  warning: '#FBBC05',
+  danger: '#F07163',
+  info: '#7FA8F5',
+};
+
+// Semantic roles, resolved per device color scheme. Components that want to be
+// themeable read these through `useTheme()`; one-off screens keep using
+// `HiveColors` until they migrate.
 export const Colors: Record<'light' | 'dark', AppTheme> = {
   light: brandTheme,
-  dark: brandTheme,
+  dark: darkTheme,
 };
 
 export type ThemeColor = keyof typeof Colors.light & keyof typeof Colors.dark;
@@ -108,6 +164,30 @@ export const Fonts = Platform.select({
   },
 });
 
+/**
+ * Canonical type scale. Every role carries size, weight and line height, wired
+ * to the `Fonts` families — new text styles should compose from these instead
+ * of inventing ad-hoc sizes per screen.
+ */
+export const Type = {
+  display: { fontFamily: Fonts.sans, fontSize: 34, fontWeight: '800', lineHeight: 41 },
+  title1: { fontFamily: Fonts.sans, fontSize: 28, fontWeight: '800', lineHeight: 34 },
+  title2: { fontFamily: Fonts.sans, fontSize: 22, fontWeight: '700', lineHeight: 28 },
+  headline: { fontFamily: Fonts.sans, fontSize: 17, fontWeight: '700', lineHeight: 22 },
+  body: { fontFamily: Fonts.sans, fontSize: 16, fontWeight: '400', lineHeight: 22 },
+  callout: { fontFamily: Fonts.sans, fontSize: 15, fontWeight: '400', lineHeight: 21 },
+  subhead: { fontFamily: Fonts.sans, fontSize: 14, fontWeight: '400', lineHeight: 20 },
+  footnote: { fontFamily: Fonts.sans, fontSize: 13, fontWeight: '400', lineHeight: 18 },
+  caption: { fontFamily: Fonts.sans, fontSize: 12, fontWeight: '400', lineHeight: 16 },
+} as const;
+
+/**
+ * Spacing convention (decided 2026-09-09, design-system consolidation): layout
+ * values are plain numeric literals colocated with each stylesheet — that is
+ * what every feature screen already does, and a t-shirt scale nobody adopts is
+ * worse than literals everyone reads. `Spacing` stays exported for the rare
+ * value genuinely shared across screens (e.g. EmptyState's padding).
+ */
 export const Spacing = {
   half: 2,
   one: 4,
@@ -118,6 +198,11 @@ export const Spacing = {
   six: 64,
 } as const;
 
+/**
+ * Card surfaces across hive-ui and hive-cards use ONE radius: `lg` (14).
+ * Badges, pills and sheets keep their own smaller/larger radii — this rule is
+ * about cards only, so a screen never has to guess which radius a card gets.
+ */
 export const Radii = {
   sm: 8,
   md: 12,
@@ -126,6 +211,11 @@ export const Radii = {
   pill: 999,
 } as const;
 
+/**
+ * The one shared shadow. Card and floating-surface components spread this and
+ * only override `shadowColor` when a tinted shadow is intentional (gradient
+ * cards, the green pill) — geometry stays identical everywhere.
+ */
 export const Shadows = {
   soft: Platform.select({
     web: {

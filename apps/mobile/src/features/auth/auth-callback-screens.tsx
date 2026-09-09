@@ -135,7 +135,7 @@ export function ResetPasswordCallbackScreen() {
 const styles = StyleSheet.create({
   resultScreen: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 18, padding: 24 },
   formScreen: { gap: 18, padding: 24 },
-  iconCircle: { width: 72, height: 72, borderRadius: 36, alignItems: 'center', justifyContent: 'center', backgroundColor: '#F1F7FB' },
+  iconCircle: { width: 72, height: 72, borderRadius: 36, alignItems: 'center', justifyContent: 'center', backgroundColor: HiveColors.blueSoft },
   centerText: { textAlign: 'center' },
   fullWidth: { width: '100%' },
   error: { color: HiveColors.danger, fontSize: 14 },

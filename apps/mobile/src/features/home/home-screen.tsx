@@ -6,7 +6,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { AvatarButton, Card, HiveIcon, SectionHeader, rowStyles } from '@/components/hive-ui';
-import { AlertBanner, ComingSoonCard, GradientActionCard, GradientActionRow, SoftGreenPanel } from '@/components/hive-cards';
+import { AlertBanner, ActionGradients, ComingSoonCard, GradientActionCard, GradientActionRow, SoftGreenPanel } from '@/components/hive-cards';
 import { FloatingPill, FloatingPillRow } from '@/components/hive-navigation';
 import { useAppState } from '@/state/app-state';
 import { StyleSheet } from 'react-native';
@@ -29,12 +29,12 @@ export function HomeScreen({ nav }: { nav: Navigation }) {
             <Text style={styles.homeGreeting}>Hi {firstName},</Text>
             <Text style={styles.homeSubGreeting}>Ready to save some money today?</Text>
           </View>
-          <AvatarButton imageUri={app.profile.profileImageUri} onPress={() => nav.push('account')} />
+          <AvatarButton imageUri={app.profile.profileImageUri} onPress={() => nav.push('account')} accessibilityLabel="View account" />
         </View>
 
         {app.ebtConnected ? (
           <LinearGradient
-            colors={['#1F5220', '#2E6B2E']}
+            colors={ActionGradients.ebt}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={styles.ebtConnected}>

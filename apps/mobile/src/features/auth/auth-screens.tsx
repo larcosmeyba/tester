@@ -6,12 +6,12 @@
 import { useEffect, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { AuthFlowError, useAuth } from '@/auth/auth-context';
-import { AppButton, AppHeader, AppLogo, AppTextField, OrDivider, Screen, ScrollScreen, uiText } from '@/components/hive-ui';
+import { AppButton, AppHeader, AppLogo, AppTextField, OrDivider, Screen, ScrollScreen, TextLink, uiText } from '@/components/hive-ui';
 import { useAppState } from '@/state/app-state';
 import { StyleSheet } from 'react-native';
 import { sharedStyles } from '@/features/app/app-shared';
 import { type Navigation } from '@/features/app/navigation-types';
-import { HiveColors, Radii } from '@/constants/theme';
+import { HiveColors } from '@/constants/theme';
 
 const logoSource = require('@/assets/images/hive/logo.png');
 const googleSource = require('@/assets/images/hive/google.png');
@@ -26,7 +26,7 @@ export function WelcomeScreen({ nav }: { nav: Navigation }) {
         </View>
         <View style={styles.authActions}>
           <AppButton title="Get Started" onPress={() => nav.push('signup')} />
-          <TextLinkLine label="Already a member?" action="Login" onPress={() => nav.push('login')} />
+          <TextLink label="Already a member?" linkText="Login" onPress={() => nav.push('login')} />
         </View>
       </View>
     </Screen>
@@ -108,9 +108,10 @@ export function SignUpScreen({ nav }: { nav: Navigation }) {
           onPress={() => void submit()}
         />
         <OrDivider />
-        <SocialButton
+        <AppButton
           title={isGoogleSubmitting ? 'Connecting to Google…' : 'Continue with Google'}
-          source={googleSource}
+          variant="social"
+          imageSource={googleSource}
           disabled={isSubmitting || isAppleSubmitting || isGoogleSubmitting}
           onPress={() => void signInWithGoogle()}
         />
@@ -120,7 +121,7 @@ export function SignUpScreen({ nav }: { nav: Navigation }) {
           disabled={isSubmitting || isAppleSubmitting || isGoogleSubmitting}
           onPress={() => void signInWithApple()}
         />
-        <TextLinkLine label="Already have an account?" action="Login" onPress={() => nav.replace('login')} />
+        <TextLink label="Already have an account?" linkText="Login" onPress={() => nav.replace('login')} />
       </View>
     </ScrollScreen>
   );
@@ -199,9 +200,10 @@ export function LoginScreen({ nav }: { nav: Navigation }) {
           onPress={() => void submit()}
         />
         <OrDivider />
-        <SocialButton
+        <AppButton
           title={isGoogleSubmitting ? 'Connecting to Google…' : 'Continue with Google'}
-          source={googleSource}
+          variant="social"
+          imageSource={googleSource}
           disabled={isSubmitting || isAppleSubmitting || isGoogleSubmitting}
           onPress={() => void signInWithGoogle()}
         />
@@ -211,7 +213,7 @@ export function LoginScreen({ nav }: { nav: Navigation }) {
           disabled={isSubmitting || isAppleSubmitting || isGoogleSubmitting}
           onPress={() => void signInWithApple()}
         />
-        <TextLinkLine label="New to Help The Hive?" action="Create account" onPress={() => nav.replace('signup')} />
+        <TextLink label="New to Help The Hive?" linkText="Create account" onPress={() => nav.replace('signup')} />
       </View>
     </ScrollScreen>
   );
@@ -260,7 +262,7 @@ export function ForgotPasswordScreen({ nav, initialEmail = '' }: { nav: Navigati
         ) : (
           <>
             <AppButton title="Back to Login" onPress={() => nav.reset('login')} />
-            <TextLinkLine label="Did not receive it?" action="Try again" onPress={() => setHasSubmitted(false)} />
+            <TextLink label="Did not receive it?" linkText="Try again" onPress={() => setHasSubmitted(false)} />
           </>
         )}
       </View>
@@ -310,44 +312,10 @@ export function VerifyScreen({ nav, email = '' }: { nav: Navigation; email?: str
           disabled={isSubmitting || !canResend}
           onPress={() => void resend()}
         />
-        <TextLinkLine label="Already verified?" action="Back to Login" onPress={() => nav.reset('login')} />
-        <TextLinkLine label="Wrong email?" action="Create account" onPress={() => nav.reset('signup')} />
+        <TextLink label="Already verified?" linkText="Back to Login" onPress={() => nav.reset('login')} />
+        <TextLink label="Wrong email?" linkText="Create account" onPress={() => nav.reset('signup')} />
       </View>
     </ScrollScreen>
-  );
-}
-
-export function SocialButton({
-  title,
-  source,
-  disabled = false,
-  onPress,
-}: {
-  title: string;
-  source: number;
-  disabled?: boolean;
-  onPress: () => void;
-}) {
-  return (
-    <Pressable
-      disabled={disabled}
-      onPress={onPress}
-      style={({ pressed }) => [styles.socialButton, (pressed || disabled) && sharedStyles.pressed]}
-    >
-      <AppLogo source={source} size={22} />
-      <Text style={styles.socialButtonText}>{title}</Text>
-    </Pressable>
-  );
-}
-
-export function TextLinkLine({ label, action, onPress }: { label: string; action: string; onPress: () => void }) {
-  return (
-    <View style={styles.textLinkLine}>
-      <Text style={styles.linkLabel}>{label}</Text>
-      <Pressable onPress={onPress}>
-        <Text style={styles.textLinkAction}>{action}</Text>
-      </Pressable>
-    </View>
   );
 }
 
@@ -383,40 +351,8 @@ const styles = StyleSheet.create({
   formStack: {
     gap: 14,
   },
-  linkLabel: {
-    color: HiveColors.textSecondary,
-    fontSize: 15,
-  },
-  socialButton: {
-    minHeight: 56,
-    borderRadius: Radii.lg,
-    borderWidth: 1.5,
-    borderColor: HiveColors.border,
-    backgroundColor: HiveColors.white,
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'row',
-    gap: 10,
-  },
-  socialButtonText: {
-    color: HiveColors.text,
-    fontSize: 16,
-    fontWeight: '700',
-  },
-  textLinkAction: {
-    color: HiveColors.green,
-    fontSize: 15,
-    fontWeight: '700',
-    textDecorationLine: 'underline',
-  },
-  textLinkLine: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: 4,
-  },
   welcomeTitle: {
-    color: '#1F471F',
+    color: HiveColors.greenDark,
     fontSize: 34,
     fontWeight: '800',
     textAlign: 'center',

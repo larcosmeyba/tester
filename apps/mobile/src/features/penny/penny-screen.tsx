@@ -5,7 +5,7 @@
 
 import { useState } from 'react';
 import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
-import { AppButton, AvatarButton, Card, HiveIcon, PennyImage, uiText } from '@/components/hive-ui';
+import { AppButton, AppHeader, Card, HiveIcon, PennyImage, uiText } from '@/components/hive-ui';
 import { HiveColors } from '@/constants/theme';
 import { PENNY_DISCLAIMER, PENNY_SUGGESTIONS, pennyService } from '@/features/penny/penny-service';
 import { describeError } from '@/services/api-error';
@@ -58,11 +58,11 @@ export function PennyScreen({ nav }: { nav: Navigation }) {
 
   return (
     <View style={sharedStyles.tabScreen}>
-      <View style={sharedStyles.centeredHeader}>
-        <View style={sharedStyles.headerSpacer} />
-        <Text style={sharedStyles.centeredHeaderTitle}>Penny AI</Text>
-        <AvatarButton imageUri={app.profile.profileImageUri} onPress={() => nav.push('account')} />
-      </View>
+      <AppHeader
+        title="Penny AI"
+        onAvatar={() => nav.push('account')}
+        profileImageUri={app.profile.profileImageUri}
+      />
 
       <ScrollView
         contentContainerStyle={hasConversation ? styles.pennyThread : styles.pennyIntro}
@@ -118,7 +118,7 @@ export function PennyScreen({ nav }: { nav: Navigation }) {
           value={messageText}
           onChangeText={setMessageText}
           placeholder="Ask Penny"
-          placeholderTextColor="#9AA0A6"
+          placeholderTextColor={HiveColors.placeholder}
           style={styles.pennyInput}
           returnKeyType="send"
           onSubmitEditing={() => void sendMessage(messageText)}
@@ -209,9 +209,9 @@ const styles = StyleSheet.create({
   },
   pennyPrompt: { color: HiveColors.textSecondary, fontSize: 18, marginTop: 4 },
   pennySend: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: HiveColors.greenLight,
@@ -234,7 +234,7 @@ const styles = StyleSheet.create({
     minHeight: 96,
     padding: 16,
     borderRadius: 16,
-    backgroundColor: '#232629',
+    backgroundColor: HiveColors.ink,
   },
   suggestionText: { color: HiveColors.white, fontSize: 15, fontWeight: '500', lineHeight: 21 },
 });

@@ -27,7 +27,15 @@ export const environment: AppEnvironment = resolveEnvironment();
 export const isProduction = environment === 'production';
 
 /** Base URL for REST endpoints that are not part of the GraphQL schema. */
-export const apiBaseUrl = (process.env.EXPO_PUBLIC_API_BASE_URL ?? 'http://localhost:8080').replace(/\/+$/, '');
+const rawApiBaseUrl = process.env.EXPO_PUBLIC_API_BASE_URL;
+if (!rawApiBaseUrl && !__DEV__) {
+  throw new Error(
+    '[env] EXPO_PUBLIC_API_BASE_URL is not set. Production builds require it ' +
+      '(set it in the EAS "production" environment). Refusing to fall back to ' +
+      'http://localhost:8080, which would be unreachable in a shipped app.',
+  );
+}
+export const apiBaseUrl = (rawApiBaseUrl ?? 'http://localhost:8080').replace(/\/+$/, '');
 
 /**
  * Whether the meal services fall back to the local development mock instead of
