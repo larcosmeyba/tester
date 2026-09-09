@@ -1,10 +1,14 @@
 # Google Cloud deployment
 
 The deployment runs Better Auth and the Go GraphQL API as separate public Cloud
-Run services. Each environment has its own Cloud SQL PostgreSQL instance, with
-separate databases and users for auth and application data. Cloud Run reaches
-Cloud SQL through the managed `/cloudsql` Unix socket; the database has no
-authorized client networks.
+Run services. Two internal-only Cloud Run services support them: the Penny AI
+agent (`helpthehive-{dev,prod}-penny`) and the video-to-recipe transcriber
+(`helpthehive-{dev,prod}-transcriber`). Neither accepts public traffic; only
+the Go API calls them, and both are optional — the API runs with graceful
+fallbacks when their URLs are not configured. Each environment has its own
+Cloud SQL PostgreSQL instance, with separate databases and users for auth and
+application data. Cloud Run reaches Cloud SQL through the managed `/cloudsql`
+Unix socket; the database has no authorized client networks.
 
 Terraform owns durable resources and creates placeholder Cloud Run revisions.
 Cloud Build owns application revisions: it tests and publishes an immutable
@@ -120,6 +124,66 @@ Generate `BETTER_AUTH_SECRET` with at least 32 random bytes and never reuse it
 between environments. Rotation creates a new secret version; deploy auth again
 to create a revision pinned through the `latest` reference.
 
+## Seed Phase 2 secrets (Penny + transcriber)
+
+These five secrets back the Penny agent and the video-to-recipe transcriber.
+Create the secret containers (Terraform does not) and add one version each,
+for `dev` first and then `prod`. The two `*-service-token` / `*-shared-secret`
+values must be identical on both sides that share them.
+
+```bash
+ENVIRONMENT=dev
+PREFIX="helpthehive-$ENVIRONMENT"
+
+for s in penny-service-token penny-tool-token-secret penny-api-key \
+         recipe-ai-api-key import-shared-secret; do
+  gcloud secrets create "$PREFIX-$s" --replication-policy=automatic \
+    --project="$PROJECT_ID"
+done
+
+read -r -s -p "Penny service token (random, >=32 bytes): " V
+printf %s "$V" | gcloud secrets versions add "$PREFIX-penny-service-token" --data-file=-
+unset V
+read -r -s -p "Penny tool token secret (random, >=32 chars): " V
+printf %s "$V" | gcloud secrets versions add "$PREFIX-penny-tool-token-secret" --data-file=-
+unset V
+read -r -s -p "Penny LLM API key (Anthropic): " V
+printf %s "$V" | gcloud secrets versions add "$PREFIX-penny-api-key" --data-file=-
+unset V
+read -r -s -p "Transcriber recipe AI key (OpenAI-compatible): " V
+printf %s "$V" | gcloud secrets versions add "$PREFIX-recipe-ai-api-key" --data-file=-
+unset V
+read -r -s -p "Import shared secret (random, >=32 bytes): " V
+printf %s "$V" | gcloud secrets versions add "$PREFIX-import-shared-secret" --data-file=-
+unset V
+```
+
+Each service also needs its own runtime service account with
+`roles/secretmanager.secretAccessor` on its secrets:
+
+```bash
+for svc in penny transcriber; do
+  gcloud iam service-accounts create "$PREFIX-$svc-run" --project="$PROJECT_ID"
+done
+gcloud secrets add-iam-policy-binding "$PREFIX-penny-service-token" \
+  --member="serviceAccount:$PREFIX-penny-run@$PROJECT_ID.iam.gserviceaccount.com" \
+  --role=roles/secretmanager.secretAccessor --project="$PROJECT_ID"
+gcloud secrets add-iam-policy-binding "$PREFIX-penny-api-key" \
+  --member="serviceAccount:$PREFIX-penny-run@$PROJECT_ID.iam.gserviceaccount.com" \
+  --role=roles/secretmanager.secretAccessor --project="$PROJECT_ID"
+gcloud secrets add-iam-policy-binding "$PREFIX-recipe-ai-api-key" \
+  --member="serviceAccount:$PREFIX-transcriber-run@$PROJECT_ID.iam.gserviceaccount.com" \
+  --role=roles/secretmanager.secretAccessor --project="$PROJECT_ID"
+gcloud secrets add-iam-policy-binding "$PREFIX-import-shared-secret" \
+  --member="serviceAccount:$PREFIX-transcriber-run@$PROJECT_ID.iam.gserviceaccount.com" \
+  --role=roles/secretmanager.secretAccessor --project="$PROJECT_ID"
+```
+
+The API's own runtime service account (`$PREFIX-api-run`) additionally needs
+`secretAccessor` on `$PREFIX-penny-service-token`,
+`$PREFIX-penny-tool-token-secret`, and `$PREFIX-import-shared-secret`, since
+the API reads all three at start-up.
+
 ## First deployment
 
 Run auth first so the API can discover its issuer and JWKS URL. The helper
@@ -134,6 +198,35 @@ commit is required.
 For production, replace `dev` with `prod`. The submitting account must be
 allowed to start Cloud Builds and act as the environment's dedicated build
 service account. Project owners normally already have those permissions.
+
+## Deploy the Phase 2 services
+
+Deploy Penny and the transcriber after the API exists, then redeploy the API
+so it discovers their URLs and enables both integrations. Deploying the API
+before they exist is safe: the helper passes empty URLs and the Go server
+keeps both integrations disabled until they are configured.
+
+```bash
+./scripts/deploy-gcp.sh transcriber dev "$PROJECT_ID"
+./scripts/deploy-gcp.sh penny dev "$PROJECT_ID"
+./scripts/deploy-gcp.sh api dev "$PROJECT_ID"   # second run: wires Phase 2 in
+```
+
+Optional overrides for Penny: `PENNY_PROVIDER` (default `anthropic`;
+`openai_compatible` also needs `PENNY_BASE_URL`) and `PENNY_MODEL` (default
+`claude-sonnet-5`). The transcriber's model and host allow-list keep their
+compiled defaults unless overridden in `cloudbuild.transcriber.yaml`.
+
+Verify afterwards:
+
+```bash
+# From inside the project (a VM or Cloud Shell with a connector): Penny must
+# report no database access.
+curl -sf "$(gcloud run services describe helpthehive-dev-penny \
+  --project="$PROJECT_ID" --region=us-central1 \
+  --format='value(status.url)')/health/detailed"
+# The transcriber's /readyz returns 200 (503 means the recipe AI key is missing).
+```
 
 The helper derives resource names and the Cloud SQL connection from the
 Terraform-managed environment. Optional environment overrides include
