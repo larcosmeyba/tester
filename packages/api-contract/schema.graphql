@@ -77,6 +77,8 @@ type AppPreferences {
   expiringPantryNotificationsEnabled: Boolean!
   weeklyMealPlanNotificationsEnabled: Boolean!
   resourceReminderNotificationsEnabled: Boolean!
+  benefitsRenewalNotificationsEnabled: Boolean!
+  benefitsRenewalDiscreetLockScreen: Boolean!
   createdAt: String!
   updatedAt: String!
 }

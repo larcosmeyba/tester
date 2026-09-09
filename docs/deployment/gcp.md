@@ -124,6 +124,20 @@ Generate `BETTER_AUTH_SECRET` with at least 32 random bytes and never reuse it
 between environments. Rotation creates a new secret version; deploy auth again
 to create a revision pinned through the `latest` reference.
 
+Seed the renewal sweep secret the same way. The daily Cloud Scheduler job
+calls `POST /internal/jobs/benefits-renewal-sweep` with this value in the
+`X-Job-Secret` header (full wiring in `docs/benefits-renewal-alerts.md`).
+
+```bash
+ENVIRONMENT=dev
+PREFIX="helpthehive-$ENVIRONMENT"
+
+gcloud secrets create "$PREFIX-internal-job-secret" \
+  --replication-policy="automatic"
+openssl rand -hex 32 | \
+  gcloud secrets versions add "$PREFIX-internal-job-secret" --data-file=-
+```
+
 ## Seed Phase 2 secrets (Penny + transcriber)
 
 These five secrets back the Penny agent and the video-to-recipe transcriber.

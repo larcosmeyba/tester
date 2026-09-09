@@ -21,7 +21,7 @@ type readinessChecker interface {
 	Ping(ctx context.Context) error
 }
 
-func NewRouter(cfg config.Config, verifier *auth.Verifier, readiness readinessChecker, resolver *hthgraphql.Resolver, pennyDeps PennyDeps, logger *slog.Logger) http.Handler {
+func NewRouter(cfg config.Config, verifier *auth.Verifier, readiness readinessChecker, resolver *hthgraphql.Resolver, pennyDeps PennyDeps, jobs JobsDeps, logger *slog.Logger) http.Handler {
 	router := chi.NewRouter()
 	router.Use(middleware.RequestID)
 	router.Use(middleware.RealIP)
@@ -79,6 +79,11 @@ func NewRouter(cfg config.Config, verifier *auth.Verifier, readiness readinessCh
 		router.With(auth.Middleware(verifier)).Route("/penny", PennyRoutes(pennyDeps))
 		router.Post("/internal/penny/tools", PennyToolGateway(pennyDeps))
 	}
+
+	// Benefits renewal sweep. Internal-only: authenticated with the shared job
+	// secret (Cloud Scheduler), never with a user token. The sweep is
+	// idempotent, so scheduler retries are safe.
+	router.Post("/internal/jobs/benefits-renewal-sweep", BenefitsRenewalSweep(jobs, logger))
 
 	return router
 }

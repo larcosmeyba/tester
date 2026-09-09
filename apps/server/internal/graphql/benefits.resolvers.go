@@ -7,6 +7,7 @@ package graphql
 import (
 	"context"
 	"errors"
+	"time"
 
 	"github.com/helpthehive/server/internal/auth"
 	domain "github.com/helpthehive/server/internal/domain/benefits"
@@ -109,6 +110,69 @@ func (r *mutationResolver) DeleteBenefitsApplication(ctx context.Context, applic
 	return deleted, nil
 }
 
+// ConfirmBenefitsRenewalDeadline is the resolver for the confirmBenefitsRenewalDeadline field.
+func (r *mutationResolver) ConfirmBenefitsRenewalDeadline(ctx context.Context, renewalID string, renewalDueAt time.Time, certificationEndsAt *time.Time) (*model.BenefitsRenewal, error) {
+	identity, err := auth.RequireIdentity(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if err := r.benefits(); err != nil {
+		return nil, err
+	}
+	renewal, err := r.Benefits.ConfirmRenewalDeadline(ctx, identity, renewalID, renewalDueAt, certificationEndsAt)
+	if err != nil {
+		return nil, benefitsError(err)
+	}
+	return benefitsRenewalModel(renewal, r.Now()), nil
+}
+
+// StartBenefitsRenewalApplication is the resolver for the startBenefitsRenewalApplication field.
+func (r *mutationResolver) StartBenefitsRenewalApplication(ctx context.Context, renewalID string) (*model.BenefitsApplication, error) {
+	identity, err := auth.RequireIdentity(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if err := r.benefits(); err != nil {
+		return nil, err
+	}
+	application, err := r.Benefits.StartRenewalApplication(ctx, identity, renewalID)
+	if err != nil {
+		return nil, benefitsError(err)
+	}
+	return benefitsApplicationModel(application), nil
+}
+
+// DismissBenefitsRenewal is the resolver for the dismissBenefitsRenewal field.
+func (r *mutationResolver) DismissBenefitsRenewal(ctx context.Context, renewalID string) (bool, error) {
+	identity, err := auth.RequireIdentity(ctx)
+	if err != nil {
+		return false, err
+	}
+	if err := r.benefits(); err != nil {
+		return false, err
+	}
+	dismissed, err := r.Benefits.DismissRenewal(ctx, identity, renewalID)
+	if err != nil {
+		return false, benefitsError(err)
+	}
+	return dismissed, nil
+}
+
+// UpdateBenefitsRenewalPreferences is the resolver for the updateBenefitsRenewalPreferences field.
+func (r *mutationResolver) UpdateBenefitsRenewalPreferences(ctx context.Context, renewalAlertsEnabled bool, discreetLockScreen bool) (bool, error) {
+	identity, err := auth.RequireIdentity(ctx)
+	if err != nil {
+		return false, err
+	}
+	if err := r.benefits(); err != nil {
+		return false, err
+	}
+	if _, err := r.Benefits.UpdateRenewalPreferences(ctx, identity, renewalAlertsEnabled, discreetLockScreen); err != nil {
+		return false, benefitsError(err)
+	}
+	return true, nil
+}
+
 // BenefitsProfile is the resolver for the benefitsProfile field.
 func (r *queryResolver) BenefitsProfile(ctx context.Context) (*model.BenefitsProfile, error) {
 	identity, err := auth.RequireIdentity(ctx)
@@ -197,6 +261,47 @@ func (r *queryResolver) BenefitsApplications(ctx context.Context) ([]*model.Bene
 // BenefitsFieldVocabulary is the resolver for the benefitsFieldVocabulary field.
 func (r *queryResolver) BenefitsFieldVocabulary(ctx context.Context) ([]*model.BenefitsFieldSpec, error) {
 	return benefitsFieldVocabularyModel(), nil
+}
+
+// BenefitsRenewals is the resolver for the benefitsRenewals field.
+func (r *queryResolver) BenefitsRenewals(ctx context.Context) ([]*model.BenefitsRenewal, error) {
+	identity, err := auth.RequireIdentity(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if err := r.benefits(); err != nil {
+		return nil, err
+	}
+	renewals, err := r.Benefits.Renewals(ctx, identity)
+	if err != nil {
+		return nil, benefitsError(err)
+	}
+	now := r.Now()
+	out := make([]*model.BenefitsRenewal, 0, len(renewals))
+	for _, renewal := range renewals {
+		out = append(out, benefitsRenewalModel(renewal, now))
+	}
+	return out, nil
+}
+
+// BenefitsProgramRules is the resolver for the benefitsProgramRules field.
+func (r *queryResolver) BenefitsProgramRules(ctx context.Context, program *string) ([]*model.BenefitsProgramRule, error) {
+	identity, err := auth.RequireIdentity(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if err := r.benefits(); err != nil {
+		return nil, err
+	}
+	rules, err := r.Benefits.ProgramRules(ctx, identity, stringValue(program))
+	if err != nil {
+		return nil, benefitsError(err)
+	}
+	out := make([]*model.BenefitsProgramRule, 0, len(rules))
+	for _, rule := range rules {
+		out = append(out, benefitsProgramRuleModel(rule))
+	}
+	return out, nil
 }
 
 // !!! WARNING !!!

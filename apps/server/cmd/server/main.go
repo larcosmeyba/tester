@@ -29,6 +29,7 @@ import (
 	"github.com/helpthehive/server/internal/modules/recipes"
 	"github.com/helpthehive/server/internal/modules/transcriber"
 	"github.com/helpthehive/server/internal/modules/users"
+	"github.com/helpthehive/server/internal/notify"
 )
 
 func main() {
@@ -149,8 +150,16 @@ func run(logger *slog.Logger) error {
 	})
 
 	server := &http.Server{
-		Addr:              cfg.HTTPAddr,
-		Handler:           serverhttp.NewRouter(cfg, verifier, serverhttp.StoreReadiness{Store: store}, resolver, pennyDeps, logger),
+		Addr: cfg.HTTPAddr,
+		Handler: serverhttp.NewRouter(cfg, verifier, serverhttp.StoreReadiness{Store: store}, resolver, pennyDeps,
+			serverhttp.JobsDeps{
+				Benefits: benefitsService,
+				// The Expo Push API needs no server key for basic sends, so
+				// there is nothing secret to configure here.
+				Sender:    notify.NewClient(notify.WithLogger(logger)),
+				JobSecret: cfg.InternalJobSecret,
+			},
+			logger),
 		ReadHeaderTimeout: 5 * time.Second,
 	}
 
