@@ -23,7 +23,7 @@ show invented data to a real user.
 
 | Source | Screens | Real backend? | What is needed |
 | --- | --- | --- | --- |
-| `data/mock-data.ts` → `initialPantryItems` | `features/pantry/pantry-screens.tsx` | **Yes, complete and unused** — `internal/modules/pantry`, GraphQL `pantryItems` / `addPantryItem` / `markPantryItemUsed` | Wire the pantry screens to the existing API. This is the single highest-value mock removal in the repo: the backend, the ownership checks and the tests all already exist. |
+| ~~`data/mock-data.ts` → `initialPantryItems`~~ | ~~`features/pantry/pantry-screens.tsx`~~ | — | **DONE.** The pantry now reads the real backend through `features/pantry/pantry-context.tsx`. `initialPantryItems`, `makePantryItem`, `storageLocations` and the `PantryItem` / `WasteStats` / `StorageLocation` / `ItemStatus` mock types were deleted. |
 | `data/mock-data.ts` → `spendingCategories`, `transactions` | `features/budget/budget-screens.tsx` | **No** | A budget backend does not exist. The screens are honest placeholders until one does. |
 | `data/mock-data.ts` → `sampleDeals`, `allVideos`, `nearbyResources` | `features/home/home-screen.tsx`, `features/resources/resources-screens.tsx` | **No** | Deals, video and local-resource sources are not built. |
 | `data/mock-data.ts` → `mealsByDow`, `benefitPrograms` | legacy references | Superseded | `mealsByDow` is dead demo data; `benefitPrograms` is superseded by `features/benefits/benefits-repository.ts`, which reads the real API. |

@@ -1,28 +1,5 @@
 import { HiveColors } from '@/constants/theme';
 
-export type StorageLocation = 'Pantry' | 'Refrigerator' | 'Freezer';
-export type ItemStatus = 'active' | 'used' | 'expired';
-
-export type PantryItem = {
-  id: string;
-  name: string;
-  quantity: string;
-  location: StorageLocation;
-  expirationDate: string;
-  category: string;
-  status: ItemStatus;
-  dateAdded: string;
-  dateUsed?: string;
-};
-
-export type WasteStats = {
-  totalAdded: number;
-  totalUsed: number;
-  totalExpired: number;
-  estimatedWasteValue: number;
-  mostWastedCategories: string[];
-};
-
 export type Deal = {
   id: string;
   title: string;
@@ -99,8 +76,6 @@ export type Transaction = {
   amount: string;
   section: string;
 };
-
-export const storageLocations: StorageLocation[] = ['Pantry', 'Refrigerator', 'Freezer'];
 
 export const sampleDeals: Deal[] = [
   {
@@ -430,45 +405,4 @@ export const spendingCategories = [
   { name: 'Utilities', amount: '$244.18 (10%)', color: '#9CD39D' },
   { name: 'Other', amount: '$196.12 (8%)', color: '#C8E6C9' },
   { name: 'Entertainment', amount: '$154.82 (6%)', color: HiveColors.border },
-];
-
-export function makePantryItem(partial: Pick<PantryItem, 'name' | 'quantity' | 'location' | 'expirationDate'> & Partial<PantryItem>): PantryItem {
-  return {
-    id: partial.id ?? `${Date.now()}-${Math.random().toString(16).slice(2)}`,
-    name: partial.name,
-    quantity: partial.quantity,
-    location: partial.location,
-    expirationDate: partial.expirationDate,
-    category: partial.category ?? 'Other',
-    status: partial.status ?? 'active',
-    dateAdded: partial.dateAdded ?? new Date().toISOString(),
-    dateUsed: partial.dateUsed,
-  };
-}
-
-export const initialPantryItems: PantryItem[] = [
-  makePantryItem({
-    id: 'p1',
-    name: 'Milk',
-    quantity: '1 gallon',
-    location: 'Refrigerator',
-    category: 'Dairy',
-    expirationDate: new Date(Date.now() + 2 * 24 * 3600 * 1000).toISOString(),
-  }),
-  makePantryItem({
-    id: 'p2',
-    name: 'Black beans',
-    quantity: '3 cans',
-    location: 'Pantry',
-    category: 'Canned goods',
-    expirationDate: new Date(Date.now() + 90 * 24 * 3600 * 1000).toISOString(),
-  }),
-  makePantryItem({
-    id: 'p3',
-    name: 'Frozen vegetables',
-    quantity: '2 bags',
-    location: 'Freezer',
-    category: 'Frozen',
-    expirationDate: new Date(Date.now() + 40 * 24 * 3600 * 1000).toISOString(),
-  }),
 ];

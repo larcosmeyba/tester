@@ -14,9 +14,11 @@ import { sharedStyles } from '@/features/app/app-shared';
 import { type Navigation } from '@/features/app/navigation-types';
 import { HiveColors } from '@/constants/theme';
 import { FLOATING_TAB_BAR_HEIGHT } from '@/components/hive-navigation';
+import { usePantry } from '@/features/pantry/pantry-context';
 
 export function HomeScreen({ nav }: { nav: Navigation }) {
   const app = useAppState();
+  const pantry = usePantry();
   const firstName = app.profile.firstName || 'there';
 
   return (
@@ -57,11 +59,11 @@ export function HomeScreen({ nav }: { nav: Navigation }) {
           />
         )}
 
-        {app.expiringItems.length > 0 ? (
+        {pantry.expiringItems.length > 0 ? (
           <AlertBanner
             emoji="🐝"
             title="Use It Soon 🐝"
-            subtitle={`${app.expiringItems.length} pantry item${app.expiringItems.length === 1 ? '' : 's'} expiring in the next 5 days`}
+            subtitle={`${pantry.expiringItems.length} pantry item${pantry.expiringItems.length === 1 ? '' : 's'} expiring in the next 5 days`}
             onPress={() => nav.push('pantry')}
             style={styles.homeBlock}
           />

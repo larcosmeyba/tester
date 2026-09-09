@@ -3,14 +3,7 @@ import { createContext, type ReactNode, useCallback, useContext, useEffect, useM
 import { DEV_PREVIEW_AUTH_ENABLED } from '@/auth/dev-preview';
 
 import { useAuth } from '@/auth/auth-context';
-import {
-  type Deal,
-  type ItemStatus,
-  initialPantryItems,
-  type PantryItem,
-  type StorageLocation,
-  type WasteStats,
-} from '@/data/mock-data';
+import { type Deal } from '@/data/mock-data';
 import {
   completeOnboarding as completeOnboardingRemote,
   checkHandleAvailability as checkHandleAvailabilityRemote,
@@ -73,7 +66,6 @@ type PersistedState = {
   profile: AppProfile;
   preferences: AppPreferences;
   governmentProfile: GovernmentProfile;
-  pantryItems: PantryItem[];
   cart: Deal[];
 };
 
@@ -83,11 +75,6 @@ type AppStateContextValue = PersistedState & {
   profileSyncError: string;
   displayName: string;
   formName: { firstName: string; lastName: string };
-  activePantryItems: PantryItem[];
-  expiringItems: PantryItem[];
-  usedItems: PantryItem[];
-  expiredItems: PantryItem[];
-  wasteStats: WasteStats;
   shouldPromptNewMealPlan: boolean;
   setSelectedTab: (tab: number) => void;
   hydrateViewer: () => Promise<void>;
@@ -101,9 +88,6 @@ type AppStateContextValue = PersistedState & {
   rememberPendingSignup: (profile: PendingSignupProfile) => void;
   updateGovernmentProfile: (profile: Partial<GovernmentProfile>) => void;
   setEbtConnected: (connected: boolean) => void;
-  addPantryItem: (item: PantryItem) => void;
-  updatePantryItemStatus: (itemId: string, status: ItemStatus) => void;
-  deletePantryItem: (itemId: string) => void;
   addToCart: (deal: Deal) => void;
   clearCart: () => void;
   isInCart: (dealId: string) => boolean;
@@ -157,7 +141,6 @@ const defaultState: PersistedState = {
   profile: defaultProfile,
   preferences: defaultPreferences,
   governmentProfile: defaultGovernmentProfile,
-  pantryItems: initialPantryItems,
   cart: [],
 };
 
@@ -196,33 +179,6 @@ function fallbackName(name: string | undefined) {
   return { firstName: parts[0] ?? '', lastName: parts.slice(1).join(' ') };
 }
 
-function isExpired(item: PantryItem) {
-  return item.status === 'active' && new Date(item.expirationDate).getTime() < Date.now();
-}
-
-function normalizePantryItems(items: PantryItem[]) {
-  return items.map((item) => (isExpired(item) ? { ...item, status: 'expired' as ItemStatus } : item));
-}
-
-function getWasteStats(items: PantryItem[]): WasteStats {
-  const expired = items.filter((item) => item.status === 'expired');
-  const categoryCounts = expired.reduce<Record<string, number>>((acc, item) => {
-    acc[item.category] = (acc[item.category] ?? 0) + 1;
-    return acc;
-  }, {});
-  const mostWastedCategories = Object.entries(categoryCounts)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 3)
-    .map(([category]) => category);
-
-  return {
-    totalAdded: items.length,
-    totalUsed: items.filter((item) => item.status === 'used').length,
-    totalExpired: expired.length,
-    estimatedWasteValue: expired.length * 2.5,
-    mostWastedCategories,
-  };
-}
 
 export function AppStateProvider({ children }: { children: ReactNode }) {
   const auth = useAuth();
@@ -242,7 +198,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
         const securedPending = await loadPendingSignupProfile();
         if (!raw) {
           if (!cancelled) {
-            setState((current) => ({ ...current, pendingSignupProfile: securedPending, pantryItems: normalizePantryItems(current.pantryItems) }));
+            setState((current) => ({ ...current, pendingSignupProfile: securedPending }));
           }
           return;
         }
@@ -263,7 +219,6 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
             preferences: { ...defaultPreferences, ...persisted.preferences },
             // Never restored from device storage: see the write below.
             governmentProfile: defaultGovernmentProfile,
-            pantryItems: normalizePantryItems(persisted.pantryItems ?? defaultState.pantryItems),
             cart: persisted.cart ?? [],
           });
         }
@@ -455,31 +410,6 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     }));
   }, [state.profile]);
 
-  const activePantryItems = useMemo(
-    () =>
-      state.pantryItems
-        .filter((item) => item.status === 'active')
-        .sort((a, b) => new Date(a.expirationDate).getTime() - new Date(b.expirationDate).getTime()),
-    [state.pantryItems]
-  );
-
-  const expiringItems = useMemo(() => {
-    const soon = sessionStartedAt + 5 * 24 * 3600 * 1000;
-    return activePantryItems.filter((item) => new Date(item.expirationDate).getTime() <= soon);
-  }, [activePantryItems]);
-
-  const usedItems = useMemo(
-    () => state.pantryItems.filter((item) => item.status === 'used').sort((a, b) => (b.dateUsed ?? '').localeCompare(a.dateUsed ?? '')),
-    [state.pantryItems]
-  );
-
-  const expiredItems = useMemo(
-    () => state.pantryItems.filter((item) => item.status === 'expired').sort((a, b) => b.expirationDate.localeCompare(a.expirationDate)),
-    [state.pantryItems]
-  );
-
-  const wasteStats = useMemo(() => getWasteStats(state.pantryItems), [state.pantryItems]);
-
   const shouldPromptNewMealPlan = useMemo(() => {
     if (!state.preferences.lastMealPlanDate) {
       return true;
@@ -502,11 +432,6 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       profileSyncError,
       displayName,
       formName,
-      activePantryItems,
-      expiringItems,
-      usedItems,
-      expiredItems,
-      wasteStats,
       shouldPromptNewMealPlan,
       setSelectedTab: (selectedTab) => patchState({ selectedTab }),
       hydrateViewer,
@@ -530,23 +455,6 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
         patchState({ governmentProfile: { ...state.governmentProfile, ...profile } });
       },
       setEbtConnected: (ebtConnected) => patchState({ ebtConnected }),
-      addPantryItem: (item) => patchState({ pantryItems: [...state.pantryItems, item] }),
-      updatePantryItemStatus: (itemId, status) => {
-        patchState({
-          pantryItems: state.pantryItems.map((item) =>
-            item.id === itemId
-              ? {
-                  ...item,
-                  status,
-                  dateUsed: status === 'used' ? new Date().toISOString() : item.dateUsed,
-                }
-              : item
-          ),
-        });
-      },
-      deletePantryItem: (itemId) => {
-        patchState({ pantryItems: state.pantryItems.filter((item) => item.id !== itemId) });
-      },
       addToCart: (deal) => {
         if (state.cart.some((item) => item.id === deal.id)) {
           return;
@@ -558,10 +466,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       markMealPlanGenerated: async () => savePreferences({ lastMealPlanDate: new Date().toISOString().slice(0, 10) }),
     }),
     [
-      activePantryItems,
       completeOnboarding,
-      expiredItems,
-      expiringItems,
       hydrateViewer,
       isReady,
       patchState,
@@ -574,8 +479,6 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       saveProfile,
       shouldPromptNewMealPlan,
       state,
-      usedItems,
-      wasteStats,
     ]
   );
 
@@ -598,12 +501,3 @@ export function daysFromNow(days: number) {
   return new Date(Date.now() + days * 24 * 3600 * 1000).toISOString();
 }
 
-export function locationIcon(location: StorageLocation) {
-  if (location === 'Refrigerator') {
-    return 'fridge';
-  }
-  if (location === 'Freezer') {
-    return 'snow';
-  }
-  return 'box';
-}
