@@ -505,6 +505,44 @@ func TestStoredPantryReachesTheGenerator(t *testing.T) {
 		}
 	})
 
+	t.Run("a stated pantry quantity buys only the shortfall", func(t *testing.T) {
+		// Say how much rice there is, and less than the week needs. The list
+		// should ask for the difference rather than nothing.
+		half := 0.5
+		unit := "lb"
+		if _, err := pantryService.Update(ctx, identity, item.ID, db.PantryItemPatch{
+			QuantityAmount: &half, QuantityUnit: &unit,
+		}); err != nil {
+			t.Fatalf("Update(quantity) error = %v", err)
+		}
+
+		withQty, err := service.Generate(ctx, identity, baseline)
+		if err != nil {
+			t.Fatalf("Generate(with quantity) error = %v", err)
+		}
+
+		var rice *meals.GroceryItem
+		for i := range withQty.GroceryList {
+			for j := range withQty.GroceryList[i].Items {
+				if withQty.GroceryList[i].Items[j].IngredientID == riceID {
+					rice = &withQty.GroceryList[i].Items[j]
+				}
+			}
+		}
+		if rice == nil {
+			t.Fatal("rice left the grocery list entirely")
+		}
+		if !rice.PartiallyInPantry {
+			t.Fatalf("rice = %+v, want marked as partially owned", rice)
+		}
+		if rice.NeededQty <= 0 {
+			t.Fatalf("needed = %v, want the shortfall, not zero", rice.NeededQty)
+		}
+		if rice.EstimatedPrice <= 0 {
+			t.Error("the shortfall was not priced")
+		}
+	})
+
 	t.Run("the week gets cheaper", func(t *testing.T) {
 		if after.Summary.EstimatedCost.Point >= before.Summary.EstimatedCost.Point {
 			t.Errorf("cost went from %v to %v; owning an ingredient should reduce the shop",

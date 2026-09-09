@@ -9,6 +9,7 @@ import (
 
 	"github.com/helpthehive/server/internal/auth"
 	"github.com/helpthehive/server/internal/db"
+	"github.com/helpthehive/server/internal/domain/meals"
 	"github.com/helpthehive/server/internal/modules/catalog"
 	"github.com/helpthehive/server/internal/modules/users"
 )
@@ -258,4 +259,15 @@ func (s *Service) IngredientIDs(ctx context.Context, identity auth.Identity) ([]
 // resolved from a verified token.
 func (s *Service) IngredientIDsForUser(ctx context.Context, userID string) ([]string, error) {
 	return s.store.ActivePantryIngredientIDs(ctx, userID)
+}
+
+// HoldingsForUser is the quantity-aware read: what the user has, and how much,
+// where they said. Rows sharing an ingredient are combined by the domain, which
+// knows when two amounts add up and when the total cannot be known.
+func (s *Service) HoldingsForUser(ctx context.Context, userID string) (map[string]meals.PantryHolding, error) {
+	holdings, err := s.store.ActivePantryHoldings(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+	return meals.HoldingsByIngredient(holdings), nil
 }

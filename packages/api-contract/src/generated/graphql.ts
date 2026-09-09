@@ -1122,11 +1122,21 @@ export type PlanSummary = {
   budget?: Maybe<Scalars['Float']['output']>;
   consumedCostTotal?: Maybe<Scalars['Float']['output']>;
   estimatedCost: CostRange;
-  /** budget minus estimatedCost.high; null when no budget was set. */
+  /** budget minus estimatedCost.high; null when no budget was set. Negative when the plan costs more than the budget. */
   headroom?: Maybe<Scalars['Float']['output']>;
   householdSize: Scalars['Int']['output'];
   mealsPlanned: Scalars['Int']['output'];
   nutritionGoal?: Maybe<NutritionGoalSummary>;
+  /**
+   * True when even the cheapest safe plan costs more than the budget.
+   *
+   * The plan is still returned. Allergy and diet rules are never relaxed to reach
+   * a number, so the honest outcome is a safe plan that is marked as too
+   * expensive rather than a cheaper one somebody cannot eat.
+   */
+  overBudget: Scalars['Boolean']['output'];
+  /** How much over, when overBudget. Null otherwise. */
+  overage?: Maybe<Scalars['Float']['output']>;
   pantryItemsUsed: Array<Scalars['ID']['output']>;
   pantryValueUsed?: Maybe<Scalars['Float']['output']>;
 };

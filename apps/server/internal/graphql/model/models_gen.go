@@ -636,8 +636,16 @@ type PlanSummary struct {
 	MealsPlanned  int        `json:"mealsPlanned"`
 	Budget        *float64   `json:"budget,omitempty"`
 	EstimatedCost *CostRange `json:"estimatedCost"`
-	// budget minus estimatedCost.high; null when no budget was set.
-	Headroom             *float64              `json:"headroom,omitempty"`
+	// budget minus estimatedCost.high; null when no budget was set. Negative when the plan costs more than the budget.
+	Headroom *float64 `json:"headroom,omitempty"`
+	// True when even the cheapest safe plan costs more than the budget.
+	//
+	// The plan is still returned. Allergy and diet rules are never relaxed to reach
+	// a number, so the honest outcome is a safe plan that is marked as too
+	// expensive rather than a cheaper one somebody cannot eat.
+	OverBudget bool `json:"overBudget"`
+	// How much over, when overBudget. Null otherwise.
+	Overage              *float64              `json:"overage,omitempty"`
 	ConsumedCostTotal    *float64              `json:"consumedCostTotal,omitempty"`
 	PantryValueUsed      *float64              `json:"pantryValueUsed,omitempty"`
 	PantryItemsUsed      []string              `json:"pantryItemsUsed"`

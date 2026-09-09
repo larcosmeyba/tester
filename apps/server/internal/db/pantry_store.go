@@ -7,6 +7,8 @@ import (
 	"database/sql"
 	"sort"
 	"time"
+
+	"github.com/helpthehive/server/internal/domain/meals"
 )
 
 type PantryItem struct {
@@ -63,6 +65,9 @@ type PantryItemPatch struct {
 	// old id behind would have the planner counting something the user no
 	// longer says they have.
 	ClearIngredient bool
+	QuantityAmount  *float64
+	QuantityUnit    *string
+	UseFirst        *bool
 }
 
 func (s *Store) ListPantryItems(ctx context.Context, userID string, filter PantryFilter) ([]PantryItem, error) {
@@ -126,11 +131,14 @@ func (s *Store) UpdatePantryItem(ctx context.Context, userID string, id string, 
 		      WHEN $9::boolean THEN NULL
 		      ELSE COALESCE($10, ingredient_id)
 		    END,
+		    quantity_amount = COALESCE($11, quantity_amount),
+		    quantity_unit = COALESCE($12, quantity_unit),
+		    use_first = COALESCE($13, use_first),
 		    updated_at = now()
 		WHERE user_id = $1 AND id = $2
 		RETURNING id, user_id, name, quantity, location, expiration_date, category, status, date_added, date_used, ingredient_id, quantity_amount::float8, quantity_unit, use_first, created_at, updated_at
 	`, userID, id, patch.Name, patch.Quantity, patch.Location, patch.ExpirationDate, patch.Category, patch.Status,
-		patch.ClearIngredient, patch.IngredientID)
+		patch.ClearIngredient, patch.IngredientID, patch.QuantityAmount, patch.QuantityUnit, patch.UseFirst)
 	return scanPantryItem(row)
 }
 
@@ -281,6 +289,45 @@ func scanPantryItem(row scanner) (PantryItem, error) {
 	}
 	item.QuantityUnit = nullStringPtr(unit)
 	return item, nil
+}
+
+// ActivePantryHoldings is what the user has on hand, with quantities where they
+// gave one. It is the quantity-aware sibling of ActivePantryIngredientIDs and
+// reads the same rows.
+//
+// Several rows can share an ingredient — two bags of rice — so they are
+// returned as-is and combined by meals.HoldingsByIngredient, which knows when
+// two amounts can be added and when the total is unknowable.
+func (s *Store) ActivePantryHoldings(ctx context.Context, userID string) ([]meals.PantryHolding, error) {
+	rows, err := s.pool.Query(ctx, `
+		SELECT ingredient_id, quantity_amount::float8, quantity_unit, use_first
+		FROM pantry_items
+		WHERE user_id = $1 AND status = 'ACTIVE' AND ingredient_id IS NOT NULL
+		ORDER BY use_first DESC, expiration_date ASC, ingredient_id
+	`, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var holdings []meals.PantryHolding
+	for rows.Next() {
+		var (
+			id       string
+			amount   *float64
+			unit     *string
+			useFirst bool
+		)
+		if err := rows.Scan(&id, &amount, &unit, &useFirst); err != nil {
+			return nil, err
+		}
+		holding := meals.PantryHolding{IngredientID: id, Amount: amount, UseFirst: useFirst}
+		if unit != nil {
+			holding.Unit = *unit
+		}
+		holdings = append(holdings, holding)
+	}
+	return holdings, rows.Err()
 }
 
 // ActivePantryIngredientIDs is what the meal generator reads: the canonical

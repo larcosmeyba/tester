@@ -20,14 +20,37 @@ import (
 // zero estimate rather than disappearing, so nothing silently goes missing from
 // a shop. Ingredients with no price row are listed with a zero estimate and
 // recorded in Assumptions — a missing price is never treated as free.
+// BuildBasket consolidates a set of planned recipes into a shopping list,
+// treating the pantry as presence-only: an owned ingredient is free.
+//
+// Kept for the callers that genuinely have no quantities. It delegates to
+// BuildBasketWithHoldings with every holding marked unknown, so there is one
+// implementation and the two can never drift.
 func BuildBasket(occurrences []meals.PlannedRecipe, pantry map[string]bool, catalog *meals.Catalog) meals.Basket {
+	ids := make([]string, 0, len(pantry))
+	for id := range pantry {
+		ids = append(ids, id)
+	}
+	return BuildBasketWithHoldings(occurrences, meals.HoldingsFromIDs(ids), catalog)
+}
+
+// BuildBasketWithHoldings is the quantity-aware consolidation.
+//
+// Where a holding carries a usable amount in a comparable unit, only the
+// shortfall is bought: two cups of rice needed against one owned is one cup on
+// the list, not zero. Where the amount is unknown — which is most pantry rows,
+// because people write "a bag" — the line is covered but flagged, so a shopper
+// is told to check rather than being quietly assured.
+func BuildBasketWithHoldings(occurrences []meals.PlannedRecipe, holdings map[string]meals.PantryHolding, catalog *meals.Catalog) meals.Basket {
 	needs := collectNeeds(occurrences, catalog)
 
 	var (
-		items       []meals.GroceryItem
-		unpriced    []string
-		missingQty  []string
-		anyUnpriced bool
+		items          []meals.GroceryItem
+		unpriced       []string
+		missingQty     []string
+		uncheckedQty   []string
+		partiallyOwned []string
+		anyUnpriced    bool
 	)
 
 	for _, entry := range needs {
@@ -39,10 +62,28 @@ func BuildBasket(occurrences []meals.PlannedRecipe, pantry map[string]bool, cata
 			UsedBy:       entry.usedBy,
 		}
 
-		if catalog.Matches(entry.ingredientID, pantry) {
-			item.InPantry = true
-			items = append(items, item)
-			continue
+		holding, owned := holdingFor(entry.ingredientID, holdings, catalog)
+		if owned {
+			remaining, coverage := meals.Subtract(entry.qty, entry.unit, holding)
+			switch coverage {
+			case meals.CoverageFull:
+				item.InPantry = true
+				items = append(items, item)
+				continue
+			case meals.CoverageUnknown:
+				// Owned, amount not known. Covered, and said out loud below.
+				item.InPantry = true
+				items = append(items, item)
+				uncheckedQty = append(uncheckedQty, entry.displayName)
+				continue
+			case meals.CoveragePartial:
+				// Buy the shortfall. The line stays on the list at the reduced
+				// quantity, priced normally from here down.
+				partiallyOwned = append(partiallyOwned, entry.displayName)
+				item.PartiallyInPantry = true
+				entry.qty = remaining
+				item.NeededQty = roundQty(remaining)
+			}
 		}
 
 		price, ok := catalog.Price(entry.ingredientID)
@@ -75,8 +116,18 @@ func BuildBasket(occurrences []meals.PlannedRecipe, pantry map[string]bool, cata
 	basket.Assumptions = append(basket.Assumptions,
 		"Prices are estimates and vary by store.",
 		"Salt, pepper and water are assumed to be on hand.")
-	if len(pantry) > 0 {
+	if len(holdings) > 0 {
 		basket.Assumptions = append(basket.Assumptions, "Pantry items are counted as $0 for this trip.")
+	}
+	if len(uncheckedQty) > 0 {
+		basket.Assumptions = append(basket.Assumptions,
+			"These are in your pantry but you did not say how much, so check you have enough: "+
+				joinDisplay(uncheckedQty)+".")
+	}
+	if len(partiallyOwned) > 0 {
+		basket.Assumptions = append(basket.Assumptions,
+			"Only the shortfall is listed for these, because you already have some: "+
+				joinDisplay(partiallyOwned)+".")
 	}
 	if len(unpriced) > 0 {
 		basket.Assumptions = append(basket.Assumptions,
@@ -191,4 +242,29 @@ func PurchaseCost(sections []meals.GrocerySection) float64 {
 		}
 	}
 	return meals.RoundCents(total)
+}
+
+// holdingFor looks up what the user has of an ingredient, following the
+// catalogue's parent relationship the same way the presence check always did:
+// owning "chicken" covers a recipe calling for chicken thighs.
+func holdingFor(ingredientID string, holdings map[string]meals.PantryHolding, catalog *meals.Catalog) (meals.PantryHolding, bool) {
+	if len(holdings) == 0 {
+		return meals.PantryHolding{}, false
+	}
+	if holding, ok := holdings[ingredientID]; ok {
+		return holding, true
+	}
+	if !catalog.Matches(ingredientID, meals.PantryIDs(holdings)) {
+		return meals.PantryHolding{}, false
+	}
+	// Matched through a parent. The parent's quantity is not this ingredient's
+	// quantity — a pound of "chicken" is not a pound of "chicken thighs" for
+	// subtraction purposes — so the amount is deliberately dropped and the
+	// coverage is unknown.
+	for id, holding := range holdings {
+		if catalog.Matches(ingredientID, map[string]bool{id: true}) {
+			return meals.PantryHolding{IngredientID: holding.IngredientID, UseFirst: holding.UseFirst}, true
+		}
+	}
+	return meals.PantryHolding{}, false
 }

@@ -107,7 +107,7 @@ func (p *Planner) BuildWith(request meals.PlanRequest, pool []meals.Recipe, plan
 		})
 	}
 
-	basket := grocery.BuildBasket(chosen, pantry, p.Catalog)
+	basket := grocery.BuildBasketWithHoldings(chosen, holdingsFor(request), p.Catalog)
 	summary := p.summarize(request, planned, basket)
 
 	plan := meals.Plan{
@@ -197,6 +197,15 @@ func (p *Planner) summarize(request meals.PlanRequest, planned []meals.PlannedMe
 		// estimate: a plan is only "within budget" if its worst case is.
 		headroom := meals.RoundCents(budget - basket.Cost.High)
 		summary.Headroom = &headroom
+		if headroom < 0 {
+			// Say it plainly rather than leaving a client to infer it from a
+			// sign. Nothing about the plan changes: it is the cheapest week the
+			// user's allergies, diet and dislikes allow, and it is returned as
+			// it stands.
+			summary.OverBudget = true
+			overage := meals.RoundCents(-headroom)
+			summary.Overage = &overage
+		}
 	}
 
 	var consumedTotal float64
@@ -262,4 +271,14 @@ func sortedKeys(values map[string]bool) []string {
 	}
 	sort.Strings(keys)
 	return keys
+}
+
+// holdingsFor is what the user has on hand, with quantities when the server
+// filled them in. Falling back to presence-only keeps every path that has no
+// quantities behaving exactly as it did.
+func holdingsFor(request meals.PlanRequest) map[string]meals.PantryHolding {
+	if len(request.PantryHoldings) > 0 {
+		return request.PantryHoldings
+	}
+	return meals.HoldingsFromIDs(request.PantryItems)
 }

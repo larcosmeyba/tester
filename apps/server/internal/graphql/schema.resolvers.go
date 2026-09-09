@@ -131,6 +131,13 @@ func (r *mutationResolver) AddPantryItem(ctx context.Context, input model.AddPan
 		Location:       string(input.Location),
 		ExpirationDate: expirationDate,
 		Category:       input.Category,
+		// The contract has carried these since meal-actions.graphql; they were
+		// being dropped here. An explicit ingredient id from a picker outranks
+		// the name-based resolution the service would otherwise do.
+		IngredientID:   input.IngredientID,
+		QuantityAmount: input.QuantityAmount,
+		QuantityUnit:   input.QuantityUnit,
+		UseFirst:       input.UseFirst != nil && *input.UseFirst,
 	})
 	if err != nil {
 		return nil, err
@@ -343,6 +350,11 @@ func pantryPatchFromInput(input model.UpdatePantryItemInput) (db.PantryItemPatch
 		Quantity:       input.Quantity,
 		ExpirationDate: expirationDate,
 		Category:       input.Category,
+		// Also carried by the contract and previously dropped here.
+		IngredientID:   input.IngredientID,
+		QuantityAmount: input.QuantityAmount,
+		QuantityUnit:   input.QuantityUnit,
+		UseFirst:       input.UseFirst,
 	}
 	if input.Location != nil {
 		location := string(*input.Location)

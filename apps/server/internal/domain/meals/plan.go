@@ -32,8 +32,16 @@ type PlanSummary struct {
 	MealsPlanned  int
 	Budget        *float64
 	EstimatedCost CostRange
-	// Budget minus EstimatedCost.High; nil when no budget was set.
-	Headroom             *float64
+	// Budget minus EstimatedCost.High; nil when no budget was set. Negative
+	// when the plan costs more than the budget.
+	Headroom *float64
+	// OverBudget is true when even the cheapest safe plan costs more than the
+	// budget allows. The plan is still returned: a household is not made safer
+	// by being handed nothing, and the alternative — dropping an allergy or a
+	// diet to hit a number — is never acceptable.
+	OverBudget bool
+	// Overage is how much over, when OverBudget. Nil otherwise.
+	Overage              *float64
 	ConsumedCostTotal    *float64
 	PantryValueUsed      *float64
 	PantryItemsUsed      []string

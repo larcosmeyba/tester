@@ -336,8 +336,18 @@ type PlanSummary {
   mealsPlanned: Int!
   budget: Float
   estimatedCost: CostRange!
-  "budget minus estimatedCost.high; null when no budget was set."
+  "budget minus estimatedCost.high; null when no budget was set. Negative when the plan costs more than the budget."
   headroom: Float
+  """
+  True when even the cheapest safe plan costs more than the budget.
+
+  The plan is still returned. Allergy and diet rules are never relaxed to reach
+  a number, so the honest outcome is a safe plan that is marked as too
+  expensive rather than a cheaper one somebody cannot eat.
+  """
+  overBudget: Boolean!
+  "How much over, when overBudget. Null otherwise."
+  overage: Float
   consumedCostTotal: Float
   pantryValueUsed: Float
   pantryItemsUsed: [ID!]!

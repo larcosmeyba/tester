@@ -297,6 +297,8 @@ func planSummaryModel(summary meals.PlanSummary) *model.PlanSummary {
 		Budget:            summary.Budget,
 		EstimatedCost:     costRangeModel(summary.EstimatedCost),
 		Headroom:          summary.Headroom,
+		OverBudget:        summary.OverBudget,
+		Overage:           summary.Overage,
 		ConsumedCostTotal: summary.ConsumedCostTotal,
 		PantryValueUsed:   summary.PantryValueUsed,
 		PantryItemsUsed:   orEmpty(summary.PantryItemsUsed),

@@ -91,20 +91,25 @@ type PlanRequest struct {
 	Days                 int        `json:"days"`
 	Budget               Budget     `json:"budget"`
 	// Canonical ingredient ids, not free text.
-	PantryItems          []string              `json:"pantry_items"`
-	DietaryRequirements  []DietRequirement     `json:"dietary_requirements"`
-	DietaryOtherText     *string               `json:"dietary_other_text"`
-	Allergies            []AllergyRequirement  `json:"allergies"`
-	AllergyIngredients   []string              `json:"allergy_ingredients"`
-	NutritionPreferences []NutritionPreference `json:"nutrition_preferences"`
-	Likes                FoodPreferences       `json:"likes"`
-	Dislikes             FoodPreferences       `json:"dislikes"`
-	CookingTime          CookingTime           `json:"cooking_time"`
-	Equipment            []string              `json:"equipment"`
-	CookingStyle         []string              `json:"cooking_style"`
-	Leftovers            string                `json:"leftovers"`
-	ExcludeRecipeIDs     []string              `json:"exclude_recipe_ids"`
-	Seed                 *int                  `json:"seed"`
+	PantryItems []string `json:"pantry_items"`
+	// PantryHoldings is how much of each pantry ingredient the user has, where
+	// they said. It is filled by the server from the pantry and is deliberately
+	// not part of the wire format: a quantity is evidence about someone's
+	// cupboard, not something a client gets to assert.
+	PantryHoldings       map[string]PantryHolding `json:"-"`
+	DietaryRequirements  []DietRequirement        `json:"dietary_requirements"`
+	DietaryOtherText     *string                  `json:"dietary_other_text"`
+	Allergies            []AllergyRequirement     `json:"allergies"`
+	AllergyIngredients   []string                 `json:"allergy_ingredients"`
+	NutritionPreferences []NutritionPreference    `json:"nutrition_preferences"`
+	Likes                FoodPreferences          `json:"likes"`
+	Dislikes             FoodPreferences          `json:"dislikes"`
+	CookingTime          CookingTime              `json:"cooking_time"`
+	Equipment            []string                 `json:"equipment"`
+	CookingStyle         []string                 `json:"cooking_style"`
+	Leftovers            string                   `json:"leftovers"`
+	ExcludeRecipeIDs     []string                 `json:"exclude_recipe_ids"`
+	Seed                 *int                     `json:"seed"`
 }
 
 // DecodeRequest reads back the questionnaire snapshot stored with a plan. A

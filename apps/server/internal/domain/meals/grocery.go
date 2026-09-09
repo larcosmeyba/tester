@@ -25,8 +25,13 @@ type GroceryItem struct {
 	EstimatedPrice float64
 	PriceTier      *int
 	InPantry       bool
-	IsChecked      bool
-	UsedBy         []string
+	// PartiallyInPantry means the user owns some of this and the quantity below
+	// is only the shortfall. It is separate from InPantry because "you own this,
+	// buy none" and "you own some, buy the rest" are different instructions to
+	// a shopper.
+	PartiallyInPantry bool
+	IsChecked         bool
+	UsedBy            []string
 }
 
 type GrocerySection struct {

@@ -456,6 +456,8 @@ type ComplexityRoot struct {
 		HouseholdSize        func(childComplexity int) int
 		MealsPlanned         func(childComplexity int) int
 		NutritionGoal        func(childComplexity int) int
+		OverBudget           func(childComplexity int) int
+		Overage              func(childComplexity int) int
 		PantryItemsUsed      func(childComplexity int) int
 		PantryValueUsed      func(childComplexity int) int
 	}
@@ -2893,6 +2895,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.PlanSummary.NutritionGoal(childComplexity), true
 
+	case "PlanSummary.overBudget":
+		if e.complexity.PlanSummary.OverBudget == nil {
+			break
+		}
+
+		return e.complexity.PlanSummary.OverBudget(childComplexity), true
+
+	case "PlanSummary.overage":
+		if e.complexity.PlanSummary.Overage == nil {
+			break
+		}
+
+		return e.complexity.PlanSummary.Overage(childComplexity), true
+
 	case "PlanSummary.pantryItemsUsed":
 		if e.complexity.PlanSummary.PantryItemsUsed == nil {
 			break
@@ -4367,8 +4383,18 @@ type PlanSummary {
   mealsPlanned: Int!
   budget: Float
   estimatedCost: CostRange!
-  "budget minus estimatedCost.high; null when no budget was set."
+  "budget minus estimatedCost.high; null when no budget was set. Negative when the plan costs more than the budget."
   headroom: Float
+  """
+  True when even the cheapest safe plan costs more than the budget.
+
+  The plan is still returned. Allergy and diet rules are never relaxed to reach
+  a number, so the honest outcome is a safe plan that is marked as too
+  expensive rather than a cheaper one somebody cannot eat.
+  """
+  overBudget: Boolean!
+  "How much over, when overBudget. Null otherwise."
+  overage: Float
   consumedCostTotal: Float
   pantryValueUsed: Float
   pantryItemsUsed: [ID!]!
@@ -13748,6 +13774,10 @@ func (ec *executionContext) fieldContext_MealPlan_summary(_ context.Context, fie
 				return ec.fieldContext_PlanSummary_estimatedCost(ctx, field)
 			case "headroom":
 				return ec.fieldContext_PlanSummary_headroom(ctx, field)
+			case "overBudget":
+				return ec.fieldContext_PlanSummary_overBudget(ctx, field)
+			case "overage":
+				return ec.fieldContext_PlanSummary_overage(ctx, field)
 			case "consumedCostTotal":
 				return ec.fieldContext_PlanSummary_consumedCostTotal(ctx, field)
 			case "pantryValueUsed":
@@ -19953,6 +19983,91 @@ func (ec *executionContext) _PlanSummary_headroom(ctx context.Context, field gra
 }
 
 func (ec *executionContext) fieldContext_PlanSummary_headroom(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "PlanSummary",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _PlanSummary_overBudget(ctx context.Context, field graphql.CollectedField, obj *model.PlanSummary) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_PlanSummary_overBudget(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.OverBudget, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_PlanSummary_overBudget(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "PlanSummary",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _PlanSummary_overage(ctx context.Context, field graphql.CollectedField, obj *model.PlanSummary) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_PlanSummary_overage(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Overage, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*float64)
+	fc.Result = res
+	return ec.marshalOFloat2ᚖfloat64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_PlanSummary_overage(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "PlanSummary",
 		Field:      field,
@@ -31678,6 +31793,13 @@ func (ec *executionContext) _PlanSummary(ctx context.Context, sel ast.SelectionS
 			}
 		case "headroom":
 			out.Values[i] = ec._PlanSummary_headroom(ctx, field, obj)
+		case "overBudget":
+			out.Values[i] = ec._PlanSummary_overBudget(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "overage":
+			out.Values[i] = ec._PlanSummary_overage(ctx, field, obj)
 		case "consumedCostTotal":
 			out.Values[i] = ec._PlanSummary_consumedCostTotal(ctx, field, obj)
 		case "pantryValueUsed":

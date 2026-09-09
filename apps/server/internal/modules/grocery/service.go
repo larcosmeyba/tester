@@ -276,7 +276,7 @@ func (s *Service) BasketFor(ctx context.Context, userID string, stored meals.Mea
 		}
 		occurrences = append(occurrences, meals.PlannedRecipe{Recipe: recipe, Scale: meal.ScaleFactor})
 	}
-	return BuildBasket(occurrences, meals.Set(request.PantryItems...), cat), cat, nil
+	return BuildBasketWithHoldings(occurrences, requestHoldings(request), cat), cat, nil
 }
 
 // PlanRecipes loads every recipe a stored plan refers to, keyed by id.
@@ -328,3 +328,12 @@ func CostRangeOf(list meals.GroceryList) meals.CostRange {
 // Everything is priced against US estimates today. `geographic_scope` exists on
 // the price rows so this can become a user-derived value without a migration.
 const defaultPriceScope = "us"
+
+// requestHoldings prefers the server-filled quantities and falls back to
+// presence-only, so a caller that never set them is unaffected.
+func requestHoldings(request meals.PlanRequest) map[string]meals.PantryHolding {
+	if len(request.PantryHoldings) > 0 {
+		return request.PantryHoldings
+	}
+	return meals.HoldingsFromIDs(meals.Dedupe(request.PantryItems))
+}

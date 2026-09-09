@@ -33,6 +33,7 @@ type ProfileSource interface {
 
 type PantrySource interface {
 	IngredientIDsForUser(ctx context.Context, userID string) ([]string, error)
+	HoldingsForUser(ctx context.Context, userID string) (map[string]meals.PantryHolding, error)
 }
 
 // Repository is what this module needs from the database. It is declared here
@@ -315,6 +316,16 @@ func (s *Service) complete(ctx context.Context, userID string, request meals.Pla
 				"user_id", userID, "error", err.Error())
 		} else if len(owned) > 0 {
 			request.PantryItems = meals.Dedupe(append(append([]string{}, request.PantryItems...), owned...))
+		}
+
+		// The quantities behind those ids, where the user gave any. Without
+		// them the grocery list can only say "you have rice"; with them it can
+		// say "buy one more cup".
+		if holdings, err := s.pantry.HoldingsForUser(ctx, userID); err != nil {
+			s.logger.WarnContext(ctx, "could not read pantry quantities for meal generation",
+				"user_id", userID, "error", err.Error())
+		} else if len(holdings) > 0 {
+			request.PantryHoldings = holdings
 		}
 	}
 
