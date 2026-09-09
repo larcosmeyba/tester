@@ -18,6 +18,7 @@ import {
 } from '@/features/profile/profile-repository';
 import { refreshPushTokenIfPermitted } from '@/features/notifications/notification-service';
 import { clearPendingSignupProfile, loadPendingSignupProfile, savePendingSignupProfile } from './pending-signup-storage';
+import { loadSensitiveProfile, saveSensitiveProfile } from './sensitive-profile-storage';
 
 export type AppProfile = {
   handle?: string;
@@ -196,13 +197,14 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       try {
         const raw = await AsyncStorage.getItem(storageKey);
         const securedPending = await loadPendingSignupProfile();
-        if (!raw) {
+        const securedProfile = await loadSensitiveProfile();
+        if (!raw && !securedProfile) {
           if (!cancelled) {
             setState((current) => ({ ...current, pendingSignupProfile: securedPending }));
           }
           return;
         }
-        const parsed = JSON.parse(raw) as Partial<PersistedState> & { notificationPreferences?: unknown };
+        const parsed = (raw ? JSON.parse(raw) : {}) as Partial<PersistedState> & { notificationPreferences?: unknown };
         const legacyPending = parsed.pendingSignupProfile;
         const persisted = { ...parsed };
         delete persisted.notificationPreferences;
@@ -210,12 +212,22 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
         if (!securedPending && legacyPending) {
           await savePendingSignupProfile(legacyPending).catch(() => undefined);
         }
+        // Migrate any profile PII left in the old plaintext store into
+        // SecureStore, then drop it from the AsyncStorage copy below.
+        // governmentProfile is not migrated: benefits answers live on the
+        // server now and are never kept on device.
+        const legacyProfile = persisted.profile;
+        delete persisted.profile;
+        delete persisted.governmentProfile;
+        if (!securedProfile && legacyProfile) {
+          await saveSensitiveProfile(legacyProfile).catch(() => undefined);
+        }
         if (!cancelled) {
           setState({
             ...defaultState,
             ...persisted,
             pendingSignupProfile: securedPending ?? legacyPending,
-            profile: { ...defaultProfile, ...persisted.profile },
+            profile: { ...defaultProfile, ...(securedProfile ?? legacyProfile) },
             preferences: { ...defaultPreferences, ...persisted.preferences },
             // Never restored from device storage: see the write below.
             governmentProfile: defaultGovernmentProfile,
@@ -239,20 +251,22 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     if (!isLocalReady) {
       return;
     }
-    // governmentProfile is dropped along with the pending signup profile.
-    //
-    // Benefits answers are the most sensitive data in the product — dates of
-    // birth, income, immigration status, and for a whole household including
-    // children — and this store is unencrypted device storage that survives
-    // sign-out. They live on the server now, behind the viewer's token, and are
-    // fetched by the benefits screens when needed. Anything already written to
-    // this key by an older build is overwritten by the line below.
+    // The app profile holds PII (name, phone, zip): it is encrypted in
+    // SecureStore, and only genuinely non-sensitive state goes to unencrypted
+    // AsyncStorage. governmentProfile is dropped along with the pending signup
+    // profile: benefits answers are the most sensitive data in the product —
+    // dates of birth, income, immigration status, for a whole household
+    // including children — and they live on the server now, behind the
+    // viewer's token, fetched by the benefits screens when needed. Anything
+    // already written to this key by an older build is overwritten below.
     const {
       pendingSignupProfile: _pendingSignupProfile,
+      profile: _profile,
       governmentProfile: _governmentProfile,
       ...nonSensitiveState
     } = state;
     AsyncStorage.setItem(storageKey, JSON.stringify(nonSensitiveState)).catch(() => undefined);
+    void saveSensitiveProfile(state.profile).catch(() => undefined);
   }, [isLocalReady, state]);
 
   const patchState = useCallback((patch: Partial<PersistedState>) => {

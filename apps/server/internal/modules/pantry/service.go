@@ -2,11 +2,11 @@ package pantry
 
 import (
 	"context"
-	"errors"
 	"log/slog"
 	"strings"
 	"time"
 
+	"github.com/helpthehive/server/internal/apperrors"
 	"github.com/helpthehive/server/internal/auth"
 	"github.com/helpthehive/server/internal/db"
 	"github.com/helpthehive/server/internal/domain/meals"
@@ -113,7 +113,7 @@ func (s *Service) Update(ctx context.Context, identity auth.Identity, id string,
 	}
 	id = strings.TrimSpace(id)
 	if id == "" {
-		return db.PantryItem{}, errors.New("pantry item id is required")
+		return db.PantryItem{}, apperrors.Public("pantry item id is required")
 	}
 	normalizePatch(&patch)
 	if err := validatePatch(patch); err != nil {
@@ -128,7 +128,7 @@ func (s *Service) Update(ctx context.Context, identity auth.Identity, id string,
 	}
 	item, err := s.store.UpdatePantryItem(ctx, viewer.User.ID, id, patch)
 	if db.IsNotFound(err) {
-		return db.PantryItem{}, errors.New("pantry item not found")
+		return db.PantryItem{}, apperrors.Public("pantry item not found")
 	}
 	return item, err
 }
@@ -140,11 +140,11 @@ func (s *Service) MarkUsed(ctx context.Context, identity auth.Identity, id strin
 	}
 	id = strings.TrimSpace(id)
 	if id == "" {
-		return db.PantryItem{}, errors.New("pantry item id is required")
+		return db.PantryItem{}, apperrors.Public("pantry item id is required")
 	}
 	item, err := s.store.MarkPantryItemUsed(ctx, viewer.User.ID, id)
 	if db.IsNotFound(err) {
-		return db.PantryItem{}, errors.New("pantry item not found")
+		return db.PantryItem{}, apperrors.Public("pantry item not found")
 	}
 	return item, err
 }
@@ -156,7 +156,7 @@ func (s *Service) Delete(ctx context.Context, identity auth.Identity, id string)
 	}
 	id = strings.TrimSpace(id)
 	if id == "" {
-		return false, errors.New("pantry item id is required")
+		return false, apperrors.Public("pantry item id is required")
 	}
 	return s.store.DeletePantryItem(ctx, viewer.User.ID, id)
 }
@@ -170,19 +170,19 @@ func normalizeCreateParams(params *db.CreatePantryItemParams) {
 
 func validateCreateParams(params db.CreatePantryItemParams) error {
 	if params.Name == "" {
-		return errors.New("name is required")
+		return apperrors.Public("name is required")
 	}
 	if params.Quantity == "" {
-		return errors.New("quantity is required")
+		return apperrors.Public("quantity is required")
 	}
 	if params.Category == "" {
-		return errors.New("category is required")
+		return apperrors.Public("category is required")
 	}
 	if !validLocation(params.Location) {
-		return errors.New("location is invalid")
+		return apperrors.Public("location is invalid")
 	}
 	if params.ExpirationDate.IsZero() {
-		return errors.New("expiration date is required")
+		return apperrors.Public("expiration date is required")
 	}
 	return nil
 }
@@ -197,19 +197,19 @@ func normalizePatch(patch *db.PantryItemPatch) {
 
 func validatePatch(patch db.PantryItemPatch) error {
 	if patch.Name != nil && *patch.Name == "" {
-		return errors.New("name cannot be empty")
+		return apperrors.Public("name cannot be empty")
 	}
 	if patch.Quantity != nil && *patch.Quantity == "" {
-		return errors.New("quantity cannot be empty")
+		return apperrors.Public("quantity cannot be empty")
 	}
 	if patch.Category != nil && *patch.Category == "" {
-		return errors.New("category cannot be empty")
+		return apperrors.Public("category cannot be empty")
 	}
 	if patch.Location != nil && !validLocation(*patch.Location) {
-		return errors.New("location is invalid")
+		return apperrors.Public("location is invalid")
 	}
 	if patch.Status != nil && !validStatus(*patch.Status) {
-		return errors.New("status is invalid")
+		return apperrors.Public("status is invalid")
 	}
 	return nil
 }

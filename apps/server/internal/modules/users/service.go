@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/helpthehive/server/internal/apperrors"
 	"github.com/helpthehive/server/internal/auth"
 	"github.com/helpthehive/server/internal/db"
 )
@@ -184,7 +185,7 @@ func (s *Service) CompleteOnboarding(ctx context.Context, identity auth.Identity
 func (s *Service) RegisterPushToken(ctx context.Context, identity auth.Identity, token string, platform string, deviceID *string) (db.PushToken, error) {
 	token = strings.TrimSpace(token)
 	if token == "" {
-		return db.PushToken{}, errors.New("push token is required")
+		return db.PushToken{}, apperrors.Public("push token is required")
 	}
 	if deviceID != nil {
 		trimmed := strings.TrimSpace(*deviceID)
@@ -200,7 +201,7 @@ func (s *Service) RegisterPushToken(ctx context.Context, identity auth.Identity,
 func (s *Service) DeletePushToken(ctx context.Context, identity auth.Identity, token string) (bool, error) {
 	token = strings.TrimSpace(token)
 	if token == "" {
-		return false, errors.New("push token is required")
+		return false, apperrors.Public("push token is required")
 	}
 	viewer, err := s.Viewer(ctx, identity)
 	if err != nil {
@@ -238,13 +239,13 @@ func trimProfilePatch(patch *db.ProfilePatch) {
 
 func validateProfilePatch(patch db.ProfilePatch) error {
 	if patch.FirstName != nil && *patch.FirstName == "" {
-		return errors.New("first name is required")
+		return apperrors.Public("first name is required")
 	}
 	if patch.LastName != nil && *patch.LastName == "" {
-		return errors.New("last name is required")
+		return apperrors.Public("last name is required")
 	}
 	if patch.HouseholdSize != nil && *patch.HouseholdSize <= 0 {
-		return errors.New("household size must be greater than zero")
+		return apperrors.Public("household size must be greater than zero")
 	}
 	return nil
 }

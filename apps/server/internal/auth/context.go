@@ -2,7 +2,8 @@ package auth
 
 import (
 	"context"
-	"errors"
+
+	"github.com/helpthehive/server/internal/apperrors"
 )
 
 type Identity struct {
@@ -25,7 +26,7 @@ func IdentityFromContext(ctx context.Context) (Identity, bool) {
 func RequireIdentity(ctx context.Context) (Identity, error) {
 	identity, ok := IdentityFromContext(ctx)
 	if !ok || identity.Subject == "" {
-		return Identity{}, errors.New("authentication required")
+		return Identity{}, apperrors.Public("authentication required")
 	}
 	return identity, nil
 }
