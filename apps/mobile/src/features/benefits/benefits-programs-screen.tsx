@@ -11,6 +11,7 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import { AppButton, AppHeader, Card, EmptyState, ScrollScreen, uiText } from '@/components/hive-ui';
 import { HiveColors, Spacing } from '@/constants/theme';
+import { BenefitsRenewalBanner } from '@/features/benefits/benefits-renewal-banner';
 import {
   type BenefitsForm,
   fetchBenefitsForms,
@@ -57,6 +58,8 @@ export default function BenefitsProgramsScreen() {
     <ScrollScreen>
       <AppHeader title="Government Assistance" onBack={router.back} />
 
+      <BenefitsRenewalBanner />
+
       <View style={styles.intro}>
         <Text style={uiText.muted}>
           Help The Hive fills in what it already knows and tells you exactly what is left. You
@@ -66,6 +69,16 @@ export default function BenefitsProgramsScreen() {
           Whether you qualify for a program is decided by the agency that runs it, on the
           application you send them. Help The Hive does not and cannot decide that.
         </Text>
+      </View>
+
+      <View style={styles.linkWrap}>
+        <Card onPress={() => router.push('/resources/benefits-renewals')}>
+          <Text style={uiText.subtitle}>Benefits due</Text>
+          <Text style={styles.coverage}>
+            Renewal deadlines for your completed applications — confirm yours and start the
+            renewal paperwork.
+          </Text>
+        </Card>
       </View>
 
       {error !== '' ? (
@@ -124,6 +137,7 @@ function coverageLine(form: BenefitsForm): string {
 
 const styles = StyleSheet.create({
   intro: { paddingHorizontal: Spacing.three, paddingBottom: Spacing.two, gap: Spacing.one },
+  linkWrap: { paddingHorizontal: Spacing.three, paddingBottom: Spacing.two },
   list: { paddingHorizontal: Spacing.three, gap: Spacing.two, paddingBottom: Spacing.four },
   meta: { color: HiveColors.textSecondary, fontSize: 12, marginBottom: 4 },
   coverage: { color: HiveColors.textSecondary, fontSize: 13, marginBottom: Spacing.one },

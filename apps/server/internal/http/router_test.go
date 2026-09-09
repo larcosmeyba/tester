@@ -42,6 +42,9 @@ func TestGraphQLRequiresBearerToken(t *testing.T) {
 		// an unauthenticated request, and the zero value mounts the routes
 		// without a service behind them.
 		PennyDeps{},
+		// The renewal sweep endpoint is covered by its own tests; the zero
+		// value leaves it returning 503 here.
+		JobsDeps{},
 		slog.New(slog.NewTextHandler(io.Discard, nil)),
 	)
 

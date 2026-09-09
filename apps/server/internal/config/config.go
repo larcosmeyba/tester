@@ -17,6 +17,11 @@ type Config struct {
 	RateLimitPerMinute int
 	Auth               AuthConfig
 	Penny              PennyConfig
+	// InternalJobSecret authenticates internal job endpoints
+	// (/internal/jobs/*), called by Cloud Scheduler with the secret in the
+	// X-Job-Secret header. Empty disables those endpoints; the server runs
+	// fine without it.
+	InternalJobSecret string
 }
 
 type AuthConfig struct {
@@ -62,6 +67,7 @@ func Load() (Config, error) {
 			ServiceToken:    strings.TrimSpace(os.Getenv("PENNY_SERVICE_TOKEN")),
 			ToolTokenSecret: strings.TrimSpace(os.Getenv("PENNY_TOOL_TOKEN_SECRET")),
 		},
+		InternalJobSecret: strings.TrimSpace(os.Getenv("INTERNAL_JOB_SECRET")),
 	}
 
 	if cfg.DatabaseURL == "" {

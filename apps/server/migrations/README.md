@@ -16,6 +16,8 @@ the order; nothing else decides it.
 | 00009 | `meal_prep.sql` | meal-prep sessions |
 | 00010 | `penny.sql` | conversations and turns |
 | 00011 | `recipe_imports.sql` | recipe import jobs |
+| 00012 | `benefits_renewals.sql` | benefits renewals, program rules, renewal notification preferences |
+| 00013 | `benefits_renewal_sends.sql` | at-most-once renewal send claims |
 
 ## Rules
 

@@ -11,6 +11,7 @@ import { useAuth } from '@/auth/auth-context';
 import { AppButton, AppHeader, AppTextField, AvatarButton, Card, CheckboxRow, HiveIcon, InfoRow, ScrollScreen, StatBadge, uiText } from '@/components/hive-ui';
 import { requestAndRegisterPushToken, unregisterStoredPushToken } from '@/features/notifications/notification-service';
 import { deleteViewerData, HandleUpdateError, type HandleAvailability } from '@/features/profile/profile-repository';
+import { updateBenefitsRenewalPreferences } from '@/features/benefits/benefits-repository';
 import { useAppState } from '@/state/app-state';
 import { StyleSheet } from 'react-native';
 import { sharedStyles } from '@/features/app/app-shared';
@@ -322,7 +323,7 @@ export function SettingsScreen({ nav }: { nav: Navigation }) {
   return (
     <ScrollScreen>
       <AppHeader title="App Settings" onBack={nav.back} />
-      <InfoRow icon="bell" title="Notifications" subtitle="Meal, pantry, and resource reminders" onPress={() => nav.push('notifications')} />
+      <InfoRow icon="bell" title="Notifications" subtitle="Meal, pantry, resource, and benefits reminders" onPress={() => nav.push('notifications')} />
       <InfoRow icon="finance" title="Budget Settings" subtitle="Weekly grocery budget and finance topics" onPress={() => nav.push('budgetSettings')} />
       <InfoRow icon="map" title="Location" subtitle="Used for nearby resources" />
       <InfoRow icon="shield" title="Privacy" subtitle="Local prototype data only" />
@@ -336,6 +337,10 @@ export function NotificationsScreen({ nav }: { nav: Navigation }) {
   const [pantry, setPantry] = useState(app.preferences.expiringPantryNotificationsEnabled);
   const [meals, setMeals] = useState(app.preferences.weeklyMealPlanNotificationsEnabled);
   const [resources, setResources] = useState(app.preferences.resourceReminderNotificationsEnabled);
+  // Benefits renewal preferences live on the server (defaults on) and are
+  // saved via their own mutation; there is no local copy until first save.
+  const [renewalAlerts, setRenewalAlerts] = useState(true);
+  const [discreetLockScreen, setDiscreetLockScreen] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState('');
   const [saveError, setSaveError] = useState('');
@@ -351,6 +356,7 @@ export function NotificationsScreen({ nav }: { nav: Navigation }) {
         weeklyMealPlanNotificationsEnabled: meals,
         resourceReminderNotificationsEnabled: resources,
       });
+      await updateBenefitsRenewalPreferences(renewalAlerts, discreetLockScreen);
       if (enabled) {
         const result = await requestAndRegisterPushToken();
         if (result.status !== 'registered') {
@@ -381,6 +387,18 @@ export function NotificationsScreen({ nav }: { nav: Navigation }) {
         <CheckboxRow title="Expiring pantry items" selected={pantry} onPress={() => setPantry(!pantry)} />
         <CheckboxRow title="Weekly meal planning" selected={meals} onPress={() => setMeals(!meals)} />
         <CheckboxRow title="Resource reminders" selected={resources} onPress={() => setResources(!resources)} />
+        <CheckboxRow
+          title="Benefits renewal reminders"
+          subtitle="Remind me before a certification period ends"
+          selected={renewalAlerts}
+          onPress={() => setRenewalAlerts(!renewalAlerts)}
+        />
+        <CheckboxRow
+          title="Discreet lock-screen notifications"
+          subtitle="Keeps program names off your lock screen"
+          selected={discreetLockScreen}
+          onPress={() => setDiscreetLockScreen(!discreetLockScreen)}
+        />
         {saveMessage ? <Text style={uiText.muted}>{saveMessage}</Text> : null}
         {saveError ? <Text style={sharedStyles.authError}>{saveError}</Text> : null}
         <AppButton title={isSaving ? 'Saving…' : 'Save Changes'} disabled={isSaving} onPress={() => void save()} />

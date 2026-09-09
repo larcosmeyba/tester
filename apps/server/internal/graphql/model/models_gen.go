@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"strconv"
+	"time"
 )
 
 // What the reviewer fills in before accepting a draft.
@@ -57,6 +58,8 @@ type AppPreferences struct {
 	ExpiringPantryNotificationsEnabled   bool     `json:"expiringPantryNotificationsEnabled"`
 	WeeklyMealPlanNotificationsEnabled   bool     `json:"weeklyMealPlanNotificationsEnabled"`
 	ResourceReminderNotificationsEnabled bool     `json:"resourceReminderNotificationsEnabled"`
+	BenefitsRenewalNotificationsEnabled  bool     `json:"benefitsRenewalNotificationsEnabled"`
+	BenefitsRenewalDiscreetLockScreen    bool     `json:"benefitsRenewalDiscreetLockScreen"`
 	CreatedAt                            string   `json:"createdAt"`
 	UpdatedAt                            string   `json:"updatedAt"`
 }
@@ -236,6 +239,38 @@ type BenefitsProfile struct {
 	VocabularyVersion int               `json:"vocabularyVersion"`
 	Answers           []*BenefitsAnswer `json:"answers"`
 	Groups            []*BenefitsGroup  `json:"groups"`
+}
+
+// Reference data: a typical certification period for a program, optionally per state.
+type BenefitsProgramRule struct {
+	Program string `json:"program"`
+	// A state code, or '*' for the national default.
+	State string `json:"state"`
+	// Typical certification period in months. Null when the program has no fixed period (VA one-time claims, SSI redeterminations).
+	CertPeriodMonths *int    `json:"certPeriodMonths,omitempty"`
+	SourceCitation   string  `json:"sourceCitation"`
+	Notes            *string `json:"notes,omitempty"`
+}
+
+// One scheduled renewal reminder. It keys off the final application and stores
+// only program, state, form id and dates — no answers, no PII beyond the viewer
+// it belongs to. Every date here is presented as "typical — confirm yours"
+// until the user confirms it.
+type BenefitsRenewal struct {
+	ID                  string     `json:"id"`
+	Program             string     `json:"program"`
+	State               string     `json:"state"`
+	FormID              string     `json:"formId"`
+	CertificationEndsAt *time.Time `json:"certificationEndsAt,omitempty"`
+	RenewalDueAt        time.Time  `json:"renewalDueAt"`
+	// Where the deadline came from: 'rule-derived' or 'user-confirmed'.
+	Source string `json:"source"`
+	// One of: scheduled, reminded, started, done, dismissed.
+	Status string `json:"status"`
+	// Which reminder offset has already been sent: 0, 1, 2 or 3.
+	ReminderStage int `json:"reminderStage"`
+	// Whole days until the renewal is due, computed server-side. Negative when overdue.
+	DaysRemaining int `json:"daysRemaining"`
 }
 
 type BenefitsSkippedField struct {

@@ -42,6 +42,31 @@ func (s *Store) DeletePushToken(ctx context.Context, userID string, token string
 	return tag.RowsAffected() > 0, nil
 }
 
+// PushTokensForUser lists a user's registered push tokens, for the renewal
+// sweep. It returns the token strings the sender needs, never any user detail.
+func (s *Store) PushTokensForUser(ctx context.Context, userID string) ([]PushToken, error) {
+	rows, err := s.pool.Query(ctx, `
+		SELECT id, user_id, token, platform, device_id, created_at, updated_at, last_seen_at
+		FROM push_tokens
+		WHERE user_id = $1
+		ORDER BY last_seen_at DESC
+	`, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var out []PushToken
+	for rows.Next() {
+		token, err := scanPushToken(rows)
+		if err != nil {
+			return nil, err
+		}
+		out = append(out, token)
+	}
+	return out, rows.Err()
+}
+
 func scanPushToken(row scanner) (PushToken, error) {
 	var token PushToken
 	var deviceID sql.NullString
