@@ -1,0 +1,113 @@
+{
+  "title": "15-Minute Red Lentil Dal",
+  "description": "A fast weeknight dal.\n\nTips from the video:\n- Toast the spices before adding the lentils.",
+  "sourceType": "video_import",
+  "sourceUrl": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+  "sourceName": "Hive Kitchen",
+  "licenseId": null,
+  "attributionText": "Adapted from \"15-Minute Red Lentil Dal\" by Hive Kitchen — https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+  "visibility": "private",
+  "reviewStatus": "draft",
+  "servings": 4.0,
+  "servingsConfidence": "source",
+  "servingSizeText": null,
+  "scalable": true,
+  "prepTimeMinutes": 5,
+  "cookTimeMinutes": 15,
+  "totalTimeMinutes": 20,
+  "timeConfidence": "source",
+  "mealTypes": [
+    "dinner"
+  ],
+  "cuisine": "Indian",
+  "difficulty": 2,
+  "equipmentRequired": [
+    "stovetop"
+  ],
+  "isComponent": false,
+  "tags": [
+    "one_pot",
+    "vegan"
+  ],
+  "ingredients": [
+    {
+      "position": 1,
+      "rawText": "200g red lentils, rinsed",
+      "displayName": "red lentils",
+      "quantity": 200.0,
+      "unit": "g",
+      "preparation": "rinsed",
+      "grams": null,
+      "isOptional": false,
+      "isToTaste": false,
+      "missingInformation": null
+    },
+    {
+      "position": 2,
+      "rawText": "1 onion, diced",
+      "displayName": "onion",
+      "quantity": 1.0,
+      "unit": "whole",
+      "preparation": "diced",
+      "grams": null,
+      "isOptional": false,
+      "isToTaste": false,
+      "missingInformation": null
+    },
+    {
+      "position": 3,
+      "rawText": "a splash of olive oil",
+      "displayName": "olive oil",
+      "quantity": null,
+      "unit": null,
+      "preparation": null,
+      "grams": null,
+      "isOptional": false,
+      "isToTaste": false,
+      "missingInformation": "The video never stated a quantity for this ingredient."
+    },
+    {
+      "position": 4,
+      "rawText": "salt to taste",
+      "displayName": "salt",
+      "quantity": null,
+      "unit": null,
+      "preparation": null,
+      "grams": null,
+      "isOptional": false,
+      "isToTaste": true,
+      "missingInformation": null
+    }
+  ],
+  "instructions": [
+    {
+      "step": 1,
+      "text": "Soften the onion in the oil.",
+      "minutes": 5
+    },
+    {
+      "step": 2,
+      "text": "Add the lentils and 600ml water, simmer until soft.",
+      "minutes": 15
+    }
+  ],
+  "nutrition": null,
+  "baseMealPlanEligible": false,
+  "missingInformation": [
+    "ingredient_quantities"
+  ],
+  "provenance": {
+    "platform": "youtube",
+    "videoId": "dQw4w9WgXcQ",
+    "canonicalUrl": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    "channel": "Hive Kitchen",
+    "channelUrl": "https://www.youtube.com/@hivekitchen",
+    "publishedAt": "2025-01-14",
+    "durationSeconds": 412,
+    "transcriptSource": "captions",
+    "transcriptLanguage": "en",
+    "usedDescription": true,
+    "model": "gpt-4o-mini",
+    "extractedAt": "2026-09-08T10:00:00+00:00"
+  }
+}

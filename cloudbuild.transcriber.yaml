@@ -1,0 +1,75 @@
+# Mirrors cloudbuild.server.yaml, with the repository root as the build
+# context so paths match the other services.
+steps:
+  - id: test
+    name: python:3.11-slim
+    waitFor: ['-']
+    entrypoint: bash
+    args:
+      - -ceu
+      - |
+        cd apps/transcriber && pip install --no-cache-dir --quiet . pytest httpx
+        python -m pytest -q
+
+  - id: cache-pull
+    name: gcr.io/cloud-builders/docker
+    entrypoint: bash
+    waitFor: ['-']
+    args:
+      - -ceu
+      - |
+        docker pull '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/transcriber:buildcache' || true
+
+  - id: build
+    name: gcr.io/cloud-builders/docker
+    env: [DOCKER_BUILDKIT=1]
+    waitFor: [cache-pull]
+    args:
+      - build
+      - --file=Dockerfile.transcriber
+      - --cache-from=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/transcriber:buildcache
+      - --build-arg=BUILDKIT_INLINE_CACHE=1
+      - --tag=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/transcriber:$BUILD_ID
+      - --tag=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/transcriber:buildcache
+      - .
+
+  - id: push
+    name: gcr.io/cloud-builders/docker
+    entrypoint: bash
+    waitFor: [test, build]
+    args:
+      - -ceu
+      - |
+        docker push '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/transcriber:$BUILD_ID'
+        docker push '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/transcriber:buildcache'
+
+  - id: deploy
+    name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    waitFor: [push]
+    entrypoint: bash
+    args:
+      - -ceu
+      - |
+        gcloud run deploy '${_SERVICE}' \
+          --project='$PROJECT_ID' \
+          --region='${_REGION}' \
+          --image='${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/transcriber:$BUILD_ID' \
+          --service-account='${_SERVICE_ACCOUNT}' \
+          --ingress=internal \
+          --no-allow-unauthenticated \
+          --set-env-vars=APP_ENV=production \
+          --set-secrets='RECIPE_AI_API_KEY=${_AI_KEY_SECRET}:latest' \
+          --set-secrets='IMPORT_SHARED_SECRET=${_SHARED_SECRET}:latest' \
+          --min-instances=1 --max-instances=1 \
+          --concurrency=4 --cpu=1 --memory=2Gi --timeout=600
+
+substitutions:
+  _REGION: europe-west1
+  _REPOSITORY: hth
+  _SERVICE: hth-transcriber
+  _SERVICE_ACCOUNT: ''
+  _AI_KEY_SECRET: recipe-ai-api-key
+  _SHARED_SECRET: import-shared-secret
+
+options:
+  logging: CLOUD_LOGGING_ONLY

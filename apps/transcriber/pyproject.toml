@@ -1,0 +1,35 @@
+[project]
+name = "hth-transcriber"
+version = "0.1.0"
+description = "Help The Hive recipe import service: turns a cooking video link into a Standard HTH Recipe Object."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.32",
+    "pydantic>=2.9",
+    "python-dotenv>=1.0",
+    "openai>=1.84",
+    "yt-dlp>=2025.5.22",
+    "youtube-transcript-api>=0.6.2",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.1.1",
+    "httpx>=0.27",
+]
+
+[project.scripts]
+hth-transcribe = "hth_transcriber.cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/hth_transcriber"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]

@@ -165,3 +165,29 @@ jobs:
 
       - name: Test
         run: pnpm --filter @helpthehive/mobile test
+
+  transcriber:
+    name: Transcriber
+    runs-on: ubuntu-latest
+
+    # The import service is Python, so nothing in the Go or mobile jobs touches
+    # it. Without this job its tests would sit in the repository never having
+    # been run by anything but the author's laptop.
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install
+        working-directory: apps/transcriber
+        run: |
+          python -m pip install --upgrade pip
+          # Dev dependencies live under [dependency-groups] (PEP 735), which
+          # pip's extras syntax cannot install, so they are named here.
+          pip install . pytest httpx
+
+      - name: Test
+        working-directory: apps/transcriber
+        run: python -m pytest -q
