@@ -43,6 +43,13 @@ extend type Query {
   benefitsRenewals: [BenefitsRenewal!]!
   "Reference certification-period rules per program, optionally filtered by program. Reference data — the same rows for every user."
   benefitsProgramRules(program: String): [BenefitsProgramRule!]!
+
+  "Detect the U.S. state for a 5-digit ZIP code. Unknown ZIPs return state: null — never a guess."
+  benefitsStateFromZip(zip: String!): BenefitsStateLookup!
+  "The official application portal for a program in a state. Final submission always happens on the official portal, in the user's own session."
+  benefitsPortal(program: String!, state: String!): BenefitsPortal!
+  "Guided checklist for applying: what to have ready before, during, and after the application."
+  benefitsChecklist(program: String!, state: String!): [BenefitsChecklistSection!]!
 }
 
 extend type Mutation {
@@ -55,9 +62,20 @@ extend type Mutation {
   startBenefitsApplication(formId: ID!): BenefitsApplication!
   "Re-runs the fill after the app has collected more answers."
   refillBenefitsApplication(applicationId: ID!): BenefitsApplication!
-  "Flattens the reviewed document. Refused while anything required is missing."
-  approveBenefitsApplication(applicationId: ID!): BenefitsApplication!
+  """
+  Records the typed signature and attestation, then flattens the reviewed
+  document. Refused while anything required is missing, the signed name is
+  blank, or attestation is not accepted. The signature is never pre-filled:
+  the name must be typed by the applicant on the review screen.
+  """
+  approveBenefitsApplication(applicationId: ID!, signedName: String!, attestationAccepted: Boolean!): BenefitsApplication!
   deleteBenefitsApplication(applicationId: ID!): Boolean!
+  """
+  Records the confirmation number the user received after applying on the
+  official portal. Feeds the renewal schedule: the renewal for this
+  application becomes user-confirmed.
+  """
+  recordBenefitsConfirmation(applicationId: ID!, confirmationNumber: String!): BenefitsApplication!
 
   "Records the user's own renewal deadline. The stored deadline is explicit user data, not a guess."
   confirmBenefitsRenewalDeadline(renewalId: ID!, renewalDueAt: Time!, certificationEndsAt: Time): BenefitsRenewal!
@@ -67,6 +85,56 @@ extend type Mutation {
   dismissBenefitsRenewal(renewalId: ID!): Boolean!
   "Sets the two renewal notification flags."
   updateBenefitsRenewalPreferences(renewalAlertsEnabled: Boolean!, discreetLockScreen: Boolean!): Boolean!
+}
+
+# ---------------------------------------------------------------------------
+# Submission Phase 1: state detection, portal routing, guided checklist
+#
+# The submission itself always happens on the official portal, in the user's
+# own browser session. Help The Hive prepares the paperwork, routes the user
+# to the right official door, and records what happened — it never submits,
+# never scrapes a portal, and never handles government-site credentials.
+# Portal URLs are never invented: a URL appears here only after verification
+# against an official .gov source, otherwise url is null and the app shows
+# fallback guidance instead.
+# ---------------------------------------------------------------------------
+
+"Result of detecting a U.S. state from a ZIP code."
+type BenefitsStateLookup {
+  "The 5-digit ZIP that was looked up."
+  zip: String!
+  "Two-letter state code, or null when the ZIP is not recognized. Never guessed."
+  state: String
+  "Why the lookup succeeded or failed, for the UI to explain."
+  detail: String!
+}
+
+"Where to apply for a program in a state."
+type BenefitsPortal {
+  program: String!
+  state: String!
+  "The official application URL, or null when no verified URL is on file. Never invented."
+  url: String
+  "True when the URL was verified against an official .gov source."
+  verified: Boolean!
+  "What to show when there is no verified URL yet."
+  fallbackGuidance: String!
+}
+
+"One checklist section: what to have ready before, during, or after applying."
+type BenefitsChecklistSection {
+  "before | during | after"
+  phase: String!
+  title: String!
+  items: [BenefitsChecklistItem!]!
+}
+
+type BenefitsChecklistItem {
+  label: String!
+  "Why this matters, in plain language."
+  detail: String
+  "True when this step is state-specific and must be confirmed on the official portal."
+  confirmOnPortal: Boolean!
 }
 
 # ---------------------------------------------------------------------------
@@ -255,6 +323,15 @@ type BenefitsApplication {
   createdAt: String!
   updatedAt: String!
   approvedAt: String
+
+  "The typed name the applicant signed with. Null until approved. Never pre-filled."
+  signedName: String
+  "When the applicant signed. Null until approved."
+  signedAt: String
+  "Confirmation number captured after the applicant applied on the official portal. Null until recorded."
+  confirmationNumber: String
+  "When the confirmation number was recorded. Null until recorded."
+  confirmationRecordedAt: String
 }
 
 type BenefitsFilledField {

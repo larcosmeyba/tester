@@ -129,6 +129,30 @@ type BenefitsApplication struct {
 	CreatedAt     string  `json:"createdAt"`
 	UpdatedAt     string  `json:"updatedAt"`
 	ApprovedAt    *string `json:"approvedAt,omitempty"`
+	// The typed name the applicant signed with. Null until approved. Never pre-filled.
+	SignedName *string `json:"signedName,omitempty"`
+	// When the applicant signed. Null until approved.
+	SignedAt *string `json:"signedAt,omitempty"`
+	// Confirmation number captured after the applicant applied on the official portal. Null until recorded.
+	ConfirmationNumber *string `json:"confirmationNumber,omitempty"`
+	// When the confirmation number was recorded. Null until recorded.
+	ConfirmationRecordedAt *string `json:"confirmationRecordedAt,omitempty"`
+}
+
+type BenefitsChecklistItem struct {
+	Label string `json:"label"`
+	// Why this matters, in plain language.
+	Detail *string `json:"detail,omitempty"`
+	// True when this step is state-specific and must be confirmed on the official portal.
+	ConfirmOnPortal bool `json:"confirmOnPortal"`
+}
+
+// One checklist section: what to have ready before, during, or after applying.
+type BenefitsChecklistSection struct {
+	// before | during | after
+	Phase string                   `json:"phase"`
+	Title string                   `json:"title"`
+	Items []*BenefitsChecklistItem `json:"items"`
 }
 
 type BenefitsFieldProblem struct {
@@ -234,6 +258,18 @@ type BenefitsMissingField struct {
 	FormFieldIds []string `json:"formFieldIds"`
 }
 
+// Where to apply for a program in a state.
+type BenefitsPortal struct {
+	Program string `json:"program"`
+	State   string `json:"state"`
+	// The official application URL, or null when no verified URL is on file. Never invented.
+	URL *string `json:"url,omitempty"`
+	// True when the URL was verified against an official .gov source.
+	Verified bool `json:"verified"`
+	// What to show when there is no verified URL yet.
+	FallbackGuidance string `json:"fallbackGuidance"`
+}
+
 type BenefitsProfile struct {
 	// The field-path vocabulary these answers were recorded against.
 	VocabularyVersion int               `json:"vocabularyVersion"`
@@ -277,6 +313,16 @@ type BenefitsSkippedField struct {
 	FieldID string             `json:"fieldId"`
 	Reason  BenefitsSkipReason `json:"reason"`
 	Note    *string            `json:"note,omitempty"`
+}
+
+// Result of detecting a U.S. state from a ZIP code.
+type BenefitsStateLookup struct {
+	// The 5-digit ZIP that was looked up.
+	Zip string `json:"zip"`
+	// Two-letter state code, or null when the ZIP is not recognized. Never guessed.
+	State *string `json:"state,omitempty"`
+	// Why the lookup succeeded or failed, for the UI to explain.
+	Detail string `json:"detail"`
 }
 
 type Budget struct {

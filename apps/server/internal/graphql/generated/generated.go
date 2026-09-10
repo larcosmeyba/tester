@@ -90,19 +90,35 @@ type ComplexityRoot struct {
 	}
 
 	BenefitsApplication struct {
-		ApprovedAt        func(childComplexity int) int
-		CreatedAt         func(childComplexity int) int
-		DraftDocumentPath func(childComplexity int) int
-		FailureReason     func(childComplexity int) int
-		FilledFields      func(childComplexity int) int
-		FinalDocumentPath func(childComplexity int) int
-		Form              func(childComplexity int) int
-		ID                func(childComplexity int) int
-		MissingFields     func(childComplexity int) int
-		Problems          func(childComplexity int) int
-		SkippedFields     func(childComplexity int) int
-		Status            func(childComplexity int) int
-		UpdatedAt         func(childComplexity int) int
+		ApprovedAt             func(childComplexity int) int
+		ConfirmationNumber     func(childComplexity int) int
+		ConfirmationRecordedAt func(childComplexity int) int
+		CreatedAt              func(childComplexity int) int
+		DraftDocumentPath      func(childComplexity int) int
+		FailureReason          func(childComplexity int) int
+		FilledFields           func(childComplexity int) int
+		FinalDocumentPath      func(childComplexity int) int
+		Form                   func(childComplexity int) int
+		ID                     func(childComplexity int) int
+		MissingFields          func(childComplexity int) int
+		Problems               func(childComplexity int) int
+		SignedAt               func(childComplexity int) int
+		SignedName             func(childComplexity int) int
+		SkippedFields          func(childComplexity int) int
+		Status                 func(childComplexity int) int
+		UpdatedAt              func(childComplexity int) int
+	}
+
+	BenefitsChecklistItem struct {
+		ConfirmOnPortal func(childComplexity int) int
+		Detail          func(childComplexity int) int
+		Label           func(childComplexity int) int
+	}
+
+	BenefitsChecklistSection struct {
+		Items func(childComplexity int) int
+		Phase func(childComplexity int) int
+		Title func(childComplexity int) int
 	}
 
 	BenefitsFieldProblem struct {
@@ -180,6 +196,14 @@ type ComplexityRoot struct {
 		Strength     func(childComplexity int) int
 	}
 
+	BenefitsPortal struct {
+		FallbackGuidance func(childComplexity int) int
+		Program          func(childComplexity int) int
+		State            func(childComplexity int) int
+		URL              func(childComplexity int) int
+		Verified         func(childComplexity int) int
+	}
+
 	BenefitsProfile struct {
 		Answers           func(childComplexity int) int
 		Groups            func(childComplexity int) int
@@ -211,6 +235,12 @@ type ComplexityRoot struct {
 		FieldID func(childComplexity int) int
 		Note    func(childComplexity int) int
 		Reason  func(childComplexity int) int
+	}
+
+	BenefitsStateLookup struct {
+		Detail func(childComplexity int) int
+		State  func(childComplexity int) int
+		Zip    func(childComplexity int) int
 	}
 
 	Budget struct {
@@ -386,7 +416,7 @@ type ComplexityRoot struct {
 		AcceptMealPlan                   func(childComplexity int, planID string) int
 		AcceptRecipeImport               func(childComplexity int, importID string, input *model.AcceptRecipeImportInput) int
 		AddPantryItem                    func(childComplexity int, input model.AddPantryItemInput) int
-		ApproveBenefitsApplication       func(childComplexity int, applicationID string) int
+		ApproveBenefitsApplication       func(childComplexity int, applicationID string, signedName string, attestationAccepted bool) int
 		CancelRecipeImport               func(childComplexity int, importID string) int
 		CompleteOnboarding               func(childComplexity int, input model.CompleteOnboardingInput) int
 		ConfirmBenefitsRenewalDeadline   func(childComplexity int, renewalID string, renewalDueAt time.Time, certificationEndsAt *time.Time) int
@@ -401,6 +431,7 @@ type ComplexityRoot struct {
 		ImportRecipeFromVideo            func(childComplexity int, input model.ImportRecipeFromVideoInput) int
 		MarkPantryItemUsed               func(childComplexity int, id string) int
 		MovePlannedMeal                  func(childComplexity int, planID string, input model.MoveMealInput) int
+		RecordBenefitsConfirmation       func(childComplexity int, applicationID string, confirmationNumber string) int
 		RefillBenefitsApplication        func(childComplexity int, applicationID string) int
 		RegenerateDay                    func(childComplexity int, planID string, day int) int
 		RegenerateMealPrepPlan           func(childComplexity int, planID string) int
@@ -530,12 +561,15 @@ type ComplexityRoot struct {
 	Query struct {
 		BenefitsApplication     func(childComplexity int, applicationID string) int
 		BenefitsApplications    func(childComplexity int) int
+		BenefitsChecklist       func(childComplexity int, program string, state string) int
 		BenefitsFieldVocabulary func(childComplexity int) int
 		BenefitsForm            func(childComplexity int, formID string) int
 		BenefitsForms           func(childComplexity int, state *string, program *string) int
+		BenefitsPortal          func(childComplexity int, program string, state string) int
 		BenefitsProfile         func(childComplexity int) int
 		BenefitsProgramRules    func(childComplexity int, program *string) int
 		BenefitsRenewals        func(childComplexity int) int
+		BenefitsStateFromZip    func(childComplexity int, zip string) int
 		CurrentMealPlan         func(childComplexity int) int
 		GroceryList             func(childComplexity int, planID string) int
 		HandleAvailability      func(childComplexity int, handle string) int
@@ -652,8 +686,9 @@ type MutationResolver interface {
 	SaveBenefitsGroup(ctx context.Context, input model.SaveBenefitsGroupInput) (*model.BenefitsProfile, error)
 	StartBenefitsApplication(ctx context.Context, formID string) (*model.BenefitsApplication, error)
 	RefillBenefitsApplication(ctx context.Context, applicationID string) (*model.BenefitsApplication, error)
-	ApproveBenefitsApplication(ctx context.Context, applicationID string) (*model.BenefitsApplication, error)
+	ApproveBenefitsApplication(ctx context.Context, applicationID string, signedName string, attestationAccepted bool) (*model.BenefitsApplication, error)
 	DeleteBenefitsApplication(ctx context.Context, applicationID string) (bool, error)
+	RecordBenefitsConfirmation(ctx context.Context, applicationID string, confirmationNumber string) (*model.BenefitsApplication, error)
 	ConfirmBenefitsRenewalDeadline(ctx context.Context, renewalID string, renewalDueAt time.Time, certificationEndsAt *time.Time) (*model.BenefitsRenewal, error)
 	StartBenefitsRenewalApplication(ctx context.Context, renewalID string) (*model.BenefitsApplication, error)
 	DismissBenefitsRenewal(ctx context.Context, renewalID string) (bool, error)
@@ -688,6 +723,9 @@ type QueryResolver interface {
 	BenefitsFieldVocabulary(ctx context.Context) ([]*model.BenefitsFieldSpec, error)
 	BenefitsRenewals(ctx context.Context) ([]*model.BenefitsRenewal, error)
 	BenefitsProgramRules(ctx context.Context, program *string) ([]*model.BenefitsProgramRule, error)
+	BenefitsStateFromZip(ctx context.Context, zip string) (*model.BenefitsStateLookup, error)
+	BenefitsPortal(ctx context.Context, program string, state string) (*model.BenefitsPortal, error)
+	BenefitsChecklist(ctx context.Context, program string, state string) ([]*model.BenefitsChecklistSection, error)
 	MealProfile(ctx context.Context) (*model.MealProfile, error)
 	PantryIngredientIds(ctx context.Context) ([]string, error)
 	MealPrepPlan(ctx context.Context, planID string) (*model.MealPrepPlan, error)
@@ -929,6 +967,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.BenefitsApplication.ApprovedAt(childComplexity), true
 
+	case "BenefitsApplication.confirmationNumber":
+		if e.complexity.BenefitsApplication.ConfirmationNumber == nil {
+			break
+		}
+
+		return e.complexity.BenefitsApplication.ConfirmationNumber(childComplexity), true
+
+	case "BenefitsApplication.confirmationRecordedAt":
+		if e.complexity.BenefitsApplication.ConfirmationRecordedAt == nil {
+			break
+		}
+
+		return e.complexity.BenefitsApplication.ConfirmationRecordedAt(childComplexity), true
+
 	case "BenefitsApplication.createdAt":
 		if e.complexity.BenefitsApplication.CreatedAt == nil {
 			break
@@ -992,6 +1044,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.BenefitsApplication.Problems(childComplexity), true
 
+	case "BenefitsApplication.signedAt":
+		if e.complexity.BenefitsApplication.SignedAt == nil {
+			break
+		}
+
+		return e.complexity.BenefitsApplication.SignedAt(childComplexity), true
+
+	case "BenefitsApplication.signedName":
+		if e.complexity.BenefitsApplication.SignedName == nil {
+			break
+		}
+
+		return e.complexity.BenefitsApplication.SignedName(childComplexity), true
+
 	case "BenefitsApplication.skippedFields":
 		if e.complexity.BenefitsApplication.SkippedFields == nil {
 			break
@@ -1012,6 +1078,48 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.BenefitsApplication.UpdatedAt(childComplexity), true
+
+	case "BenefitsChecklistItem.confirmOnPortal":
+		if e.complexity.BenefitsChecklistItem.ConfirmOnPortal == nil {
+			break
+		}
+
+		return e.complexity.BenefitsChecklistItem.ConfirmOnPortal(childComplexity), true
+
+	case "BenefitsChecklistItem.detail":
+		if e.complexity.BenefitsChecklistItem.Detail == nil {
+			break
+		}
+
+		return e.complexity.BenefitsChecklistItem.Detail(childComplexity), true
+
+	case "BenefitsChecklistItem.label":
+		if e.complexity.BenefitsChecklistItem.Label == nil {
+			break
+		}
+
+		return e.complexity.BenefitsChecklistItem.Label(childComplexity), true
+
+	case "BenefitsChecklistSection.items":
+		if e.complexity.BenefitsChecklistSection.Items == nil {
+			break
+		}
+
+		return e.complexity.BenefitsChecklistSection.Items(childComplexity), true
+
+	case "BenefitsChecklistSection.phase":
+		if e.complexity.BenefitsChecklistSection.Phase == nil {
+			break
+		}
+
+		return e.complexity.BenefitsChecklistSection.Phase(childComplexity), true
+
+	case "BenefitsChecklistSection.title":
+		if e.complexity.BenefitsChecklistSection.Title == nil {
+			break
+		}
+
+		return e.complexity.BenefitsChecklistSection.Title(childComplexity), true
 
 	case "BenefitsFieldProblem.fieldId":
 		if e.complexity.BenefitsFieldProblem.FieldID == nil {
@@ -1391,6 +1499,41 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.BenefitsMissingField.Strength(childComplexity), true
 
+	case "BenefitsPortal.fallbackGuidance":
+		if e.complexity.BenefitsPortal.FallbackGuidance == nil {
+			break
+		}
+
+		return e.complexity.BenefitsPortal.FallbackGuidance(childComplexity), true
+
+	case "BenefitsPortal.program":
+		if e.complexity.BenefitsPortal.Program == nil {
+			break
+		}
+
+		return e.complexity.BenefitsPortal.Program(childComplexity), true
+
+	case "BenefitsPortal.state":
+		if e.complexity.BenefitsPortal.State == nil {
+			break
+		}
+
+		return e.complexity.BenefitsPortal.State(childComplexity), true
+
+	case "BenefitsPortal.url":
+		if e.complexity.BenefitsPortal.URL == nil {
+			break
+		}
+
+		return e.complexity.BenefitsPortal.URL(childComplexity), true
+
+	case "BenefitsPortal.verified":
+		if e.complexity.BenefitsPortal.Verified == nil {
+			break
+		}
+
+		return e.complexity.BenefitsPortal.Verified(childComplexity), true
+
 	case "BenefitsProfile.answers":
 		if e.complexity.BenefitsProfile.Answers == nil {
 			break
@@ -1537,6 +1680,27 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.BenefitsSkippedField.Reason(childComplexity), true
+
+	case "BenefitsStateLookup.detail":
+		if e.complexity.BenefitsStateLookup.Detail == nil {
+			break
+		}
+
+		return e.complexity.BenefitsStateLookup.Detail(childComplexity), true
+
+	case "BenefitsStateLookup.state":
+		if e.complexity.BenefitsStateLookup.State == nil {
+			break
+		}
+
+		return e.complexity.BenefitsStateLookup.State(childComplexity), true
+
+	case "BenefitsStateLookup.zip":
+		if e.complexity.BenefitsStateLookup.Zip == nil {
+			break
+		}
+
+		return e.complexity.BenefitsStateLookup.Zip(childComplexity), true
 
 	case "Budget.amount":
 		if e.complexity.Budget.Amount == nil {
@@ -2368,7 +2532,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.ApproveBenefitsApplication(childComplexity, args["applicationId"].(string)), true
+		return e.complexity.Mutation.ApproveBenefitsApplication(childComplexity, args["applicationId"].(string), args["signedName"].(string), args["attestationAccepted"].(bool)), true
 
 	case "Mutation.cancelRecipeImport":
 		if e.complexity.Mutation.CancelRecipeImport == nil {
@@ -2532,6 +2696,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.MovePlannedMeal(childComplexity, args["planId"].(string), args["input"].(model.MoveMealInput)), true
+
+	case "Mutation.recordBenefitsConfirmation":
+		if e.complexity.Mutation.RecordBenefitsConfirmation == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_recordBenefitsConfirmation_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.RecordBenefitsConfirmation(childComplexity, args["applicationId"].(string), args["confirmationNumber"].(string)), true
 
 	case "Mutation.refillBenefitsApplication":
 		if e.complexity.Mutation.RefillBenefitsApplication == nil {
@@ -3341,6 +3517,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.BenefitsApplications(childComplexity), true
 
+	case "Query.benefitsChecklist":
+		if e.complexity.Query.BenefitsChecklist == nil {
+			break
+		}
+
+		args, err := ec.field_Query_benefitsChecklist_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.BenefitsChecklist(childComplexity, args["program"].(string), args["state"].(string)), true
+
 	case "Query.benefitsFieldVocabulary":
 		if e.complexity.Query.BenefitsFieldVocabulary == nil {
 			break
@@ -3372,6 +3560,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.BenefitsForms(childComplexity, args["state"].(*string), args["program"].(*string)), true
 
+	case "Query.benefitsPortal":
+		if e.complexity.Query.BenefitsPortal == nil {
+			break
+		}
+
+		args, err := ec.field_Query_benefitsPortal_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.BenefitsPortal(childComplexity, args["program"].(string), args["state"].(string)), true
+
 	case "Query.benefitsProfile":
 		if e.complexity.Query.BenefitsProfile == nil {
 			break
@@ -3397,6 +3597,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.BenefitsRenewals(childComplexity), true
+
+	case "Query.benefitsStateFromZip":
+		if e.complexity.Query.BenefitsStateFromZip == nil {
+			break
+		}
+
+		args, err := ec.field_Query_benefitsStateFromZip_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.BenefitsStateFromZip(childComplexity, args["zip"].(string)), true
 
 	case "Query.currentMealPlan":
 		if e.complexity.Query.CurrentMealPlan == nil {
@@ -4872,6 +5084,13 @@ extend type Query {
   benefitsRenewals: [BenefitsRenewal!]!
   "Reference certification-period rules per program, optionally filtered by program. Reference data — the same rows for every user."
   benefitsProgramRules(program: String): [BenefitsProgramRule!]!
+
+  "Detect the U.S. state for a 5-digit ZIP code. Unknown ZIPs return state: null — never a guess."
+  benefitsStateFromZip(zip: String!): BenefitsStateLookup!
+  "The official application portal for a program in a state. Final submission always happens on the official portal, in the user's own session."
+  benefitsPortal(program: String!, state: String!): BenefitsPortal!
+  "Guided checklist for applying: what to have ready before, during, and after the application."
+  benefitsChecklist(program: String!, state: String!): [BenefitsChecklistSection!]!
 }
 
 extend type Mutation {
@@ -4884,9 +5103,20 @@ extend type Mutation {
   startBenefitsApplication(formId: ID!): BenefitsApplication!
   "Re-runs the fill after the app has collected more answers."
   refillBenefitsApplication(applicationId: ID!): BenefitsApplication!
-  "Flattens the reviewed document. Refused while anything required is missing."
-  approveBenefitsApplication(applicationId: ID!): BenefitsApplication!
+  """
+  Records the typed signature and attestation, then flattens the reviewed
+  document. Refused while anything required is missing, the signed name is
+  blank, or attestation is not accepted. The signature is never pre-filled:
+  the name must be typed by the applicant on the review screen.
+  """
+  approveBenefitsApplication(applicationId: ID!, signedName: String!, attestationAccepted: Boolean!): BenefitsApplication!
   deleteBenefitsApplication(applicationId: ID!): Boolean!
+  """
+  Records the confirmation number the user received after applying on the
+  official portal. Feeds the renewal schedule: the renewal for this
+  application becomes user-confirmed.
+  """
+  recordBenefitsConfirmation(applicationId: ID!, confirmationNumber: String!): BenefitsApplication!
 
   "Records the user's own renewal deadline. The stored deadline is explicit user data, not a guess."
   confirmBenefitsRenewalDeadline(renewalId: ID!, renewalDueAt: Time!, certificationEndsAt: Time): BenefitsRenewal!
@@ -4896,6 +5126,56 @@ extend type Mutation {
   dismissBenefitsRenewal(renewalId: ID!): Boolean!
   "Sets the two renewal notification flags."
   updateBenefitsRenewalPreferences(renewalAlertsEnabled: Boolean!, discreetLockScreen: Boolean!): Boolean!
+}
+
+# ---------------------------------------------------------------------------
+# Submission Phase 1: state detection, portal routing, guided checklist
+#
+# The submission itself always happens on the official portal, in the user's
+# own browser session. Help The Hive prepares the paperwork, routes the user
+# to the right official door, and records what happened — it never submits,
+# never scrapes a portal, and never handles government-site credentials.
+# Portal URLs are never invented: a URL appears here only after verification
+# against an official .gov source, otherwise url is null and the app shows
+# fallback guidance instead.
+# ---------------------------------------------------------------------------
+
+"Result of detecting a U.S. state from a ZIP code."
+type BenefitsStateLookup {
+  "The 5-digit ZIP that was looked up."
+  zip: String!
+  "Two-letter state code, or null when the ZIP is not recognized. Never guessed."
+  state: String
+  "Why the lookup succeeded or failed, for the UI to explain."
+  detail: String!
+}
+
+"Where to apply for a program in a state."
+type BenefitsPortal {
+  program: String!
+  state: String!
+  "The official application URL, or null when no verified URL is on file. Never invented."
+  url: String
+  "True when the URL was verified against an official .gov source."
+  verified: Boolean!
+  "What to show when there is no verified URL yet."
+  fallbackGuidance: String!
+}
+
+"One checklist section: what to have ready before, during, or after applying."
+type BenefitsChecklistSection {
+  "before | during | after"
+  phase: String!
+  title: String!
+  items: [BenefitsChecklistItem!]!
+}
+
+type BenefitsChecklistItem {
+  label: String!
+  "Why this matters, in plain language."
+  detail: String
+  "True when this step is state-specific and must be confirmed on the official portal."
+  confirmOnPortal: Boolean!
 }
 
 # ---------------------------------------------------------------------------
@@ -5084,6 +5364,15 @@ type BenefitsApplication {
   createdAt: String!
   updatedAt: String!
   approvedAt: String
+
+  "The typed name the applicant signed with. Null until approved. Never pre-filled."
+  signedName: String
+  "When the applicant signed. Null until approved."
+  signedAt: String
+  "Confirmation number captured after the applicant applied on the official portal. Null until recorded."
+  confirmationNumber: String
+  "When the confirmation number was recorded. Null until recorded."
+  confirmationRecordedAt: String
 }
 
 type BenefitsFilledField {
@@ -5577,6 +5866,24 @@ func (ec *executionContext) field_Mutation_approveBenefitsApplication_args(ctx c
 		}
 	}
 	args["applicationId"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["signedName"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("signedName"))
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["signedName"] = arg1
+	var arg2 bool
+	if tmp, ok := rawArgs["attestationAccepted"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("attestationAccepted"))
+		arg2, err = ec.unmarshalNBoolean2bool(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["attestationAccepted"] = arg2
 	return args, nil
 }
 
@@ -5799,6 +6106,30 @@ func (ec *executionContext) field_Mutation_movePlannedMeal_args(ctx context.Cont
 		}
 	}
 	args["input"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_recordBenefitsConfirmation_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["applicationId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("applicationId"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["applicationId"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["confirmationNumber"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("confirmationNumber"))
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["confirmationNumber"] = arg1
 	return args, nil
 }
 
@@ -6243,6 +6574,30 @@ func (ec *executionContext) field_Query_benefitsApplication_args(ctx context.Con
 	return args, nil
 }
 
+func (ec *executionContext) field_Query_benefitsChecklist_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["program"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("program"))
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["program"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["state"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("state"))
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["state"] = arg1
+	return args, nil
+}
+
 func (ec *executionContext) field_Query_benefitsForm_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -6282,6 +6637,30 @@ func (ec *executionContext) field_Query_benefitsForms_args(ctx context.Context, 
 	return args, nil
 }
 
+func (ec *executionContext) field_Query_benefitsPortal_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["program"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("program"))
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["program"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["state"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("state"))
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["state"] = arg1
+	return args, nil
+}
+
 func (ec *executionContext) field_Query_benefitsProgramRules_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -6294,6 +6673,21 @@ func (ec *executionContext) field_Query_benefitsProgramRules_args(ctx context.Co
 		}
 	}
 	args["program"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_benefitsStateFromZip_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["zip"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("zip"))
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["zip"] = arg0
 	return args, nil
 }
 
@@ -8435,6 +8829,439 @@ func (ec *executionContext) fieldContext_BenefitsApplication_approvedAt(_ contex
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BenefitsApplication_signedName(ctx context.Context, field graphql.CollectedField, obj *model.BenefitsApplication) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BenefitsApplication_signedName(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SignedName, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BenefitsApplication_signedName(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BenefitsApplication",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BenefitsApplication_signedAt(ctx context.Context, field graphql.CollectedField, obj *model.BenefitsApplication) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BenefitsApplication_signedAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SignedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BenefitsApplication_signedAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BenefitsApplication",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BenefitsApplication_confirmationNumber(ctx context.Context, field graphql.CollectedField, obj *model.BenefitsApplication) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BenefitsApplication_confirmationNumber(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ConfirmationNumber, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BenefitsApplication_confirmationNumber(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BenefitsApplication",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BenefitsApplication_confirmationRecordedAt(ctx context.Context, field graphql.CollectedField, obj *model.BenefitsApplication) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BenefitsApplication_confirmationRecordedAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ConfirmationRecordedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BenefitsApplication_confirmationRecordedAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BenefitsApplication",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BenefitsChecklistItem_label(ctx context.Context, field graphql.CollectedField, obj *model.BenefitsChecklistItem) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BenefitsChecklistItem_label(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Label, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BenefitsChecklistItem_label(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BenefitsChecklistItem",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BenefitsChecklistItem_detail(ctx context.Context, field graphql.CollectedField, obj *model.BenefitsChecklistItem) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BenefitsChecklistItem_detail(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Detail, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BenefitsChecklistItem_detail(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BenefitsChecklistItem",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BenefitsChecklistItem_confirmOnPortal(ctx context.Context, field graphql.CollectedField, obj *model.BenefitsChecklistItem) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BenefitsChecklistItem_confirmOnPortal(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ConfirmOnPortal, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BenefitsChecklistItem_confirmOnPortal(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BenefitsChecklistItem",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BenefitsChecklistSection_phase(ctx context.Context, field graphql.CollectedField, obj *model.BenefitsChecklistSection) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BenefitsChecklistSection_phase(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Phase, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BenefitsChecklistSection_phase(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BenefitsChecklistSection",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BenefitsChecklistSection_title(ctx context.Context, field graphql.CollectedField, obj *model.BenefitsChecklistSection) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BenefitsChecklistSection_title(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Title, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BenefitsChecklistSection_title(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BenefitsChecklistSection",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BenefitsChecklistSection_items(ctx context.Context, field graphql.CollectedField, obj *model.BenefitsChecklistSection) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BenefitsChecklistSection_items(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Items, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.BenefitsChecklistItem)
+	fc.Result = res
+	return ec.marshalNBenefitsChecklistItem2ᚕᚖgithubᚗcomᚋhelpthehiveᚋserverᚋinternalᚋgraphqlᚋmodelᚐBenefitsChecklistItemᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BenefitsChecklistSection_items(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BenefitsChecklistSection",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "label":
+				return ec.fieldContext_BenefitsChecklistItem_label(ctx, field)
+			case "detail":
+				return ec.fieldContext_BenefitsChecklistItem_detail(ctx, field)
+			case "confirmOnPortal":
+				return ec.fieldContext_BenefitsChecklistItem_confirmOnPortal(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type BenefitsChecklistItem", field.Name)
 		},
 	}
 	return fc, nil
@@ -10823,6 +11650,223 @@ func (ec *executionContext) fieldContext_BenefitsMissingField_formFieldIds(_ con
 	return fc, nil
 }
 
+func (ec *executionContext) _BenefitsPortal_program(ctx context.Context, field graphql.CollectedField, obj *model.BenefitsPortal) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BenefitsPortal_program(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Program, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BenefitsPortal_program(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BenefitsPortal",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BenefitsPortal_state(ctx context.Context, field graphql.CollectedField, obj *model.BenefitsPortal) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BenefitsPortal_state(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.State, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BenefitsPortal_state(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BenefitsPortal",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BenefitsPortal_url(ctx context.Context, field graphql.CollectedField, obj *model.BenefitsPortal) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BenefitsPortal_url(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.URL, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BenefitsPortal_url(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BenefitsPortal",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BenefitsPortal_verified(ctx context.Context, field graphql.CollectedField, obj *model.BenefitsPortal) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BenefitsPortal_verified(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Verified, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BenefitsPortal_verified(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BenefitsPortal",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BenefitsPortal_fallbackGuidance(ctx context.Context, field graphql.CollectedField, obj *model.BenefitsPortal) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BenefitsPortal_fallbackGuidance(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.FallbackGuidance, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BenefitsPortal_fallbackGuidance(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BenefitsPortal",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _BenefitsProfile_vocabularyVersion(ctx context.Context, field graphql.CollectedField, obj *model.BenefitsProfile) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_BenefitsProfile_vocabularyVersion(ctx, field)
 	if err != nil {
@@ -11761,6 +12805,135 @@ func (ec *executionContext) _BenefitsSkippedField_note(ctx context.Context, fiel
 func (ec *executionContext) fieldContext_BenefitsSkippedField_note(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "BenefitsSkippedField",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BenefitsStateLookup_zip(ctx context.Context, field graphql.CollectedField, obj *model.BenefitsStateLookup) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BenefitsStateLookup_zip(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Zip, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BenefitsStateLookup_zip(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BenefitsStateLookup",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BenefitsStateLookup_state(ctx context.Context, field graphql.CollectedField, obj *model.BenefitsStateLookup) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BenefitsStateLookup_state(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.State, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BenefitsStateLookup_state(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BenefitsStateLookup",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _BenefitsStateLookup_detail(ctx context.Context, field graphql.CollectedField, obj *model.BenefitsStateLookup) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_BenefitsStateLookup_detail(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Detail, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_BenefitsStateLookup_detail(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "BenefitsStateLookup",
 		Field:      field,
 		IsMethod:   false,
 		IsResolver: false,
@@ -18652,6 +19825,14 @@ func (ec *executionContext) fieldContext_Mutation_startBenefitsApplication(ctx c
 				return ec.fieldContext_BenefitsApplication_updatedAt(ctx, field)
 			case "approvedAt":
 				return ec.fieldContext_BenefitsApplication_approvedAt(ctx, field)
+			case "signedName":
+				return ec.fieldContext_BenefitsApplication_signedName(ctx, field)
+			case "signedAt":
+				return ec.fieldContext_BenefitsApplication_signedAt(ctx, field)
+			case "confirmationNumber":
+				return ec.fieldContext_BenefitsApplication_confirmationNumber(ctx, field)
+			case "confirmationRecordedAt":
+				return ec.fieldContext_BenefitsApplication_confirmationRecordedAt(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type BenefitsApplication", field.Name)
 		},
@@ -18735,6 +19916,14 @@ func (ec *executionContext) fieldContext_Mutation_refillBenefitsApplication(ctx 
 				return ec.fieldContext_BenefitsApplication_updatedAt(ctx, field)
 			case "approvedAt":
 				return ec.fieldContext_BenefitsApplication_approvedAt(ctx, field)
+			case "signedName":
+				return ec.fieldContext_BenefitsApplication_signedName(ctx, field)
+			case "signedAt":
+				return ec.fieldContext_BenefitsApplication_signedAt(ctx, field)
+			case "confirmationNumber":
+				return ec.fieldContext_BenefitsApplication_confirmationNumber(ctx, field)
+			case "confirmationRecordedAt":
+				return ec.fieldContext_BenefitsApplication_confirmationRecordedAt(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type BenefitsApplication", field.Name)
 		},
@@ -18767,7 +19956,7 @@ func (ec *executionContext) _Mutation_approveBenefitsApplication(ctx context.Con
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().ApproveBenefitsApplication(rctx, fc.Args["applicationId"].(string))
+		return ec.resolvers.Mutation().ApproveBenefitsApplication(rctx, fc.Args["applicationId"].(string), fc.Args["signedName"].(string), fc.Args["attestationAccepted"].(bool))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -18818,6 +20007,14 @@ func (ec *executionContext) fieldContext_Mutation_approveBenefitsApplication(ctx
 				return ec.fieldContext_BenefitsApplication_updatedAt(ctx, field)
 			case "approvedAt":
 				return ec.fieldContext_BenefitsApplication_approvedAt(ctx, field)
+			case "signedName":
+				return ec.fieldContext_BenefitsApplication_signedName(ctx, field)
+			case "signedAt":
+				return ec.fieldContext_BenefitsApplication_signedAt(ctx, field)
+			case "confirmationNumber":
+				return ec.fieldContext_BenefitsApplication_confirmationNumber(ctx, field)
+			case "confirmationRecordedAt":
+				return ec.fieldContext_BenefitsApplication_confirmationRecordedAt(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type BenefitsApplication", field.Name)
 		},
@@ -18885,6 +20082,97 @@ func (ec *executionContext) fieldContext_Mutation_deleteBenefitsApplication(ctx 
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Mutation_deleteBenefitsApplication_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_recordBenefitsConfirmation(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_recordBenefitsConfirmation(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().RecordBenefitsConfirmation(rctx, fc.Args["applicationId"].(string), fc.Args["confirmationNumber"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.BenefitsApplication)
+	fc.Result = res
+	return ec.marshalNBenefitsApplication2ᚖgithubᚗcomᚋhelpthehiveᚋserverᚋinternalᚋgraphqlᚋmodelᚐBenefitsApplication(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_recordBenefitsConfirmation(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_BenefitsApplication_id(ctx, field)
+			case "form":
+				return ec.fieldContext_BenefitsApplication_form(ctx, field)
+			case "status":
+				return ec.fieldContext_BenefitsApplication_status(ctx, field)
+			case "filledFields":
+				return ec.fieldContext_BenefitsApplication_filledFields(ctx, field)
+			case "missingFields":
+				return ec.fieldContext_BenefitsApplication_missingFields(ctx, field)
+			case "problems":
+				return ec.fieldContext_BenefitsApplication_problems(ctx, field)
+			case "skippedFields":
+				return ec.fieldContext_BenefitsApplication_skippedFields(ctx, field)
+			case "draftDocumentPath":
+				return ec.fieldContext_BenefitsApplication_draftDocumentPath(ctx, field)
+			case "finalDocumentPath":
+				return ec.fieldContext_BenefitsApplication_finalDocumentPath(ctx, field)
+			case "failureReason":
+				return ec.fieldContext_BenefitsApplication_failureReason(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_BenefitsApplication_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_BenefitsApplication_updatedAt(ctx, field)
+			case "approvedAt":
+				return ec.fieldContext_BenefitsApplication_approvedAt(ctx, field)
+			case "signedName":
+				return ec.fieldContext_BenefitsApplication_signedName(ctx, field)
+			case "signedAt":
+				return ec.fieldContext_BenefitsApplication_signedAt(ctx, field)
+			case "confirmationNumber":
+				return ec.fieldContext_BenefitsApplication_confirmationNumber(ctx, field)
+			case "confirmationRecordedAt":
+				return ec.fieldContext_BenefitsApplication_confirmationRecordedAt(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type BenefitsApplication", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_recordBenefitsConfirmation_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -19033,6 +20321,14 @@ func (ec *executionContext) fieldContext_Mutation_startBenefitsRenewalApplicatio
 				return ec.fieldContext_BenefitsApplication_updatedAt(ctx, field)
 			case "approvedAt":
 				return ec.fieldContext_BenefitsApplication_approvedAt(ctx, field)
+			case "signedName":
+				return ec.fieldContext_BenefitsApplication_signedName(ctx, field)
+			case "signedAt":
+				return ec.fieldContext_BenefitsApplication_signedAt(ctx, field)
+			case "confirmationNumber":
+				return ec.fieldContext_BenefitsApplication_confirmationNumber(ctx, field)
+			case "confirmationRecordedAt":
+				return ec.fieldContext_BenefitsApplication_confirmationRecordedAt(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type BenefitsApplication", field.Name)
 		},
@@ -24221,6 +25517,14 @@ func (ec *executionContext) fieldContext_Query_benefitsApplication(ctx context.C
 				return ec.fieldContext_BenefitsApplication_updatedAt(ctx, field)
 			case "approvedAt":
 				return ec.fieldContext_BenefitsApplication_approvedAt(ctx, field)
+			case "signedName":
+				return ec.fieldContext_BenefitsApplication_signedName(ctx, field)
+			case "signedAt":
+				return ec.fieldContext_BenefitsApplication_signedAt(ctx, field)
+			case "confirmationNumber":
+				return ec.fieldContext_BenefitsApplication_confirmationNumber(ctx, field)
+			case "confirmationRecordedAt":
+				return ec.fieldContext_BenefitsApplication_confirmationRecordedAt(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type BenefitsApplication", field.Name)
 		},
@@ -24304,6 +25608,14 @@ func (ec *executionContext) fieldContext_Query_benefitsApplications(_ context.Co
 				return ec.fieldContext_BenefitsApplication_updatedAt(ctx, field)
 			case "approvedAt":
 				return ec.fieldContext_BenefitsApplication_approvedAt(ctx, field)
+			case "signedName":
+				return ec.fieldContext_BenefitsApplication_signedName(ctx, field)
+			case "signedAt":
+				return ec.fieldContext_BenefitsApplication_signedAt(ctx, field)
+			case "confirmationNumber":
+				return ec.fieldContext_BenefitsApplication_confirmationNumber(ctx, field)
+			case "confirmationRecordedAt":
+				return ec.fieldContext_BenefitsApplication_confirmationRecordedAt(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type BenefitsApplication", field.Name)
 		},
@@ -24502,6 +25814,199 @@ func (ec *executionContext) fieldContext_Query_benefitsProgramRules(ctx context.
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Query_benefitsProgramRules_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_benefitsStateFromZip(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_benefitsStateFromZip(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().BenefitsStateFromZip(rctx, fc.Args["zip"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.BenefitsStateLookup)
+	fc.Result = res
+	return ec.marshalNBenefitsStateLookup2ᚖgithubᚗcomᚋhelpthehiveᚋserverᚋinternalᚋgraphqlᚋmodelᚐBenefitsStateLookup(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_benefitsStateFromZip(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "zip":
+				return ec.fieldContext_BenefitsStateLookup_zip(ctx, field)
+			case "state":
+				return ec.fieldContext_BenefitsStateLookup_state(ctx, field)
+			case "detail":
+				return ec.fieldContext_BenefitsStateLookup_detail(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type BenefitsStateLookup", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_benefitsStateFromZip_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_benefitsPortal(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_benefitsPortal(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().BenefitsPortal(rctx, fc.Args["program"].(string), fc.Args["state"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.BenefitsPortal)
+	fc.Result = res
+	return ec.marshalNBenefitsPortal2ᚖgithubᚗcomᚋhelpthehiveᚋserverᚋinternalᚋgraphqlᚋmodelᚐBenefitsPortal(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_benefitsPortal(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "program":
+				return ec.fieldContext_BenefitsPortal_program(ctx, field)
+			case "state":
+				return ec.fieldContext_BenefitsPortal_state(ctx, field)
+			case "url":
+				return ec.fieldContext_BenefitsPortal_url(ctx, field)
+			case "verified":
+				return ec.fieldContext_BenefitsPortal_verified(ctx, field)
+			case "fallbackGuidance":
+				return ec.fieldContext_BenefitsPortal_fallbackGuidance(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type BenefitsPortal", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_benefitsPortal_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_benefitsChecklist(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_benefitsChecklist(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().BenefitsChecklist(rctx, fc.Args["program"].(string), fc.Args["state"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.BenefitsChecklistSection)
+	fc.Result = res
+	return ec.marshalNBenefitsChecklistSection2ᚕᚖgithubᚗcomᚋhelpthehiveᚋserverᚋinternalᚋgraphqlᚋmodelᚐBenefitsChecklistSectionᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_benefitsChecklist(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "phase":
+				return ec.fieldContext_BenefitsChecklistSection_phase(ctx, field)
+			case "title":
+				return ec.fieldContext_BenefitsChecklistSection_title(ctx, field)
+			case "items":
+				return ec.fieldContext_BenefitsChecklistSection_items(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type BenefitsChecklistSection", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_benefitsChecklist_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -30973,6 +32478,109 @@ func (ec *executionContext) _BenefitsApplication(ctx context.Context, sel ast.Se
 			}
 		case "approvedAt":
 			out.Values[i] = ec._BenefitsApplication_approvedAt(ctx, field, obj)
+		case "signedName":
+			out.Values[i] = ec._BenefitsApplication_signedName(ctx, field, obj)
+		case "signedAt":
+			out.Values[i] = ec._BenefitsApplication_signedAt(ctx, field, obj)
+		case "confirmationNumber":
+			out.Values[i] = ec._BenefitsApplication_confirmationNumber(ctx, field, obj)
+		case "confirmationRecordedAt":
+			out.Values[i] = ec._BenefitsApplication_confirmationRecordedAt(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var benefitsChecklistItemImplementors = []string{"BenefitsChecklistItem"}
+
+func (ec *executionContext) _BenefitsChecklistItem(ctx context.Context, sel ast.SelectionSet, obj *model.BenefitsChecklistItem) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, benefitsChecklistItemImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("BenefitsChecklistItem")
+		case "label":
+			out.Values[i] = ec._BenefitsChecklistItem_label(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "detail":
+			out.Values[i] = ec._BenefitsChecklistItem_detail(ctx, field, obj)
+		case "confirmOnPortal":
+			out.Values[i] = ec._BenefitsChecklistItem_confirmOnPortal(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var benefitsChecklistSectionImplementors = []string{"BenefitsChecklistSection"}
+
+func (ec *executionContext) _BenefitsChecklistSection(ctx context.Context, sel ast.SelectionSet, obj *model.BenefitsChecklistSection) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, benefitsChecklistSectionImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("BenefitsChecklistSection")
+		case "phase":
+			out.Values[i] = ec._BenefitsChecklistSection_phase(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "title":
+			out.Values[i] = ec._BenefitsChecklistSection_title(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "items":
+			out.Values[i] = ec._BenefitsChecklistSection_items(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -31477,6 +33085,62 @@ func (ec *executionContext) _BenefitsMissingField(ctx context.Context, sel ast.S
 	return out
 }
 
+var benefitsPortalImplementors = []string{"BenefitsPortal"}
+
+func (ec *executionContext) _BenefitsPortal(ctx context.Context, sel ast.SelectionSet, obj *model.BenefitsPortal) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, benefitsPortalImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("BenefitsPortal")
+		case "program":
+			out.Values[i] = ec._BenefitsPortal_program(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "state":
+			out.Values[i] = ec._BenefitsPortal_state(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "url":
+			out.Values[i] = ec._BenefitsPortal_url(ctx, field, obj)
+		case "verified":
+			out.Values[i] = ec._BenefitsPortal_verified(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "fallbackGuidance":
+			out.Values[i] = ec._BenefitsPortal_fallbackGuidance(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
 var benefitsProfileImplementors = []string{"BenefitsProfile"}
 
 func (ec *executionContext) _BenefitsProfile(ctx context.Context, sel ast.SelectionSet, obj *model.BenefitsProfile) graphql.Marshaler {
@@ -31683,6 +33347,52 @@ func (ec *executionContext) _BenefitsSkippedField(ctx context.Context, sel ast.S
 			}
 		case "note":
 			out.Values[i] = ec._BenefitsSkippedField_note(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var benefitsStateLookupImplementors = []string{"BenefitsStateLookup"}
+
+func (ec *executionContext) _BenefitsStateLookup(ctx context.Context, sel ast.SelectionSet, obj *model.BenefitsStateLookup) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, benefitsStateLookupImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("BenefitsStateLookup")
+		case "zip":
+			out.Values[i] = ec._BenefitsStateLookup_zip(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "state":
+			out.Values[i] = ec._BenefitsStateLookup_state(ctx, field, obj)
+		case "detail":
+			out.Values[i] = ec._BenefitsStateLookup_detail(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -33062,6 +34772,13 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		case "recordBenefitsConfirmation":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_recordBenefitsConfirmation(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		case "confirmBenefitsRenewalDeadline":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_confirmBenefitsRenewalDeadline(ctx, field)
@@ -34213,6 +35930,72 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "benefitsStateFromZip":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_benefitsStateFromZip(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "benefitsPortal":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_benefitsPortal(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "benefitsChecklist":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_benefitsChecklist(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
 		case "mealProfile":
 			field := field
 
@@ -35330,6 +37113,114 @@ func (ec *executionContext) marshalNBenefitsApplicationStatus2githubᚗcomᚋhel
 	return v
 }
 
+func (ec *executionContext) marshalNBenefitsChecklistItem2ᚕᚖgithubᚗcomᚋhelpthehiveᚋserverᚋinternalᚋgraphqlᚋmodelᚐBenefitsChecklistItemᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.BenefitsChecklistItem) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNBenefitsChecklistItem2ᚖgithubᚗcomᚋhelpthehiveᚋserverᚋinternalᚋgraphqlᚋmodelᚐBenefitsChecklistItem(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNBenefitsChecklistItem2ᚖgithubᚗcomᚋhelpthehiveᚋserverᚋinternalᚋgraphqlᚋmodelᚐBenefitsChecklistItem(ctx context.Context, sel ast.SelectionSet, v *model.BenefitsChecklistItem) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._BenefitsChecklistItem(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNBenefitsChecklistSection2ᚕᚖgithubᚗcomᚋhelpthehiveᚋserverᚋinternalᚋgraphqlᚋmodelᚐBenefitsChecklistSectionᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.BenefitsChecklistSection) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNBenefitsChecklistSection2ᚖgithubᚗcomᚋhelpthehiveᚋserverᚋinternalᚋgraphqlᚋmodelᚐBenefitsChecklistSection(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNBenefitsChecklistSection2ᚖgithubᚗcomᚋhelpthehiveᚋserverᚋinternalᚋgraphqlᚋmodelᚐBenefitsChecklistSection(ctx context.Context, sel ast.SelectionSet, v *model.BenefitsChecklistSection) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._BenefitsChecklistSection(ctx, sel, v)
+}
+
 func (ec *executionContext) marshalNBenefitsFieldProblem2ᚕᚖgithubᚗcomᚋhelpthehiveᚋserverᚋinternalᚋgraphqlᚋmodelᚐBenefitsFieldProblemᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.BenefitsFieldProblem) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
@@ -35750,6 +37641,20 @@ func (ec *executionContext) marshalNBenefitsMissingField2ᚖgithubᚗcomᚋhelpt
 	return ec._BenefitsMissingField(ctx, sel, v)
 }
 
+func (ec *executionContext) marshalNBenefitsPortal2githubᚗcomᚋhelpthehiveᚋserverᚋinternalᚋgraphqlᚋmodelᚐBenefitsPortal(ctx context.Context, sel ast.SelectionSet, v model.BenefitsPortal) graphql.Marshaler {
+	return ec._BenefitsPortal(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNBenefitsPortal2ᚖgithubᚗcomᚋhelpthehiveᚋserverᚋinternalᚋgraphqlᚋmodelᚐBenefitsPortal(ctx context.Context, sel ast.SelectionSet, v *model.BenefitsPortal) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._BenefitsPortal(ctx, sel, v)
+}
+
 func (ec *executionContext) marshalNBenefitsProfile2githubᚗcomᚋhelpthehiveᚋserverᚋinternalᚋgraphqlᚋmodelᚐBenefitsProfile(ctx context.Context, sel ast.SelectionSet, v model.BenefitsProfile) graphql.Marshaler {
 	return ec._BenefitsProfile(ctx, sel, &v)
 }
@@ -35938,6 +37843,20 @@ func (ec *executionContext) marshalNBenefitsSkippedField2ᚖgithubᚗcomᚋhelpt
 		return graphql.Null
 	}
 	return ec._BenefitsSkippedField(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNBenefitsStateLookup2githubᚗcomᚋhelpthehiveᚋserverᚋinternalᚋgraphqlᚋmodelᚐBenefitsStateLookup(ctx context.Context, sel ast.SelectionSet, v model.BenefitsStateLookup) graphql.Marshaler {
+	return ec._BenefitsStateLookup(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNBenefitsStateLookup2ᚖgithubᚗcomᚋhelpthehiveᚋserverᚋinternalᚋgraphqlᚋmodelᚐBenefitsStateLookup(ctx context.Context, sel ast.SelectionSet, v *model.BenefitsStateLookup) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._BenefitsStateLookup(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNBenefitsTemplateKind2githubᚗcomᚋhelpthehiveᚋserverᚋinternalᚋgraphqlᚋmodelᚐBenefitsTemplateKind(ctx context.Context, v interface{}) (model.BenefitsTemplateKind, error) {
