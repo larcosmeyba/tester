@@ -147,53 +147,164 @@ function requestedSlots(request: PlanRequest): MealSlot[] {
   return slots.sort((a, b) => a.day - b.day);
 }
 
+/** One slot's best-scoring recipe, before the budget-fit pass below. */
+type SlotPick = { slot: MealSlot; recipe: Recipe };
+
+/** The best-scoring eligible recipe for one slot, given what's used already. */
+function pickRecipeForSlot(
+  request: PlanRequest,
+  pool: Recipe[],
+  slot: MealSlot,
+  usedRecipeIds: ReadonlySet<string>,
+): Recipe | null {
+  const candidates = pool
+    .filter((recipe) => recipe.mealTypes.includes(slot.mealType))
+    // `leftovers: no` means never the same recipe twice in the week.
+    .filter((recipe) => (request.leftovers === 'no' ? !usedRecipeIds.has(recipe.recipeId) : true))
+    .sort((a, b) => {
+      const repeatPenalty = (r: Recipe) => (usedRecipeIds.has(r.recipeId) ? 25 : 0);
+      return score(b, request) - repeatPenalty(b) - (score(a, request) - repeatPenalty(a));
+    });
+
+  return candidates[0] ?? null;
+}
+
+/** The PlannedMeal rows for one slot's recipe. */
+function planMealForRecipe(
+  recipe: Recipe,
+  slot: MealSlot,
+  request: PlanRequest,
+  pantry: ReadonlySet<string>,
+  scaleFactors: Map<string, number>,
+): PlannedMeal {
+  const scaleFactor = scaleFactors.get(recipe.recipeId) ?? 1;
+  const ownedHere = purchasableLines(recipe)
+    .map((line) => line.ingredientId)
+    .filter((id): id is string => Boolean(id) && seedCatalog.inPantry(id, pantry));
+
+  return {
+    slot,
+    recipeId: recipe.recipeId,
+    title: recipe.title,
+    totalTimeMinutes: recipe.totalTimeMinutes,
+    scaleFactor,
+    servingsPlanned: (recipe.servings ?? request.household.size) * scaleFactor,
+    proteinGPerServing: recipe.nutrition?.proteinG ?? null,
+    goalIndicator: request.nutritionPreferences[0]?.goal ?? null,
+    pantryIngredientsUsed: ownedHere,
+    incrementalCheckoutCost: null,
+    consumedCost: null,
+    why: null,
+  };
+}
+
+/**
+ * Budget rule (product rule): the 7-day total must fit the selected budget —
+ * or Penny shows the closest honest plan plus a note. The scoring pass above
+ * ignores cost, so when the picked plan runs over budget this greedily swaps
+ * the most expensive slot for the cheapest still-eligible alternative of that
+ * meal type, re-checking the full basket each time. When no single swap helps,
+ * the plan is the closest honest one and the over-budget note below stays.
+ *
+ * Every cost here comes from `buildBasket` — the same consolidation arithmetic
+ * the rest of the mock uses. Nothing invents a price.
+ */
+function fitPicksToBudget(
+  request: PlanRequest,
+  pool: Recipe[],
+  picks: SlotPick[],
+  pantry: ReadonlySet<string>,
+  scaleFactors: Map<string, number>,
+  budget: number | null,
+): void {
+  if (budget === null || picks.length === 0) return;
+
+  const recipeById = new Map(pool.map((recipe) => [recipe.recipeId, recipe]));
+  // Standalone high-end cost per recipe, precomputed once so the pass only
+  // trials candidates that are actually cheaper than the current slot.
+  const standaloneHigh = new Map<string, number>();
+  for (const recipe of pool) {
+    standaloneHigh.set(recipe.recipeId, buildBasket([recipe], pantry, scaleFactors).checkoutCost.high);
+  }
+
+  const recipeIds = () => picks.map((pick) => pick.recipe.recipeId);
+  const checkoutHigh = (ids: string[]): number => {
+    const recipes = ids
+      .map((id) => recipeById.get(id))
+      .filter((recipe): recipe is Recipe => Boolean(recipe));
+    return buildBasket(recipes, pantry, scaleFactors).checkoutCost.high;
+  };
+
+  const uniqueRecipes = request.leftovers === 'no';
+
+  for (let pass = 0; pass < 12; pass += 1) {
+    const currentIds = recipeIds();
+    const currentTotal = checkoutHigh(currentIds);
+    if (currentTotal <= budget) return;
+
+    // Try the most expensive slot first.
+    const byCostDesc = picks
+      .map((pick, index) => ({ index, cost: standaloneHigh.get(pick.recipe.recipeId) ?? 0 }))
+      .sort((a, b) => b.cost - a.cost);
+
+    let swapped = false;
+    for (const { index } of byCostDesc) {
+      const pick = picks[index];
+      if (!pick) continue;
+      const { slot, recipe: current } = pick;
+      const currentCost = standaloneHigh.get(current.recipeId) ?? 0;
+      const usedElsewhere = new Set(currentIds.filter((_, slotIndex) => slotIndex !== index));
+
+      let bestId: string | null = null;
+      let bestTotal = currentTotal;
+      for (const candidate of pool) {
+        if (candidate.recipeId === current.recipeId) continue;
+        if (!candidate.mealTypes.includes(slot.mealType)) continue;
+        if (uniqueRecipes && usedElsewhere.has(candidate.recipeId)) continue;
+        const candidateCost = standaloneHigh.get(candidate.recipeId) ?? 0;
+        if (candidateCost >= currentCost) continue; // Only cheaper alternatives.
+        const trial = currentIds.slice();
+        trial[index] = candidate.recipeId;
+        const trialTotal = checkoutHigh(trial);
+        if (trialTotal < bestTotal) {
+          bestId = candidate.recipeId;
+          bestTotal = trialTotal;
+        }
+      }
+
+      if (bestId) {
+        const replacement = recipeById.get(bestId);
+        if (!replacement) continue;
+        picks[index] = { slot, recipe: replacement };
+        swapped = true;
+        break; // One swap per pass, then re-rank.
+      }
+    }
+    if (!swapped) return; // No single swap helps: closest honest plan reached.
+  }
+}
+
 function buildPlan(request: PlanRequest, planId: string): MealPlan {
   const pool = eligibleRecipes(request);
   const slots = requestedSlots(request);
   const pantry = new Set(request.pantryItems);
 
-  const chosen: PlannedMeal[] = [];
+  const picks: SlotPick[] = [];
   const usedRecipeIds = new Set<string>();
-
   for (const slot of slots) {
-    const candidates = pool
-      .filter((recipe) => recipe.mealTypes.includes(slot.mealType))
-      // `leftovers: no` means never the same recipe twice in the week.
-      .filter((recipe) => request.leftovers === 'no' ? !usedRecipeIds.has(recipe.recipeId) : true)
-      .sort((a, b) => {
-        const repeatPenalty = (r: Recipe) => (usedRecipeIds.has(r.recipeId) ? 25 : 0);
-        return score(b, request) - repeatPenalty(b) - (score(a, request) - repeatPenalty(a));
-      });
-
-    const recipe = candidates[0];
+    const recipe = pickRecipeForSlot(request, pool, slot, usedRecipeIds);
     if (!recipe) continue;
     usedRecipeIds.add(recipe.recipeId);
-
-    const factors = scaleFactorsFor([recipe], request.household.size);
-    const scaleFactor = factors.get(recipe.recipeId) ?? 1;
-    const ownedHere = purchasableLines(recipe)
-      .map((line) => line.ingredientId)
-      .filter((id): id is string => Boolean(id) && seedCatalog.inPantry(id, pantry));
-
-    chosen.push({
-      slot,
-      recipeId: recipe.recipeId,
-      title: recipe.title,
-      totalTimeMinutes: recipe.totalTimeMinutes,
-      scaleFactor,
-      servingsPlanned: (recipe.servings ?? request.household.size) * scaleFactor,
-      proteinGPerServing: recipe.nutrition?.proteinG ?? null,
-      goalIndicator: request.nutritionPreferences[0]?.goal ?? null,
-      pantryIngredientsUsed: ownedHere,
-      incrementalCheckoutCost: null,
-      consumedCost: null,
-      why: null,
-    });
+    picks.push({ slot, recipe });
   }
 
-  const plannedRecipes = chosen
-    .map((meal) => pool.find((r) => r.recipeId === meal.recipeId))
-    .filter((r): r is Recipe => Boolean(r));
+  // Product rule: headroom is measured against the range's UPPER bound.
+  const budget = request.budget.amount > 0 ? request.budget.amount : null;
+  const scaleFactors = scaleFactorsFor(pool, request.household.size);
+  fitPicksToBudget(request, pool, picks, pantry, scaleFactors, budget);
+
+  const chosen = picks.map(({ slot, recipe }) => planMealForRecipe(recipe, slot, request, pantry, scaleFactors));
+  const plannedRecipes = picks.map((pick) => pick.recipe);
 
   const basket = buildBasket(
     plannedRecipes,
@@ -201,8 +312,8 @@ function buildPlan(request: PlanRequest, planId: string): MealPlan {
     scaleFactorsFor(plannedRecipes, request.household.size),
   );
 
-  const budget = request.budget.amount > 0 ? request.budget.amount : null;
   const pantryItemsUsed = [...new Set(chosen.flatMap((meal) => meal.pantryIngredientsUsed))];
+  const overBudget = budget !== null && basket.checkoutCost.high > budget;
 
   return {
     planId,
@@ -228,6 +339,11 @@ function buildPlan(request: PlanRequest, planId: string): MealPlan {
       'Prices are national estimates (tier 3/4).',
       'Pantry items counted as $0 for this trip.',
       'Salt, pepper, and water assumed on hand.',
+      // Product rule: 7-day total must fit the budget, or Penny shows the
+      // closest honest plan plus a note (the over-budget case in pennyMessage).
+      ...(overBudget
+        ? ['Cheaper eligible swaps could not bring this under your budget — this is the closest plan your answers allow.']
+        : []),
     ],
   };
 }

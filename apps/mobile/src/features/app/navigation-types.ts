@@ -40,7 +40,8 @@ export type ScreenName =
   | 'financeHub'
   | 'spendingReport'
   | 'transactions'
-  | 'connectAccount';
+  | 'connectAccount'
+  | 'paywall';
 
 export type Route = {
   name: ScreenName;

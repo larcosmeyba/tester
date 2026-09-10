@@ -506,7 +506,14 @@ export function BenefitsQuestionnaireScreen({ nav, programs }: { nav: Navigation
       housingStatus,
       monthlyRent,
     });
-    nav.back();
+    // Penny does the paperwork: the saved profile becomes the autofilled draft
+    // the user reviews on the next screen before anything leaves the app.
+    const firstProgram = BENEFIT_PROGRAMS.find((program) => program.id === programIds[0]);
+    if (firstProgram) {
+      nav.replace('programApplication', { program: firstProgram });
+    } else {
+      nav.back();
+    }
   }
 
   return (
@@ -548,7 +555,7 @@ export function ProgramApplicationScreen({ nav, program }: { nav: Navigation; pr
           <Text style={sharedStyles.cardBody}>Household size: {app.governmentProfile.householdSize || app.profile.householdSize}</Text>
           <Text style={sharedStyles.cardBody}>State: {app.governmentProfile.state || 'Not set'}</Text>
         </Card>
-        <AppButton title="Review Draft Application" onPress={nav.back} />
+        <AppButton title="Done" onPress={nav.back} />
       </View>
     </ScrollScreen>
   );

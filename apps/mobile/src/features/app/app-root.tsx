@@ -26,6 +26,7 @@ import { BudgetSettingsScreen, ConnectAccountScreen, FinanceScreen, SpendingRepo
 import { AddPantryScreen, PantryScreen, ScanPantryScreen } from '@/features/pantry/pantry-screens';
 import { AccountScreen, ChangeEmailScreen, DeleteAccountScreen, EditHandleScreen, EditProfileScreen, FeedbackScreen, NotificationsScreen } from '@/features/profile/profile-screens';
 import { DealsScreen, RecipeScreen } from '@/features/meals/recipe-deals-screens';
+import { PaywallScreen } from '@/features/paywall/paywall-screen';
 import { type Navigation, type Route, type ScreenName } from '@/features/app/navigation-types';
 import { sharedStyles } from '@/features/app/app-shared';
 import { StyleSheet } from 'react-native';
@@ -147,6 +148,8 @@ export default function AppRoot({ initialPublicScreen }: { initialPublicScreen?:
       return <TransactionsScreen nav={nav} />;
     case 'connectAccount':
       return <ConnectAccountScreen nav={nav} />;
+    case 'paywall':
+      return <PaywallScreen nav={nav} />;
     case 'welcome':
     default:
       return <WelcomeScreen nav={nav} />;

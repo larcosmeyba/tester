@@ -4,6 +4,7 @@
 // that already talk to the real backend through features/profile/profile-repository.
 
 import * as ImagePicker from 'expo-image-picker';
+import { enqueueFeedback, flushFeedbackOutbox, type FeedbackFlushResult } from '@/features/profile/feedback-outbox';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Image, Linking, Pressable, Text, View } from 'react-native';
 import { useAuth } from '@/auth/auth-context';
@@ -83,6 +84,7 @@ export function AccountScreen({ nav }: { nav: Navigation }) {
 
       <AccountSection title="PREFERENCES" />
       <View style={settingsStyles.group}>
+        <SettingsRow icon="sparkle" title="Hive Plus" subtitle="Unlimited plans, Penny & more" onPress={() => nav.push('paywall')} />
         <SettingsRow icon="bell" title="Notification Settings" onPress={() => nav.push('notifications')} />
         <SettingsRow icon="dollar" title="Budget Settings" onPress={() => nav.push('budgetSettings')} last />
       </View>
@@ -820,13 +822,84 @@ const notificationStyles = StyleSheet.create({
 
 /**
  * Send Feedback — the Figma feedback form: star rating, category chips, a
- * message field, and the founder note. Still prototype-local: sending returns
- * to the previous screen (no backend ticket yet).
+ * message field, and the founder note. Submissions go to the local feedback
+ * outbox (`features/profile/feedback-outbox`): they are captured immediately,
+ * delivery is attempted through the existing service layer, and anything still
+ * pending stays queued until the backend accepts it.
  */
 export function FeedbackScreen({ nav }: { nav: Navigation }) {
   const [rating, setRating] = useState(0);
   const [category, setCategory] = useState('Love');
   const [message, setMessage] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitState, setSubmitState] = useState<'idle' | 'sent' | 'saved' | 'error'>('idle');
+  const [submitError, setSubmitError] = useState('');
+  const mountedRef = useRef(true);
+
+  // Best-effort: anything still queued from a previous offline session goes
+  // out as soon as the user opens this screen.
+  useEffect(() => {
+    mountedRef.current = true;
+    void flushFeedbackOutbox().catch(() => undefined);
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
+
+  async function submit() {
+    const trimmed = message.trim();
+    if (!trimmed || isSubmitting) return;
+    setIsSubmitting(true);
+    setSubmitError('');
+    try {
+      await enqueueFeedback({ rating, category, message: trimmed });
+      let result: FeedbackFlushResult = { attempted: 0, sent: 0 };
+      try {
+        result = await flushFeedbackOutbox();
+      } catch {
+        // Delivery is best-effort; the outbox keeps the entry queued.
+      }
+      if (!mountedRef.current) return;
+      setSubmitState(result.sent > 0 ? 'sent' : 'saved');
+    } catch (error) {
+      if (!mountedRef.current) return;
+      setSubmitState('error');
+      setSubmitError(error instanceof Error ? error.message : 'Unable to save your feedback.');
+    } finally {
+      if (mountedRef.current) setIsSubmitting(false);
+    }
+  }
+
+  function sendAnother() {
+    setRating(0);
+    setCategory('Love');
+    setMessage('');
+    setSubmitState('idle');
+    setSubmitError('');
+  }
+
+  if (submitState === 'sent' || submitState === 'saved') {
+    return (
+      <ScrollScreen keyboard>
+        <AppHeader title="Send Feedback" onBack={nav.back} />
+        <View style={feedbackStyles.body}>
+          <View style={feedbackStyles.confirmIcon}>
+            <HiveIcon name="check" size={28} color={HiveColors.white} />
+          </View>
+          <Text style={feedbackStyles.heading}>
+            {submitState === 'sent' ? 'Thanks — your feedback was sent.' : 'Saved — will send when you\'re back online / connected.'}
+          </Text>
+          <Text style={uiText.muted}>
+            {submitState === 'sent'
+              ? 'Our founder reads every message.'
+              : 'Your message is queued on this device and will be delivered automatically once a feedback endpoint is connected.'}
+          </Text>
+          <AppButton title="Send another" variant="secondary" onPress={sendAnother} />
+          <AppButton title="Done" variant="plain" onPress={nav.back} />
+        </View>
+      </ScrollScreen>
+    );
+  }
 
   return (
     <ScrollScreen keyboard>
@@ -886,7 +959,12 @@ export function FeedbackScreen({ nav }: { nav: Navigation }) {
           <Text style={feedbackStyles.founderNoteText}>Our founder reads every message</Text>
         </View>
 
-        <AppButton title="Send feedback" disabled={!message.trim()} onPress={nav.back} />
+        {submitError ? <Text style={sharedStyles.authError}>{submitError}</Text> : null}
+        <AppButton
+          title={isSubmitting ? 'Sending feedback…' : 'Send feedback'}
+          disabled={!message.trim() || isSubmitting}
+          onPress={() => void submit()}
+        />
       </View>
     </ScrollScreen>
   );
@@ -913,6 +991,14 @@ const feedbackStyles = StyleSheet.create({
   chipTextSelected: { color: HiveColors.white },
   founderNote: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   founderNoteText: { color: HiveColors.textSecondary, fontSize: 14 },
+  confirmIcon: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: HiveColors.greenDark,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });
 
 export function AccountSection({ title }: { title: string }) {
