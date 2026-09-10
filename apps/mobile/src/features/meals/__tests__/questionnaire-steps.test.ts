@@ -1,106 +1,174 @@
 /**
- * Questionnaire flow.
+ * The iOS questionnaire: 5 steps, 14 questions.
  *
- * The two required sections gate progress; everything else is skippable. These
- * tests also pin the "you don't have to plan every meal" rule, which is easy to
- * break by assuming a full week of three meals a day.
+ * The final step gates progress on at least one meal category and a budget
+ * range; everything else always has an answer (steppers and defaults). These
+ * tests also pin the product rules the mapping applies: children count as full
+ * servings, snacks are always zero, and the Q14 range drives the plan budget.
  */
 import {
+  DEFAULT_IOS_ANSWERS,
+  PLACEHOLDER_COPY,
+  PLACEHOLDER_QUESTIONS,
   QUESTIONNAIRE_STEPS,
+  applyIosAnswers,
   canAdvance,
-  householdSplitError,
-  MAX_COOKING_STYLES,
   PANTRY_STAPLES,
+  type IosQuestionnaireAnswers,
 } from '@/features/meals/questionnaire-steps';
-import { createEmptyPlanRequest, selectedMealTypes, type PlanRequest } from '@/features/meals/meal-plan-model';
+import { createEmptyPlanRequest, budgetRangeBounds } from '@/features/meals/meal-plan-model';
 
-const withMeals = (meals: Partial<PlanRequest['meals']>): PlanRequest => ({
-  ...createEmptyPlanRequest(),
-  meals: { ...createEmptyPlanRequest().meals, ...meals },
+const answers = (patch: Partial<IosQuestionnaireAnswers> = {}): IosQuestionnaireAnswers => ({
+  ...DEFAULT_IOS_ANSWERS,
+  ...patch,
 });
 
 describe('questionnaire steps', () => {
-  it('covers the thirteen sections the spec defines, ending on review', () => {
-    expect(QUESTIONNAIRE_STEPS).toHaveLength(13);
-    expect(QUESTIONNAIRE_STEPS.at(-1)?.id).toBe('review');
+  it('covers the five iOS steps', () => {
+    expect(QUESTIONNAIRE_STEPS).toHaveLength(5);
+    expect(QUESTIONNAIRE_STEPS.map((step) => step.id)).toEqual([
+      'household',
+      'diets',
+      'health',
+      'taste',
+      'budget',
+    ]);
   });
 
-  it('marks only household and meals as required', () => {
-    const required = QUESTIONNAIRE_STEPS.filter((step) => step.required).map((step) => step.id);
-    expect(required).toEqual(['household', 'meals']);
+  it('uses the verified question numbers 1, 2, 3, 4, 6, 7, 8, 9, 12, 13, 14', () => {
+    const numbers = QUESTIONNAIRE_STEPS.flatMap((step) => step.questions.map((q) => q.number));
+    expect(numbers).toEqual([1, 2, 3, 4, 6, 7, 8, 9, 12, 13, 14]);
+  });
+
+  it('never invents copy for questions without an iOS screenshot', () => {
+    const missing = PLACEHOLDER_QUESTIONS.map((placeholder) => placeholder.number).sort(
+      (a, b) => a - b,
+    );
+    expect(missing).toEqual([5, 10, 11]);
+    for (const placeholder of PLACEHOLDER_QUESTIONS) {
+      expect(PLACEHOLDER_COPY).toContain('AWAITING iOS SCREENSHOT');
+      expect(placeholder.afterStep).toBeDefined();
+    }
+  });
+
+  it('marks the cropped Q9 spice option as pending copy instead of inventing it', () => {
+    const taste = QUESTIONNAIRE_STEPS.find((step) => step.id === 'taste')!;
+    const spice = taste.questions.find((question) => question.number === 9)!;
+    const pending = spice.options?.find((option) => option.pendingCopy);
+    expect(pending?.label).toBe(PLACEHOLDER_COPY);
+  });
+
+  it('uses the exact iOS budget range copy on Q14', () => {
+    const budget = QUESTIONNAIRE_STEPS.find((step) => step.id === 'budget')!;
+    const ranges = budget.questions.find((question) => question.number === 14)!;
+    expect(ranges.options?.map((option) => option.label)).toEqual([
+      'Under $75',
+      '$75–$150',
+      '$150–$250',
+    ]);
   });
 });
 
 describe('canAdvance', () => {
-  it('blocks the meals step until at least one category is chosen', () => {
-    expect(canAdvance('meals', createEmptyPlanRequest())).toBe(false);
+  it('requires a household of at least one, with children capped at household size', () => {
+    expect(canAdvance('household', answers())).toBe(true);
+    expect(canAdvance('household', answers({ householdSize: 0 }))).toBe(false);
+    expect(canAdvance('household', answers({ householdSize: 2, children: 3 }))).toBe(false);
   });
 
-  it('allows breakfast and dinner only', () => {
-    const request = withMeals({ breakfast: 5, dinner: 5 });
-    expect(canAdvance('meals', request)).toBe(true);
-    expect(selectedMealTypes(request.meals)).toEqual(['breakfast', 'dinner']);
+  it('blocks the budget step until a meal category and budget range are set', () => {
+    expect(canAdvance('budget', answers())).toBe(true);
+    expect(canAdvance('budget', answers({ mealTypes: [] }))).toBe(false);
+    expect(canAdvance('budget', answers({ budgetRange: null }))).toBe(false);
   });
 
-  it('allows lunch, dinner and snacks without breakfast', () => {
-    const request = withMeals({ lunch: 3, dinner: 5, snack: 2 });
-    expect(canAdvance('meals', request)).toBe(true);
-    expect(selectedMealTypes(request.meals)).toEqual(['lunch', 'dinner', 'snack']);
-  });
-
-  it('allows a single category', () => {
-    expect(canAdvance('meals', withMeals({ dinner: 5 }))).toBe(true);
-  });
-
-  it('requires a household of at least one', () => {
-    const request = createEmptyPlanRequest();
-    expect(canAdvance('household', request)).toBe(true);
-    expect(canAdvance('household', { ...request, household: { ...request.household, size: 0 } })).toBe(false);
-  });
-
-  it('never blocks an optional step', () => {
-    const empty = createEmptyPlanRequest();
-    for (const step of QUESTIONNAIRE_STEPS.filter((candidate) => !candidate.required)) {
-      expect(canAdvance(step.id, empty)).toBe(true);
+  it('never blocks an optional middle step', () => {
+    for (const id of ['diets', 'health', 'taste'] as const) {
+      expect(canAdvance(id, answers({ diets: [], goals: [], cuisines: [] }))).toBe(true);
     }
   });
 });
 
-describe('householdSplitError', () => {
-  it('passes when neither adults nor children were given', () => {
-    expect(householdSplitError(createEmptyPlanRequest())).toBeNull();
+describe('applyIosAnswers', () => {
+  it('counts children as full servings in the household size', () => {
+    const request = applyIosAnswers(
+      createEmptyPlanRequest(),
+      answers({ householdSize: 4, children: 2 }),
+    );
+    expect(request.household.size).toBe(4);
+    expect(request.household.children).toBe(2);
+    expect(request.household.adults).toBe(2);
   });
 
-  it('passes when the split adds up', () => {
-    const request = createEmptyPlanRequest();
-    request.household = { size: 4, adults: 2, children: 2, sizeIsPlus: false };
-    expect(householdSplitError(request)).toBeNull();
+  it('keeps snacks at zero — breakfast/lunch/dinner only', () => {
+    const request = applyIosAnswers(
+      createEmptyPlanRequest(),
+      answers({ mealTypes: ['breakfast', 'lunch', 'dinner'] }),
+    );
+    expect(request.meals.snack).toBe(0);
+    expect(request.meals.breakfast).toBe(5);
+    expect(request.meals.lunch).toBe(5);
+    expect(request.meals.dinner).toBe(5);
   });
 
-  it('explains when the split does not add up', () => {
-    const request = createEmptyPlanRequest();
-    request.household = { size: 4, adults: 3, children: 3, sizeIsPlus: false };
-    expect(householdSplitError(request)).toMatch(/add up to 4/);
+  it('drives the budget from the Q14 range and always plans seven days', () => {
+    const request = applyIosAnswers(
+      createEmptyPlanRequest(),
+      answers({ budgetRange: '150_250' }),
+    );
+    const bounds = budgetRangeBounds('150_250');
+    expect(request.budget.amount).toBe((bounds.maxCents ?? 0) / 100);
+    expect(request.budget.enabled).toBe(true);
+    expect(request.days).toBe(7);
+  });
+
+  it('treats "None" as a clear for diets, allergies, and health answers', () => {
+    const request = applyIosAnswers(
+      createEmptyPlanRequest(),
+      answers({
+        diets: ['none'],
+        allergies: ['none'],
+        healthConsiderations: ['none_of_these'],
+        goals: ['no_specific_goal'],
+      }),
+    );
+    expect(request.dietaryRequirements).toEqual([]);
+    expect(request.allergies).toEqual([]);
+    expect(request.healthConsiderations).toEqual(['none_of_these']);
+    expect(request.planGoals).toEqual(['no_specific_goal']);
+  });
+
+  it('preserves unmapped diets as free text for the backend', () => {
+    const request = applyIosAnswers(
+      createEmptyPlanRequest(),
+      answers({ diets: ['halal', 'vegetarian'] }),
+    );
+    expect(request.dietaryRequirements).toEqual([{ diet: 'vegetarian', strength: 'required' }]);
+    expect(request.dietaryOtherText).toBe('halal');
+  });
+
+  it('carries spice level, dinners per week, and budget range through', () => {
+    const request = applyIosAnswers(
+      createEmptyPlanRequest(),
+      answers({ spiceLevel: 'medium', dinnersPerWeek: 6, budgetRange: 'under_75' }),
+    );
+    expect(request.spiceLevel).toBe('medium');
+    expect(request.dinnersPerWeek).toBe(6);
+    expect(request.budgetRange).toBe('under_75');
   });
 });
 
 describe('questionnaire defaults', () => {
-  it('starts with stovetop, oven and microwave checked, per the spec', () => {
-    expect(createEmptyPlanRequest().equipment).toEqual(['stovetop', 'oven', 'microwave']);
+  it('matches the iOS defaults: 2 people, 0 children, 5 dinners, Dinner, $75–$150', () => {
+    expect(DEFAULT_IOS_ANSWERS.householdSize).toBe(2);
+    expect(DEFAULT_IOS_ANSWERS.children).toBe(0);
+    expect(DEFAULT_IOS_ANSWERS.dinnersPerWeek).toBe(5);
+    expect(DEFAULT_IOS_ANSWERS.mealTypes).toEqual(['dinner']);
+    expect(DEFAULT_IOS_ANSWERS.budgetRange).toBe('75_150');
   });
 
   it('pre-checks no pantry staples — we never assume a household owns anything', () => {
     expect(createEmptyPlanRequest().pantryItems).toEqual([]);
     expect(PANTRY_STAPLES.length).toBeGreaterThan(0);
-  });
-
-  it('starts with budget planning off', () => {
-    const { budget } = createEmptyPlanRequest();
-    expect(budget.amount).toBe(0);
-    expect(budget.enabled).toBe(false);
-  });
-
-  it('caps cooking styles at three', () => {
-    expect(MAX_COOKING_STYLES).toBe(3);
   });
 });

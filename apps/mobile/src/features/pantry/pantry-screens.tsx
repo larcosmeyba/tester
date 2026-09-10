@@ -8,7 +8,7 @@
 // The loading, error and retry states follow the same shape as the meal screens
 // so the app behaves consistently when the network does not cooperate.
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { ActivityIndicator, Image, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 
@@ -31,12 +31,15 @@ import { formatDate, useAppState } from '@/state/app-state';
 import { capitalize, sharedStyles } from '@/features/app/app-shared';
 import { type Navigation } from '@/features/app/navigation-types';
 import { usePantry } from '@/features/pantry/pantry-context';
+import { cookFromPantry } from '@/features/pantry/cook-from-pantry';
+import { addGroceryExtra, useGroceryExtras } from '@/features/pantry/grocery-extras';
 import {
   STORAGE_LOCATIONS,
   expirationDateInDays,
   locationIconFor,
   locationLabel,
   type PantryFilter,
+  type PantryItem,
   type StorageLocation,
 } from '@/features/pantry/pantry-model';
 
@@ -44,6 +47,13 @@ export function PantryScreen({ nav }: { nav: Navigation }) {
   const app = useAppState();
   const pantry = usePantry();
   const [filter, setFilter] = useState<PantryFilter>('active');
+  const [cooking, setCooking] = useState(false);
+
+  if (cooking) {
+    // Rendered inline so the pantry feature owns the whole flow: the router
+    // (features/app) never learns about this view.
+    return <CookFromPantryView items={pantry.activeItems} onBack={() => setCooking(false)} />;
+  }
 
   const items =
     filter === 'active' ? pantry.activeItems : filter === 'used' ? pantry.usedItems : pantry.expiredItems;
@@ -130,6 +140,11 @@ export function PantryScreen({ nav }: { nav: Navigation }) {
         <StatBadge value={`${pantry.wasteStats.totalUsed}`} label="USED" />
         <StatBadge value={`$${pantry.wasteStats.estimatedWasteValue.toFixed(2)}`} label="WASTE SAVED" />
       </View>
+      {pantry.status === 'ready' && pantry.activeItems.length > 0 ? (
+        <View style={styles.sideMargin}>
+          <AppButton title="Cook what I have" icon="fork" onPress={() => setCooking(true)} />
+        </View>
+      ) : null}
       <View style={sharedStyles.filterRow}>
         {(['active', 'used', 'expired'] as const).map((item) => (
           <Chip key={item} label={capitalize(item)} selected={filter === item} onPress={() => setFilter(item)} />
@@ -141,6 +156,103 @@ export function PantryScreen({ nav }: { nav: Navigation }) {
           <AppButton title="Scan Items" variant="secondary" onPress={() => nav.push('scanPantry')} style={sharedStyles.flexOne} />
           <AppButton title="Add Pantry Item" icon="plus" onPress={() => nav.push('addPantry')} style={sharedStyles.flexOne} />
         </View>
+      </View>
+    </ScrollScreen>
+  );
+}
+
+/**
+ * "Make a meal from my pantry".
+ *
+ * One recipe that maximizes the use of the active (on-hand) items, shown with
+ * what it uses and a "Missing ingredients" section where each missing item
+ * has a one-tap Add to the grocery list. The list itself lives in
+ * grocery-extras.ts — see the GROCERY LIST SEAM comment there, because the
+ * meals-owned grocery service has no add-one-item API.
+ */
+function CookFromPantryView({ items, onBack }: { items: PantryItem[]; onBack: () => void }) {
+  const suggestion = useMemo(() => cookFromPantry(items), [items]);
+  const extras = useGroceryExtras();
+
+  if (items.length === 0 || !suggestion) {
+    return (
+      <ScrollScreen>
+        <AppHeader title="Cook what I have" onBack={onBack} />
+        <View style={sharedStyles.formScreen}>
+          <EmptyState
+            title="Add items to your pantry first"
+            subtitle="Once your pantry has items, this picks one meal that uses the most of what you have."
+          />
+          <AppButton title="Back to Pantry" variant="secondary" onPress={onBack} />
+        </View>
+      </ScrollScreen>
+    );
+  }
+
+  const { recipe, matched, missing } = suggestion;
+
+  return (
+    <ScrollScreen>
+      <AppHeader title="Cook what I have" onBack={onBack} />
+      <View style={sharedStyles.formScreen}>
+        <Card style={styles.cookRecipeCard}>
+          <View style={rowStyles.row}>
+            <View style={styles.rowIconTint}>
+              <HiveIcon name="fork" size={18} color={HiveColors.green} />
+            </View>
+            <View style={sharedStyles.flexOne}>
+              <Text style={sharedStyles.cardTitle}>{recipe.title}</Text>
+              <Text style={sharedStyles.miniMuted}>{recipe.minutes} minutes</Text>
+            </View>
+          </View>
+          <Text style={uiText.muted}>{recipe.blurb}</Text>
+        </Card>
+
+        <Text style={styles.cookSectionTitle}>From your pantry ({matched.length})</Text>
+        {matched.map(({ ingredient, pantryItem }) => (
+          <View key={ingredient.name} style={styles.cookRow}>
+            <HiveIcon name="check" size={14} color={HiveColors.green} />
+            <View style={sharedStyles.flexOne}>
+              <Text style={styles.cookRowTitle}>{ingredient.name}</Text>
+              <Text style={sharedStyles.miniMuted}>
+                {pantryItem.quantity ? `${pantryItem.quantity} on hand` : 'On hand'}
+              </Text>
+            </View>
+          </View>
+        ))}
+
+        <Text style={styles.cookSectionTitle}>Missing ingredients</Text>
+        {missing.length === 0 ? (
+          <Text style={uiText.muted}>Nothing missing — you have everything this needs.</Text>
+        ) : (
+          missing.map((ingredient) => {
+            const added = extras.some((name) => name.toLowerCase() === ingredient.name.toLowerCase());
+            return (
+              <View key={ingredient.name} style={styles.cookRow}>
+                <View style={sharedStyles.flexOne}>
+                  <Text style={styles.cookRowTitle}>{ingredient.name}</Text>
+                  <Text style={sharedStyles.miniMuted}>{ingredient.amount}</Text>
+                </View>
+                <AppButton
+                  title={added ? 'Added' : 'Add'}
+                  icon={added ? 'check' : 'plus'}
+                  variant="secondary"
+                  disabled={added}
+                  onPress={() => addGroceryExtra(ingredient.name)}
+                  style={styles.cookAddButton}
+                />
+              </View>
+            );
+          })
+        )}
+
+        <Text style={styles.cookSectionTitle}>Steps</Text>
+        {recipe.steps.map((step, index) => (
+          <View key={index} style={styles.cookRow}>
+            <Text style={styles.cookStepNumber}>{index + 1}.</Text>
+            <Text style={[styles.cookRowTitle, sharedStyles.flexOne]}>{step}</Text>
+          </View>
+        ))}
       </View>
     </ScrollScreen>
   );
@@ -406,6 +518,37 @@ const styles = StyleSheet.create({
   cardActionRow: {
     flexDirection: 'row',
     gap: 10,
+  },
+  cookRecipeCard: {
+    gap: 12,
+    backgroundColor: HiveColors.white,
+    borderWidth: 1,
+    borderColor: HiveColors.border,
+  },
+  cookSectionTitle: {
+    ...uiText.subtitle,
+    marginTop: 8,
+  },
+  cookRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    paddingVertical: 8,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: HiveColors.border,
+  },
+  cookRowTitle: {
+    fontSize: 15,
+    color: HiveColors.text,
+  },
+  cookStepNumber: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: HiveColors.green,
+    minWidth: 22,
+  },
+  cookAddButton: {
+    minWidth: 96,
   },
   pantryItemCard: {
     gap: 12,

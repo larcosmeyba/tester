@@ -2,8 +2,8 @@
  * Custom bottom tab bar icons, drawn from the Figma set.
  *
  * Hand-built from Views (no new native dependency), so they render identically
- * on iOS and Android — unlike HiveIcon, which is SF Symbols with letter
- * fallbacks on Android, where SF Symbols don't exist.
+ * on iOS and Android — the same technique the HiveIcon system now uses
+ * throughout the app.
  *
  * Each glyph is designed on a 24x24 grid and scaled to the requested size, so
  * the geometry below is in grid units.

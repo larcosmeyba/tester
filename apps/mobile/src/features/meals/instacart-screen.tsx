@@ -1,16 +1,16 @@
 /**
- * Shop with Instacart.
+ * Shop with Instacart (see instacart-spec.md).
  *
- * BACKEND INTEGRATION REQUIRED. The handoff belongs on the server: it holds the
- * Instacart partner credentials and builds the cart. This app only ever sends
- * the plan id and opens whatever URL the backend hands back.
+ * BACKEND INTEGRATION REQUIRED. The handoff belongs on the server: it holds
+ * the Instacart partner credentials and builds the cart. This app only ever
+ * sends the plan id and opens whatever URL the backend hands back.
  *
- * No Instacart key, partner id, or signing secret exists in this bundle, and
- * none should be added.
+ * No Instacart key, partner id, affiliate tag, or signing secret exists in
+ * this bundle, and none should be added.
  */
 import { useCallback, useState } from 'react';
 import { useRouter } from 'expo-router';
-import { StyleSheet, Text, View } from 'react-native';
+import { Linking, StyleSheet, Text, View } from 'react-native';
 
 import { AppButton, AppHeader, Card, ScrollScreen, uiText } from '@/components/hive-ui';
 import { Spacing } from '@/constants/theme';
@@ -23,7 +23,9 @@ export function InstacartScreen() {
   const router = useRouter();
   const { plan } = useMealPlan();
   const [isPreparing, setIsPreparing] = useState(false);
+  const [isOpeningFallback, setIsOpeningFallback] = useState(false);
   const [error, setError] = useState<unknown>(null);
+  const [unmatchedCount, setUnmatchedCount] = useState(0);
 
   const itemCount = (plan?.groceryList ?? [])
     .flatMap((section) => section.items)
@@ -34,11 +36,27 @@ export function InstacartScreen() {
     setIsPreparing(true);
     setError(null);
     try {
-      await groceryService.prepareInstacartOrder(plan.planId);
+      const handoff = await groceryService.prepareInstacartOrder(plan.planId);
+      setUnmatchedCount(handoff.unmatchedIngredientIds.length);
+      await Linking.openURL(handoff.checkoutUrl);
     } catch (caught) {
       setError(caught);
     } finally {
       setIsPreparing(false);
+    }
+  }, [plan]);
+
+  const openFallback = useCallback(async () => {
+    if (!plan) return;
+    setIsOpeningFallback(true);
+    setError(null);
+    try {
+      const url = await groceryService.instacartFallbackUrl(plan.planId);
+      await Linking.openURL(url);
+    } catch (caught) {
+      setError(caught);
+    } finally {
+      setIsOpeningFallback(false);
     }
   }, [plan]);
 
@@ -57,16 +75,35 @@ export function InstacartScreen() {
           <Text style={uiText.small}>{PRICING_NOTICE}</Text>
         </Card>
 
+        {unmatchedCount > 0 ? (
+          <Card style={styles.card}>
+            <Text style={uiText.body}>
+              Instacart couldn&apos;t match {unmatchedCount} {unmatchedCount === 1 ? 'item' : 'items'} —
+              add {unmatchedCount === 1 ? 'it' : 'them'} to your cart there.
+            </Text>
+          </Card>
+        ) : null}
+
         {error ? (
           <Card style={styles.card}>
-            <Text style={uiText.body}>{describeError(error).message}</Text>
+            <Text style={uiText.subtitle}>Instacart checkout isn&apos;t connected yet</Text>
+            <Text style={uiText.muted}>
+              {describeError(error).message} You can still open Instacart with your list beside
+              you and shop it there.
+            </Text>
+            <AppButton
+              title="Open Instacart instead"
+              variant="secondary"
+              disabled={!plan || isOpeningFallback}
+              onPress={() => void openFallback()}
+            />
           </Card>
         ) : null}
 
         <View style={styles.actions}>
           <AppButton
             title="Send my list to Instacart"
-            disabled={!plan || itemCount === 0}
+            disabled={!plan || itemCount === 0 || isPreparing}
             onPress={() => void start()}
           />
           {isPreparing ? <Text style={uiText.small}>Preparing your cart…</Text> : null}

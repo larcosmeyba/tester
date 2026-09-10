@@ -35,6 +35,30 @@ export const MAX_PLAN_DAYS = 7;
 export const MIN_HOUSEHOLD_SIZE = 1;
 export const MAX_HOUSEHOLD_SIZE = 8;
 
+/**
+ * Weekly grocery budget ranges from the iOS questionnaire's question 14
+ * ("About how much would you like to spend on groceries per week?").
+ * Labels are the exact iOS copy.
+ */
+export const BUDGET_RANGE_KEYS = ['under_75', '75_150', '150_250'] as const;
+export type BudgetRangeKey = (typeof BUDGET_RANGE_KEYS)[number];
+
+export interface BudgetRangeBounds {
+  key: BudgetRangeKey;
+  label: string;
+  minCents: number;
+  /** null means open-ended (no cap). */
+  maxCents: number | null;
+}
+
+export const BUDGET_RANGE_BOUNDS: Record<BudgetRangeKey, BudgetRangeBounds> = {
+  under_75: { key: 'under_75', label: 'Under $75', minCents: 0, maxCents: 7500 },
+  '75_150': { key: '75_150', label: '$75–$150', minCents: 7500, maxCents: 15000 },
+  '150_250': { key: '150_250', label: '$150–$250', minCents: 15000, maxCents: 25000 },
+};
+
+export const budgetRangeBounds = (key: BudgetRangeKey): BudgetRangeBounds => BUDGET_RANGE_BOUNDS[key];
+
 // ---------------------------------------------------------------------------
 // REQUEST — produced by the questionnaire, sent to POST /plans
 // ---------------------------------------------------------------------------
@@ -126,6 +150,19 @@ export interface PlanRequest {
   cookingStyle: CookingStyle[];
   leftovers: LeftoversPreference;
   excludeRecipeIds: string[];
+  // -------------------------------------------------------------------------
+  // iOS 5-step questionnaire answers (question numbers match the iOS screens).
+  // -------------------------------------------------------------------------
+  /** Q6 — health considerations, stored as stable value keys (see questionnaire-steps). */
+  healthConsiderations: string[];
+  /** Q7 — plan goals, stored as stable value keys. */
+  planGoals: string[];
+  /** Q9 — spice preference: 'mild' | 'medium' | null. */
+  spiceLevel: string | null;
+  /** Q12 — dinners planned per week. */
+  dinnersPerWeek: number;
+  /** Q14 — weekly grocery budget range. */
+  budgetRange: BudgetRangeKey | null;
 }
 
 /** A fresh questionnaire with the defaults Doc 04 specifies. */
@@ -148,6 +185,11 @@ export const createEmptyPlanRequest = (): PlanRequest => ({
   cookingStyle: [],
   leftovers: 'sometimes',
   excludeRecipeIds: [],
+  healthConsiderations: [],
+  planGoals: [],
+  spiceLevel: null,
+  dinnersPerWeek: 5,
+  budgetRange: null,
 });
 
 /** The exact snake_case body `POST /plans` expects (Doc 04). */
@@ -173,6 +215,11 @@ export interface PlanRequestPayload {
   leftovers: string;
   exclude_recipe_ids: string[];
   seed: number | null;
+  health_considerations: string[];
+  plan_goals: string[];
+  spice_level: string | null;
+  dinners_per_week: number;
+  budget_range: string | null;
 }
 
 export const toPlanRequestPayload = (
@@ -228,6 +275,11 @@ export const toPlanRequestPayload = (
   leftovers: request.leftovers,
   exclude_recipe_ids: request.excludeRecipeIds,
   seed: options.seed ?? null,
+  health_considerations: request.healthConsiderations,
+  plan_goals: request.planGoals,
+  spice_level: request.spiceLevel,
+  dinners_per_week: request.dinnersPerWeek,
+  budget_range: request.budgetRange,
 });
 
 // ---------------------------------------------------------------------------

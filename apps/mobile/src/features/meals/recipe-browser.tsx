@@ -1,233 +1,335 @@
 /**
- * Choose My Recipes — browse the library, filter it, pick what you want.
+ * Recipe Database — browse budget-friendly, EBT-approved recipes (iOS layout).
  *
- * The selected recipes go through the same pipeline as a Penny-generated plan:
- * one recipe model, one consolidation engine, one grocery list. Nothing here
- * builds a second path.
- *
- * Recipes the engine cannot plan automatically (a source that never stated a
- * quantity, say) are still shown — they are just marked, because the spec says
- * incomplete recipes stay viewable and never get auto-planned.
+ * Search, All/Breakfast/Lunch/Dinner filters, and rows with image, time,
+ * servings, estimated price and a meal chip. Data is Spoonacular-shaped
+ * (`MOCK_SPOONACULAR_CATALOG`) converted to the one shared Recipe model, so
+ * picks flow through the same pipeline as everything else: assign → week →
+ * grocery list.
  */
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'expo-router';
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Image, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
-import { AppButton, AppHeader, Chip, EmptyState, HiveIcon, ScrollScreen, uiText } from '@/components/hive-ui';
+import { AppButton, AppHeader, EmptyState, HiveIcon, ScrollScreen, uiText } from '@/components/hive-ui';
 import { HiveColors, Radii, Spacing } from '@/constants/theme';
 import { useMealPlan } from '@/features/meals/meal-plan-context';
-import { recipeService } from '@/features/meals/recipe-service';
-import { isIncomplete, type Recipe } from '@/features/meals/recipe-model';
-import { describeError } from '@/services/api-error';
+import { MOCK_SPOONACULAR_CATALOG } from '@/features/meals/mock/spoonacular-catalog';
+import { registerMockRecipes } from '@/features/meals/mock/mock-recipe-service';
+import {
+  spoonacularMealType,
+  spoonacularToRecipe,
+  type SpoonacularRecipe,
+} from '@/features/meals/spoonacular-types';
 
-/** Doc 02 §6 — the filter panel's tag map. */
-const FILTERS: { tagId: string; label: string }[] = [
-  { tagId: 'meal.breakfast', label: 'Breakfast' },
-  { tagId: 'meal.lunch', label: 'Lunch' },
-  { tagId: 'meal.dinner', label: 'Dinner' },
-  { tagId: 'diet.vegan', label: 'Vegan' },
-  { tagId: 'diet.vegetarian', label: 'Vegetarian' },
-  { tagId: 'diet.gluten_free', label: 'Gluten Free' },
-  { tagId: 'diet.dairy_free', label: 'Dairy Free' },
-  { tagId: 'nutrition.high_protein', label: 'High Protein' },
-  { tagId: 'time.30_min', label: 'Under 30 Minutes' },
-  { tagId: 'method.one_pot', label: 'One Pot' },
+type MealFilter = 'all' | 'breakfast' | 'lunch' | 'dinner';
+
+const FILTERS: { key: MealFilter; label: string }[] = [
+  { key: 'all', label: 'All' },
+  { key: 'breakfast', label: 'Breakfast' },
+  { key: 'lunch', label: 'Lunch' },
+  { key: 'dinner', label: 'Dinner' },
 ];
 
-export function RecipeBrowser() {
-  const router = useRouter();
-  const { selectedRecipeIds, toggleRecipe } = useMealPlan();
+const MEAL_CHIP_TINTS: Record<'breakfast' | 'lunch' | 'dinner', { background: string; text: string }> = {
+  breakfast: { background: '#FFF3E2', text: '#D97A1F' },
+  lunch: { background: '#E9F7EF', text: '#1E7A3C' },
+  dinner: { background: '#E7F0FE', text: '#2F7CF6' },
+};
 
-  const [activeTags, setActiveTags] = useState<string[]>([]);
-  const [recipes, setRecipes] = useState<Recipe[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<unknown>(null);
+function servingsLabel(servings: number): string {
+  return servings === 1 ? '1 serving' : `${servings} servings`;
+}
 
-  const load = useCallback(async (tagIds: string[]) => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      setRecipes(await recipeService.list({ tagIds }));
-    } catch (caught) {
-      setError(caught);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    // Wrapped so no setState runs synchronously in the effect body.
-    void (async () => {
-      await load(activeTags);
-    })();
-  }, [load, activeTags]);
-
-  const toggleFilter = useCallback((tagId: string) => {
-    setActiveTags((current) =>
-      current.includes(tagId) ? current.filter((id) => id !== tagId) : [...current, tagId]
-    );
-  }, []);
-
-  const selectedCount = selectedRecipeIds.length;
-
-  const body = useMemo(() => {
-    if (isLoading) {
-      return (
-        <View style={styles.stateBody}>
-          <ActivityIndicator size="large" color={HiveColors.green} />
-        </View>
-      );
-    }
-
-    if (error) {
-      const { message, retryable } = describeError(error);
-      return (
-        <View style={styles.stateBody}>
-          <Text style={uiText.subtitle}>We couldn&apos;t load the recipes</Text>
-          <Text style={uiText.muted}>{message}</Text>
-          {retryable ? <AppButton title="Try again" onPress={() => void load(activeTags)} /> : null}
-        </View>
-      );
-    }
-
-    if (recipes.length === 0) {
-      return (
-        <View style={styles.stateBody}>
-          <EmptyState
-            icon="fork"
-            title="Nothing matches those filters"
-            subtitle="Try removing one to see more recipes."
-          />
-        </View>
-      );
-    }
-
-    return (
-      <View style={styles.list}>
-        {recipes.map((recipe) => (
-          <RecipeRow
-            key={recipe.recipeId}
-            recipe={recipe}
-            selected={selectedRecipeIds.includes(recipe.recipeId)}
-            onToggle={() => toggleRecipe(recipe.recipeId)}
-            onOpen={() => router.push(`/meals/recipe/${recipe.recipeId}`)}
-          />
-        ))}
-      </View>
-    );
-  }, [isLoading, error, recipes, selectedRecipeIds, toggleRecipe, router, load, activeTags]);
-
-  return (
-    <ScrollScreen>
-      <AppHeader title="Choose recipes" onBack={router.back} />
-      <View style={styles.body}>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.filterRow}>
-          {FILTERS.map((filter) => (
-            <Chip
-              key={filter.tagId}
-              label={filter.label}
-              selected={activeTags.includes(filter.tagId)}
-              onPress={() => toggleFilter(filter.tagId)}
-            />
-          ))}
-        </ScrollView>
-
-        {body}
-
-        {selectedCount > 0 ? (
-          <View style={styles.actions}>
-            <AppButton
-              title={`Continue with ${selectedCount} ${selectedCount === 1 ? 'recipe' : 'recipes'}`}
-              onPress={() => router.push('/meals/assign')}
-            />
-          </View>
-        ) : null}
-      </View>
-    </ScrollScreen>
-  );
+function priceLabel(pricePerServingUsd: number | null): string {
+  return pricePerServingUsd === null ? 'Est. —' : `Est. $${pricePerServingUsd.toFixed(2)}`;
 }
 
 function RecipeRow({
   recipe,
   selected,
   onToggle,
-  onOpen,
 }: {
-  recipe: Recipe;
+  recipe: SpoonacularRecipe;
   selected: boolean;
   onToggle: () => void;
-  onOpen: () => void;
 }) {
-  const incomplete = isIncomplete(recipe);
+  const mealType = spoonacularMealType(recipe.dishTypes);
+  const tint = MEAL_CHIP_TINTS[mealType];
+  return (
+    <Pressable
+      accessibilityRole="checkbox"
+      accessibilityState={{ checked: selected }}
+      accessibilityLabel={recipe.title}
+      onPress={onToggle}
+      style={({ pressed }) => [styles.row, selected && styles.rowSelected, pressed && styles.pressed]}>
+      <View style={styles.thumb}>
+        {recipe.imageUrl ? (
+          <Image source={{ uri: recipe.imageUrl }} style={styles.thumbImage} accessibilityLabel="" />
+        ) : (
+          <HiveIcon name="fork" size={30} color="#E8A04C" />
+        )}
+        {selected ? (
+          <View style={styles.checkBadge}>
+            <HiveIcon name="check" size={14} color={HiveColors.white} />
+          </View>
+        ) : null}
+      </View>
+      <View style={styles.rowText}>
+        <Text style={styles.rowTitle}>{recipe.title}</Text>
+        <Text style={styles.rowMeta}>
+          {recipe.readyInMinutes !== null ? `${recipe.readyInMinutes} min` : '—'}
+          {'  ·  '}
+          {servingsLabel(recipe.servings)}
+        </Text>
+      </View>
+      <View style={styles.rowRight}>
+        <Text style={styles.rowPrice}>{priceLabel(recipe.pricePerServingUsd)}</Text>
+        <View style={[styles.mealChip, { backgroundColor: tint.background }]}>
+          <Text style={[styles.mealChipText, { color: tint.text }]}>
+            {mealType === 'breakfast' ? 'Breakfast' : mealType === 'lunch' ? 'Lunch' : 'Dinner'}
+          </Text>
+        </View>
+      </View>
+    </Pressable>
+  );
+}
+
+export function RecipeBrowser() {
+  const router = useRouter();
+  const { selectedRecipeIds, toggleRecipe, clearSelectedRecipes } = useMealPlan();
+  const [query, setQuery] = useState('');
+  const [filter, setFilter] = useState<MealFilter>('all');
+
+  // One shared model: converted records resolve in recipeService.get() so the
+  // assign screen and grocery pipeline work unchanged.
+  useEffect(() => {
+    registerMockRecipes(MOCK_SPOONACULAR_CATALOG.map(spoonacularToRecipe));
+  }, []);
+
+  const recipes = useMemo(() => {
+    const search = query.trim().toLowerCase();
+    return MOCK_SPOONACULAR_CATALOG.filter((recipe) => {
+      if (filter !== 'all' && spoonacularMealType(recipe.dishTypes) !== filter) return false;
+      if (search.length > 0 && !recipe.title.toLowerCase().includes(search)) return false;
+      return true;
+    });
+  }, [query, filter]);
+
+  const toggle = (recipe: SpoonacularRecipe) => {
+    toggleRecipe(spoonacularToRecipe(recipe).recipeId);
+  };
+
+  const selectedCount = selectedRecipeIds.length;
 
   return (
-    <View style={[styles.row, selected && styles.rowSelected]}>
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel={`Open ${recipe.title}`}
-        onPress={onOpen}
-        style={styles.flexOne}>
-        <Text style={uiText.body}>{recipe.title}</Text>
-        <Text style={uiText.small}>
-          {[
-            recipe.totalTimeMinutes ? `${recipe.totalTimeMinutes} min` : null,
-            recipe.servings ? `${recipe.servings} servings` : null,
-            recipe.cuisine ?? null,
-          ]
-            .filter(Boolean)
-            .join(' · ')}
-        </Text>
-        {incomplete ? (
-          <Text style={styles.incompleteNote}>
-            Missing some details — you can still cook it, but Penny won&apos;t auto-plan it.
-          </Text>
-        ) : null}
-      </Pressable>
+    <ScrollScreen keyboard>
+      <AppHeader title="Recipe Database" onBack={router.back} />
+      <View style={styles.body}>
+        <View style={styles.searchWrap}>
+          <TextInput
+            value={query}
+            onChangeText={setQuery}
+            placeholder="Search recipes..."
+            placeholderTextColor={HiveColors.textSecondary}
+            autoCapitalize="none"
+            autoCorrect={false}
+            returnKeyType="search"
+            style={styles.searchInput}
+            accessibilityLabel="Search recipes"
+          />
+        </View>
 
-      <Pressable
-        accessibilityRole="checkbox"
-        accessibilityState={{ checked: selected }}
-        accessibilityLabel={selected ? `Remove ${recipe.title}` : `Add ${recipe.title}`}
-        onPress={onToggle}
-        style={({ pressed }) => [styles.addButton, selected && styles.addButtonSelected, pressed && styles.pressed]}>
-        <HiveIcon
-          name={selected ? 'check' : 'plus'}
-          size={16}
-          color={selected ? HiveColors.white : HiveColors.green}
-        />
-      </Pressable>
-    </View>
+        <View style={styles.filterRow}>
+          {FILTERS.map((entry) => {
+            const active = filter === entry.key;
+            return (
+              <Pressable
+                key={entry.key}
+                accessibilityRole="button"
+                accessibilityState={{ selected: active }}
+                accessibilityLabel={`Filter: ${entry.label}`}
+                onPress={() => setFilter(entry.key)}
+                style={({ pressed }) => [
+                  styles.filterChip,
+                  active ? styles.filterChipActive : styles.filterChipInactive,
+                  pressed && styles.pressed,
+                ]}>
+                <Text style={active ? styles.filterLabelActive : styles.filterLabelInactive}>
+                  {entry.label}
+                </Text>
+              </Pressable>
+            );
+          })}
+        </View>
+
+        {recipes.length === 0 ? (
+          <EmptyState
+            icon="fork"
+            title="No recipes found"
+            subtitle="Try a different search or meal filter."
+          />
+        ) : (
+          <View style={styles.list}>
+            {recipes.map((recipe) => {
+              const recipeId = spoonacularToRecipe(recipe).recipeId;
+              return (
+                <RecipeRow
+                  key={recipe.id}
+                  recipe={recipe}
+                  selected={selectedRecipeIds.includes(recipeId)}
+                  onToggle={() => toggle(recipe)}
+                />
+              );
+            })}
+          </View>
+        )}
+      </View>
+
+      {selectedCount > 0 ? (
+        <View style={styles.footer}>
+          <AppButton
+            title={`Continue (${selectedCount})`}
+            onPress={() => router.push('/meals/assign')}
+          />
+          <Pressable onPress={clearSelectedRecipes} accessibilityRole="button" accessibilityLabel="Clear selection">
+            <Text style={styles.clearLabel}>Clear</Text>
+          </Pressable>
+        </View>
+      ) : null}
+    </ScrollScreen>
   );
 }
 
 const styles = StyleSheet.create({
-  body: { paddingHorizontal: Spacing.three, paddingTop: Spacing.three, gap: Spacing.three },
-  stateBody: { paddingVertical: Spacing.five, gap: Spacing.three, alignItems: 'center' },
-  filterRow: { gap: Spacing.two, paddingVertical: Spacing.one },
-  list: { gap: Spacing.two },
-  flexOne: { flex: 1 },
+  body: {
+    paddingHorizontal: Spacing.three,
+    paddingTop: Spacing.three,
+    paddingBottom: Spacing.three,
+    gap: Spacing.three,
+  },
+  searchWrap: {
+    backgroundColor: HiveColors.card,
+    borderRadius: Radii.xl,
+    paddingHorizontal: Spacing.three,
+    minHeight: 52,
+    justifyContent: 'center',
+  },
+  searchInput: {
+    color: HiveColors.text,
+    fontSize: 16,
+    paddingVertical: 10,
+  },
+  filterRow: {
+    flexDirection: 'row',
+    gap: Spacing.two,
+  },
+  filterChip: {
+    borderRadius: Radii.pill,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+  },
+  filterChipActive: {
+    backgroundColor: HiveColors.greenDark,
+  },
+  filterChipInactive: {
+    backgroundColor: HiveColors.card,
+  },
+  filterLabelActive: {
+    color: HiveColors.white,
+    fontSize: 15,
+    fontWeight: '700',
+  },
+  filterLabelInactive: {
+    color: HiveColors.text,
+    fontSize: 15,
+    fontWeight: '500',
+  },
+  pressed: { opacity: 0.7 },
+  list: {
+    gap: 4,
+  },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.three,
-    padding: Spacing.three,
+    paddingVertical: 12,
+    paddingHorizontal: 4,
     borderRadius: Radii.lg,
-    borderWidth: 1.5,
-    borderColor: HiveColors.border,
-    backgroundColor: HiveColors.white,
+    borderWidth: 2,
+    borderColor: 'transparent',
   },
-  rowSelected: { borderColor: HiveColors.green },
-  incompleteNote: { color: HiveColors.warningText, fontSize: 12, lineHeight: 17, marginTop: 2 },
-  addButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    borderWidth: 1.5,
+  rowSelected: {
     borderColor: HiveColors.green,
+    backgroundColor: HiveColors.greenLight,
+  },
+  thumb: {
+    width: 72,
+    height: 72,
+    borderRadius: Radii.lg,
+    backgroundColor: '#FFF3E2',
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+  },
+  thumbImage: {
+    width: '100%',
+    height: '100%',
+  },
+  checkBadge: {
+    position: 'absolute',
+    right: 4,
+    top: 4,
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: HiveColors.greenDark,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  addButtonSelected: { backgroundColor: HiveColors.green },
-  pressed: { opacity: 0.7 },
-  actions: { gap: Spacing.two, marginTop: Spacing.three },
+  rowText: {
+    flex: 1,
+    gap: 6,
+    justifyContent: 'center',
+  },
+  rowTitle: {
+    color: HiveColors.text,
+    fontSize: 17,
+    fontWeight: '700',
+    lineHeight: 22,
+  },
+  rowMeta: {
+    color: HiveColors.textSecondary,
+    fontSize: 14,
+  },
+  rowRight: {
+    alignItems: 'flex-end',
+    gap: 8,
+  },
+  rowPrice: {
+    color: HiveColors.greenDark,
+    fontSize: 16,
+    fontWeight: '800',
+  },
+  mealChip: {
+    borderRadius: 8,
+    paddingVertical: 4,
+    paddingHorizontal: 10,
+  },
+  mealChipText: {
+    fontSize: 13,
+    fontWeight: '700',
+  },
+  footer: {
+    paddingHorizontal: Spacing.three,
+    paddingBottom: Spacing.five,
+    paddingTop: Spacing.two,
+    gap: Spacing.two,
+    alignItems: 'center',
+  },
+  clearLabel: {
+    color: HiveColors.textSecondary,
+    fontSize: 14,
+    fontWeight: '600',
+  },
 });

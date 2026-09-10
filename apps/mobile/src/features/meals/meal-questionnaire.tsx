@@ -1,54 +1,56 @@
 /**
- * The meal-planning questionnaire wizard (product Doc 04).
+ * The iOS meal-planning questionnaire wizard: 5 steps, 14 questions.
  *
- * Walks the thirteen sections, then hands the collected `PlanRequest` to the
- * backend. On success it routes to the **main meal plan page** — the user is
- * never left inside the generator.
+ * Answers live in `IosQuestionnaireAnswers` while the user moves through the
+ * steps and are folded into `PlanRequest` (via `applyIosAnswers`) on every
+ * change, so what the user sees and what gets posted to `POST /plans` can
+ * never drift apart. On success it routes to the **main meal plan page** — the
+ * user is never left inside the generator.
  */
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { AppButton, AppHeader, ProgressBar, ScrollScreen, uiText } from '@/components/hive-ui';
-import { Spacing } from '@/constants/theme';
+import { AppButton, HiveIcon, ScrollScreen, uiText } from '@/components/hive-ui';
+import { HiveColors, Radii } from '@/constants/theme';
 import { useAuth } from '@/auth/auth-context';
 import { MealPlanGenerating } from '@/features/meals/meal-plan-generating';
 import { useMealPlan } from '@/features/meals/meal-plan-context';
 import {
-  AllergiesSection,
-  BudgetSection,
-  DietSection,
-  EquipmentSection,
-  HouseholdSection,
-  LeftoversSection,
-  MealsSection,
-  NutritionSection,
-  PantrySection,
-  PreferencesSection,
-  StyleSection,
-  TimeSection,
-  type SectionProps,
+  BudgetStepSection,
+  DietsStepSection,
+  HealthStepSection,
+  HouseholdStepSection,
+  TasteStepSection,
+  type IosSectionProps,
 } from '@/features/meals/questionnaire-sections';
-import { QuestionnaireReview } from '@/features/meals/questionnaire-review';
 import {
-  QUESTIONNAIRE_STEPS,
+  applyIosAnswers,
   canAdvance,
+  DEFAULT_IOS_ANSWERS,
+  QUESTIONNAIRE_STEPS,
+  type IosQuestionnaireAnswers,
   type QuestionnaireStepId,
 } from '@/features/meals/questionnaire-steps';
 
-const SECTION_COMPONENTS: Partial<Record<QuestionnaireStepId, (props: SectionProps) => React.ReactElement>> = {
-  household: HouseholdSection,
-  meals: MealsSection,
-  budget: BudgetSection,
-  pantry: PantrySection,
-  diet: DietSection,
-  allergies: AllergiesSection,
-  nutrition: NutritionSection,
-  preferences: PreferencesSection,
-  time: TimeSection,
-  equipment: EquipmentSection,
-  style: StyleSection,
-  leftovers: LeftoversSection,
+const SECTION_COMPONENTS: Record<
+  QuestionnaireStepId,
+  (props: IosSectionProps) => React.ReactElement
+> = {
+  household: HouseholdStepSection,
+  diets: DietsStepSection,
+  health: HealthStepSection,
+  taste: TasteStepSection,
+  budget: BudgetStepSection,
+};
+
+/** Icon tint per step, echoing the iOS header circles. */
+const STEP_TINTS: Record<QuestionnaireStepId, { background: string; icon: string }> = {
+  household: { background: '#E7F0FE', icon: '#2F7CF6' },
+  diets: { background: HiveColors.greenLight, icon: HiveColors.greenDark },
+  health: { background: '#FDE8EA', icon: '#E5484D' },
+  taste: { background: '#FFF1DE', icon: '#F59E0B' },
+  budget: { background: HiveColors.greenLight, icon: HiveColors.greenDark },
 };
 
 export function MealQuestionnaire() {
@@ -56,16 +58,24 @@ export function MealQuestionnaire() {
   const auth = useAuth();
   const { request, updateRequest, generate, isGenerating, error, clearError } = useMealPlan();
   const [stepIndex, setStepIndex] = useState(0);
+  const [answers, setAnswers] = useState<IosQuestionnaireAnswers>(DEFAULT_IOS_ANSWERS);
 
   const step = QUESTIONNAIRE_STEPS[stepIndex]!;
-  const isReview = step.id === 'review';
+  const isLast = stepIndex === QUESTIONNAIRE_STEPS.length - 1;
   const Section = SECTION_COMPONENTS[step.id];
 
-  const canContinue = useMemo(() => canAdvance(step.id, request), [step.id, request]);
+  // Keep the context's PlanRequest in lock-step with the wizard answers.
+  useEffect(() => {
+    updateRequest(applyIosAnswers(request, answers));
+    // `request` is intentionally read once per answers change; including it
+    // would re-run on every context update and loop.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [answers]);
 
-  const goTo = useCallback((id: QuestionnaireStepId) => {
-    const index = QUESTIONNAIRE_STEPS.findIndex((candidate) => candidate.id === id);
-    if (index >= 0) setStepIndex(index);
+  const canContinue = useMemo(() => canAdvance(step.id, answers), [step.id, answers]);
+
+  const patch = useCallback((part: Partial<IosQuestionnaireAnswers>) => {
+    setAnswers((current) => ({ ...current, ...part }));
   }, []);
 
   const back = useCallback(() => {
@@ -81,7 +91,6 @@ export function MealQuestionnaire() {
     try {
       await generate(auth.user?.id ?? 'anonymous');
       // Straight to the plan — never leave the user inside the generator.
-      // `/meals/plan` is the real route; the meal tab renders the same screen.
       router.replace('/meals/plan');
     } catch {
       // The failure is held in context and rendered by MealPlanGenerating,
@@ -90,54 +99,72 @@ export function MealQuestionnaire() {
     }
   }
 
-  if (isGenerating || (error && isReview)) {
+  if (isGenerating || error) {
     return (
       <MealPlanGenerating
         error={error}
         onRetry={() => void submit()}
         onCancel={() => {
           clearError();
-          goTo('household');
+          setStepIndex(0);
         }}
       />
     );
   }
 
+  const tint = STEP_TINTS[step.id];
+
   return (
     <ScrollScreen keyboard>
-      <AppHeader title="Build your meal plan" onBack={back} />
       <View style={styles.body}>
-        <ProgressBar current={stepIndex + 1} total={QUESTIONNAIRE_STEPS.length} />
+        <View style={styles.progress}>
+          {QUESTIONNAIRE_STEPS.map((candidate) => (
+            <View
+              key={candidate.id}
+              style={[
+                styles.segment,
+                candidate.position <= step.position ? styles.segmentDone : styles.segmentTodo,
+              ]}
+            />
+          ))}
+        </View>
+        <Text style={styles.stepCounter}>
+          Step {step.position} of {QUESTIONNAIRE_STEPS.length}
+        </Text>
 
         <View style={styles.heading}>
-          <Text style={uiText.subtitle}>{step.title}</Text>
-          {step.subtitle ? <Text style={uiText.muted}>{step.subtitle}</Text> : null}
+          <View style={[styles.iconCircle, { backgroundColor: tint.background }]}>
+            <HiveIcon name={step.icon} size={34} color={tint.icon} />
+          </View>
+          <Text style={uiText.title}>{step.title}</Text>
+          <Text style={uiText.muted}>{step.subtitle}</Text>
         </View>
 
-        {isReview ? (
-          <QuestionnaireReview request={request} onEdit={goTo} />
-        ) : Section ? (
-          <Section request={request} update={updateRequest} />
-        ) : null}
+        <Section answers={answers} onPatch={patch} />
 
         <View style={styles.actions}>
-          {isReview ? (
-            <AppButton title="Let Penny plan my week" onPress={() => void submit()} />
-          ) : (
-            <>
+          {isLast ? (
+            <View style={styles.finalRow}>
+              <AppButton title="Back" variant="secondary" onPress={back} style={styles.backButton} />
               <AppButton
-                title="Next"
+                title="Generate My Meal Plan 🐝"
+                disabled={!canContinue}
+                onPress={() => void submit()}
+                style={styles.generateButton}
+              />
+            </View>
+          ) : (
+            <View style={styles.navRow}>
+              {stepIndex > 0 ? (
+                <AppButton title="Back" variant="secondary" onPress={back} style={styles.backButton} />
+              ) : null}
+              <AppButton
+                title="Continue"
                 disabled={!canContinue}
                 onPress={() => setStepIndex((current) => current + 1)}
+                style={stepIndex > 0 ? styles.continueButton : styles.continueFull}
               />
-              {!step.required ? (
-                <AppButton
-                  title="Skip"
-                  variant="plain"
-                  onPress={() => setStepIndex((current) => current + 1)}
-                />
-              ) : null}
-            </>
+            </View>
           )}
         </View>
       </View>
@@ -146,7 +173,61 @@ export function MealQuestionnaire() {
 }
 
 const styles = StyleSheet.create({
-  body: { paddingHorizontal: Spacing.three, paddingTop: Spacing.three, gap: Spacing.three },
-  heading: { gap: Spacing.one },
-  actions: { gap: Spacing.two, marginTop: Spacing.four },
+  body: {
+    paddingHorizontal: 20,
+    paddingTop: 12,
+    paddingBottom: 32,
+    gap: 20,
+  },
+  progress: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  segment: {
+    flex: 1,
+    height: 6,
+    borderRadius: 3,
+  },
+  segmentDone: { backgroundColor: HiveColors.greenDark },
+  segmentTodo: { backgroundColor: HiveColors.border },
+  stepCounter: {
+    textAlign: 'center',
+    color: HiveColors.textSecondary,
+    fontSize: 15,
+    fontWeight: '500',
+  },
+  heading: {
+    gap: 12,
+  },
+  iconCircle: {
+    width: 84,
+    height: 84,
+    borderRadius: 42,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  actions: {
+    marginTop: 8,
+  },
+  navRow: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  finalRow: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  backButton: {
+    flex: 1,
+  },
+  continueButton: {
+    flex: 2,
+  },
+  continueFull: {
+    flex: 1,
+  },
+  generateButton: {
+    flex: 2,
+    borderRadius: Radii.xl,
+  },
 });

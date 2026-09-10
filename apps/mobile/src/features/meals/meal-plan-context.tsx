@@ -25,8 +25,7 @@ type MealPlanContextValue = {
   updateRequest: (patch: Partial<PlanRequest>) => void;
   resetRequest: () => void;
 
-  plan: MealPlan | null;
-  /**
+  plan: MealPlan | null;  /**
    * Calendar date that plan day 1 falls on, so the week strip and the plan's
    * day indices line up. Set when a plan is generated or loaded.
    */
@@ -49,7 +48,41 @@ type MealPlanContextValue = {
   clearError: () => void;
 };
 
-const MealPlanContext = createContext<MealPlanContextValue | null>(null);
+/**
+ * A video link imported from social media, awaiting backend transcription.
+ * `provenance` records how the link entered the app: typed/pasted by hand vs
+ * read from the clipboard.
+ */
+export interface ImportedVideoLink {
+  url: string;
+  platform: 'tiktok' | 'instagram' | 'youtube' | 'other';
+  provenance: 'pasted' | 'clipboard';
+}
+
+type ExtendedMealPlanContextValue = MealPlanContextValue & {
+  /** Video links awaiting transcription into recipes. */
+  importedLinks: ImportedVideoLink[];
+  addImportedLinks: (links: ImportedVideoLink[]) => void;
+  removeImportedLink: (url: string) => void;
+  clearImportedLinks: () => void;
+  /**
+   * Publishes hand assignments (picked or imported recipes) as the shared
+   * plan, so the week calendar and grocery list treat them like an AI plan.
+   */
+  publishAssignments: (meals: PublishedMeal[]) => void;
+};
+
+/** One assigned recipe, ready to become a planned meal. */
+export interface PublishedMeal {
+  recipeId: string;
+  title: string;
+  day: number;
+  mealType: 'breakfast' | 'lunch' | 'dinner';
+  totalTimeMinutes: number | null;
+  servings: number;
+}
+
+const MealPlanContext = createContext<ExtendedMealPlanContextValue | null>(null);
 
 function startOfToday(): Date {
   const today = new Date();
@@ -67,6 +100,7 @@ export function MealPlanProvider({ children }: { children: ReactNode }) {
   const [isLoadingPlan, setIsLoadingPlan] = useState(true);
   const [error, setError] = useState<unknown>(null);
   const [selectedRecipeIds, setSelectedRecipeIds] = useState<string[]>([]);
+  const [importedLinks, setImportedLinks] = useState<ImportedVideoLink[]>([]);
 
   const updateRequest = useCallback((patch: Partial<PlanRequest>) => {
     setRequest((current) => ({ ...current, ...patch }));
@@ -81,6 +115,68 @@ export function MealPlanProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const clearSelectedRecipes = useCallback(() => setSelectedRecipeIds([]), []);
+
+  const addImportedLinks = useCallback((links: ImportedVideoLink[]) => {
+    setImportedLinks((current) => {
+      const known = new Set(current.map((link) => link.url));
+      const fresh = links.filter((link) => !known.has(link.url));
+      return fresh.length > 0 ? [...current, ...fresh] : current;
+    });
+  }, []);
+
+  const removeImportedLink = useCallback((url: string) => {
+    setImportedLinks((current) => current.filter((link) => link.url !== url));
+  }, []);
+
+  const clearImportedLinks = useCallback(() => setImportedLinks([]), []);
+
+  /**
+   * Turns hand assignments into the shared `MealPlan` shape. Days with no
+   * assignment stay empty — the week calendar renders them as open slots.
+   */
+  const publishAssignments = useCallback(
+    (meals: PublishedMeal[]) => {
+      const plannedMeals = meals.map((meal) => ({
+        slot: { day: meal.day, mealType: meal.mealType },
+        recipeId: meal.recipeId,
+        title: meal.title,
+        totalTimeMinutes: meal.totalTimeMinutes,
+        scaleFactor: 1,
+        servingsPlanned: meal.servings,
+        proteinGPerServing: null,
+        goalIndicator: null,
+        pantryIngredientsUsed: [],
+        incrementalCheckoutCost: null,
+        consumedCost: null,
+        why: null,
+      }));
+      setPlan({
+        planId: `hand-${Date.now()}`,
+        status: 'ok',
+        summary: {
+          householdSize: request.household.size,
+          mealsPlanned: plannedMeals.length,
+          budget: request.budget.enabled ? request.budget.amount : null,
+          // Hand-built plans have no server cost model yet; the grocery list
+          // computes real numbers from the basket. Never show this as exact.
+          estimatedCost: { point: 0, low: 0, high: 0, confidence: 'low', tierMix: null, basis: null },
+          headroom: null,
+          consumedCostTotal: null,
+          pantryValueUsed: null,
+          pantryItemsUsed: [],
+          nutritionGoal: null,
+          balancedMealBaseline: null,
+        },
+        meals: plannedMeals,
+        groceryList: [],
+        pennyMessage: '',
+        swapOptions: [],
+        assumptions: ['Built by hand from picked recipes. Cost estimate updates in the grocery list.'],
+      });
+      setPlanStartDate(startOfToday());
+    },
+    [request]
+  );
 
   const generate = useCallback(
     async (userId: string, signal?: AbortSignal) => {
@@ -152,7 +248,7 @@ export function MealPlanProvider({ children }: { children: ReactNode }) {
     [plan]
   );
 
-  const value = useMemo<MealPlanContextValue>(
+  const value = useMemo<ExtendedMealPlanContextValue>(
     () => ({
       request,
       updateRequest,
@@ -165,6 +261,11 @@ export function MealPlanProvider({ children }: { children: ReactNode }) {
       selectedRecipeIds,
       toggleRecipe,
       clearSelectedRecipes,
+      importedLinks,
+      addImportedLinks,
+      removeImportedLink,
+      clearImportedLinks,
+      publishAssignments,
       generate,
       loadCurrent,
       moveMeal,
@@ -183,6 +284,11 @@ export function MealPlanProvider({ children }: { children: ReactNode }) {
       selectedRecipeIds,
       toggleRecipe,
       clearSelectedRecipes,
+      importedLinks,
+      addImportedLinks,
+      removeImportedLink,
+      clearImportedLinks,
+      publishAssignments,
       generate,
       loadCurrent,
       moveMeal,

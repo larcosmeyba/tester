@@ -29,6 +29,28 @@ function matchesTags(recipe: Recipe, tagIds: string[]): boolean {
  * three calls; `recipe-service.ts` fills them in with a clear "needs the
  * server" response rather than pretending they worked.
  */
+
+/**
+ * Extra recipes registered at runtime — e.g. Spoonacular-shaped catalog
+ * entries converted to the shared Recipe model. Lets database picks flow
+ * through `get()` and the grocery pipeline without a second data path.
+ */
+const registeredRecipes: Recipe[] = [];
+
+export function registerMockRecipes(recipes: Recipe[]): void {
+  for (const recipe of recipes) {
+    if (!registeredRecipes.some((candidate) => candidate.recipeId === recipe.recipeId)) {
+      registeredRecipes.push(recipe);
+    }
+  }
+}
+
+function findRecipe(recipeId: string): Recipe | undefined {
+  return (
+    registeredRecipes.find((candidate) => candidate.recipeId === recipeId) ??
+    seedRecipes.find((candidate) => candidate.recipeId === recipeId)
+  );
+}
 export const mockRecipeService: Omit<RecipeService, 'listSaved' | 'save' | 'unsave'> = {
   async list(query: RecipeQuery = {}) {
     await delay(LATENCY_MS);
@@ -47,14 +69,17 @@ export const mockRecipeService: Omit<RecipeService, 'listSaved' | 'save' | 'unsa
 
   async get(recipeId: string) {
     await delay(LATENCY_MS);
-    const recipe = seedRecipes.find((candidate) => candidate.recipeId === recipeId);
+    const recipe = findRecipe(recipeId);
     if (!recipe) throw new ApiError('not_found', "We couldn't find that recipe.");
     return recipe;
   },
 
   async groceryListFromRecipes({ recipeIds, householdSize, pantryItems }: GroceryListFromRecipesInput) {
     await delay(LATENCY_MS * 2);
-    const selected = seedRecipes.filter((recipe) => recipeIds.includes(recipe.recipeId));
+    const selected = recipeIds.flatMap((recipeId) => {
+      const recipe = findRecipe(recipeId);
+      return recipe ? [recipe] : [];
+    });
     if (selected.length === 0) {
       throw new ApiError('validation', 'Pick at least one recipe first.');
     }

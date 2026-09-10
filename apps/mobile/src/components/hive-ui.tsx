@@ -1,6 +1,5 @@
-import { SymbolView, type SymbolViewProps } from 'expo-symbols';
 import { LinearGradient } from 'expo-linear-gradient';
-import type { ReactNode } from 'react';
+import type { ReactElement, ReactNode } from 'react';
 import {
   Image,
   type ImageSourcePropType,
@@ -21,46 +20,17 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 
 import { BottomTabInset, HiveColors, MaxContentWidth, Radii, Spacing } from '@/constants/theme';
 
+import { hiveIconGlyphs, type HiveGlyphProps } from './hive-icons/hive-icons';
+
 type PressHandler = () => void;
 
-const iconMap = {
-  home: { ios: 'house.fill', fallback: 'H' },
-  calendar: { ios: 'calendar', fallback: 'Cal' },
-  penny: { ios: 'ant.circle.fill', fallback: 'P' },
-  resources: { ios: 'book.fill', fallback: 'R' },
-  finance: { ios: 'creditcard.fill', fallback: '$' },
-  user: { ios: 'person.circle', fallback: 'U' },
-  bell: { ios: 'bell', fallback: '!' },
-  gear: { ios: 'gearshape', fallback: '*' },
-  back: { ios: 'chevron.left', fallback: '<' },
-  next: { ios: 'chevron.right', fallback: '>' },
-  plus: { ios: 'plus', fallback: '+' },
-  check: { ios: 'checkmark', fallback: 'OK' },
-  close: { ios: 'xmark', fallback: 'x' },
-  card: { ios: 'creditcard.fill', fallback: '$' },
-  doc: { ios: 'doc.text.fill', fallback: 'D' },
-  fork: { ios: 'fork.knife', fallback: 'F' },
-  fridge: { ios: 'refrigerator.fill', fallback: 'Fr' },
-  map: { ios: 'mappin.circle.fill', fallback: 'M' },
-  cart: { ios: 'cart.fill', fallback: 'C' },
-  play: { ios: 'play.fill', fallback: 'P' },
-  box: { ios: 'archivebox.fill', fallback: 'B' },
-  snow: { ios: 'snowflake', fallback: 'S' },
-  trash: { ios: 'trash', fallback: 'Del' },
-  chat: { ios: 'message.fill', fallback: 'Msg' },
-  camera: { ios: 'camera', fallback: 'Cam' },
-  chart: { ios: 'chart.bar.fill', fallback: 'Ch' },
-  shield: { ios: 'shield.fill', fallback: 'Sh' },
-  heart: { ios: 'heart.fill', fallback: 'Ht' },
-  bolt: { ios: 'bolt.fill', fallback: 'B' },
-  job: { ios: 'briefcase.fill', fallback: 'Job' },
-  child: { ios: 'figure.2.and.child.holdinghands', fallback: 'Kid' },
-  sun: { ios: 'sun.max.fill', fallback: 'Sun' },
-  sunrise: { ios: 'sunrise.fill', fallback: 'AM' },
-  moon: { ios: 'moon.fill', fallback: 'PM' },
-  mic: { ios: 'mic.fill', fallback: 'Mic' },
-  send: { ios: 'arrow.up.circle.fill', fallback: 'Up' },
-} as const;
+/**
+ * Icon name -> glyph component. The glyphs live in `./hive-icons/hive-icons`
+ * (hand-built Views on a 24x24 grid, no native deps) so every icon renders
+ * identically on iOS and Android. Key names are the public contract — do not
+ * rename or remove keys.
+ */
+const iconMap = hiveIconGlyphs;
 
 export type HiveIconName = keyof typeof iconMap;
 
@@ -71,20 +41,17 @@ type IconProps = {
   style?: StyleProp<ViewStyle>;
 };
 
+const ICON_GRID = 24;
+
 export function HiveIcon({ name, size = 22, color = HiveColors.text, style }: IconProps) {
-  const item = iconMap[name];
+  const Glyph: (props: HiveGlyphProps) => ReactElement = iconMap[name];
+  const scale = size / ICON_GRID;
   return (
-    <SymbolView
-      name={{ ios: item.ios } as SymbolViewProps['name']}
-      size={size}
-      tintColor={color}
-      style={style}
-      fallback={
-        <Text style={[styles.iconFallback, { color, minWidth: size, minHeight: size, fontSize: Math.max(10, size * 0.45) }]}>
-          {item.fallback}
-        </Text>
-      }
-    />
+    <View style={[{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }, style]}>
+      <View style={{ width: ICON_GRID, height: ICON_GRID, transform: [{ scale }] }}>
+        <Glyph color={color} />
+      </View>
+    </View>
   );
 }
 
@@ -718,12 +685,6 @@ const styles = StyleSheet.create({
   },
   logo: {
     borderRadius: 24,
-  },
-  iconFallback: {
-    textAlign: 'center',
-    textAlignVertical: 'center',
-    fontWeight: '800',
-    lineHeight: 18,
   },
   buttonGradient: {
     position: 'absolute',

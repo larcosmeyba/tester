@@ -1,3 +1,3 @@
-import { RecipeBrowser } from '@/features/meals/recipe-browser';
+import { BuildMealsScreen } from '@/features/meals/build-meals-screen';
 
-export default RecipeBrowser;
+export default BuildMealsScreen;

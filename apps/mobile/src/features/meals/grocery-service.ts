@@ -35,6 +35,11 @@ export type GroceryService = {
   setItemChecked(planId: string, ingredientId: string, checked: boolean): Promise<boolean>;
   /** Builds the Instacart cart server-side and returns where to send the user. */
   prepareInstacartOrder(planId: string): Promise<InstacartHandoff>;
+  /**
+   * Affiliate deep-link fallback (see instacart-spec.md). The server owns the
+   * affiliate tag; the client only receives the finished URL and opens it.
+   */
+  instacartFallbackUrl(planId: string): Promise<string>;
 };
 
 export const groceryService: GroceryService = {
@@ -79,4 +84,12 @@ export const groceryService: GroceryService = {
    */
   prepareInstacartOrder: () =>
     Promise.reject(new BackendIntegrationRequiredError('Instacart cart handoff')),
+
+  /**
+   * BACKEND INTEGRATION REQUIRED. The affiliate deep link is server config
+   * (the tag must never be a client constant), so until the endpoint exists
+   * this reports the feature as pending like the partner handoff.
+   */
+  instacartFallbackUrl: () =>
+    Promise.reject(new BackendIntegrationRequiredError('Instacart affiliate link')),
 };

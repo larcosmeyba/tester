@@ -1,46 +1,524 @@
-// The onboarding flow and its permission steps.
+// Signup onboarding flow, rebuilt to match the Xcode app's 6-step flow exactly.
 //
-// Extracted verbatim from app-root.tsx; markup unchanged.
+// Copy, order, controls, and optional/required behavior below come from the
+// iOS onboarding screenshots (the source of truth). The expo-router
+// (onboarding) group renders one screen component per route; the standalone
+// OnboardingScreen at the bottom keeps the legacy app-root 'onboarding' route
+// working with the same iOS-accurate content until it is rewired.
 
 import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
-import { type ReactNode, useState } from 'react';
-import { Pressable, Text, View } from 'react-native';
-import { AppButton, AvatarButton, CheckboxRow, Chip, HiveIcon, type HiveIconName, ProgressBar, Screen, ScrollScreen, SelectionRow, rowStyles } from '@/components/hive-ui';
+import { useRef, useState, type ReactNode } from 'react';
+import { Image, PanResponder, Pressable, StyleSheet, Text, View } from 'react-native';
+import {
+  AppButton,
+  CheckboxRow,
+  Chip,
+  HiveIcon,
+  type HiveIconName,
+  ProgressBar,
+  Screen,
+  ScrollScreen,
+  SelectionRow,
+} from '@/components/hive-ui';
 import { HiveColors } from '@/constants/theme';
+import { sharedStyles } from '@/features/app/app-shared';
 import { refreshPushTokenIfPermitted, requestNotificationPermission } from '@/features/notifications/notification-service';
 import { useAppState, type AppPreferences } from '@/state/app-state';
-import { StyleSheet } from 'react-native';
-import { sharedStyles } from '@/features/app/app-shared';
 import { type Navigation } from '@/features/app/navigation-types';
+import { BUDGET_MAX, BUDGET_MIN, BUDGET_STEP, DEFAULT_BUDGET_DOLLARS, formatBudgetDollars } from './onboarding-model';
 
 const financeTopics: { title: string; subtitle: string; icon: HiveIconName }[] = [
   { title: 'How to Open a Roth IRA', subtitle: 'Learn the basics of tax-free retirement savings', icon: 'chart' },
   { title: 'How to Save for Kids College', subtitle: '529 plans, education savings, and strategies', icon: 'resources' },
   { title: 'How to Save for Retirement', subtitle: 'Build a plan for long-term financial security', icon: 'calendar' },
   { title: 'Budgeting & Money Management', subtitle: 'Track spending, reduce debt, and save more', icon: 'card' },
-  { title: 'Building an Emergency Fund', subtitle: 'Prepare for unexpected expenses', icon: 'shield' },
+  { title: 'Building an Emergency Fund', subtitle: 'How to prepare for unexpected expenses', icon: 'shield' },
 ];
+
 const resourceOptions: { title: string; subtitle: string; icon: HiveIconName }[] = [
   { title: 'Food Assistance', subtitle: 'Food pantries, free meals, and grocery programs', icon: 'fork' },
   { title: 'Housing Help', subtitle: 'Housing assistance programs', icon: 'home' },
-  { title: 'Healthcare', subtitle: 'Medicaid and related programs', icon: 'heart' },
-  { title: 'Utility Assistance', subtitle: 'Electric, gas, water, and phone bills', icon: 'bolt' },
-  { title: 'Job', subtitle: 'Career programs, resume help, and places hiring', icon: 'job' },
+  { title: 'Healthcare', subtitle: 'How to apply to medicaid and other programs.', icon: 'heart' },
+  { title: 'Utility Assistance', subtitle: 'Help with electric, gas, water, and phone bills', icon: 'bolt' },
+  { title: 'Job', subtitle: 'Career programs, resume help, and places hiring.', icon: 'job' },
   { title: 'Childcare', subtitle: 'Daycare assistance and after-school programs', icon: 'child' },
 ];
+
+const benefitPrograms = ['SNAP', 'WIC', 'Medicaid', 'LIHEAP'];
+
+export function formatBudgetDisplay(dollars: number): string {
+  return formatBudgetDollars(dollars);
+}
+
+export async function pickProfileImage(): Promise<string | undefined> {
+  const result = await ImagePicker.launchImageLibraryAsync({
+    mediaTypes: ['images'],
+    allowsEditing: true,
+    aspect: [1, 1],
+    quality: 0.85,
+  });
+  if (!result.canceled && result.assets[0]) {
+    return result.assets[0].uri;
+  }
+  return undefined;
+}
+
+export function OnboardingTopBar({ current, total, onBack }: { current: number; total: number; onBack?: () => void }) {
+  return (
+    <View style={styles.topBar}>
+      <View style={styles.topRow}>
+        {onBack ? (
+          <Pressable onPress={onBack} style={styles.backButton} accessibilityRole="button" accessibilityLabel="Go back">
+            <HiveIcon name="back" size={18} color={HiveColors.text} />
+          </Pressable>
+        ) : (
+          <View style={styles.backButton} />
+        )}
+        <Text style={styles.stepLabel}>
+          STEP {current} OF {total}
+        </Text>
+        <View style={styles.backButton} />
+      </View>
+      <ProgressBar current={current} total={total} />
+    </View>
+  );
+}
+
+export function OnboardingStepScreen({
+  current,
+  total,
+  onBack,
+  children,
+}: {
+  current: number;
+  total: number;
+  onBack?: () => void;
+  children: ReactNode;
+}) {
+  return (
+    <ScrollScreen contentStyle={styles.content}>
+      <OnboardingTopBar current={current} total={total} onBack={onBack} />
+      <View style={styles.body}>{children}</View>
+    </ScrollScreen>
+  );
+}
+
+export function ComingSoonBadge() {
+  return (
+    <View style={styles.comingSoonBadge} accessibilityLabel="Coming soon">
+      {/* No clock glyph in the HiveIcon set; the clock emoji matches the iOS badge. */}
+      <Text style={styles.comingSoonIcon}>🕒</Text>
+      <Text style={styles.comingSoonText}>Coming Soon</Text>
+    </View>
+  );
+}
+
+const SLIDER_TICKS = 11;
+
+export function BudgetSlider({ value, onChange }: { value: number; onChange: (dollars: number) => void }) {
+  const [trackWidth, setTrackWidth] = useState(0);
+
+  const setFromX = (x: number) => {
+    if (trackWidth <= 0) {
+      return;
+    }
+    const fraction = Math.min(1, Math.max(0, x / trackWidth));
+    const raw = BUDGET_MIN + fraction * (BUDGET_MAX - BUDGET_MIN);
+    onChange(Math.round(raw / BUDGET_STEP) * BUDGET_STEP);
+  };
+
+  const pan = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onMoveShouldSetPanResponder: () => true,
+      onPanResponderGrant: (event) => setFromX(event.nativeEvent.locationX),
+      onPanResponderMove: (event) => setFromX(event.nativeEvent.locationX),
+    }),
+  ).current;
+
+  const fraction = (value - BUDGET_MIN) / (BUDGET_MAX - BUDGET_MIN);
+  const thumbOffset = { left: `${Math.min(100, Math.max(0, fraction * 100))}%` } as const;
+
+  return (
+    <View style={styles.sliderBlock}>
+      <View
+        style={styles.sliderTrack}
+        onLayout={(event) => setTrackWidth(event.nativeEvent.layout.width)}
+        {...pan.panHandlers}
+        accessibilityRole="adjustable"
+        accessibilityLabel="Weekly grocery budget"
+        accessibilityValue={{ text: `${formatBudgetDisplay(value)} per week` }}>
+        <View style={[styles.sliderFill, { width: `${fraction * 100}%` }]} />
+        {Array.from({ length: SLIDER_TICKS }).map((_, index) => (
+          <View
+            key={index}
+            style={[styles.sliderTick, { left: `${(index / (SLIDER_TICKS - 1)) * 100}%` }]}
+            pointerEvents="none"
+          />
+        ))}
+        <View style={[styles.sliderThumb, thumbOffset]} pointerEvents="none" />
+      </View>
+      <View style={styles.sliderLabels}>
+        <Text style={styles.sliderLabel}>$25</Text>
+        <Text style={styles.sliderLabel}>$300+</Text>
+      </View>
+    </View>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Step 1 — grocery budget
+// ---------------------------------------------------------------------------
+
+export function BudgetStep({
+  value,
+  onChange,
+  onNext,
+}: {
+  value: number;
+  onChange: (dollars: number) => void;
+  onNext: () => void;
+}) {
+  return (
+    <OnboardingStepScreen current={1} total={6}>
+      <Text style={styles.stepTitle}>What's your weekly grocery budget?</Text>
+      <Text style={styles.stepSubtitle}>This helps us plan meals that fit around your budget.</Text>
+      <View style={styles.amountCard}>
+        <Text style={styles.amountText}>{formatBudgetDisplay(value)}</Text>
+        <Text style={styles.amountLabel}>per week</Text>
+      </View>
+      <BudgetSlider value={value} onChange={onChange} />
+      <View style={styles.buttonSpacer} />
+      <AppButton title="Continue" onPress={onNext} />
+    </OnboardingStepScreen>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Step 2 — bank / EBT connection (coming soon)
+// ---------------------------------------------------------------------------
+
+export function ConnectEbtStep({ onNext, onBack }: { onNext: () => void; onBack: () => void }) {
+  return (
+    <OnboardingStepScreen current={2} total={6} onBack={onBack}>
+      <Text style={styles.stepTitle}>Connect your bank or EBT Card</Text>
+      <ComingSoonBadge />
+      <Text style={styles.stepSubtitle}>
+        We're building EBT card and bank integration to help you track your balance and spending automatically. This feature
+        is launching soon!
+      </Text>
+      <View style={styles.disabledCard}>
+        <View style={styles.disabledRow}>
+          <View style={styles.disabledIcon}>
+            <HiveIcon name="card" size={22} color={HiveColors.textSecondary} />
+          </View>
+          <View style={styles.flexOne}>
+            <Text style={styles.disabledTitle}>EBT Card Connection</Text>
+            <Text style={styles.disabledSubtitle}>Track balance, deposits & spending</Text>
+          </View>
+        </View>
+        <View style={styles.disabledRow}>
+          <View style={styles.disabledIcon}>
+            {/* No bank-building glyph in the HiveIcon set; card glyph is the closest available. */}
+            <HiveIcon name="finance" size={22} color={HiveColors.textSecondary} />
+          </View>
+          <View style={styles.flexOne}>
+            <Text style={styles.disabledTitle}>Bank Account Link</Text>
+            <Text style={styles.disabledSubtitle}>Powered by Plaid — securely encrypted</Text>
+          </View>
+        </View>
+      </View>
+      <Text style={styles.centerNote}>We'll notify you when this feature is ready.</Text>
+      <View style={styles.buttonSpacer} />
+      <AppButton title="Continue" onPress={onNext} />
+    </OnboardingStepScreen>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Step 3 — finance topics (coming soon)
+// ---------------------------------------------------------------------------
+
+export function FinanceTopicsStep({
+  selected,
+  onToggle,
+  onNext,
+  onBack,
+}: {
+  selected: string[];
+  onToggle: (topic: string) => void;
+  onNext: () => void;
+  onBack: () => void;
+}) {
+  return (
+    <OnboardingStepScreen current={3} total={6} onBack={onBack}>
+      <Text style={styles.stepTitle}>What financial help do you want to learn?</Text>
+      <ComingSoonBadge />
+      <Text style={styles.stepSubtitle}>
+        This feature is launching soon! Tell us what you're interested in and we'll personalize your experience when it's
+        ready.
+      </Text>
+      {financeTopics.map((topic) => (
+        <CheckboxRow
+          key={topic.title}
+          title={topic.title}
+          subtitle={topic.subtitle}
+          icon={topic.icon}
+          selected={selected.includes(topic.title)}
+          onPress={() => onToggle(topic.title)}
+        />
+      ))}
+      <Text style={styles.footnote}>You can always change this later in settings</Text>
+      <AppButton title="Next" onPress={onNext} />
+    </OnboardingStepScreen>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Step 4 — resources
+// ---------------------------------------------------------------------------
+
+export function ResourcesStep({
+  selected,
+  onToggle,
+  onNext,
+  onBack,
+}: {
+  selected: string[];
+  onToggle: (resource: string) => void;
+  onNext: () => void;
+  onBack: () => void;
+}) {
+  return (
+    <OnboardingStepScreen current={4} total={6} onBack={onBack}>
+      <Text style={styles.stepTitle}>What resources do you need?</Text>
+      <Text style={styles.stepSubtitle}>Select all that apply. We'll match you with resources near you.</Text>
+      {resourceOptions.map((resource) => (
+        <CheckboxRow
+          key={resource.title}
+          title={resource.title}
+          subtitle={resource.subtitle}
+          icon={resource.icon}
+          selected={selected.includes(resource.title)}
+          onPress={() => onToggle(resource.title)}
+        />
+      ))}
+      <Text style={styles.footnote}>You can always change this later in settings</Text>
+      <AppButton title="Next" onPress={onNext} />
+    </OnboardingStepScreen>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Step 5 — benefits help
+// ---------------------------------------------------------------------------
+
+export function BenefitsStep({
+  value,
+  onChange,
+  onNext,
+  onBack,
+}: {
+  value: boolean | null;
+  onChange: (value: boolean) => void;
+  onNext: () => void;
+  onBack: () => void;
+}) {
+  return (
+    <OnboardingStepScreen current={5} total={6} onBack={onBack}>
+      <Text style={styles.stepTitle}>Would you like help applying for benefits?</Text>
+      <Text style={styles.stepSubtitle}>Penny can help you prepare applications for government programs you may qualify for.</Text>
+      <View style={sharedStyles.chipRow}>
+        {benefitPrograms.map((program) => (
+          <Chip key={program} label={program} tone="green" />
+        ))}
+      </View>
+      <SelectionRow
+        title="Yes, I'd like help with applications"
+        selected={value === true}
+        onPress={() => onChange(true)}
+      />
+      <SelectionRow title="I'll explore this on my own" selected={value === false} onPress={() => onChange(false)} />
+      <Text style={styles.footnote}>You can always find these programs in the Resources tab.</Text>
+      <AppButton title="Next" onPress={onNext} />
+    </OnboardingStepScreen>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Step 6 — profile photo
+// ---------------------------------------------------------------------------
+
+export function ProfilePhotoStep({
+  imageUri,
+  onPick,
+  onNext,
+  onBack,
+}: {
+  imageUri?: string;
+  onPick: () => void;
+  onNext: () => void;
+  onBack: () => void;
+}) {
+  return (
+    <OnboardingStepScreen current={6} total={6} onBack={onBack}>
+      <Text style={styles.stepTitle}>Upload a Profile Picture</Text>
+      <Text style={styles.stepSubtitle}>Add a photo so Penny can greet you personally.</Text>
+      <Pressable
+        onPress={onPick}
+        style={styles.photoPicker}
+        accessibilityRole="button"
+        accessibilityLabel="Choose profile photo">
+        {imageUri ? (
+          <Image source={{ uri: imageUri }} style={styles.photoImage} />
+        ) : (
+          <>
+            <HiveIcon name="camera" size={38} color={HiveColors.green} />
+            <Text style={styles.photoHint}>Tap to choose</Text>
+          </>
+        )}
+      </Pressable>
+      <View style={styles.buttonSpacer} />
+      <AppButton title="Continue" onPress={onNext} />
+      <AppButton title="Skip for now" variant="plain" onPress={onNext} />
+    </OnboardingStepScreen>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// All-set screen (after step 6, before permissions)
+// ---------------------------------------------------------------------------
+
+export function AllSetStep({ onNext }: { onNext: () => void }) {
+  return (
+    <Screen>
+      <View style={sharedStyles.permissionScreen}>
+        <View style={sharedStyles.bigIconCircle}>
+          <HiveIcon name="check" size={44} color={HiveColors.green} />
+        </View>
+        <Text style={sharedStyles.permissionTitle}>You're all set!</Text>
+        <Text style={sharedStyles.permissionSubtitle}>Penny has everything needed to personalize your experience.</Text>
+        <View style={styles.flexSpacer} />
+        <View style={sharedStyles.fullWidth}>
+          <AppButton title="Continue" onPress={onNext} />
+        </View>
+      </View>
+    </Screen>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Permission prompts (notifications -> location)
+// ---------------------------------------------------------------------------
+
+export function PermissionPrompt({
+  icon,
+  iconCircleColor,
+  title,
+  subtitle,
+  primaryLabel,
+  secondaryLabel,
+  onPrimary,
+  onSecondary,
+  busy = false,
+}: {
+  icon: HiveIconName;
+  iconCircleColor: string;
+  title: string;
+  subtitle: string;
+  primaryLabel: string;
+  secondaryLabel: string;
+  onPrimary: () => void;
+  onSecondary: () => void;
+  busy?: boolean;
+}) {
+  return (
+    <Screen>
+      <View style={sharedStyles.permissionScreen}>
+        <View style={[sharedStyles.bigIconCircle, { backgroundColor: iconCircleColor }]}>
+          <HiveIcon name={icon} size={38} color={HiveColors.green} />
+        </View>
+        <Text style={sharedStyles.permissionTitle}>{title}</Text>
+        <Text style={sharedStyles.permissionSubtitle}>{subtitle}</Text>
+        <View style={styles.flexSpacer} />
+        <View style={sharedStyles.fullWidth}>
+          <AppButton title={busy ? 'Saving…' : primaryLabel} onPress={onPrimary} disabled={busy} />
+          <AppButton title={secondaryLabel} variant="plain" onPress={onSecondary} disabled={busy} />
+        </View>
+      </View>
+    </Screen>
+  );
+}
+
+export function NotificationsPermissionStep({
+  onPrimary,
+  onSecondary,
+  busy,
+}: {
+  onPrimary: () => void;
+  onSecondary: () => void;
+  busy: boolean;
+}) {
+  return (
+    <PermissionPrompt
+      icon="bell"
+      iconCircleColor={HiveColors.cream}
+      title="Stay in the loop"
+      subtitle="Get reminders for your meal plan and budget — plus new benefits you may qualify for."
+      primaryLabel="Turn on notifications"
+      secondaryLabel="Maybe later"
+      onPrimary={onPrimary}
+      onSecondary={onSecondary}
+      busy={busy}
+    />
+  );
+}
+
+export function LocationPermissionStep({
+  message,
+  onPrimary,
+  onSecondary,
+  busy,
+}: {
+  message: string;
+  onPrimary: () => void;
+  onSecondary: () => void;
+  busy: boolean;
+}) {
+  return (
+    <PermissionPrompt
+      // No navigation-arrow glyph in the HiveIcon set; 'send' is the closest available.
+      icon="send"
+      iconCircleColor={HiveColors.greenLight}
+      title="Find help near you"
+      subtitle={message || 'Allow location access so we can show food banks, SNAP offices, and resources close to you.'}
+      primaryLabel="Allow location"
+      secondaryLabel="Not now"
+      onPrimary={onPrimary}
+      onSecondary={onSecondary}
+      busy={busy}
+    />
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Standalone OnboardingScreen — legacy app-root 'onboarding' route.
+//
+// Same iOS-accurate content as the route group above, with internal step state
+// and the legacy Navigation API, until that route is rewired to the group.
+// ---------------------------------------------------------------------------
 
 export function OnboardingScreen({ nav }: { nav: Navigation }) {
   const app = useAppState();
   const [step, setStep] = useState(0);
-  const [budget, setBudget] = useState(app.preferences.weeklyBudget);
-  const [connectBank, setConnectBank] = useState('');
+  const [budgetDollars, setBudgetDollars] = useState(DEFAULT_BUDGET_DOLLARS);
   const [selectedFinanceTopics, setSelectedFinanceTopics] = useState<string[]>(app.preferences.preferredFinanceTopics);
   const [selectedResources, setSelectedResources] = useState<string[]>(app.preferences.preferredResources);
   const [wantsGovAssistance, setWantsGovAssistance] = useState<boolean | null>(app.preferences.wantsGovAssistance);
   const [profileImageUri, setProfileImageUri] = useState(app.profile.profileImageUri);
-  const [notificationsEnabled, setNotificationsEnabled] = useState(app.preferences.notificationsEnabled);
-  const [permissionMessage, setPermissionMessage] = useState('');
+  const [notificationsEnabled, setNotificationsEnabled] = useState(false);
+  const [statusMessage, setStatusMessage] = useState('');
   const [isFinishing, setIsFinishing] = useState(false);
   const [finishError, setFinishError] = useState('');
 
@@ -49,55 +527,53 @@ export function OnboardingScreen({ nav }: { nav: Navigation }) {
   }
 
   async function pickImage() {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images'],
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 0.85,
-    });
-    if (!result.canceled && result.assets[0]) {
-      setProfileImageUri(result.assets[0].uri);
+    const uri = await pickProfileImage();
+    if (uri) {
+      setProfileImageUri(uri);
     }
-  }
-
-  async function requestLocationAndFinish() {
-    const result = await Location.requestForegroundPermissionsAsync();
-    setPermissionMessage(result.granted ? 'Location permission enabled.' : 'Location skipped. You can enable it later.');
-    await finish();
   }
 
   async function requestNotifications() {
     try {
       const granted = await requestNotificationPermission();
       setNotificationsEnabled(granted);
-      setPermissionMessage(granted ? 'Notification permission enabled.' : 'Notifications skipped. You can enable them later.');
+      setStatusMessage(
+        granted ? 'Notification permission enabled.' : 'Notifications skipped. You can enable them later.',
+      );
     } catch {
       setNotificationsEnabled(false);
-      setPermissionMessage('Push notifications are unavailable in Expo Go. You can enable them in a development build.');
+      setStatusMessage('Push notifications are unavailable in Expo Go. You can enable them in a development build.');
     }
     setStep(7);
   }
 
+  async function requestLocationAndFinish() {
+    const result = await Location.requestForegroundPermissionsAsync();
+    setStatusMessage(result.granted ? 'Location permission enabled.' : 'Location skipped. You can enable it later.');
+    await finish();
+  }
+
   async function finish() {
-    if (isFinishing) return;
-    const preferences: AppPreferences = {
-      weeklyBudget: budget,
-      preferredFinanceTopics: selectedFinanceTopics,
-      preferredResources: selectedResources,
-      wantsGovAssistance: wantsGovAssistance ?? false,
-      notificationsEnabled,
-      expiringPantryNotificationsEnabled: app.preferences.expiringPantryNotificationsEnabled,
-      weeklyMealPlanNotificationsEnabled: app.preferences.weeklyMealPlanNotificationsEnabled,
-      resourceReminderNotificationsEnabled: app.preferences.resourceReminderNotificationsEnabled,
-    };
+    if (isFinishing) {
+      return;
+    }
     setIsFinishing(true);
     setFinishError('');
     try {
+      const preferences: AppPreferences = {
+        weeklyBudget: formatBudgetDollars(budgetDollars),
+        preferredFinanceTopics: selectedFinanceTopics,
+        preferredResources: selectedResources,
+        wantsGovAssistance: wantsGovAssistance ?? false,
+        notificationsEnabled,
+        expiringPantryNotificationsEnabled: app.preferences.expiringPantryNotificationsEnabled,
+        weeklyMealPlanNotificationsEnabled: app.preferences.weeklyMealPlanNotificationsEnabled,
+        resourceReminderNotificationsEnabled: app.preferences.resourceReminderNotificationsEnabled,
+      };
       await app.completeOnboarding(preferences, profileImageUri);
       if (notificationsEnabled) {
         void refreshPushTokenIfPermitted();
       }
-      app.setEbtConnected(connectBank === 'yes');
       nav.reset('main');
     } catch (error) {
       setFinishError(error instanceof Error ? error.message : 'Unable to save onboarding.');
@@ -106,235 +582,182 @@ export function OnboardingScreen({ nav }: { nav: Navigation }) {
     }
   }
 
-  const shellProps = {
-    step,
-    setStep,
-    total: 6,
-  };
+  const back = () => setStep((current) => Math.max(0, current - 1));
 
   if (step === 0) {
-    return (
-      <OnboardingShell {...shellProps} current={1} canGoBack={false}>
-        <Text style={styles.stepTitle}>What is your weekly{'\n'}grocery budget?</Text>
-        <Text style={styles.stepSubtitle}>This helps us plan meals that fit around your budget.</Text>
-        {['Below $50', '$75-100', '$100-$150', '$150-$200'].map((option) => (
-          <SelectionRow key={option} title={option} selected={budget === option} onPress={() => setBudget(option)} />
-        ))}
-        <View style={styles.flexSpacer} />
-        <AppButton title="Continue" disabled={!budget} onPress={() => setStep(1)} />
-      </OnboardingShell>
-    );
+    return <BudgetStep value={budgetDollars} onChange={setBudgetDollars} onNext={() => setStep(1)} />;
   }
-
   if (step === 1) {
-    return (
-      <OnboardingShell {...shellProps} current={2}>
-        <Text style={styles.stepTitle}>Connect your bank or{'\n'}EBT card to get insights</Text>
-        <Text style={styles.stepSubtitle}>Connecting your EBT card helps us find local deals and track your weekly benefits.</Text>
-        <SelectionRow title="Yes, I would like to connect" selected={connectBank === 'yes'} onPress={() => setConnectBank('yes')} />
-        <SelectionRow title="I'll connect to this later." selected={connectBank === 'later'} onPress={() => setConnectBank('later')} />
-        <View style={styles.flexSpacer} />
-        <Text style={sharedStyles.helperText}>You can always change this later in settings.</Text>
-        <AppButton title="Next" disabled={!connectBank} onPress={() => setStep(2)} />
-      </OnboardingShell>
-    );
+    return <ConnectEbtStep onNext={() => setStep(2)} onBack={back} />;
   }
-
   if (step === 2) {
     return (
-      <OnboardingShell {...shellProps} current={3}>
-        <Text style={styles.stepTitle}>What financial help do{'\n'}you want to learn?</Text>
-        <Text style={styles.stepSubtitle}>Select all that apply. We will personalize your learning experience.</Text>
-        {financeTopics.map((topic) => (
-          <CheckboxRow
-            key={topic.title}
-            title={topic.title}
-            subtitle={topic.subtitle}
-            icon={topic.icon}
-            selected={selectedFinanceTopics.includes(topic.title)}
-            onPress={() => toggleList(topic.title, selectedFinanceTopics, setSelectedFinanceTopics)}
-          />
-        ))}
-        <View style={styles.flexSpacer} />
-        <AppButton title="Next" onPress={() => setStep(3)} />
-      </OnboardingShell>
-    );
-  }
-
-  if (step === 3) {
-    return (
-      <OnboardingShell {...shellProps} current={4}>
-        <Text style={styles.stepTitle}>What resources do you{'\n'}need?</Text>
-        <Text style={styles.stepSubtitle}>Select all that apply. We will match you with nearby resources.</Text>
-        {resourceOptions.map((resource) => (
-          <CheckboxRow
-            key={resource.title}
-            title={resource.title}
-            subtitle={resource.subtitle}
-            icon={resource.icon}
-            selected={selectedResources.includes(resource.title)}
-            onPress={() => toggleList(resource.title, selectedResources, setSelectedResources)}
-          />
-        ))}
-        <View style={styles.flexSpacer} />
-        <AppButton title="Next" onPress={() => setStep(4)} />
-      </OnboardingShell>
-    );
-  }
-
-  if (step === 4) {
-    return (
-      <OnboardingShell {...shellProps} current={5}>
-        <Text style={styles.stepTitle}>Would you like help applying{'\n'}for benefits?</Text>
-        <Text style={styles.stepSubtitle}>Penny can help prepare applications for programs you may qualify for.</Text>
-        <View style={sharedStyles.chipRow}>
-          {['SNAP', 'WIC', 'Medicaid', 'LIHEAP'].map((program) => (
-            <Chip key={program} label={program} tone="green" />
-          ))}
-        </View>
-        <SelectionRow title="Yes, I'd like help with applications" selected={wantsGovAssistance === true} onPress={() => setWantsGovAssistance(true)} />
-        <SelectionRow title="I'll explore this on my own" selected={wantsGovAssistance === false} onPress={() => setWantsGovAssistance(false)} />
-        <View style={styles.flexSpacer} />
-        <AppButton title="Next" onPress={() => setStep(5)} />
-      </OnboardingShell>
-    );
-  }
-
-  if (step === 5) {
-    return (
-      <OnboardingShell {...shellProps} current={6}>
-        <Text style={styles.stepTitle}>Upload a profile picture</Text>
-        <Text style={styles.stepSubtitle}>Add a photo so Penny can greet you personally.</Text>
-        <Pressable onPress={pickImage} style={styles.photoPicker} accessibilityRole="button" accessibilityLabel="Choose profile photo">
-          {profileImageUri ? <AvatarButton imageUri={profileImageUri} size={130} onPress={pickImage} /> : <HiveIcon name="camera" size={38} color={HiveColors.green} />}
-          {!profileImageUri ? <Text style={sharedStyles.helperText}>Tap to choose</Text> : null}
-        </Pressable>
-        <View style={styles.flexSpacer} />
-        <AppButton title="Continue" onPress={() => setStep(6)} />
-      </OnboardingShell>
-    );
-  }
-
-  if (step === 6) {
-    return (
-      <PermissionStep
-        icon="bell"
-        title="Enable notifications"
-        subtitle="Get reminders when items are expiring and when it is time to plan meals."
-        primaryLabel="Enable Notifications"
-        secondaryLabel="Maybe Later"
-        onPrimary={() => void requestNotifications()}
-        onSecondary={() => {
-          setNotificationsEnabled(false);
-          setStep(7);
-        }}
+      <FinanceTopicsStep
+        selected={selectedFinanceTopics}
+        onToggle={(topic) => toggleList(topic, selectedFinanceTopics, setSelectedFinanceTopics)}
+        onNext={() => setStep(3)}
+        onBack={back}
       />
     );
   }
-
+  if (step === 3) {
+    return (
+      <ResourcesStep
+        selected={selectedResources}
+        onToggle={(resource) => toggleList(resource, selectedResources, setSelectedResources)}
+        onNext={() => setStep(4)}
+        onBack={back}
+      />
+    );
+  }
+  if (step === 4) {
+    return (
+      <BenefitsStep
+        value={wantsGovAssistance}
+        onChange={setWantsGovAssistance}
+        onNext={() => setStep(5)}
+        onBack={back}
+      />
+    );
+  }
+  if (step === 5) {
+    return <ProfilePhotoStep imageUri={profileImageUri} onPick={() => void pickImage()} onNext={() => setStep(6)} onBack={back} />;
+  }
+  if (step === 6) {
+    return <AllSetStep onNext={() => setStep(7)} />;
+  }
+  if (step === 7) {
+    return (
+      <NotificationsPermissionStep
+        onPrimary={() => void requestNotifications()}
+        onSecondary={() => setStep(8)}
+        busy={isFinishing}
+      />
+    );
+  }
   return (
-    <PermissionStep
-      icon="map"
-      title="Use your location"
-      subtitle={finishError || permissionMessage || 'Location helps Penny show resources close to you.'}
-      primaryLabel={isFinishing ? 'Saving…' : 'Allow Location'}
-      secondaryLabel={isFinishing ? 'Saving…' : 'Skip for Now'}
-      onPrimary={requestLocationAndFinish}
+    <LocationPermissionStep
+      message={finishError || statusMessage}
+      onPrimary={() => void requestLocationAndFinish()}
       onSecondary={() => void finish()}
+      busy={isFinishing}
     />
   );
 }
 
-export function OnboardingShell({
-  children,
-  step,
-  setStep,
-  current,
-  total,
-  canGoBack = true,
-}: {
-  children: ReactNode;
-  step: number;
-  setStep: (step: number) => void;
-  current: number;
-  total: number;
-  canGoBack?: boolean;
-}) {
-  return (
-    <ScrollScreen contentStyle={styles.onboardingContent}>
-      <View style={styles.onboardingTop}>
-        <View style={rowStyles.spread}>
-          {canGoBack ? (
-            <Pressable onPress={() => setStep(Math.max(0, step - 1))} style={styles.smallBackButton}>
-              <HiveIcon name="back" size={18} color={HiveColors.text} />
-            </Pressable>
-          ) : (
-            <View style={styles.smallBackButton} />
-          )}
-          <Text style={styles.stepLabel}>STEP {current} OF {total}</Text>
-          <View style={styles.smallBackButton} />
-        </View>
-        <ProgressBar current={current} total={total} />
-      </View>
-      <View style={styles.onboardingBody}>{children}</View>
-    </ScrollScreen>
-  );
-}
-
-export function PermissionStep({
-  icon,
-  title,
-  subtitle,
-  primaryLabel,
-  secondaryLabel,
-  onPrimary,
-  onSecondary,
-}: {
-  icon: HiveIconName;
-  title: string;
-  subtitle: string;
-  primaryLabel: string;
-  secondaryLabel: string;
-  onPrimary: () => void;
-  onSecondary: () => void;
-}) {
-  return (
-    <Screen>
-      <View style={sharedStyles.permissionScreen}>
-        <View style={sharedStyles.bigIconCircle}>
-          <HiveIcon name={icon} size={38} color={HiveColors.green} />
-        </View>
-        <Text style={sharedStyles.permissionTitle}>{title}</Text>
-        <Text style={sharedStyles.permissionSubtitle}>{subtitle}</Text>
-        <View style={styles.flexSpacer} />
-        <View style={sharedStyles.fullWidth}>
-          <AppButton title={primaryLabel} onPress={onPrimary} />
-          <AppButton title={secondaryLabel} variant="plain" onPress={onSecondary} />
-        </View>
-      </View>
-    </Screen>
-  );
-}
-
 const styles = StyleSheet.create({
+  amountCard: {
+    backgroundColor: HiveColors.greenLight,
+    borderRadius: 24,
+    paddingVertical: 36,
+    alignItems: 'center',
+    gap: 4,
+    marginTop: 8,
+  },
+  amountLabel: {
+    color: HiveColors.textSecondary,
+    fontSize: 16,
+  },
+  amountText: {
+    color: HiveColors.green,
+    fontSize: 56,
+    fontWeight: '800',
+  },
+  backButton: {
+    width: 36,
+    height: 36,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  body: {
+    flexGrow: 1,
+    paddingHorizontal: 24,
+    paddingBottom: 24,
+    gap: 14,
+  },
+  buttonSpacer: {
+    height: 8,
+  },
+  centerNote: {
+    color: HiveColors.textSecondary,
+    fontSize: 15,
+    textAlign: 'center',
+    marginTop: 4,
+  },
+  comingSoonBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    backgroundColor: HiveColors.cream,
+    borderRadius: 999,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    gap: 6,
+  },
+  comingSoonIcon: {
+    fontSize: 14,
+  },
+  comingSoonText: {
+    color: HiveColors.orange,
+    fontSize: 13,
+    fontWeight: '800',
+  },
+  content: {
+    flexGrow: 1,
+  },
+  disabledCard: {
+    backgroundColor: HiveColors.white,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: HiveColors.border,
+    padding: 8,
+    opacity: 0.5,
+  },
+  disabledIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    backgroundColor: HiveColors.card,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  disabledRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingVertical: 14,
+    paddingHorizontal: 12,
+  },
+  disabledSubtitle: {
+    color: HiveColors.textSecondary,
+    fontSize: 13,
+    marginTop: 2,
+  },
+  disabledTitle: {
+    color: HiveColors.text,
+    fontSize: 16,
+    fontWeight: '700',
+  },
+  flexOne: {
+    flex: 1,
+  },
   flexSpacer: {
     flex: 1,
     minHeight: 24,
   },
-  onboardingBody: {
-    flexGrow: 1,
-    paddingHorizontal: 24,
-    paddingBottom: 24,
-    gap: 12,
+  footnote: {
+    color: HiveColors.textSecondary,
+    fontSize: 14,
+    marginTop: 6,
   },
-  onboardingContent: {
-    flexGrow: 1,
+  photoHint: {
+    color: HiveColors.textSecondary,
+    fontSize: 14,
   },
-  onboardingTop: {
-    gap: 14,
-    paddingHorizontal: 24,
-    paddingTop: 10,
-    paddingBottom: 20,
+  photoImage: {
+    width: 146,
+    height: 146,
+    borderRadius: 73,
   },
   photoPicker: {
     width: 150,
@@ -349,28 +772,82 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 8,
     marginVertical: 24,
+    overflow: 'hidden',
   },
-  smallBackButton: {
-    width: 36,
-    height: 36,
-    alignItems: 'center',
-    justifyContent: 'center',
+  sliderBlock: {
+    marginTop: 12,
+  },
+  sliderFill: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    bottom: 0,
+    backgroundColor: HiveColors.green,
+    borderRadius: 999,
+  },
+  sliderLabel: {
+    color: HiveColors.textSecondary,
+    fontSize: 14,
+  },
+  sliderLabels: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 18,
+  },
+  sliderThumb: {
+    position: 'absolute',
+    top: -11,
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: HiveColors.white,
+    marginLeft: -14,
+    shadowColor: HiveColors.text,
+    shadowOpacity: 0.18,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 3,
+  },
+  sliderTick: {
+    position: 'absolute',
+    top: 13,
+    width: 4,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: HiveColors.placeholder,
+    marginLeft: -2,
+    opacity: 0.6,
+  },
+  sliderTrack: {
+    height: 6,
+    borderRadius: 999,
+    backgroundColor: HiveColors.border,
   },
   stepLabel: {
-    color: HiveColors.textSecondary,
-    fontSize: 12,
+    color: HiveColors.green,
+    fontSize: 13,
     fontWeight: '800',
+    letterSpacing: 0.5,
   },
   stepSubtitle: {
     color: HiveColors.textSecondary,
     fontSize: 15,
     lineHeight: 21,
-    marginBottom: 4,
   },
   stepTitle: {
     color: HiveColors.text,
-    fontSize: 26,
+    fontSize: 28,
     fontWeight: '800',
-    letterSpacing: 0,
+  },
+  topBar: {
+    gap: 12,
+    paddingHorizontal: 24,
+    paddingTop: 10,
+    paddingBottom: 18,
+  },
+  topRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
 });

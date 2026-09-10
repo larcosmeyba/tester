@@ -22,9 +22,9 @@ const pennySource = require('@/assets/images/hive/penny.png');
 
 /**
  * Notification bell drawn from Views on a 24x24 grid — the same approach as
- * components/tab-icons.tsx. HiveIcon is SF Symbols with a letter fallback on
- * Android (the bell rendered as "!"), so the header bell gets a real glyph
- * that renders identically on both platforms.
+ * components/tab-icons.tsx and the HiveIcon system. The shared `bell` glyph in
+ * hive-icons.tsx was ported from this artwork; this local copy is kept so the
+ * header bell (with its alert badge layout) stays pixel-stable.
  */
 function BellGlyph({ color, size = 20 }: { color: string; size?: number }) {
   const scale = size / 24;
