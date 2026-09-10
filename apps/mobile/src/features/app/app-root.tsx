@@ -12,8 +12,8 @@
 import { useMemo, useState } from 'react';
 import { Text, View } from 'react-native';
 import { useAuth } from '@/auth/auth-context';
-import { AppButton, AppLogo, type HiveIconName, ModalSheet, PennyImage, Screen, uiText } from '@/components/hive-ui';
-import { FloatingTabBar } from '@/components/hive-navigation';
+import { AppButton, AppLogo, ModalSheet, PennyImage, Screen, uiText } from '@/components/hive-ui';
+import { FloatingTabBar, type TabItem } from '@/components/hive-navigation';
 import { MealPlanScreen as WeeklyMealPlanScreen } from '@/features/meals/meal-plan-screen';
 import { allVideos, type BenefitProgram, type MealRecipe, type ResourceItem, transactions, type VideoItem } from '@/data/mock-data';
 import { useAppState } from '@/state/app-state';
@@ -34,7 +34,7 @@ import { HiveColors } from '@/constants/theme';
 const pennySource = require('@/assets/images/hive/penny.png');
 
 const logoSource = require('@/assets/images/hive/logo.png');
-const tabs: { label: string; icon: HiveIconName }[] = [
+const tabs: TabItem[] = [
   { label: 'Home', icon: 'home' },
   { label: 'Meal Plan', icon: 'calendar' },
   { label: 'Penny', icon: 'penny' },

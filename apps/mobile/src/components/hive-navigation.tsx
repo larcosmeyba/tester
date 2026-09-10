@@ -10,9 +10,10 @@ import { Pressable, StyleSheet, Text, View, type StyleProp, type ViewStyle } fro
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { HiveIcon, type HiveIconName } from '@/components/hive-ui';
+import { TabIcon, type TabIconName } from '@/components/tab-icons';
 import { HiveColors, Shadows } from '@/constants/theme';
 
-export type TabItem = { label: string; icon: HiveIconName };
+export type TabItem = { label: string; icon: TabIconName };
 
 /**
  * Inset, rounded tab bar. Sits above the home indicator with its own shadow,
@@ -45,10 +46,10 @@ export function FloatingTabBar({
               onPress={() => onSelect(index)}
               style={styles.tabButton}>
               <View style={[styles.tabIcon, selected && styles.tabIconSelected]}>
-                <HiveIcon
+                <TabIcon
                   name={tab.icon}
-                  size={21}
-                  color={selected ? HiveColors.green : HiveColors.textSecondary}
+                  size={23}
+                  color={selected ? HiveColors.green : HiveColors.text}
                 />
               </View>
               <Text
@@ -154,7 +155,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  tabIconSelected: { backgroundColor: HiveColors.greenLight },
+  tabIconSelected: { backgroundColor: HiveColors.card },
   tabLabel: { fontSize: 10, fontWeight: '600', color: HiveColors.textSecondary },
   tabLabelSelected: { color: HiveColors.green },
 
