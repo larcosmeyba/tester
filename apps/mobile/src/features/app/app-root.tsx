@@ -23,7 +23,7 @@ import { HomeScreen } from '@/features/home/home-screen';
 import { PennyScreen } from '@/features/penny/penny-screen';
 import { BenefitsQuestionnaireScreen, GovernmentScreen, ProgramApplicationScreen, ResourceDetailsScreen, ResourceSearchScreen, ResourcesScreen, VideoDetailScreen, VideoHubScreen } from '@/features/resources/resources-screens';
 import { BudgetSettingsScreen, ConnectAccountScreen, FinanceScreen, SpendingReportScreen, TransactionsScreen } from '@/features/budget/budget-screens';
-import { AddPantryScreen, PantryScreen } from '@/features/pantry/pantry-screens';
+import { AddPantryScreen, PantryScreen, ScanPantryScreen } from '@/features/pantry/pantry-screens';
 import { AccountScreen, ChangeEmailScreen, DeleteAccountScreen, EditHandleScreen, EditProfileScreen, FeedbackScreen, NotificationsScreen, SettingsScreen } from '@/features/profile/profile-screens';
 import { DealsScreen, RecipeScreen } from '@/features/meals/recipe-deals-screens';
 import { type Navigation, type Route, type ScreenName } from '@/features/app/navigation-types';
@@ -101,6 +101,8 @@ export default function AppRoot({ initialPublicScreen }: { initialPublicScreen?:
       return <PantryScreen nav={nav} />;
     case 'addPantry':
       return <AddPantryScreen nav={nav} />;
+    case 'scanPantry':
+      return <ScanPantryScreen nav={nav} />;
     case 'account':
       return <AccountScreen nav={nav} />;
     case 'editProfile':

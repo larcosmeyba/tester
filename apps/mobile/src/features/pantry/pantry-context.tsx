@@ -15,6 +15,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState, t
 
 import { useAuth } from '@/auth/auth-context';
 import { ApiError } from '@/services/api-error';
+import { useMockServices } from '@/constants/env';
 import {
   addPantryItem as addRemote,
   deletePantryItem as deleteRemote,
@@ -26,6 +27,14 @@ import {
   type UpdatePantryItemInput,
   type WasteStats,
 } from '@/features/pantry/pantry-repository';
+import {
+  addPantryItem as addMock,
+  deletePantryItem as deleteMock,
+  fetchPantryItems as fetchMockItems,
+  fetchWasteStats as fetchMockStats,
+  markPantryItemUsed as markUsedMock,
+  updatePantryItem as updateMock,
+} from '@/features/pantry/mock/mock-pantry-service';
 import { byExpiry, byRecentlyUsed, expiringSoon, itemsMatching, type PantryItem } from '@/features/pantry/pantry-model';
 
 export type PantryStatus = 'idle' | 'loading' | 'ready' | 'error';
@@ -62,6 +71,31 @@ const EMPTY_STATS: WasteStats = {
 
 const PantryContext = createContext<PantryContextValue | null>(null);
 
+/**
+ * The pantry's data source. Developer preview and `EXPO_PUBLIC_USE_MOCK_SERVICES`
+ * builds route to the in-memory mock, so the screens render seeded data (and
+ * writes work) instead of a network error when no backend is reachable. Real
+ * builds always use the GraphQL repository. `useMockServices` is never true
+ * in production (see constants/env.ts).
+ */
+const repository = useMockServices
+  ? {
+      fetchPantryItems: fetchMockItems,
+      fetchWasteStats: fetchMockStats,
+      addPantryItem: addMock,
+      updatePantryItem: updateMock,
+      markPantryItemUsed: markUsedMock,
+      deletePantryItem: deleteMock,
+    }
+  : {
+      fetchPantryItems,
+      fetchWasteStats,
+      addPantryItem: addRemote,
+      updatePantryItem: updateRemote,
+      markPantryItemUsed: markUsedRemote,
+      deletePantryItem: deleteRemote,
+    };
+
 function messageFor(error: unknown): string {
   if (error instanceof ApiError) return error.userMessage;
   return 'Something went wrong loading your pantry. Please try again.';
@@ -83,7 +117,10 @@ export function PantryProvider({ children }: { children: ReactNode }) {
     try {
       // Both in one round trip: the stats are the server's own count, not a
       // number derived from the page of items that happened to load.
-      const [nextItems, nextStats] = await Promise.all([fetchPantryItems(), fetchWasteStats()]);
+      const [nextItems, nextStats] = await Promise.all([
+        repository.fetchPantryItems(),
+        repository.fetchWasteStats(),
+      ]);
       setItems(nextItems);
       setWasteStats(nextStats);
       setStatus('ready');
@@ -121,7 +158,7 @@ export function PantryProvider({ children }: { children: ReactNode }) {
       try {
         const next = await run();
         if (next) setItems(next);
-        setWasteStats(await fetchWasteStats());
+        setWasteStats(await repository.fetchWasteStats());
         setStatus('ready');
       } catch (caught) {
         setError(messageFor(caught));
@@ -138,7 +175,7 @@ export function PantryProvider({ children }: { children: ReactNode }) {
   const addItem = useCallback(
     async (input: AddPantryItemInput) => {
       await mutate(async () => {
-        const created = await addRemote(input);
+        const created = await repository.addPantryItem(input);
         return [...items, created];
       });
     },
@@ -148,7 +185,7 @@ export function PantryProvider({ children }: { children: ReactNode }) {
   const updateItem = useCallback(
     async (id: string, input: UpdatePantryItemInput) => {
       await mutate(async () => {
-        const updated = await updateRemote(id, input);
+        const updated = await repository.updatePantryItem(id, input);
         return items.map((item) => (item.id === id ? updated : item));
       });
     },
@@ -158,7 +195,7 @@ export function PantryProvider({ children }: { children: ReactNode }) {
   const markUsed = useCallback(
     async (id: string) => {
       await mutate(async () => {
-        const updated = await markUsedRemote(id);
+        const updated = await repository.markPantryItemUsed(id);
         return items.map((item) => (item.id === id ? updated : item));
       });
     },
@@ -170,7 +207,7 @@ export function PantryProvider({ children }: { children: ReactNode }) {
       await mutate(async () => {
         // A false result means the row was already gone, which is the same
         // end state the caller wanted. Either way the item leaves the list.
-        await deleteRemote(id);
+        await repository.deletePantryItem(id);
         return items.filter((item) => item.id !== id);
       });
     },

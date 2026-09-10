@@ -9,7 +9,8 @@
 // so the app behaves consistently when the network does not cooperate.
 
 import { useState } from 'react';
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Image, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
 
 import {
   AppButton,
@@ -76,7 +77,7 @@ export function PantryScreen({ nav }: { nav: Navigation }) {
                 ? "Nothing's been marked used yet."
                 : 'Nothing has expired. Good.'
           }
-          subtitle={filter === 'active' ? 'Add items manually or from the scan prototype.' : undefined}
+          subtitle={filter === 'active' ? 'Add items manually or scan them with your camera.' : undefined}
         />
       );
     }
@@ -136,7 +137,10 @@ export function PantryScreen({ nav }: { nav: Navigation }) {
       </View>
       <View style={sharedStyles.listStack}>{body()}</View>
       <View style={styles.sideMargin}>
-        <AppButton title="Add Pantry Item" icon="plus" onPress={() => nav.push('addPantry')} />
+        <View style={styles.addRow}>
+          <AppButton title="Scan Items" variant="secondary" onPress={() => nav.push('scanPantry')} style={sharedStyles.flexOne} />
+          <AppButton title="Add Pantry Item" icon="plus" onPress={() => nav.push('addPantry')} style={sharedStyles.flexOne} />
+        </View>
       </View>
     </ScrollScreen>
   );
@@ -175,6 +179,7 @@ export function AddPantryScreen({ nav }: { nav: Navigation }) {
     <ScrollScreen keyboard>
       <AppHeader title="Add Pantry Item" onBack={nav.back} />
       <View style={sharedStyles.formScreen}>
+        <AppButton title="Scan with Camera Instead" variant="secondary" onPress={() => nav.push('scanPantry')} />
         <AppTextField label="Item name" value={name} onChangeText={setName} placeholder="Milk" />
         <AppTextField label="Quantity" value={quantity} onChangeText={setQuantity} placeholder="1 gallon" />
         <AppTextField label="Category" value={category} onChangeText={setCategory} placeholder="Dairy" />
@@ -202,6 +207,196 @@ export function AddPantryScreen({ nav }: { nav: Navigation }) {
           disabled={!name.trim() || !quantity.trim() || pantry.isMutating}
           onPress={() => void save()}
         />
+      </View>
+    </ScrollScreen>
+  );
+}
+
+type DetectedPantryItem = {
+  key: string;
+  name: string;
+  quantity: string;
+  location: StorageLocation;
+  category: string;
+  days: string;
+  selected: boolean;
+};
+
+/**
+ * What the (simulated) vision pass returns. A fixed, plausible fridge haul —
+ * the point of this screen in preview builds is the review-and-confirm flow,
+ * not the recognition itself.
+ */
+const PREVIEW_DETECTIONS: Array<Omit<DetectedPantryItem, 'key' | 'selected'>> = [
+  { name: 'Milk', quantity: '1 gallon', location: 'REFRIGERATOR', category: 'Dairy', days: '7' },
+  { name: 'Eggs', quantity: '1 dozen', location: 'REFRIGERATOR', category: 'Dairy', days: '14' },
+  { name: 'Bread', quantity: '1 loaf', location: 'PANTRY', category: 'Bakery', days: '5' },
+  { name: 'Apples', quantity: '4', location: 'PANTRY', category: 'Produce', days: '10' },
+];
+
+export function ScanPantryScreen({ nav }: { nav: Navigation }) {
+  const pantry = usePantry();
+  const [photoUri, setPhotoUri] = useState<string | null>(null);
+  const [phase, setPhase] = useState<'idle' | 'analyzing' | 'review' | 'saving'>('idle');
+  const [detected, setDetected] = useState<DetectedPantryItem[]>([]);
+  const [notice, setNotice] = useState('');
+
+  async function handleAsset(uri: string) {
+    setPhotoUri(uri);
+    setPhase('analyzing');
+    setNotice('');
+    // Preview build: on-device/server vision is not wired yet (there is no
+    // scan endpoint in the API contract), so the detection pass is simulated.
+    // Everything after it — review, edit, confirm, save — is the real flow
+    // and writes through the same pantry.addItem as manual entry.
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+    setDetected(PREVIEW_DETECTIONS.map((item, index) => ({ ...item, key: `scan-${index}`, selected: true })));
+    setPhase('review');
+  }
+
+  async function takePhoto() {
+    setNotice('');
+    try {
+      const permission = await ImagePicker.requestCameraPermissionsAsync();
+      if (!permission.granted) {
+        setNotice('Camera access was denied. Choose a photo from your library instead, or add items manually.');
+        return;
+      }
+      const result = await ImagePicker.launchCameraAsync({ mediaTypes: ['images'], quality: 0.8 });
+      if (!result.canceled && result.assets[0]) await handleAsset(result.assets[0].uri);
+    } catch {
+      setNotice('The camera is not available on this device. Choose a photo from your library instead.');
+    }
+  }
+
+  async function chooseFromLibrary() {
+    setNotice('');
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], quality: 0.8 });
+      if (!result.canceled && result.assets[0]) await handleAsset(result.assets[0].uri);
+    } catch {
+      setNotice('Could not open your photo library. Please try again.');
+    }
+  }
+
+  function toggleSelected(key: string) {
+    setDetected((current) =>
+      current.map((item) => (item.key === key ? { ...item, selected: !item.selected } : item))
+    );
+  }
+
+  function updateDetected(key: string, patch: Partial<DetectedPantryItem>) {
+    setDetected((current) => current.map((item) => (item.key === key ? { ...item, ...patch } : item)));
+  }
+
+  function retake() {
+    setPhotoUri(null);
+    setDetected([]);
+    setNotice('');
+    setPhase('idle');
+  }
+
+  async function saveSelected() {
+    const chosen = detected.filter((item) => item.selected && item.name.trim().length > 0);
+    if (chosen.length === 0) {
+      setNotice('Select at least one item to add.');
+      return;
+    }
+    setPhase('saving');
+    setNotice('');
+    try {
+      for (const item of chosen) {
+        await pantry.addItem({
+          name: item.name.trim(),
+          quantity: item.quantity.trim() || '1',
+          location: item.location,
+          category: item.category.trim() || 'Other',
+          expirationDate: expirationDateInDays(Number.parseInt(item.days, 10) || 7),
+        });
+      }
+      nav.back();
+    } catch {
+      setNotice(pantry.error || 'We could not save those items. Please try again.');
+      setPhase('review');
+    }
+  }
+
+  const selectedCount = detected.filter((item) => item.selected).length;
+
+  return (
+    <ScrollScreen keyboard>
+      <AppHeader title="Scan Items" onBack={nav.back} />
+      <View style={sharedStyles.formScreen}>
+        {phase === 'idle' ? (
+          <>
+            <Text style={uiText.subtitle}>Take a photo of your fridge or pantry</Text>
+            <Text style={uiText.muted}>
+              Penny will pull out the items she can see. You review everything before anything is added — nothing is
+              saved automatically.
+            </Text>
+            {notice ? <Text style={styles.saveError}>{notice}</Text> : null}
+            <AppButton title="Take a Photo" onPress={() => void takePhoto()} />
+            <AppButton title="Choose from Library" variant="secondary" onPress={() => void chooseFromLibrary()} />
+            <Text style={sharedStyles.miniMuted}>
+              Preview: item detection is simulated in this build. Real photo recognition arrives with the backend.
+            </Text>
+          </>
+        ) : null}
+
+        {phase === 'analyzing' && photoUri ? (
+          <View style={styles.stateBody}>
+            <Image source={{ uri: photoUri }} style={styles.scanPhoto} resizeMode="cover" />
+            <ActivityIndicator size="large" color={HiveColors.green} />
+            <Text style={uiText.muted}>Looking at your photo…</Text>
+          </View>
+        ) : null}
+
+        {phase === 'review' || phase === 'saving' ? (
+          <>
+            {photoUri ? <Image source={{ uri: photoUri }} style={styles.scanPhotoSmall} resizeMode="cover" /> : null}
+            <Text style={uiText.subtitle}>We spotted these items</Text>
+            <Text style={uiText.muted}>
+              Uncheck anything we got wrong, fix names and quantities, then add them to your pantry.
+            </Text>
+            {detected.map((item) => (
+              <View key={item.key} style={styles.scanRow}>
+                <Pressable
+                  accessibilityRole="checkbox"
+                  accessibilityState={{ checked: item.selected }}
+                  accessibilityLabel={`Include ${item.name || 'item'}`}
+                  onPress={() => toggleSelected(item.key)}
+                  style={[styles.scanCheck, item.selected && styles.scanCheckOn]}
+                />
+                <View style={sharedStyles.flexOne}>
+                  <TextInput
+                    value={item.name}
+                    onChangeText={(value) => updateDetected(item.key, { name: value })}
+                    placeholder="Item name"
+                    placeholderTextColor={HiveColors.textSecondary}
+                    style={styles.scanInput}
+                  />
+                  <Text style={sharedStyles.miniMuted}>
+                    {locationLabel(item.location)} · {item.category}
+                  </Text>
+                </View>
+                <TextInput
+                  value={item.quantity}
+                  onChangeText={(value) => updateDetected(item.key, { quantity: value })}
+                  placeholder="Qty"
+                  placeholderTextColor={HiveColors.textSecondary}
+                  style={[styles.scanInput, styles.scanQty]}
+                />
+              </View>
+            ))}
+            {notice ? <Text style={styles.saveError}>{notice}</Text> : null}
+            <AppButton
+              title={phase === 'saving' ? 'Adding…' : `Add ${selectedCount} Item${selectedCount === 1 ? '' : 's'}`}
+              disabled={selectedCount === 0 || phase === 'saving' || pantry.isMutating}
+              onPress={() => void saveSelected()}
+            />
+            <AppButton title="Retake Photo" variant="plain" disabled={phase === 'saving'} onPress={retake} />
+          </>
+        ) : null}
       </View>
     </ScrollScreen>
   );
@@ -240,6 +435,51 @@ const styles = StyleSheet.create({
   },
   sideMargin: {
     marginHorizontal: 20,
+  },
+  addRow: {
+    flexDirection: 'row',
+    gap: 10,
+  },
+  scanPhoto: {
+    width: '100%',
+    height: 220,
+    borderRadius: 12,
+    backgroundColor: HiveColors.card,
+  },
+  scanPhotoSmall: {
+    width: '100%',
+    height: 120,
+    borderRadius: 12,
+    backgroundColor: HiveColors.card,
+  },
+  scanRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    paddingVertical: 8,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: HiveColors.border,
+  },
+  scanCheck: {
+    width: 24,
+    height: 24,
+    borderRadius: 6,
+    borderWidth: 2,
+    borderColor: HiveColors.border,
+    backgroundColor: HiveColors.white,
+  },
+  scanCheckOn: {
+    borderColor: HiveColors.green,
+    backgroundColor: HiveColors.green,
+  },
+  scanInput: {
+    fontSize: 15,
+    color: HiveColors.text,
+    paddingVertical: 6,
+  },
+  scanQty: {
+    width: 88,
+    textAlign: 'right',
   },
   stateBody: {
     alignItems: 'center',

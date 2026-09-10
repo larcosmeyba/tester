@@ -18,6 +18,7 @@ export type ScreenName =
   | 'main'
   | 'pantry'
   | 'addPantry'
+  | 'scanPantry'
   | 'account'
   | 'editProfile'
   | 'editHandle'

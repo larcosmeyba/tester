@@ -162,6 +162,20 @@ export function AppHeader({
   right?: ReactNode;
   hiddenTitle?: boolean;
 }) {
+  if (hiddenTitle) {
+    // Auth screens (signup/login): a compact back row in normal flow. No side
+    // spacers and no empty title cell, so the control sits in its own row with
+    // guaranteed spacing and can never drift over the form fields below.
+    return (
+      <View style={styles.headerCompact}>
+        {onBack ? (
+          <Pressable accessibilityRole="button" accessibilityLabel="Back" onPress={onBack} style={styles.iconButton}>
+            <HiveIcon name="back" size={18} />
+          </Pressable>
+        ) : null}
+      </View>
+    );
+  }
   return (
     <View style={styles.header}>
       <View style={styles.headerSide}>
@@ -655,6 +669,13 @@ const styles = StyleSheet.create({
     width: 70,
     minHeight: 44,
     justifyContent: 'center',
+  },
+  headerCompact: {
+    minHeight: 52,
+    paddingHorizontal: 16,
+    paddingBottom: 4,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   headerRight: {
     alignItems: 'flex-end',
