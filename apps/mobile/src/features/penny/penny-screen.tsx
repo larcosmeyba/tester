@@ -137,7 +137,7 @@ export function PennyScreen({ nav }: { nav: Navigation }) {
   );
 }
 
-export function PaywallContent({ onClose }: { onClose: () => void }) {
+export function PaywallContent({ onClose, onUpgrade }: { onClose: () => void; onUpgrade?: () => void }) {
   return (
     <View style={styles.sheetStack}>
       <PennyImage source={pennySource} size={78} />
@@ -153,7 +153,7 @@ export function PaywallContent({ onClose }: { onClose: () => void }) {
           </View>
         ))}
       </Card>
-      <AppButton title="Upgrade to Premium" onPress={onClose} style={sharedStyles.fullWidth} />
+      <AppButton title="Upgrade to Premium" onPress={onUpgrade ?? onClose} style={sharedStyles.fullWidth} />
       <AppButton title="Maybe later" variant="plain" onPress={onClose} />
     </View>
   );

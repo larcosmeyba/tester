@@ -10,9 +10,10 @@
 // These three go when the routes stop re-exporting the AppRoot shell; deleting
 // them now would break the shell's own navigation with nothing to replace it.
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Image, Linking, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { loadSavedVideoIds, toggleVideoSaved } from '@/features/resources/saved-videos';
 import { AppButton, AppHeader, AppTextField, AvatarButton, Card, Chip, HiveIcon, InfoRow, ScrollScreen, SectionHeader, rowStyles, uiText, type HiveIconName } from '@/components/hive-ui';
 import { HiveColors } from '@/constants/theme';
 import { ComingSoonRow, GradientActionRow } from '@/components/hive-cards';
@@ -574,6 +575,22 @@ export function VideoHubScreen({ nav, title, videos }: { nav: Navigation; title:
 
 export function VideoDetailScreen({ nav, video }: { nav: Navigation; video?: VideoItem }) {
   const chosen = video ?? allVideos[0];
+  const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    void loadSavedVideoIds().then((ids) => {
+      if (!cancelled) setSaved(ids.has(chosen.id));
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [chosen.id]);
+
+  async function onToggleSave() {
+    setSaved(await toggleVideoSaved(chosen.id));
+  }
+
   return (
     <ScrollScreen>
       <AppHeader title="How-To Video" onBack={nav.back} />
@@ -589,7 +606,11 @@ export function VideoDetailScreen({ nav, video }: { nav: Navigation; video?: Vid
         <View style={sharedStyles.chipRow}>
           {chosen.tags.map((tag) => <Chip key={tag} label={tag} tone="neutral" />)}
         </View>
-        <AppButton title="Save Video" variant="secondary" onPress={nav.back} />
+        <AppButton
+          title={saved ? 'Saved ✓' : 'Save Video'}
+          variant="secondary"
+          onPress={() => void onToggleSave()}
+        />
       </View>
     </ScrollScreen>
   );

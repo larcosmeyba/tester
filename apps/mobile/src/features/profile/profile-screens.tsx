@@ -11,6 +11,7 @@ import { useAuth } from '@/auth/auth-context';
 import { AppButton, AppHeader, AppTextField, AvatarButton, HiveIcon, ScrollScreen, StatBadge, uiText, type HiveIconName } from '@/components/hive-ui';
 import { requestAndRegisterPushToken, unregisterStoredPushToken } from '@/features/notifications/notification-service';
 import { deleteViewerData, HandleUpdateError, type HandleAvailability } from '@/features/profile/profile-repository';
+import { loadLocalToggles, saveLocalToggles } from '@/features/profile/local-toggles';
 import { updateBenefitsRenewalPreferences } from '@/features/benefits/benefits-repository';
 import { useAppState } from '@/state/app-state';
 import { StyleSheet } from 'react-native';
@@ -578,13 +579,30 @@ export function NotificationsScreen({ nav }: { nav: Navigation }) {
   const [weeklyPlanReady, setWeeklyPlanReady] = useState(app.preferences.weeklyMealPlanNotificationsEnabled);
   const [expiringItems, setExpiringItems] = useState(app.preferences.expiringPantryNotificationsEnabled);
   const [renewalReminders, setRenewalReminders] = useState(true);
-  // Figma-only toggles (no backend field yet — local state for this pass):
+  // Figma-only toggles (no backend field yet — persisted on-device via
+  // local-toggles.ts so flips survive restarts):
   const [dailyReminders, setDailyReminders] = useState(true);
   const [newDeals, setNewDeals] = useState(true);
   const [priceDrops, setPriceDrops] = useState(true);
   const [lowStock, setLowStock] = useState(false);
   const [ebtBalance, setEbtBalance] = useState(true);
   const [adFree, setAdFree] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    void loadLocalToggles().then((stored) => {
+      if (cancelled) return;
+      setDailyReminders(stored.dailyReminders);
+      setNewDeals(stored.newDeals);
+      setPriceDrops(stored.priceDrops);
+      setLowStock(stored.lowStock);
+      setEbtBalance(stored.ebtBalance);
+      setAdFree(stored.adFree);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const [saveError, setSaveError] = useState('');
   const persistRef = useRef({
@@ -665,6 +683,16 @@ export function NotificationsScreen({ nav }: { nav: Navigation }) {
       renewalReminders: merged.renewalReminders,
       anyOn,
     };
+    // The Figma-only rows have no backend field; persist them on-device so
+    // the flip survives a restart.
+    void saveLocalToggles({
+      dailyReminders: merged.dailyReminders,
+      newDeals: merged.newDeals,
+      priceDrops: merged.priceDrops,
+      lowStock: merged.lowStock,
+      ebtBalance: merged.ebtBalance,
+      adFree: merged.adFree,
+    });
     void persist();
   }
 

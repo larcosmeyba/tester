@@ -10,6 +10,7 @@ import { HiveColors } from '@/constants/theme';
 import { ComingSoonHub } from '@/components/hive-cards';
 import { spendingCategories, transactions } from '@/data/mock-data';
 import { useAppState } from '@/state/app-state';
+import { loadLocalToggles, saveLocalToggles } from '@/features/profile/local-toggles';
 import { StyleSheet } from 'react-native';
 import { sharedStyles } from '@/features/app/app-shared';
 import { type Navigation } from '@/features/app/navigation-types';
@@ -244,7 +245,7 @@ export function ConnectAccountScreen({ nav }: { nav: Navigation }) {
  *
  * The budget persists through the existing weeklyBudget preference (the
  * "$100" / "$300+" format from onboarding). The three toggles have no
- * backend field yet and are local state for this pass.
+ * backend field yet and persist on-device via local-toggles.ts.
  */
 export function BudgetSettingsScreen({ nav }: { nav: Navigation }) {
   const app = useAppState();
@@ -255,11 +256,25 @@ export function BudgetSettingsScreen({ nav }: { nav: Navigation }) {
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState('');
 
+  useEffect(() => {
+    let cancelled = false;
+    void loadLocalToggles().then((stored) => {
+      if (cancelled) return;
+      setBudgetAlerts(stored.budgetAlerts);
+      setRollOver(stored.rollOver);
+      setRoundUp(stored.roundUp);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   async function save() {
     setIsSaving(true);
     setSaveError('');
     try {
       await app.savePreferences({ weeklyBudget: formatBudgetDollars(budget) });
+      await saveLocalToggles({ budgetAlerts, rollOver, roundUp });
       nav.back();
     } catch (error) {
       setSaveError(error instanceof Error ? error.message : 'Unable to save your budget.');
