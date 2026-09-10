@@ -565,10 +565,9 @@ export function ChangeEmailScreen({ nav }: { nav: Navigation }) {
  * through the existing pipeline, and push registration follows whether any
  * toggle is on.
  *
- * NOTE (product conflict, flagged for Marcos): the Figma includes an
- * "Ad-Free Experience / Hide ads throughout the app" row marked PREMIUM, but
- * the standing product rule is no ads. The row is rendered locked exactly as
- * designed; the no-ads rule itself is unchanged.
+ * NOTE: the Figma showed "Ad-Free Experience" as a locked PREMIUM upsell.
+ * Marcos removed the premium treatment (2026-09-10): it is now a standard
+ * toggle like the other rows, defaulting on — the app shows no ads.
  */
 export function NotificationsScreen({ nav }: { nav: Navigation }) {
   const app = useAppState();
@@ -583,6 +582,7 @@ export function NotificationsScreen({ nav }: { nav: Navigation }) {
   const [priceDrops, setPriceDrops] = useState(true);
   const [lowStock, setLowStock] = useState(false);
   const [ebtBalance, setEbtBalance] = useState(true);
+  const [adFree, setAdFree] = useState(true);
 
   const [saveError, setSaveError] = useState('');
   const persistRef = useRef({
@@ -631,7 +631,7 @@ export function NotificationsScreen({ nav }: { nav: Navigation }) {
     }
   }
 
-  function update(patch: Partial<{ weeklyPlanReady: boolean; expiringItems: boolean; renewalReminders: boolean; dailyReminders: boolean; newDeals: boolean; priceDrops: boolean; lowStock: boolean; ebtBalance: boolean }>) {
+  function update(patch: Partial<{ weeklyPlanReady: boolean; expiringItems: boolean; renewalReminders: boolean; dailyReminders: boolean; newDeals: boolean; priceDrops: boolean; lowStock: boolean; ebtBalance: boolean; adFree: boolean }>) {
     if (patch.weeklyPlanReady !== undefined) setWeeklyPlanReady(patch.weeklyPlanReady);
     if (patch.expiringItems !== undefined) setExpiringItems(patch.expiringItems);
     if (patch.renewalReminders !== undefined) setRenewalReminders(patch.renewalReminders);
@@ -640,6 +640,7 @@ export function NotificationsScreen({ nav }: { nav: Navigation }) {
     if (patch.priceDrops !== undefined) setPriceDrops(patch.priceDrops);
     if (patch.lowStock !== undefined) setLowStock(patch.lowStock);
     if (patch.ebtBalance !== undefined) setEbtBalance(patch.ebtBalance);
+    if (patch.adFree !== undefined) setAdFree(patch.adFree);
 
     const merged = {
       dailyReminders,
@@ -649,6 +650,7 @@ export function NotificationsScreen({ nav }: { nav: Navigation }) {
       expiringItems,
       lowStock,
       ebtBalance,
+      adFree,
       renewalReminders,
       ...patch,
     };
@@ -698,19 +700,13 @@ export function NotificationsScreen({ nav }: { nav: Navigation }) {
         />
       </NotificationSection>
       <NotificationSection title="ADS">
-        <View style={notificationStyles.lockedRow}>
-          <View style={sharedStyles.flexOne}>
-            <View style={notificationStyles.lockedTitleRow}>
-              <Text style={notificationStyles.toggleTitle}>Ad-Free Experience</Text>
-              <View style={notificationStyles.premiumBadge}>
-                <HiveIcon name="star" size={11} color={HiveColors.warning} />
-                <Text style={notificationStyles.premiumText}>PREMIUM</Text>
-              </View>
-            </View>
-            <Text style={notificationStyles.toggleSubtitle}>Hide ads throughout the app</Text>
-          </View>
-          <HiveIcon name="lock" size={22} color={HiveColors.warning} />
-        </View>
+        <NotificationToggle
+          title="Ad-Free Experience"
+          subtitle="Hide ads throughout the app"
+          value={adFree}
+          onToggle={() => update({ adFree: !adFree })}
+          last
+        />
       </NotificationSection>
       <NotificationSection title="PANTRY">
         <NotificationToggle
@@ -819,18 +815,6 @@ const notificationStyles = StyleSheet.create({
     justifyContent: 'center',
   },
   checkboxOn: { borderColor: HiveColors.greenDark, backgroundColor: HiveColors.greenDark },
-  lockedRow: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 13 },
-  lockedTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  premiumBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    backgroundColor: '#FFF4D6',
-    borderRadius: Radii.pill,
-    paddingVertical: 4,
-    paddingHorizontal: 9,
-  },
-  premiumText: { color: '#B97E00', fontSize: 11, fontWeight: '800', letterSpacing: 0.4 },
   errorWrap: { paddingHorizontal: 20, paddingTop: 12 },
 });
 
