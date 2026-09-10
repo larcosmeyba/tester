@@ -18,6 +18,8 @@ import (
 	"github.com/helpthehive/server/internal/modules/benefits"
 	"github.com/helpthehive/server/internal/modules/catalog"
 	"github.com/helpthehive/server/internal/modules/grocery"
+	"github.com/helpthehive/server/internal/modules/instacart"
+	"github.com/helpthehive/server/internal/modules/kroger"
 	"github.com/helpthehive/server/internal/modules/mealgen"
 	"github.com/helpthehive/server/internal/modules/mealgen/provider"
 	"github.com/helpthehive/server/internal/modules/mealplans"
@@ -93,11 +95,60 @@ func run(logger *slog.Logger) error {
 		store, userService, extractor, catalogService, recipes.ImportPolicyFromEnv(), logger,
 	)
 
-	// No retailer handoff is configured. The grocery list is built entirely on
-	// Help The Hive's own terms first, and a retailer — when there is one — is
-	// handed that finished list rather than shaping it. Passing nil selects
-	// retailer.Unconfigured, which reports the feature as unavailable.
-	groceryService := grocery.NewService(store, userService, catalogService, nil)
+	// Kroger is the tier-1 retailer price feed. With no credentials the feed
+	// is off and pricing serves the stored estimates, exactly as it does
+	// today — the PriceFeed degrades to a no-op and the tier-1 rows simply
+	// never appear. A configured-but-invalid client is still a start-up
+	// failure.
+	var krogerProvider kroger.Provider = kroger.Unconfigured{}
+	if cfg.Kroger.Enabled() {
+		client, err := kroger.New(kroger.Config{
+			ClientID:     cfg.Kroger.ClientID,
+			ClientSecret: cfg.Kroger.ClientSecret,
+		}, kroger.WithLogger(logger))
+		if err != nil {
+			return err
+		}
+		krogerProvider = client
+		logger.Info("kroger live pricing enabled")
+	} else {
+		logger.Info("kroger live pricing disabled", "reason", "KROGER_CLIENT_ID / KROGER_CLIENT_SECRET not set")
+	}
+
+	// Instacart takes the finished grocery list and builds the shopping list
+	// page the app opens. No key means the handoff reports itself
+	// unconfigured — the list and everything else work, and the app shows the
+	// affiliate fallback card.
+	instacartHandoff := instacart.NewHandoff(instacart.Config{
+		APIKey:  cfg.Instacart.APIKey,
+		BaseURL: cfg.Instacart.BaseURL,
+	}, instacart.WithLogger(logger))
+	if cfg.Instacart.Enabled() {
+		logger.Info("instacart handoff enabled")
+	} else {
+		logger.Info("instacart handoff disabled", "reason", "INSTACART_API_KEY not set")
+	}
+
+	// The grocery list is built entirely on Help The Hive's own terms first,
+	// and the Instacart handoff — when its key is configured — is handed that
+	// finished list rather than shaping it. With no key the handoff reports
+	// itself unconfigured, which is an ordinary state, not a fault.
+	groceryService := grocery.NewService(store, userService, catalogService, instacartHandoff)
+
+	// The tier-1 feed refreshes the live Kroger rows in the background so
+	// pricing requests never wait on the Kroger API. With Kroger unconfigured
+	// there is no feed: the sync endpoint reports itself unavailable and
+	// pricing serves the stored estimates.
+	var krogerSync serverhttp.KrogerPriceSyncer
+	if cfg.Kroger.Enabled() {
+		feed := grocery.NewPriceFeed(catalogService, store, krogerProvider, cfg.Kroger.LocationID, logger)
+		krogerSync = feed
+		go func() {
+			if _, err := feed.Sync(context.Background()); err != nil {
+				logger.Warn("kroger price feed: initial sync failed", "error", err)
+			}
+		}()
+	}
 
 	mealProfileService := mealprofile.NewService(store, userService)
 	generatorService := mealgen.NewService(store, catalogService, aiProvider, logger)
@@ -156,8 +207,14 @@ func run(logger *slog.Logger) error {
 				Benefits: benefitsService,
 				// The Expo Push API needs no server key for basic sends, so
 				// there is nothing secret to configure here.
-				Sender:    notify.NewClient(notify.WithLogger(logger)),
-				JobSecret: cfg.InternalJobSecret,
+				Sender:     notify.NewClient(notify.WithLogger(logger)),
+				JobSecret:  cfg.InternalJobSecret,
+				KrogerFeed: krogerSync,
+			},
+			serverhttp.InstacartDeps{
+				Grocery:      groceryService,
+				AffiliateURL: cfg.Instacart.AffiliateURL,
+				Logger:       logger,
 			},
 			logger),
 		ReadHeaderTimeout: 5 * time.Second,

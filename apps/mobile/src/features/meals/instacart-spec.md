@@ -2,11 +2,18 @@
 
 ## Status
 
-Partner API **not yet approved**. The app ships with the affiliate deep-link
-fallback only; the partner-gated path activates server-side once Instacart
-approves the Help The Hive partner application. No Instacart key, partner id,
-affiliate tag, or signing secret exists in the mobile bundle, and none should
-be added.
+Partner API **implemented server-side** (2026-09-10). The mobile client calls
+`POST /api/instacart/handoff` and `POST /api/instacart/fallback-link`; both
+are live routes behind the user auth middleware. The server needs
+`INSTACART_API_KEY` in its environment before the partner handoff works —
+until then `/handoff` returns 503 and the app shows the affiliate fallback
+card. No Instacart key, partner id, affiliate tag, or signing secret exists
+in the mobile bundle, and none should be added.
+
+Server implementation: `apps/server/internal/modules/instacart` (the
+`retailer.Handoff`), routes in `apps/server/internal/http/instacart.go`.
+Secret names (never values) are listed in
+`apps/server/docs/partner-secrets.md`.
 
 ## The two paths
 

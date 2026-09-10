@@ -1,9 +1,11 @@
 /**
  * Shop with Instacart (see instacart-spec.md).
  *
- * BACKEND INTEGRATION REQUIRED. The handoff belongs on the server: it holds
- * the Instacart partner credentials and builds the cart. This app only ever
- * sends the plan id and opens whatever URL the backend hands back.
+ * The handoff belongs on the server: it holds the Instacart partner
+ * credentials and builds the cart. This app only ever sends the plan id and
+ * opens whatever URL the backend hands back. When the backend reports the
+ * integration as not connected yet, the screen offers the affiliate fallback
+ * card instead.
  *
  * No Instacart key, partner id, affiliate tag, or signing secret exists in
  * this bundle, and none should be added.
