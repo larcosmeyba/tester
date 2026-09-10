@@ -24,7 +24,7 @@ import { PennyScreen } from '@/features/penny/penny-screen';
 import { BenefitsQuestionnaireScreen, GovernmentScreen, ProgramApplicationScreen, ResourceDetailsScreen, ResourceSearchScreen, ResourcesScreen, VideoDetailScreen, VideoHubScreen } from '@/features/resources/resources-screens';
 import { BudgetSettingsScreen, ConnectAccountScreen, FinanceScreen, SpendingReportScreen, TransactionsScreen } from '@/features/budget/budget-screens';
 import { AddPantryScreen, PantryScreen, ScanPantryScreen } from '@/features/pantry/pantry-screens';
-import { AccountScreen, ChangeEmailScreen, DeleteAccountScreen, EditHandleScreen, EditProfileScreen, FeedbackScreen, NotificationsScreen, SettingsScreen } from '@/features/profile/profile-screens';
+import { AccountScreen, ChangeEmailScreen, DeleteAccountScreen, EditHandleScreen, EditProfileScreen, FeedbackScreen, NotificationsScreen } from '@/features/profile/profile-screens';
 import { DealsScreen, RecipeScreen } from '@/features/meals/recipe-deals-screens';
 import { type Navigation, type Route, type ScreenName } from '@/features/app/navigation-types';
 import { sharedStyles } from '@/features/app/app-shared';
@@ -113,8 +113,6 @@ export default function AppRoot({ initialPublicScreen }: { initialPublicScreen?:
       return <ChangeEmailScreen nav={nav} />;
     case 'deleteAccount':
       return <DeleteAccountScreen nav={nav} />;
-    case 'settings':
-      return <SettingsScreen nav={nav} />;
     case 'notifications':
       return <NotificationsScreen nav={nav} />;
     case 'budgetSettings':
@@ -138,7 +136,7 @@ export default function AppRoot({ initialPublicScreen }: { initialPublicScreen?:
     case 'government':
       return <GovernmentScreen nav={nav} />;
     case 'benefitsQuestionnaire':
-      return <BenefitsQuestionnaireScreen nav={nav} />;
+      return <BenefitsQuestionnaireScreen nav={nav} programs={route.params?.programs as string[] | undefined} />;
     case 'programApplication':
       return <ProgramApplicationScreen nav={nav} program={route.params?.program as BenefitProgram | undefined} />;
     case 'financeHub':

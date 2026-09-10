@@ -339,7 +339,7 @@ export function ComingSoonHub({
       <View style={styles.hubGrid}>
         {features.map((feature) => (
           <View key={feature.label} style={styles.hubFeature}>
-            <HiveIcon name={feature.icon} size={18} color={HiveColors.green} />
+            <HiveIcon name={feature.icon} size={18} color={HiveColors.text} />
             <Text style={styles.hubFeatureLabel}>{feature.label}</Text>
           </View>
         ))}

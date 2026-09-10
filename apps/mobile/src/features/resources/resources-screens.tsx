@@ -11,50 +11,47 @@
 // them now would break the shell's own navigation with nothing to replace it.
 
 import { useState } from 'react';
-import { Linking, Pressable, ScrollView, Text, View } from 'react-native';
-import { AppButton, AppHeader, AppTextField, AvatarButton, Card, Chip, EmptyState, HiveIcon, InfoRow, ScrollScreen, SectionHeader, rowStyles, uiText } from '@/components/hive-ui';
+import { Image, Linking, Pressable, ScrollView, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { AppButton, AppHeader, AppTextField, AvatarButton, Card, Chip, HiveIcon, InfoRow, ScrollScreen, SectionHeader, rowStyles, uiText, type HiveIconName } from '@/components/hive-ui';
 import { HiveColors } from '@/constants/theme';
 import { ComingSoonRow, GradientActionRow } from '@/components/hive-cards';
 import { allVideos, benefitPrograms, type BenefitProgram, nearbyResources, type ResourceItem, type VideoItem } from '@/data/mock-data';
 import { useAppState } from '@/state/app-state';
 import { StyleSheet } from 'react-native';
-import { Bullet, HorizontalScroller, sharedStyles } from '@/features/app/app-shared';
+import { Bullet, sharedStyles } from '@/features/app/app-shared';
 import { type Navigation } from '@/features/app/navigation-types';
 import { Radii } from '@/constants/theme';
 
+const pennySource = require('@/assets/images/hive/penny.png');
+
 export function ResourcesScreen({ nav }: { nav: Navigation }) {
   const app = useAppState();
-  const [selectedCategory, setSelectedCategory] = useState('All');
-  const categories = ['All', 'Food', 'Housing', 'Healthcare', 'Utility', 'Job'];
-  const filteredResources =
-    selectedCategory === 'All'
-      ? nearbyResources
-      : nearbyResources.filter((resource) =>
-          resource.tag.toLowerCase().includes(selectedCategory.toLowerCase())
-        );
+  // The Figma shows exactly the first two nearby resources; "See all" opens
+  // the full searchable list.
+  const featuredResources = nearbyResources.slice(0, 2);
 
   return (
     <View style={sharedStyles.tabScreen}>
       <View style={sharedStyles.centeredHeader}>
         <View style={sharedStyles.headerSpacer} />
-        <Text style={sharedStyles.centeredHeaderTitle}>Resources</Text>
+        <Text style={sharedStyles.centeredHeaderTitle}>Government Assistance</Text>
         <AvatarButton imageUri={app.profile.profileImageUri} onPress={() => nav.push('account')} />
       </View>
 
       <ScrollView contentContainerStyle={styles.resourceContent} showsVerticalScrollIndicator={false}>
-        <Text style={styles.pageSectionTitle}>Government Assistance</Text>
         <View style={styles.sectionInset}>
           <GradientActionRow
             icon="doc"
             gradient="benefits"
             title="Start Your Benefits Application"
-            subtitle="Penny pre-fills SNAP, Medicaid, WIC & more — you review before submitting"
+            subtitle="Penny pre-fills SNAP, Medicaid, WIC & more - you review before submitting"
             onPress={() => nav.push('government')}
           />
         </View>
 
         <View style={styles.pennyNote}>
-          <Text style={styles.pennyNoteEmoji}>🐝</Text>
+          <Image source={pennySource} style={styles.pennyNoteImage} resizeMode="contain" />
           <Text style={styles.pennyNoteText}>
             We&apos;ll guide you through your application step by step. Before anything is printed or
             sent, you&apos;ll have the chance to review every detail and make sure it&apos;s ready to go
@@ -62,47 +59,31 @@ export function ResourcesScreen({ nav }: { nav: Navigation }) {
           </Text>
         </View>
 
-        {/* Category filtering is newer than the reference build; kept, restyled. */}
-        <HorizontalScroller>
-          {categories.map((category) => (
-            <Chip
-              key={category}
-              label={category}
-              selected={selectedCategory === category}
-              onPress={() => setSelectedCategory(category)}
-            />
-          ))}
-        </HorizontalScroller>
-
         <SectionHeader title="Resources Near You" onPress={() => nav.push('resourceSearch')} />
-        {filteredResources.length > 0 ? (
-          filteredResources.map((resource) => (
-            <ResourceRow
-              key={resource.id}
-              resource={resource}
-              onPress={() => nav.push('resourceDetails', { resource })}
-            />
-          ))
-        ) : (
-          <EmptyState title="No resources match this filter." icon="map" />
-        )}
+        {featuredResources.map((resource) => (
+          <ResourceRow
+            key={resource.id}
+            resource={resource}
+            onPress={() => nav.push('resourceDetails', { resource })}
+          />
+        ))}
 
         <Text style={sharedStyles.homeSectionTitle}>More Coming Soon</Text>
         <View style={styles.comingSoonList}>
           <ComingSoonRow
-            icon="play"
+            icon="wallet"
             title="How-To Video Guides"
             subtitle="Step-by-step guides for SNAP, housing & more"
             onPress={() => nav.push('resourcesHub')}
           />
           <ComingSoonRow
-            icon="cart"
+            icon="tag"
             title="Deals & Discounts"
             subtitle="Curated EBT-friendly deals near you"
             onPress={() => nav.push('deals')}
           />
           <ComingSoonRow
-            icon="shield"
+            icon="heart"
             title="Emergency Help"
             subtitle="Urgent housing, food, and crisis resources"
             onPress={() => nav.push('resourceSearch')}
@@ -150,41 +131,360 @@ export function ResourceDetailsScreen({ nav, resource }: { nav: Navigation; reso
   );
 }
 
+/**
+ * Government Assistance — the Figma program-selection screen (copy verbatim).
+ *
+ * Privacy banner, three-step "How it works", eight selectable programs, the
+ * "Penny will never invent answers" safeguard, and a CTA that stays disabled
+ * until at least one program is picked. The CTA opens the benefits
+ * questionnaire; nothing is ever submitted without the user's review.
+ */
 export function GovernmentScreen({ nav }: { nav: Navigation }) {
   const app = useAppState();
+  const [selected, setSelected] = useState<string[]>([]);
+
+  const toggle = (id: string) =>
+    setSelected((current) =>
+      current.includes(id) ? current.filter((item) => item !== id) : [...current, id],
+    );
+
+  const canContinue = selected.length > 0;
+
+  function continueToQuestionnaire() {
+    // Persist the selection so the questionnaire (and later the benefits
+    // submission flow) knows which programs the user picked.
+    app.updateGovernmentProfile({ selectedPrograms: selected });
+    nav.push('benefitsQuestionnaire', { programs: selected });
+  }
 
   return (
-    <ScrollScreen>
-      <AppHeader title="Government Assistance" onBack={nav.back} />
-      <View style={sharedStyles.formScreen}>
-        <Card style={styles.benefitsBanner}>
-          <Text style={styles.infoTitleStrong}>Benefits profile</Text>
-          <Text style={styles.infoSubtitleText}>
-            {app.governmentProfile.completed ? 'Profile ready for review before any application.' : 'Complete a profile to prefill application drafts.'}
+    <SafeAreaView style={govStyles.safeArea} edges={['top', 'bottom']}>
+      <View style={govStyles.backRow}>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Back"
+          onPress={nav.back}
+          style={({ pressed }) => [govStyles.backButton, pressed && sharedStyles.pressed]}>
+          <HiveIcon name="back" size={22} color={HiveColors.text} />
+        </Pressable>
+      </View>
+
+      <ScrollView
+        contentContainerStyle={govStyles.content}
+        showsVerticalScrollIndicator={false}>
+        <Text style={govStyles.title}>Government Assistance</Text>
+        <Text style={govStyles.subtitle}>Apply for multiple benefits with one questionnaire.</Text>
+
+        <View style={govStyles.privacyBanner}>
+          <View style={govStyles.privacyIcon}>
+            <HiveIcon name="xcircle" size={18} color={HiveColors.greenDark} />
+          </View>
+          <Text style={govStyles.privacyText}>
+            Your information stays private and is never submitted without your review.
           </Text>
-          <AppButton title={app.governmentProfile.completed ? 'Update Profile' : 'Start Questionnaire'} onPress={() => nav.push('benefitsQuestionnaire')} />
-        </Card>
-      </View>
-      <View style={sharedStyles.listStack}>
-        {benefitPrograms.map((program) => (
-          <Card key={program.id} onPress={() => nav.push('programApplication', { program })}>
-            <View style={rowStyles.spread}>
-              <View style={sharedStyles.flexOne}>
-                <Text style={sharedStyles.cardTitle}>{program.name}</Text>
-                <Text style={sharedStyles.miniMuted}>{program.agency}</Text>
-                <Text style={sharedStyles.cardBody}>{program.description}</Text>
+        </View>
+
+        <Text style={govStyles.sectionTitle}>How it works</Text>
+        <View style={govStyles.stepsRow}>
+          {HOW_IT_WORKS.map((step) => (
+            <View key={step.number} style={govStyles.step}>
+              <View style={govStyles.stepNumber}>
+                <Text style={govStyles.stepNumberText}>{step.number}</Text>
               </View>
-              <HiveIcon name="next" size={14} color={HiveColors.textSecondary} />
+              <Text style={govStyles.stepCaption}>{step.caption}</Text>
             </View>
-          </Card>
-        ))}
+          ))}
+        </View>
+
+        <Text style={govStyles.sectionTitle}>Select programs to apply for</Text>
+        <Text style={govStyles.sectionSubtitle}>
+          Choose one or more - you&apos;ll fill out a single questionnaire that covers all of them.
+        </Text>
+
+        <View style={govStyles.programList}>
+          {BENEFIT_PROGRAMS.map((program) => {
+            const isSelected = selected.includes(program.id);
+            return (
+              <Pressable
+                key={program.id}
+                accessibilityRole="checkbox"
+                accessibilityState={{ checked: isSelected }}
+                accessibilityLabel={program.name}
+                onPress={() => toggle(program.id)}
+                style={({ pressed }) => [
+                  govStyles.programCard,
+                  isSelected && govStyles.programCardSelected,
+                  pressed && sharedStyles.pressed,
+                ]}>
+                <View
+                  style={[
+                    govStyles.radio,
+                    isSelected && govStyles.radioSelected,
+                  ]}>
+                  {isSelected ? (
+                    <HiveIcon name="check" size={12} color={HiveColors.white} />
+                  ) : null}
+                </View>
+                <View style={[govStyles.programIcon, { backgroundColor: program.tile }]}>
+                  <HiveIcon name={program.icon} size={26} color={program.accent} />
+                </View>
+                <View style={govStyles.programText}>
+                  <View style={govStyles.programNameRow}>
+                    <Text style={govStyles.programName}>{program.name}</Text>
+                    <View style={[govStyles.pill, { backgroundColor: program.tile }]}>
+                      <Text style={[govStyles.pillText, { color: program.accent }]}>
+                        {program.category}
+                      </Text>
+                    </View>
+                  </View>
+                  <Text style={govStyles.programDescription}>{program.description}</Text>
+                </View>
+              </Pressable>
+            );
+          })}
+        </View>
+
+        <View style={govStyles.safeguard}>
+          <View style={govStyles.safeguardIcon}>
+            <HiveIcon name="penny" size={22} color={HiveColors.greenDark} />
+          </View>
+          <Text style={govStyles.safeguardText}>
+            Penny will never invent answers. Every detail is reviewed by you before anything is
+            submitted.
+          </Text>
+        </View>
+      </ScrollView>
+
+      <View style={govStyles.ctaBar}>
+        <AppButton
+          title={canContinue ? 'Continue' : 'Select at least one program above'}
+          disabled={!canContinue}
+          onPress={continueToQuestionnaire}
+        />
       </View>
-    </ScrollScreen>
+    </SafeAreaView>
   );
 }
 
-export function BenefitsQuestionnaireScreen({ nav }: { nav: Navigation }) {
+const HOW_IT_WORKS = [
+  { number: '1', caption: 'Select the benefits you want to apply for' },
+  { number: '2', caption: 'Complete one universal questionnaire' },
+  { number: '3', caption: 'Review your auto-filled applications & download' },
+];
+
+interface BenefitProgramOption {
+  id: string;
+  name: string;
+  category: string;
+  description: string;
+  icon: HiveIconName;
+  /** Tinted tile/pill background. */
+  tile: string;
+  /** Glyph + pill text color. */
+  accent: string;
+}
+
+const BENEFIT_PROGRAMS: BenefitProgramOption[] = [
+  {
+    id: 'snap',
+    name: 'SNAP',
+    category: 'Food Assistance',
+    description: 'Helps eligible households pay for groceries.',
+    icon: 'cart',
+    tile: '#E6F6EC',
+    accent: '#2E9E4F',
+  },
+  {
+    id: 'wic',
+    name: 'WIC',
+    category: 'Women, Infants & Children',
+    description:
+      'Provides food and nutrition support for pregnant women, infants, and young children.',
+    icon: 'users',
+    tile: '#FDECEA',
+    accent: '#C0564F',
+  },
+  {
+    id: 'medicaid',
+    name: 'Medicaid',
+    category: 'Health Coverage',
+    description: 'Provides health coverage for eligible low-income individuals and families.',
+    icon: 'ambulance',
+    tile: '#E7F0FE',
+    accent: '#2F7CF6',
+  },
+  {
+    id: 'liheap',
+    name: 'LIHEAP',
+    category: 'Utility Assistance',
+    description: 'Helps eligible households pay home energy costs.',
+    icon: 'hexagon',
+    tile: '#F7F0E1',
+    accent: '#A07D2C',
+  },
+  {
+    id: 'tanf',
+    name: 'TANF',
+    category: 'Cash Assistance',
+    description: 'Provides temporary cash assistance for eligible families.',
+    icon: 'dollar',
+    tile: '#F1EAFE',
+    accent: '#7C3AED',
+  },
+  {
+    id: 'va_disability',
+    name: 'VA Disability',
+    category: 'Veterans Affairs',
+    description:
+      'Monthly tax-free payments for veterans with service-connected disabilities or conditions.',
+    icon: 'medal',
+    tile: '#E8EDF7',
+    accent: '#3B4E8C',
+  },
+  {
+    id: 'va_pension',
+    name: 'VA Pension',
+    category: 'Veterans Affairs',
+    description: 'Provides financial support to low-income wartime veterans and surviving spouses.',
+    icon: 'wallet',
+    tile: '#E8EDF7',
+    accent: '#3B4E8C',
+  },
+  {
+    id: 'va_health_care',
+    name: 'VA Health Care',
+    category: 'Veterans Affairs',
+    description:
+      'Provides comprehensive medical care, mental health services, and prescriptions through VA facilities.',
+    icon: 'heart',
+    tile: '#E8EDF7',
+    accent: '#3B4E8C',
+  },
+];
+
+const govStyles = StyleSheet.create({
+  safeArea: { flex: 1, backgroundColor: HiveColors.white },
+  backRow: { paddingHorizontal: 12, paddingTop: 4 },
+  backButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  content: { paddingHorizontal: 20, paddingBottom: 16, gap: 16 },
+  title: { color: HiveColors.text, fontSize: 30, fontWeight: '800', letterSpacing: -0.5 },
+  subtitle: { color: HiveColors.textSecondary, fontSize: 16, lineHeight: 22, marginTop: -10 },
+  privacyBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    backgroundColor: '#E9F7EF',
+    borderRadius: 16,
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+  },
+  privacyIcon: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    borderWidth: 2,
+    borderColor: HiveColors.greenDark,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  privacyText: { flex: 1, color: '#1E5C38', fontSize: 14, fontWeight: '600', lineHeight: 20 },
+  sectionTitle: { color: HiveColors.text, fontSize: 20, fontWeight: '800', marginTop: 4 },
+  sectionSubtitle: { color: HiveColors.textSecondary, fontSize: 15, lineHeight: 21, marginTop: -10 },
+  stepsRow: { flexDirection: 'row', gap: 8 },
+  step: { flex: 1, alignItems: 'center', gap: 8 },
+  stepNumber: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: '#1E5C38',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  stepNumberText: { color: HiveColors.white, fontSize: 18, fontWeight: '800' },
+  stepCaption: {
+    color: HiveColors.text,
+    fontSize: 12.5,
+    lineHeight: 17,
+    textAlign: 'center',
+    fontWeight: '500',
+  },
+  programList: { gap: 12 },
+  programCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    backgroundColor: HiveColors.white,
+    borderRadius: 20,
+    borderWidth: 1.5,
+    borderColor: HiveColors.border,
+    paddingVertical: 14,
+    paddingHorizontal: 14,
+  },
+  programCardSelected: { borderColor: HiveColors.green },
+  radio: {
+    width: 26,
+    height: 26,
+    borderRadius: 13,
+    borderWidth: 2,
+    borderColor: HiveColors.border,
+    backgroundColor: HiveColors.white,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  radioSelected: { borderColor: HiveColors.greenDark, backgroundColor: HiveColors.greenDark },
+  programIcon: {
+    width: 56,
+    height: 56,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  programText: { flex: 1, gap: 4 },
+  programNameRow: { flexDirection: 'row', alignItems: 'center', gap: 8, flexWrap: 'wrap' },
+  programName: { color: HiveColors.text, fontSize: 17, fontWeight: '800' },
+  pill: { borderRadius: Radii.pill, paddingVertical: 4, paddingHorizontal: 10 },
+  pillText: { fontSize: 12, fontWeight: '700' },
+  programDescription: { color: HiveColors.textSecondary, fontSize: 14, lineHeight: 20 },
+  safeguard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    backgroundColor: '#E9F7EF',
+    borderRadius: 16,
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+  },
+  safeguardIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: HiveColors.white,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  safeguardText: { flex: 1, color: '#1E5C38', fontSize: 14, fontWeight: '600', lineHeight: 20 },
+  ctaBar: {
+    paddingHorizontal: 20,
+    paddingTop: 12,
+    paddingBottom: 8,
+    backgroundColor: HiveColors.white,
+    borderTopWidth: 1,
+    borderTopColor: HiveColors.border,
+  },
+});
+
+export function BenefitsQuestionnaireScreen({ nav, programs }: { nav: Navigation; programs?: string[] }) {
   const app = useAppState();
+  const programIds = programs ?? app.governmentProfile.selectedPrograms;
+  const programNames = programIds
+    .map((id) => BENEFIT_PROGRAMS.find((program) => program.id === id)?.name)
+    .filter((name): name is string => Boolean(name));
   const [firstName, setFirstName] = useState(app.formName.firstName);
   const [lastName, setLastName] = useState(app.formName.lastName);
   const [stateName, setStateName] = useState(app.governmentProfile.state || 'California');
@@ -213,6 +513,9 @@ export function BenefitsQuestionnaireScreen({ nav }: { nav: Navigation }) {
     <ScrollScreen keyboard>
       <AppHeader title="Benefits Questionnaire" onBack={nav.back} />
       <View style={sharedStyles.formScreen}>
+        {programNames.length > 0 ? (
+          <Text style={uiText.muted}>Applying for: {programNames.join(', ')}</Text>
+        ) : null}
         <AppTextField label="First name" value={firstName} onChangeText={setFirstName} />
         <AppTextField label="Last name" value={lastName} onChangeText={setLastName} />
         <AppTextField label="State" value={stateName} onChangeText={setStateName} />
@@ -365,7 +668,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     marginBottom: 20,
   },
-  pennyNoteEmoji: { fontSize: 20 },
+  pennyNoteImage: { width: 34, height: 34, borderRadius: 17 },
   pennyNoteText: { flex: 1, color: HiveColors.textSecondary, fontSize: 14, lineHeight: 20 },
   resourceCard: {
     marginHorizontal: 20,

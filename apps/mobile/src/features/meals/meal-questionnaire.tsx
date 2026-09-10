@@ -1,5 +1,5 @@
 /**
- * The iOS meal-planning questionnaire wizard: 5 steps, 14 questions.
+ * The meal-planning questionnaire wizard: 5 steps, 15 questions.
  *
  * Answers live in `IosQuestionnaireAnswers` while the user moves through the
  * steps and are folded into `PlanRequest` (via `applyIosAnswers`) on every

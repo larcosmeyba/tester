@@ -1,17 +1,16 @@
 /**
- * Questionnaire control primitives, styled after the iOS screenshots.
+ * Questionnaire control primitives, styled after the Figma screens.
  *
  * - StepperControl: the green − / + circle stepper (Q1, Q2, Q12).
  * - OptionGrid: the two-column chip grid with radio circles (Q3, Q4, Q6, Q7, Q8, Q13).
- * - RadioRows: full-width single-select rows (Q9, Q14).
- * - PlaceholderQuestion: the "AWAITING iOS SCREENSHOT" block for questions
- *   whose real copy was never captured (Q5, Q10, Q11, Q9's third option).
+ * - RadioRows: full-width single-select rows (Q9, Q10, Q11, Q14, Q15).
+ * - TextInputControl: the free-text answer box (Q5).
  */
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { HiveIcon } from '@/components/hive-ui';
 import { HiveColors, Radii } from '@/constants/theme';
-import { PLACEHOLDER_COPY, type QuestionOption } from '@/features/meals/questionnaire-steps';
+import { type QuestionOption } from '@/features/meals/questionnaire-steps';
 
 export function QuestionLabel({ number, text }: { number: number; text: string }) {
   return (
@@ -170,7 +169,7 @@ function RadioRow({
   );
 }
 
-/** Single-select rows (Q9, Q14). Pending-copy options render disabled. */
+/** Single-select rows (Q9, Q10, Q11, Q14, Q15). */
 export function RadioRows({
   options,
   selected,
@@ -182,24 +181,43 @@ export function RadioRows({
 }) {
   return (
     <View style={styles.rows}>
-      {options.map((option) =>
-        option.pendingCopy ? (
-          <View
-            key={option.value}
-            style={[styles.radioRow, styles.radioRowPending]}
-            accessibilityLabel={PLACEHOLDER_COPY}>
-            <Text style={styles.pendingLabel}>{option.label}</Text>
-          </View>
-        ) : (
-          <RadioRow
-            key={option.value}
-            label={option.label}
-            selected={selected === option.value}
-            onPress={() => onSelect(option.value)}
-          />
-        ),
-      )}
+      {options.map((option) => (
+        <RadioRow
+          key={option.value}
+          label={option.label}
+          selected={selected === option.value}
+          onPress={() => onSelect(option.value)}
+        />
+      ))}
     </View>
+  );
+}
+
+/** Free-text answer box (Q5). */
+export function TextInputControl({
+  value,
+  placeholder,
+  onChange,
+  accessibilityLabel,
+}: {
+  value: string;
+  placeholder?: string;
+  onChange: (value: string) => void;
+  accessibilityLabel: string;
+}) {
+  return (
+    <TextInput
+      style={styles.textInput}
+      value={value}
+      placeholder={placeholder}
+      placeholderTextColor={HiveColors.textSecondary}
+      onChangeText={onChange}
+      multiline
+      numberOfLines={3}
+      textAlignVertical="top"
+      accessibilityLabel={accessibilityLabel}
+      returnKeyType="done"
+    />
   );
 }
 
@@ -208,19 +226,6 @@ export function WarningNote({ text }: { text: string }) {
     <View style={styles.warning}>
       <HiveIcon name="bell" size={16} color={HiveColors.warningText} />
       <Text style={styles.warningText}>{text}</Text>
-    </View>
-  );
-}
-
-/**
- * Placeholder for a question whose real iOS copy was never captured.
- * Deliberately unmissable: this must not ship.
- */
-export function PlaceholderQuestion({ number }: { number: number }) {
-  return (
-    <View style={styles.placeholder} accessibilityLabel={`Question ${number}: ${PLACEHOLDER_COPY}`}>
-      <Text style={styles.placeholderNumber}>Question {number}</Text>
-      <Text style={styles.placeholderCopy}>{PLACEHOLDER_COPY}</Text>
     </View>
   );
 }
@@ -348,17 +353,17 @@ const styles = StyleSheet.create({
     color: HiveColors.greenDark,
     fontWeight: '700',
   },
-  radioRowPending: {
-    borderStyle: 'dashed',
-    borderColor: HiveColors.warning,
-    opacity: 0.85,
-  },
-  pendingLabel: {
-    flex: 1,
-    color: HiveColors.warningText,
-    fontSize: 14,
-    fontWeight: '600',
-    lineHeight: 19,
+  textInput: {
+    backgroundColor: HiveColors.card,
+    borderRadius: Radii.xl,
+    borderWidth: 2,
+    borderColor: 'transparent',
+    paddingVertical: 16,
+    paddingHorizontal: 18,
+    minHeight: 96,
+    color: HiveColors.text,
+    fontSize: 16,
+    lineHeight: 22,
   },
   warning: {
     flexDirection: 'row',
@@ -370,25 +375,5 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     lineHeight: 20,
-  },
-  placeholder: {
-    borderWidth: 2,
-    borderStyle: 'dashed',
-    borderColor: HiveColors.warning,
-    backgroundColor: HiveColors.warningBg,
-    borderRadius: Radii.lg,
-    padding: 16,
-    gap: 6,
-  },
-  placeholderNumber: {
-    color: HiveColors.warningText,
-    fontSize: 15,
-    fontWeight: '800',
-  },
-  placeholderCopy: {
-    color: HiveColors.warningText,
-    fontSize: 13,
-    fontWeight: '600',
-    lineHeight: 18,
   },
 });

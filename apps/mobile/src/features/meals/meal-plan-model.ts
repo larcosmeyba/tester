@@ -26,7 +26,7 @@ import {
 
 const maybe = <T extends z.ZodTypeAny>(schema: T) => schema.nullish().transform((v) => v ?? null);
 
-export const QUESTIONNAIRE_VERSION = '1.0';
+export const QUESTIONNAIRE_VERSION = '1.1';
 
 /** Brief: the default plan is 5 days. Doc 04 §2 allows 1–7. */
 export const DEFAULT_PLAN_DAYS = 5;
@@ -37,10 +37,18 @@ export const MAX_HOUSEHOLD_SIZE = 8;
 
 /**
  * Weekly grocery budget ranges from the iOS questionnaire's question 14
- * ("About how much would you like to spend on groceries per week?").
- * Labels are the exact iOS copy.
+/**
+ * Q14 budget ranges ("About how much would you like to spend on groceries per
+ * week?"). Open-ended ranges ($250+, No Preference) carry no cap.
+ * Labels are the exact Figma copy.
  */
-export const BUDGET_RANGE_KEYS = ['under_75', '75_150', '150_250'] as const;
+export const BUDGET_RANGE_KEYS = [
+  'under_75',
+  '75_150',
+  '150_250',
+  '250_plus',
+  'no_preference',
+] as const;
 export type BudgetRangeKey = (typeof BUDGET_RANGE_KEYS)[number];
 
 export interface BudgetRangeBounds {
@@ -53,8 +61,10 @@ export interface BudgetRangeBounds {
 
 export const BUDGET_RANGE_BOUNDS: Record<BudgetRangeKey, BudgetRangeBounds> = {
   under_75: { key: 'under_75', label: 'Under $75', minCents: 0, maxCents: 7500 },
-  '75_150': { key: '75_150', label: '$75–$150', minCents: 7500, maxCents: 15000 },
-  '150_250': { key: '150_250', label: '$150–$250', minCents: 15000, maxCents: 25000 },
+  '75_150': { key: '75_150', label: '$75-$150', minCents: 7500, maxCents: 15000 },
+  '150_250': { key: '150_250', label: '$150-$250', minCents: 15000, maxCents: 25000 },
+  '250_plus': { key: '250_plus', label: '$250+', minCents: 25000, maxCents: null },
+  no_preference: { key: 'no_preference', label: 'No Preference', minCents: 0, maxCents: null },
 };
 
 export const budgetRangeBounds = (key: BudgetRangeKey): BudgetRangeBounds => BUDGET_RANGE_BOUNDS[key];
@@ -157,12 +167,20 @@ export interface PlanRequest {
   healthConsiderations: string[];
   /** Q7 — plan goals, stored as stable value keys. */
   planGoals: string[];
-  /** Q9 — spice preference: 'mild' | 'medium' | null. */
+  /** Q9 — spice preference: 'mild' | 'medium' | 'hot' | null. */
   spiceLevel: string | null;
+  /** Q10 — available cooking time. */
+  cookTime: string | null;
+  /** Q11 — cooking confidence. */
+  cookingConfidence: string | null;
+  /** Q5 — free-text foods to exclude. */
+  dislikedFoods: string;
   /** Q12 — dinners planned per week. */
   dinnersPerWeek: number;
   /** Q14 — weekly grocery budget range. */
   budgetRange: BudgetRangeKey | null;
+  /** Q15 — grocery shopping preference. */
+  shoppingPreference: string | null;
 }
 
 /** A fresh questionnaire with the defaults Doc 04 specifies. */
@@ -188,8 +206,12 @@ export const createEmptyPlanRequest = (): PlanRequest => ({
   healthConsiderations: [],
   planGoals: [],
   spiceLevel: null,
+  cookTime: null,
+  cookingConfidence: null,
+  dislikedFoods: '',
   dinnersPerWeek: 5,
   budgetRange: null,
+  shoppingPreference: null,
 });
 
 /** The exact snake_case body `POST /plans` expects (Doc 04). */
@@ -218,8 +240,16 @@ export interface PlanRequestPayload {
   health_considerations: string[];
   plan_goals: string[];
   spice_level: string | null;
+  /** Q10 — available cooking time (raw answer value). */
+  cook_time: string | null;
+  /** Q11 — cooking confidence (raw answer value). */
+  cooking_confidence: string | null;
+  /** Q5 — free-text foods to exclude (raw answer value). */
+  disliked_foods: string;
   dinners_per_week: number;
   budget_range: string | null;
+  /** Q15 — grocery shopping preference (raw answer value). */
+  shopping_preference: string | null;
 }
 
 export const toPlanRequestPayload = (
@@ -278,8 +308,12 @@ export const toPlanRequestPayload = (
   health_considerations: request.healthConsiderations,
   plan_goals: request.planGoals,
   spice_level: request.spiceLevel,
+  cook_time: request.cookTime,
+  cooking_confidence: request.cookingConfidence,
+  disliked_foods: request.dislikedFoods,
   dinners_per_week: request.dinnersPerWeek,
   budget_range: request.budgetRange,
+  shopping_preference: request.shoppingPreference,
 });
 
 // ---------------------------------------------------------------------------

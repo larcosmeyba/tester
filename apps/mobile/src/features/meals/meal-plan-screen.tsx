@@ -146,7 +146,7 @@ export function MealPlanScreen() {
               </>
             ) : (
               <EmptyState
-                icon="fork"
+                icon="fork-mealplan"
                 title="No meals planned for this day"
                 actionLabel={plan ? undefined : 'Build a Meal Plan'}
                 onAction={plan ? undefined : () => router.push('/meals/questionnaire')}
@@ -157,7 +157,7 @@ export function MealPlanScreen() {
 
             <Text style={styles.sectionTitle}>Deals for you this week</Text>
             <ComingSoonCard
-              icon="cart"
+              icon="cart-mealplan"
               title="Coming Soon"
               subtitle="Personalized deals based on your meal plan — launching soon!"
               style={styles.block}

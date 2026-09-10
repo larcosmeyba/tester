@@ -1,15 +1,19 @@
 /**
- * Build Your Meal Plan — the three-option entry screen (iOS copy verbatim).
+ * Build Your Meal Plan — the three-option entry screen.
+ *
+ * Card copy is transcribed from the Figma (BUild_Your_Meal_Plan_Screen.svg).
+ * Note: an earlier pass used different card copy supplied in chat; the Figma
+ * render is the authoritative source and now wins — flagged for Marcos.
  *
  * - Import from Social Media → paste video links, transcribed into recipes.
- * - Recipe Database → browse budget-friendly, EBT-approved recipes.
- * - AI Meal Generator → the questionnaire; Penny builds the full weekly plan.
+ * - Recipe Database → budget-friendly, EBT-approved recipes.
+ * - AI Meal Generator → a few quick questions; Penny builds the weekly plan.
  */
 import { useRouter } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { HiveIcon, ScrollScreen, uiText, type HiveIconName } from '@/components/hive-ui';
-import { Radii } from '@/constants/theme';
+import { HiveColors, Radii } from '@/constants/theme';
 
 interface BuildOption {
   key: string;
@@ -27,8 +31,8 @@ const OPTIONS: BuildOption[] = [
     key: 'social',
     title: 'Import from Social Media',
     description:
-      "Paste a TikTok, Instagram Reel, or YouTube link — we'll transcribe it into a recipe.",
-    icon: 'play',
+      'Paste a TikTok, Instagram Reel, or YouTube link — we\u2019ll transcribe it into a recipe.',
+    icon: 'link',
     background: '#2F7CF6',
     iconBackground: 'rgba(255,255,255,0.18)',
     route: '/meals/import',
@@ -37,7 +41,7 @@ const OPTIONS: BuildOption[] = [
     key: 'database',
     title: 'Recipe Database',
     description: 'Browse our collection of budget-friendly, EBT-approved recipes.',
-    icon: 'doc',
+    icon: 'xcircle',
     background: '#2E9E4F',
     iconBackground: 'rgba(255,255,255,0.18)',
     route: '/meals/database',
@@ -47,7 +51,7 @@ const OPTIONS: BuildOption[] = [
     title: 'AI Meal Generator',
     description:
       'Answer a few quick questions and let Penny build your full personalized weekly plan.',
-    icon: 'penny',
+    icon: 'sparkle',
     badge: 'Recommended',
     background: '#6D28D9',
     iconBackground: 'rgba(255,255,255,0.18)',
@@ -100,7 +104,6 @@ export function BuildMealsScreen() {
         </View>
 
         <View style={styles.footnote}>
-          <Text style={styles.footnoteBee}>🐝</Text>
           <Text style={styles.footnoteText}>
             All options create a full 7-day plan. You can swap individual meals afterward.
           </Text>
@@ -170,17 +173,10 @@ const styles = StyleSheet.create({
     lineHeight: 21,
   },
   footnote: {
-    flexDirection: 'row',
-    gap: 10,
     marginTop: 12,
-    alignItems: 'flex-start',
-  },
-  footnoteBee: {
-    fontSize: 20,
   },
   footnoteText: {
-    flex: 1,
-    color: '#6B7280',
+    color: HiveColors.text,
     fontSize: 15,
     lineHeight: 22,
   },

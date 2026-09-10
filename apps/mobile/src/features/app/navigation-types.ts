@@ -24,7 +24,6 @@ export type ScreenName =
   | 'editHandle'
   | 'changeEmail'
   | 'deleteAccount'
-  | 'settings'
   | 'notifications'
   | 'budgetSettings'
   | 'feedback'

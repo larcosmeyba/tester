@@ -19,6 +19,7 @@ import type { ReactElement, ReactNode } from 'react';
 import { View } from 'react-native';
 
 import { TabIcon } from '../tab-icons';
+import { FigmaIcon } from '../figma-icons';
 
 const GRID = 24;
 const STROKE = 2.2;
@@ -158,28 +159,9 @@ function BellGlyph({ color }: HiveGlyphProps): ReactElement {
   );
 }
 
-// FIGMA-DROPIN
+// Final Figma artwork — Marcos Leyba, 2026-09-10.
 function UserGlyph({ color }: HiveGlyphProps): ReactElement {
-  return (
-    <Grid>
-      <Ring cx={12} cy={7.5} r={4} color={color} />
-      {/* Shoulders */}
-      <View
-        style={{
-          position: 'absolute',
-          left: 5,
-          top: 14,
-          width: 14,
-          height: 8,
-          borderWidth: STROKE,
-          borderBottomWidth: 0,
-          borderColor: color,
-          borderTopLeftRadius: 7,
-          borderTopRightRadius: 7,
-        }}
-      />
-    </Grid>
-  );
+  return <FigmaIcon name="user" size={GRID} color={color} />;
 }
 
 // FIGMA-DROPIN
@@ -260,131 +242,44 @@ function CloseGlyph({ color }: HiveGlyphProps): ReactElement {
 /* Home / feature cards                                               */
 /* ------------------------------------------------------------------ */
 
-// FIGMA-DROPIN
+// Final Figma artwork — Marcos Leyba, 2026-09-10.
 function CardGlyph({ color }: HiveGlyphProps): ReactElement {
-  return (
-    <Grid>
-      <View
-        style={{
-          position: 'absolute',
-          left: 3,
-          top: 6,
-          width: 18,
-          height: 13,
-          borderRadius: 3,
-          borderWidth: STROKE,
-          borderColor: color,
-        }}
-      />
-      {/* Stripe */}
-      <Bar cx={12} cy={10} len={13.5} sw={2} color={color} />
-    </Grid>
-  );
+  return <FigmaIcon name="card" size={GRID} color={color} />;
 }
 
-// FIGMA-DROPIN
+// Final Figma artwork — Marcos Leyba, 2026-09-10.
 function DocGlyph({ color }: HiveGlyphProps): ReactElement {
-  return (
-    <Grid>
-      <View
-        style={{
-          position: 'absolute',
-          left: 6.5,
-          top: 3,
-          width: 11,
-          height: 18,
-          borderRadius: 2,
-          borderWidth: STROKE,
-          borderColor: color,
-        }}
-      />
-      {/* Text lines */}
-      <Bar cx={12} cy={8.5} len={6} sw={2} color={color} />
-      <Bar cx={12} cy={12} len={6} sw={2} color={color} />
-      <Bar cx={11} cy={15.5} len={4} sw={2} color={color} />
-    </Grid>
-  );
+  return <FigmaIcon name="doc" size={GRID} color={color} />;
 }
 
-// FIGMA-DROPIN
+// Final Figma artwork — Marcos Leyba, 2026-09-10.
 function ForkGlyph({ color }: HiveGlyphProps): ReactElement {
-  return (
-    <Grid>
-      {/* Fork: two tines, crossbar, handle */}
-      <Bar cx={6.2} cy={7.5} len={6} angle={90} color={color} />
-      <Bar cx={9.8} cy={7.5} len={6} angle={90} color={color} />
-      <Bar cx={8} cy={10.75} len={3.6} color={color} />
-      <Bar cx={8} cy={15.5} len={9} angle={90} color={color} />
-      {/* Knife: blade + handle */}
-      <Bar cx={16} cy={7.5} len={7} angle={90} sw={2.8} color={color} />
-      <Bar cx={16} cy={15.5} len={9} angle={90} color={color} />
-    </Grid>
-  );
+  return <FigmaIcon name="fork" size={GRID} color={color} />;
 }
 
-// FIGMA-DROPIN
+// Final artwork: the "Meal Plan for the Week" fork variant.
+function ForkMealplanGlyph({ color }: HiveGlyphProps): ReactElement {
+  return <FigmaIcon name="forkMealplan" size={GRID} color={color} />;
+}
+
+// Final Figma artwork — Marcos Leyba, 2026-09-10.
 function FridgeGlyph({ color }: HiveGlyphProps): ReactElement {
-  return (
-    <Grid>
-      <View
-        style={{
-          position: 'absolute',
-          left: 7.5,
-          top: 3,
-          width: 9,
-          height: 18,
-          borderRadius: 2,
-          borderWidth: STROKE,
-          borderColor: color,
-        }}
-      />
-      {/* Door split */}
-      <Bar cx={12} cy={11} len={8.6} color={color} />
-      {/* Handles */}
-      <Bar cx={14.8} cy={6.5} len={3} angle={90} sw={2} color={color} />
-      <Bar cx={14.8} cy={14.8} len={3} angle={90} sw={2} color={color} />
-    </Grid>
-  );
+  return <FigmaIcon name="fridge" size={GRID} color={color} />;
 }
 
-// FIGMA-DROPIN
+// Final Figma artwork — Marcos Leyba, 2026-09-10.
 function MapPinGlyph({ color }: HiveGlyphProps): ReactElement {
-  return (
-    <Grid>
-      <Ring cx={12} cy={8.5} r={5} color={color} />
-      <Dot cx={12} cy={8.5} r={1.7} color={color} />
-      <Bar cx={10.1} cy={16.25} len={8.4} angle={63.1} color={color} />
-      <Bar cx={13.9} cy={16.25} len={8.4} angle={-63.1} color={color} />
-    </Grid>
-  );
+  return <FigmaIcon name="map" size={GRID} color={color} />;
 }
 
-// FIGMA-DROPIN
+// Final Figma artwork — Marcos Leyba, 2026-09-10.
 function CartGlyph({ color }: HiveGlyphProps): ReactElement {
-  return (
-    <Grid>
-      {/* Handle */}
-      <Bar cx={5} cy={6.5} len={4.2} angle={45} color={color} />
-      {/* Basket */}
-      <View
-        style={{
-          position: 'absolute',
-          left: 6.5,
-          top: 8,
-          width: 12,
-          height: 8,
-          borderWidth: STROKE,
-          borderTopWidth: 0,
-          borderColor: color,
-          borderBottomLeftRadius: 2,
-          borderBottomRightRadius: 2,
-        }}
-      />
-      {/* Wheels */}
-      <Dot cx={9.5} cy={19} r={1.5} color={color} />
-      <Dot cx={15.5} cy={19} r={1.5} color={color} />
-    </Grid>
-  );
+  return <FigmaIcon name="cart" size={GRID} color={color} />;
+}
+
+// Final artwork: the "Coming Soon — Meal Plan for the Week" cart variant.
+function CartMealplanGlyph({ color }: HiveGlyphProps): ReactElement {
+  return <FigmaIcon name="cartMealplan" size={GRID} color={color} />;
 }
 
 /* ------------------------------------------------------------------ */
@@ -781,6 +676,294 @@ function SendGlyph({ color }: HiveGlyphProps): ReactElement {
   );
 }
 
+// FIGMA-DROPIN
+function LeafGlyph({ color }: HiveGlyphProps): ReactElement {
+  return (
+    <Grid>
+      <View
+        style={{
+          position: 'absolute',
+          left: 4,
+          top: 4,
+          width: 16,
+          height: 16,
+          borderWidth: STROKE,
+          borderColor: color,
+          borderTopRightRadius: 16,
+          borderBottomLeftRadius: 16,
+        }}
+      />
+      <Bar cx={12} cy={12} len={13} angle={-45} sw={1.8} color={color} />
+    </Grid>
+  );
+}
+
+// FIGMA-DROPIN
+function DollarGlyph({ color }: HiveGlyphProps): ReactElement {
+  return (
+    <Grid>
+      <Ring cx={12} cy={12} r={8.5} color={color} />
+      <Bar cx={12} cy={12} len={11} angle={90} color={color} />
+      <Bar cx={12} cy={8.4} len={5} color={color} />
+      <Bar cx={12} cy={15.6} len={5} color={color} />
+    </Grid>
+  );
+}
+
+// FIGMA-DROPIN — wallet/billfold for the VA Pension card.
+function WalletGlyph({ color }: HiveGlyphProps): ReactElement {
+  return (
+    <Grid>
+      <View
+        style={{
+          position: 'absolute',
+          left: 4.5,
+          top: 7,
+          width: 15,
+          height: 10.5,
+          borderRadius: 2.5,
+          borderWidth: 2.2,
+          borderColor: color,
+        }}
+      />
+      <View
+        style={{
+          position: 'absolute',
+          left: 13.5,
+          top: 10.5,
+          width: 6,
+          height: 3.5,
+          borderRadius: 1.75,
+          borderWidth: 2.2,
+          borderColor: color,
+          borderLeftWidth: 0,
+        }}
+      />
+    </Grid>
+  );
+}
+
+// FIGMA-DROPIN — pie chart for Spending Reports.
+function PieGlyph({ color }: HiveGlyphProps): ReactElement {
+  return (
+    <Grid>
+      <Ring cx={12} cy={12} r={8.5} color={color} />
+      <Bar cx={12} cy={7.8} len={8.4} angle={90} color={color} />
+      <Bar cx={15} cy={10.2} len={8.4} angle={35} color={color} />
+    </Grid>
+  );
+}
+
+// FIGMA-DROPIN — chain-link mark for social import.
+function LinkGlyph({ color }: HiveGlyphProps): ReactElement {
+  return (
+    <Grid>
+      <Ring cx={9} cy={12} r={4.6} color={color} />
+      <Ring cx={15} cy={12} r={4.6} color={color} />
+    </Grid>
+  );
+}
+
+// FIGMA-DROPIN — circled X as drawn in the Recipe Database card.
+function XCircleGlyph({ color }: HiveGlyphProps): ReactElement {
+  return (
+    <Grid>
+      <Ring cx={12} cy={12} r={8.5} color={color} />
+      <Bar cx={12} cy={12} len={8} angle={45} color={color} />
+      <Bar cx={12} cy={12} len={8} angle={135} color={color} />
+    </Grid>
+  );
+}
+
+// FIGMA-DROPIN — eight-spoke sparkle for the AI Meal Generator card.
+function SparkleGlyph({ color }: HiveGlyphProps): ReactElement {
+  const spokes = [0, 45, 90, 135].map((angle) => ({ angle }));
+  return (
+    <Grid>
+      {spokes.map((spoke, index) => (
+        <Bar key={index} cx={12} cy={12} len={13} angle={spoke.angle} color={color} />
+      ))}
+      <Dot cx={12} cy={12} r={1.8} color={color} />
+    </Grid>
+  );
+}
+
+// FIGMA-DROPIN — five-point star outline for the feedback rating.
+// Ten segments of a regular 5-point star (outer r=8, inner r=3.2, centered 12,12).
+function StarGlyph({ color }: HiveGlyphProps): ReactElement {
+  const segments = [
+    { cx: 12.95, cy: 6.7, len: 5.73, angle: 70.6 },
+    { cx: 16.75, cy: 9.45, len: 5.7, angle: 1 },
+    { cx: 17.3, cy: 11.25, len: 5.78, angle: 142.7 },
+    { cx: 15.85, cy: 15.75, len: 5.76, angle: 72.8 },
+    { cx: 14.35, cy: 16.85, len: 5.74, angle: -144.9 },
+    { cx: 9.65, cy: 16.85, len: 5.74, angle: 144.9 },
+    { cx: 8.15, cy: 15.75, len: 5.76, angle: -72.8 },
+    { cx: 6.7, cy: 11.25, len: 5.78, angle: -142.7 },
+    { cx: 7.25, cy: 9.45, len: 5.7, angle: -1 },
+    { cx: 11.05, cy: 6.7, len: 5.73, angle: -70.6 },
+  ];
+  return (
+    <Grid>
+      {segments.map((segment, index) => (
+        <Bar
+          key={index}
+          cx={segment.cx}
+          cy={segment.cy}
+          len={segment.len}
+          angle={segment.angle}
+          color={color}
+        />
+      ))}
+    </Grid>
+  );
+}
+
+// FIGMA-DROPIN — circled "i" for the About row.
+function InfoGlyph({ color }: HiveGlyphProps): ReactElement {
+  return (
+    <Grid>
+      <Ring cx={12} cy={12} r={8.5} color={color} />
+      <Dot cx={12} cy={8} r={1.6} color={color} />
+      <Bar cx={12} cy={14} len={6} angle={90} color={color} />
+    </Grid>
+  );
+}
+
+// FIGMA-DROPIN — padlock for the locked Premium row.
+function LockGlyph({ color }: HiveGlyphProps): ReactElement {
+  return (
+    <Grid>
+      <View
+        style={{
+          position: 'absolute',
+          left: 7,
+          top: 4.5,
+          width: 10,
+          height: 8,
+          borderWidth: STROKE,
+          borderColor: color,
+          borderTopLeftRadius: 5,
+          borderTopRightRadius: 5,
+          borderBottomWidth: 0,
+        }}
+      />
+      <View
+        style={{
+          position: 'absolute',
+          left: 5,
+          top: 11,
+          width: 14,
+          height: 10,
+          borderWidth: STROKE,
+          borderColor: color,
+          borderRadius: 2.5,
+        }}
+      />
+      <Dot cx={12} cy={15.5} r={1.4} color={color} />
+    </Grid>
+  );
+}
+
+// FIGMA-DROPIN — minus for the household stepper.
+function MinusGlyph({ color }: HiveGlyphProps): ReactElement {
+  return (
+    <Grid>
+      <Bar cx={12} cy={12} len={10} color={color} />
+    </Grid>
+  );
+}
+
+// FIGMA-DROPIN — price-tag mark for Deals & Discounts.
+function TagGlyph({ color }: HiveGlyphProps): ReactElement {
+  return (
+    <Grid>
+      <View
+        style={{
+          position: 'absolute',
+          left: 5,
+          top: 5,
+          width: 14,
+          height: 14,
+          borderWidth: STROKE,
+          borderColor: color,
+          borderRadius: 4,
+          transform: [{ rotate: '45deg' }],
+        }}
+      />
+      <Dot cx={9.5} cy={9.5} r={1.6} color={color} />
+    </Grid>
+  );
+}
+
+// FIGMA-DROPIN — two-person "household" mark for WIC.
+function UsersGlyph({ color }: HiveGlyphProps): ReactElement {
+  return (
+    <Grid>
+      <Dot cx={9} cy={8} r={2.6} color={color} />
+      <Bar cx={9} cy={14.5} len={8} angle={90} color={color} />
+      <Dot cx={16} cy={9.5} r={2.2} color={color} />
+      <Bar cx={16} cy={15} len={6.6} angle={90} color={color} />
+    </Grid>
+  );
+}
+
+// FIGMA-DROPIN — side-view ambulance for Medicaid.
+function AmbulanceGlyph({ color }: HiveGlyphProps): ReactElement {
+  return (
+    <Grid>
+      <View
+        style={{
+          position: 'absolute',
+          left: 2.5,
+          top: 7,
+          width: 15,
+          height: 9,
+          borderWidth: STROKE,
+          borderColor: color,
+          borderRadius: 2.5,
+        }}
+      />
+      <Bar cx={7.5} cy={11.5} len={4.5} color={color} />
+      <Bar cx={7.5} cy={11.5} len={4.5} angle={90} color={color} />
+      <Dot cx={6.5} cy={18} r={2} color={color} />
+      <Dot cx={14.5} cy={18} r={2} color={color} />
+    </Grid>
+  );
+}
+
+// FIGMA-DROPIN — hexagon outline for LIHEAP.
+function HexagonGlyph({ color }: HiveGlyphProps): ReactElement {
+  const r = 7.5;
+  const edges = [0, 1, 2, 3, 4, 5].map((i) => {
+    const mid = ((i * 60 + 30) * Math.PI) / 180;
+    return {
+      cx: 12 + r * 0.866 * Math.cos(mid),
+      cy: 12 + r * 0.866 * Math.sin(mid),
+      angle: i * 60 - 60,
+    };
+  });
+  return (
+    <Grid>
+      {edges.map((edge, index) => (
+        <Bar key={index} cx={edge.cx} cy={edge.cy} len={r} angle={edge.angle} color={color} />
+      ))}
+    </Grid>
+  );
+}
+
+// FIGMA-DROPIN — service medal for VA Disability.
+function MedalGlyph({ color }: HiveGlyphProps): ReactElement {
+  return (
+    <Grid>
+      <Bar cx={10} cy={6.5} len={6} angle={62} color={color} />
+      <Bar cx={14} cy={6.5} len={6} angle={118} color={color} />
+      <Ring cx={12} cy={15} r={4.6} color={color} />
+      <Dot cx={12} cy={15} r={1.4} color={color} />
+    </Grid>
+  );
+}
+
 /* ------------------------------------------------------------------ */
 /* Name -> glyph map. Aliased as `iconMap` in hive-ui.tsx.             */
 /* ------------------------------------------------------------------ */
@@ -802,9 +985,11 @@ export const hiveIconGlyphs = {
   card: CardGlyph,
   doc: DocGlyph,
   fork: ForkGlyph,
+  'fork-mealplan': ForkMealplanGlyph,
   fridge: FridgeGlyph,
   map: MapPinGlyph,
   cart: CartGlyph,
+  'cart-mealplan': CartMealplanGlyph,
   play: PlayGlyph,
   box: BoxGlyph,
   snow: SnowflakeGlyph,
@@ -822,4 +1007,20 @@ export const hiveIconGlyphs = {
   moon: MoonGlyph,
   mic: MicGlyph,
   send: SendGlyph,
+  leaf: LeafGlyph,
+  dollar: DollarGlyph,
+  users: UsersGlyph,
+  ambulance: AmbulanceGlyph,
+  hexagon: HexagonGlyph,
+  medal: MedalGlyph,
+  tag: TagGlyph,
+  star: StarGlyph,
+  info: InfoGlyph,
+  lock: LockGlyph,
+  minus: MinusGlyph,
+  link: LinkGlyph,
+  xcircle: XCircleGlyph,
+  sparkle: SparkleGlyph,
+  pie: PieGlyph,
+  wallet: WalletGlyph,
 } as const;

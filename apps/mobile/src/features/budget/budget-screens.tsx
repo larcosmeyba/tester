@@ -4,7 +4,7 @@
 // screens still comes from data/mock-data.ts — there is no budget backend yet.
 
 import { useEffect, useState } from 'react';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { Pressable, ScrollView, Text, View, type GestureResponderEvent } from 'react-native';
 import { AppButton, AppHeader, AvatarButton, Card, Chip, HiveIcon, Screen, ScrollScreen, SelectionRow, rowStyles, uiText } from '@/components/hive-ui';
 import { HiveColors } from '@/constants/theme';
 import { ComingSoonHub } from '@/components/hive-cards';
@@ -145,17 +145,17 @@ export function FinanceScreen({ nav }: { nav: Navigation }) {
         <ComingSoonHub
           image={pennySource}
           title="Finance Hub"
-          subtitle="Coming Soon to Help The Hive"
+          subtitle="Coming Soon to Help The Hive."
           body="We're building powerful money tools designed specifically for families like yours — EBT tracking, spending insights, bill reminders, and more."
           features={[
             { icon: 'card', label: 'EBT Balance Tracking' },
-            { icon: 'chart', label: 'Spending Reports' },
+            { icon: 'pie', label: 'Spending Reports' },
             { icon: 'bell', label: 'Bill Reminders' },
-            { icon: 'finance', label: 'Budget Goals' },
+            { icon: 'dollar', label: 'Budget Goals' },
             { icon: 'heart', label: 'Rx Savings' },
             { icon: 'shield', label: 'Insurance Offers' },
           ]}
-          footnote="Penny will notify you the moment this launches"
+          footnote="Penny will notify you the moment this launches."
         />
       </ScrollView>
     </View>
@@ -238,9 +238,20 @@ export function ConnectAccountScreen({ nav }: { nav: Navigation }) {
   );
 }
 
+/**
+ * Budget Settings — the Figma budget editor: a slider card for the weekly
+ * grocery budget ($25–$1,000) plus alert/roll-over/round-up toggles.
+ *
+ * The budget persists through the existing weeklyBudget preference (the
+ * "$100" / "$300+" format from onboarding). The three toggles have no
+ * backend field yet and are local state for this pass.
+ */
 export function BudgetSettingsScreen({ nav }: { nav: Navigation }) {
   const app = useAppState();
-  const [budget, setBudget] = useState(app.preferences.weeklyBudget || '$75-100');
+  const [budget, setBudget] = useState(() => parseBudgetDollars(app.preferences.weeklyBudget));
+  const [budgetAlerts, setBudgetAlerts] = useState(true);
+  const [rollOver, setRollOver] = useState(false);
+  const [roundUp, setRoundUp] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState('');
 
@@ -248,7 +259,7 @@ export function BudgetSettingsScreen({ nav }: { nav: Navigation }) {
     setIsSaving(true);
     setSaveError('');
     try {
-      await app.savePreferences({ weeklyBudget: budget });
+      await app.savePreferences({ weeklyBudget: formatBudgetDollars(budget) });
       nav.back();
     } catch (error) {
       setSaveError(error instanceof Error ? error.message : 'Unable to save your budget.');
@@ -260,17 +271,183 @@ export function BudgetSettingsScreen({ nav }: { nav: Navigation }) {
   return (
     <ScrollScreen>
       <AppHeader title="Budget Settings" onBack={nav.back} />
-      <View style={sharedStyles.formScreen}>
-        <Text style={uiText.subtitle}>Weekly grocery budget</Text>
-        {['Below $50', '$75-100', '$100-$150', '$150-$200'].map((option) => (
-          <SelectionRow key={option} title={option} selected={budget === option} onPress={() => setBudget(option)} />
-        ))}
+      <View style={budgetSettingsStyles.body}>
+        <View style={budgetSettingsStyles.sliderCard}>
+          <Text style={budgetSettingsStyles.sliderLabel}>Weekly grocery budget</Text>
+          <Text style={budgetSettingsStyles.sliderValue}>${budget.toFixed(2)}</Text>
+          <BudgetSlider value={budget} min={25} max={1000} onChange={setBudget} />
+          <View style={budgetSettingsStyles.sliderEnds}>
+            <Text style={budgetSettingsStyles.sliderEndLabel}>$25</Text>
+            <Text style={budgetSettingsStyles.sliderEndLabel}>$1,000</Text>
+          </View>
+        </View>
+
+        <View style={budgetSettingsStyles.toggles}>
+          <BudgetToggle
+            title="Budget alerts"
+            subtitle="Notify me at 80% and 100% used"
+            value={budgetAlerts}
+            onToggle={() => setBudgetAlerts((current) => !current)}
+          />
+          <BudgetToggle
+            title="Roll over unspent"
+            subtitle="Carry leftover budget to next week"
+            value={rollOver}
+            onToggle={() => setRollOver((current) => !current)}
+          />
+          <BudgetToggle
+            title="Round-up savings"
+            subtitle="Round purchases up and save the difference"
+            value={roundUp}
+            onToggle={() => setRoundUp((current) => !current)}
+            last
+          />
+        </View>
+
         {saveError ? <Text style={sharedStyles.authError}>{saveError}</Text> : null}
-        <AppButton title={isSaving ? 'Saving…' : 'Save Budget'} disabled={isSaving} onPress={() => void save()} />
+        <AppButton title={isSaving ? 'Saving…' : 'Save changes'} disabled={isSaving} onPress={() => void save()} />
       </View>
     </ScrollScreen>
   );
 }
+
+/** Reads the first dollar amount out of a stored budget string ("$100", "$300+", "$75-100"). */
+function parseBudgetDollars(stored: string | undefined): number {
+  const match = stored?.match(/[\d,]+/);
+  const parsed = match ? Number(match[0].replace(/,/g, '')) : Number.NaN;
+  if (!Number.isFinite(parsed)) return 100;
+  return Math.min(1000, Math.max(25, Math.round(parsed)));
+}
+
+/** Display/storage form of the budget slider value, e.g. "$100" or "$1000+". */
+function formatBudgetDollars(dollars: number): string {
+  return dollars >= 1000 ? '$1000+' : `\$${dollars}`;
+}
+
+/** A tap-and-drag slider built from Views (no native slider dependency). */
+function BudgetSlider({
+  value,
+  min,
+  max,
+  onChange,
+}: {
+  value: number;
+  min: number;
+  max: number;
+  onChange: (value: number) => void;
+}) {
+  const [trackWidth, setTrackWidth] = useState(0);
+  const ratio = (value - min) / (max - min);
+
+  function valueFromX(x: number): void {
+    if (trackWidth <= 0) return;
+    const clamped = Math.min(1, Math.max(0, x / trackWidth));
+    const stepped = Math.round((min + clamped * (max - min)) / 5) * 5;
+    onChange(Math.min(max, Math.max(min, stepped)));
+  }
+
+  const panHandlers = {
+    onStartShouldSetResponder: () => true,
+    onResponderGrant: (event: GestureResponderEvent) => valueFromX(event.nativeEvent.locationX),
+    onResponderMove: (event: GestureResponderEvent) => valueFromX(event.nativeEvent.locationX),
+  };
+
+  return (
+    <View
+      style={budgetSettingsStyles.sliderHitArea}
+      onLayout={(event) => setTrackWidth(event.nativeEvent.layout.width)}
+      {...panHandlers}>
+      <View style={budgetSettingsStyles.track}>
+        <View style={[budgetSettingsStyles.fill, { width: `${ratio * 100}%` }]} />
+      </View>
+      <View style={[budgetSettingsStyles.thumb, { left: `${ratio * 100}%` }]} />
+    </View>
+  );
+}
+
+function BudgetToggle({
+  title,
+  subtitle,
+  value,
+  onToggle,
+  last = false,
+}: {
+  title: string;
+  subtitle: string;
+  value: boolean;
+  onToggle: () => void;
+  last?: boolean;
+}) {
+  return (
+    <Pressable
+      accessibilityRole="checkbox"
+      accessibilityState={{ checked: value }}
+      accessibilityLabel={title}
+      onPress={onToggle}
+      style={({ pressed }) => [
+        budgetSettingsStyles.toggleRow,
+        !last && budgetSettingsStyles.toggleDivider,
+        pressed && sharedStyles.pressed,
+      ]}>
+      <View style={sharedStyles.flexOne}>
+        <Text style={budgetSettingsStyles.toggleTitle}>{title}</Text>
+        <Text style={budgetSettingsStyles.toggleSubtitle}>{subtitle}</Text>
+      </View>
+      <View style={[budgetSettingsStyles.checkbox, value && budgetSettingsStyles.checkboxOn]}>
+        {value ? <HiveIcon name="check" size={13} color={HiveColors.white} /> : null}
+      </View>
+    </Pressable>
+  );
+}
+
+const budgetSettingsStyles = StyleSheet.create({
+  body: { paddingHorizontal: 20, paddingTop: 12, gap: 24 },
+  sliderCard: {
+    backgroundColor: '#F4F5F4',
+    borderRadius: 20,
+    paddingVertical: 22,
+    paddingHorizontal: 20,
+    gap: 10,
+  },
+  sliderLabel: { color: HiveColors.textSecondary, fontSize: 15, textAlign: 'center' },
+  sliderValue: { color: HiveColors.text, fontSize: 40, fontWeight: '800', textAlign: 'center', letterSpacing: -1 },
+  sliderHitArea: { justifyContent: 'center', height: 32, marginTop: 6 },
+  track: { height: 8, borderRadius: 4, backgroundColor: '#E2E5E2', overflow: 'hidden' },
+  fill: { height: 8, borderRadius: 4, backgroundColor: HiveColors.greenDark },
+  thumb: {
+    position: 'absolute',
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: HiveColors.white,
+    borderWidth: 1,
+    borderColor: '#E2E5E2',
+    marginLeft: -14,
+    shadowColor: '#000',
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 3,
+  },
+  sliderEnds: { flexDirection: 'row', justifyContent: 'space-between' },
+  sliderEndLabel: { color: HiveColors.textSecondary, fontSize: 14 },
+  toggles: {},
+  toggleRow: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 14 },
+  toggleDivider: { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: HiveColors.border },
+  toggleTitle: { color: HiveColors.text, fontSize: 16.5, fontWeight: '700' },
+  toggleSubtitle: { color: HiveColors.textSecondary, fontSize: 14, marginTop: 2 },
+  checkbox: {
+    width: 26,
+    height: 26,
+    borderRadius: 7,
+    borderWidth: 2,
+    borderColor: '#D8DCD8',
+    backgroundColor: HiveColors.white,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  checkboxOn: { borderColor: HiveColors.greenDark, backgroundColor: HiveColors.greenDark },
+});
 
 export function DonutPlaceholder({ large = false }: { large?: boolean }) {
   return (

@@ -1,5 +1,5 @@
 /**
- * The iOS questionnaire: 5 steps, 14 questions.
+ * The meal-planning questionnaire: 5 steps, 15 questions.
  *
  * The final step gates progress on at least one meal category and a budget
  * range; everything else always has an answer (steppers and defaults). These
@@ -8,8 +8,6 @@
  */
 import {
   DEFAULT_IOS_ANSWERS,
-  PLACEHOLDER_COPY,
-  PLACEHOLDER_QUESTIONS,
   QUESTIONNAIRE_STEPS,
   applyIosAnswers,
   canAdvance,
@@ -24,7 +22,7 @@ const answers = (patch: Partial<IosQuestionnaireAnswers> = {}): IosQuestionnaire
 });
 
 describe('questionnaire steps', () => {
-  it('covers the five iOS steps', () => {
+  it('covers the five steps', () => {
     expect(QUESTIONNAIRE_STEPS).toHaveLength(5);
     expect(QUESTIONNAIRE_STEPS.map((step) => step.id)).toEqual([
       'household',
@@ -35,36 +33,82 @@ describe('questionnaire steps', () => {
     ]);
   });
 
-  it('uses the verified question numbers 1, 2, 3, 4, 6, 7, 8, 9, 12, 13, 14', () => {
+  it('asks the full 15 Figma questions in order', () => {
     const numbers = QUESTIONNAIRE_STEPS.flatMap((step) => step.questions.map((q) => q.number));
-    expect(numbers).toEqual([1, 2, 3, 4, 6, 7, 8, 9, 12, 13, 14]);
+    expect(numbers).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]);
   });
 
-  it('never invents copy for questions without an iOS screenshot', () => {
-    const missing = PLACEHOLDER_QUESTIONS.map((placeholder) => placeholder.number).sort(
-      (a, b) => a - b,
-    );
-    expect(missing).toEqual([5, 10, 11]);
-    for (const placeholder of PLACEHOLDER_QUESTIONS) {
-      expect(PLACEHOLDER_COPY).toContain('AWAITING iOS SCREENSHOT');
-      expect(placeholder.afterStep).toBeDefined();
-    }
+  it('asks Q5 as a free-text question with the Figma placeholder', () => {
+    const diets = QUESTIONNAIRE_STEPS.find((step) => step.id === 'diets')!;
+    const q5 = diets.questions.find((question) => question.number === 5)!;
+    expect(q5.kind).toBe('text');
+    expect(q5.text).toBe('Any foods you never want in your meal plan?');
+    expect(q5.placeholder).toBe('e.g. Mushrooms, cilantro, olives');
   });
 
-  it('marks the cropped Q9 spice option as pending copy instead of inventing it', () => {
+  it('offers Hot as the third Q9 spice option', () => {
     const taste = QUESTIONNAIRE_STEPS.find((step) => step.id === 'taste')!;
     const spice = taste.questions.find((question) => question.number === 9)!;
-    const pending = spice.options?.find((option) => option.pendingCopy);
-    expect(pending?.label).toBe(PLACEHOLDER_COPY);
+    expect(spice.options?.map((option) => option.label)).toEqual(['Mild', 'Medium', 'Hot']);
   });
 
-  it('uses the exact iOS budget range copy on Q14', () => {
+  it('asks the Q10 cook-time and Q11 confidence questions from the Figma', () => {
+    const taste = QUESTIONNAIRE_STEPS.find((step) => step.id === 'taste')!;
+    const q10 = taste.questions.find((question) => question.number === 10)!;
+    const q11 = taste.questions.find((question) => question.number === 11)!;
+    expect(q10.text).toBe('How much time do you usually have to cook?');
+    expect(q10.options?.map((option) => option.label)).toEqual([
+      'Under 20 Minutes',
+      '20-40 Minutes',
+      '40+ Minutes',
+      'Depends on the Day',
+    ]);
+    expect(q11.text).toBe('How comfortable are you in the kitchen?');
+    expect(q11.options?.map((option) => option.label)).toEqual([
+      'Beginner',
+      'Comfortable',
+      'Confident Cook',
+    ]);
+  });
+
+  it('covers the full Q4 allergy list including Soy, Sesame, and Other', () => {
+    const diets = QUESTIONNAIRE_STEPS.find((step) => step.id === 'diets')!;
+    const q4 = diets.questions.find((question) => question.number === 4)!;
+    expect(q4.options?.map((option) => option.label)).toEqual([
+      'None',
+      'Peanuts',
+      'Tree Nuts',
+      'Dairy / Lactose',
+      'Eggs',
+      'Gluten / Wheat',
+      'Shellfish',
+      'Fish',
+      'Soy',
+      'Sesame',
+      'Other',
+    ]);
+  });
+
+  it('uses the exact Figma budget range copy on Q14', () => {
     const budget = QUESTIONNAIRE_STEPS.find((step) => step.id === 'budget')!;
     const ranges = budget.questions.find((question) => question.number === 14)!;
     expect(ranges.options?.map((option) => option.label)).toEqual([
       'Under $75',
-      '$75–$150',
-      '$150–$250',
+      '$75-$150',
+      '$150-$250',
+      '$250+',
+      'No Preference',
+    ]);
+  });
+
+  it('asks the Q15 shopping preference question from the Figma', () => {
+    const budget = QUESTIONNAIRE_STEPS.find((step) => step.id === 'budget')!;
+    const q15 = budget.questions.find((question) => question.number === 15)!;
+    expect(q15.text).toBe('How would you like to shop for your groceries?');
+    expect(q15.options?.map((option) => option.label)).toEqual([
+      'Give Me a Grocery List',
+      'Shop with Instacart',
+      "I'm Not Sure Yet",
     ]);
   });
 });
@@ -80,6 +124,10 @@ describe('canAdvance', () => {
     expect(canAdvance('budget', answers())).toBe(true);
     expect(canAdvance('budget', answers({ mealTypes: [] }))).toBe(false);
     expect(canAdvance('budget', answers({ budgetRange: null }))).toBe(false);
+  });
+
+  it('accepts No Preference as a real budget answer', () => {
+    expect(canAdvance('budget', answers({ budgetRange: 'no_preference' }))).toBe(true);
   });
 
   it('never blocks an optional middle step', () => {
@@ -122,6 +170,14 @@ describe('applyIosAnswers', () => {
     expect(request.days).toBe(7);
   });
 
+  it('disables the budget for the open-ended Q14 ranges', () => {
+    for (const budgetRange of ['250_plus', 'no_preference'] as const) {
+      const request = applyIosAnswers(createEmptyPlanRequest(), answers({ budgetRange }));
+      expect(request.budget.amount).toBe(0);
+      expect(request.budget.enabled).toBe(false);
+    }
+  });
+
   it('treats "None" as a clear for diets, allergies, and health answers', () => {
     const request = applyIosAnswers(
       createEmptyPlanRequest(),
@@ -138,6 +194,14 @@ describe('applyIosAnswers', () => {
     expect(request.planGoals).toEqual(['no_specific_goal']);
   });
 
+  it('maps Soy and Sesame allergies to their allergens', () => {
+    const request = applyIosAnswers(
+      createEmptyPlanRequest(),
+      answers({ allergies: ['soy', 'sesame'] }),
+    );
+    expect(request.allergies.map((a) => a.allergen).sort()).toEqual(['sesame', 'soy']);
+  });
+
   it('preserves unmapped diets as free text for the backend', () => {
     const request = applyIosAnswers(
       createEmptyPlanRequest(),
@@ -147,19 +211,33 @@ describe('applyIosAnswers', () => {
     expect(request.dietaryOtherText).toBe('halal');
   });
 
-  it('carries spice level, dinners per week, and budget range through', () => {
+  it('carries spice level, cook time, confidence, dislikes, and shopping preference through', () => {
     const request = applyIosAnswers(
       createEmptyPlanRequest(),
-      answers({ spiceLevel: 'medium', dinnersPerWeek: 6, budgetRange: 'under_75' }),
+      answers({
+        spiceLevel: 'hot',
+        cookTime: '20_40',
+        cookingConfidence: 'comfortable',
+        dislikedFoods: 'Mushrooms, cilantro',
+        dinnersPerWeek: 6,
+        budgetRange: 'under_75',
+        shoppingPreference: 'instacart',
+      }),
     );
-    expect(request.spiceLevel).toBe('medium');
+    expect(request.spiceLevel).toBe('hot');
+    expect(request.cookTime).toBe('20_40');
+    expect(request.cookingTime.maxMinutes).toBe(40);
+    expect(request.cookingConfidence).toBe('comfortable');
+    expect(request.dislikedFoods).toBe('Mushrooms, cilantro');
+    expect(request.dislikes.freeText).toBe('Mushrooms, cilantro');
     expect(request.dinnersPerWeek).toBe(6);
     expect(request.budgetRange).toBe('under_75');
+    expect(request.shoppingPreference).toBe('instacart');
   });
 });
 
 describe('questionnaire defaults', () => {
-  it('matches the iOS defaults: 2 people, 0 children, 5 dinners, Dinner, $75–$150', () => {
+  it('matches the Figma defaults: 2 people, 0 children, 5 dinners, Dinner, $75-$150', () => {
     expect(DEFAULT_IOS_ANSWERS.householdSize).toBe(2);
     expect(DEFAULT_IOS_ANSWERS.children).toBe(0);
     expect(DEFAULT_IOS_ANSWERS.dinnersPerWeek).toBe(5);

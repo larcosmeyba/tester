@@ -202,7 +202,7 @@ describe('questionnaire request', () => {
     const payload = toPlanRequestPayload(request, 'user-1', { seed: 42 });
 
     expect(payload).toMatchObject({
-      questionnaire_version: '1.0',
+      questionnaire_version: '1.1',
       user_id: 'user-1',
       plan_scope: 'us',
       household: { size: 4, adults: 2, children: 2, size_is_plus: false },

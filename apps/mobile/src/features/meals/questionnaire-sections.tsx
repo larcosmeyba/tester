@@ -10,14 +10,13 @@ import { View } from 'react-native';
 import { Spacing } from '@/constants/theme';
 import {
   OptionGrid,
-  PlaceholderQuestion,
   QuestionLabel,
   RadioRows,
   StepperControl,
+  TextInputControl,
   WarningNote,
 } from '@/features/meals/questionnaire-controls';
 import {
-  PLACEHOLDER_QUESTIONS,
   QUESTIONNAIRE_STEPS,
   type IosQuestionnaireAnswers,
   type QuestionnaireStepId,
@@ -33,10 +32,6 @@ const questionGap = { gap: Spacing.two } as const;
 
 function stepQuestions(id: QuestionnaireStepId) {
   return QUESTIONNAIRE_STEPS.find((step) => step.id === id)!.questions;
-}
-
-function placeholdersAfter(id: QuestionnaireStepId) {
-  return PLACEHOLDER_QUESTIONS.filter((placeholder) => placeholder.afterStep === id);
 }
 
 /** Step 1 — Your Household (Q1, Q2). */
@@ -73,9 +68,9 @@ export function HouseholdStepSection({ answers, onPatch }: IosSectionProps) {
   );
 }
 
-/** Step 2 — Diets & Restrictions (Q3, Q4, then placeholder Q5). */
+/** Step 2 — Diets & Restrictions (Q3, Q4, Q5). */
 export function DietsStepSection({ answers, onPatch }: IosSectionProps) {
-  const [q3, q4] = stepQuestions('diets');
+  const [q3, q4, q5] = stepQuestions('diets');
   return (
     <View style={gap}>
       <View style={questionGap}>
@@ -97,9 +92,15 @@ export function DietsStepSection({ answers, onPatch }: IosSectionProps) {
           columns={q4!.columns}
         />
       </View>
-      {placeholdersAfter('diets').map((placeholder) => (
-        <PlaceholderQuestion key={placeholder.number} number={placeholder.number} />
-      ))}
+      <View style={questionGap}>
+        <QuestionLabel number={q5!.number} text={q5!.text} />
+        <TextInputControl
+          value={answers.dislikedFoods}
+          placeholder={q5!.placeholder}
+          onChange={(dislikedFoods) => onPatch({ dislikedFoods })}
+          accessibilityLabel={q5!.text}
+        />
+      </View>
     </View>
   );
 }
@@ -131,9 +132,9 @@ export function HealthStepSection({ answers, onPatch }: IosSectionProps) {
   );
 }
 
-/** Step 4 — Taste & Cooking (Q8, Q9, then placeholders Q10, Q11). */
+/** Step 4 — Taste & Cooking (Q8, Q9, Q10, Q11). */
 export function TasteStepSection({ answers, onPatch }: IosSectionProps) {
-  const [q8, q9] = stepQuestions('taste');
+  const [q8, q9, q10, q11] = stepQuestions('taste');
   return (
     <View style={gap}>
       <View style={questionGap}>
@@ -153,16 +154,29 @@ export function TasteStepSection({ answers, onPatch }: IosSectionProps) {
           onSelect={(spiceLevel) => onPatch({ spiceLevel })}
         />
       </View>
-      {placeholdersAfter('taste').map((placeholder) => (
-        <PlaceholderQuestion key={placeholder.number} number={placeholder.number} />
-      ))}
+      <View style={questionGap}>
+        <QuestionLabel number={q10!.number} text={q10!.text} />
+        <RadioRows
+          options={q10!.options ?? []}
+          selected={answers.cookTime}
+          onSelect={(cookTime) => onPatch({ cookTime })}
+        />
+      </View>
+      <View style={questionGap}>
+        <QuestionLabel number={q11!.number} text={q11!.text} />
+        <RadioRows
+          options={q11!.options ?? []}
+          selected={answers.cookingConfidence}
+          onSelect={(cookingConfidence) => onPatch({ cookingConfidence })}
+        />
+      </View>
     </View>
   );
 }
 
-/** Step 5 — Meal Planning & Budget (Q12, Q13, Q14). */
+/** Step 5 — Meal Planning & Budget (Q12, Q13, Q14, Q15). */
 export function BudgetStepSection({ answers, onPatch }: IosSectionProps) {
-  const [q12, q13, q14] = stepQuestions('budget');
+  const [q12, q13, q14, q15] = stepQuestions('budget');
   return (
     <View style={gap}>
       <View style={questionGap}>
@@ -194,6 +208,14 @@ export function BudgetStepSection({ answers, onPatch }: IosSectionProps) {
           onSelect={(value) =>
             onPatch({ budgetRange: value as IosQuestionnaireAnswers['budgetRange'] })
           }
+        />
+      </View>
+      <View style={questionGap}>
+        <QuestionLabel number={q15!.number} text={q15!.text} />
+        <RadioRows
+          options={q15!.options ?? []}
+          selected={answers.shoppingPreference}
+          onSelect={(shoppingPreference) => onPatch({ shoppingPreference })}
         />
       </View>
     </View>

@@ -1,15 +1,10 @@
 /**
- * The iOS meal-planning questionnaire: 5 steps, 14 questions.
+ * The meal-planning questionnaire: 5 steps, 15 questions.
  *
- * Every piece of user-facing copy below is transcribed verbatim from the iOS
- * screenshots (see media_library), except where a question's wording was never
- * captured — those questions are NOT invented. They are declared in
- * `PLACEHOLDER_QUESTIONS` and render as a clearly-marked
- * "AWAITING iOS SCREENSHOT" block so they can never ship with made-up copy.
- *
- * Verified question numbers: 1, 2, 3, 4, 6, 7, 8, 9, 12, 13, 14.
- * Missing (no screenshot): 5, 10, 11 — plus the third spice option on Q9,
- * which was cut off in its screenshot.
+ * Every piece of user-facing copy below is transcribed verbatim from Marcos
+ * Leyba's Figma screens (delivered 2026-09-10) — the design source of truth.
+ * Copy is never invented: where a Figma label was visually truncated, the
+ * full form was cross-checked against the earlier iOS screenshots.
  */
 import type { HiveIconName } from '@/components/hive-ui';
 import {
@@ -21,13 +16,11 @@ import type { Allergen, Diet } from '@/features/meals/meal-enums';
 
 export type QuestionnaireStepId = 'household' | 'diets' | 'health' | 'taste' | 'budget';
 
-export type QuestionKind = 'stepper' | 'multi' | 'single';
+export type QuestionKind = 'stepper' | 'multi' | 'single' | 'text';
 
 export interface QuestionOption {
   value: string;
   label: string;
-  /** Rendered as a disabled "awaiting screenshot" row — never selectable. */
-  pendingCopy?: boolean;
 }
 
 export interface QuestionnaireQuestion {
@@ -35,11 +28,13 @@ export interface QuestionnaireQuestion {
   text: string;
   kind: QuestionKind;
   options?: QuestionOption[];
-  /** Two-column chip grid (iOS) vs full-width rows. */
+  /** Two-column chip grid (Figma) vs full-width rows. */
   columns?: 1 | 2;
   warning?: string;
   stepperMin?: number;
   stepperMax?: number;
+  /** Placeholder for free-text questions. */
+  placeholder?: string;
 }
 
 export interface QuestionnaireStep {
@@ -51,25 +46,6 @@ export interface QuestionnaireStep {
   icon: HiveIconName;
   questions: QuestionnaireQuestion[];
 }
-
-/** Exact placeholder copy — mandated by the product brief. */
-export const PLACEHOLDER_COPY = 'AWAITING iOS SCREENSHOT — do not ship without real copy';
-
-export interface PlaceholderQuestion {
-  number: number;
-  /** Rendered after this step's questions, where the numbering jumps. */
-  afterStep: QuestionnaireStepId;
-}
-
-/**
- * Questions 5, 10 and 11 have no iOS screenshot. They are listed here —
- * never with invented wording — so the renderer can show the placeholder.
- */
-export const PLACEHOLDER_QUESTIONS: PlaceholderQuestion[] = [
-  { number: 5, afterStep: 'diets' },
-  { number: 10, afterStep: 'taste' },
-  { number: 11, afterStep: 'taste' },
-];
 
 export const QUESTIONNAIRE_STEPS: QuestionnaireStep[] = [
   {
@@ -100,7 +76,7 @@ export const QUESTIONNAIRE_STEPS: QuestionnaireStep[] = [
     position: 2,
     title: 'Diets & Restrictions',
     subtitle: "We'll make sure the plan works for everyone at the table.",
-    icon: 'shield',
+    icon: 'leaf',
     questions: [
       {
         number: 3,
@@ -133,7 +109,16 @@ export const QUESTIONNAIRE_STEPS: QuestionnaireStep[] = [
           { value: 'gluten_wheat', label: 'Gluten / Wheat' },
           { value: 'shellfish', label: 'Shellfish' },
           { value: 'fish', label: 'Fish' },
+          { value: 'soy', label: 'Soy' },
+          { value: 'sesame', label: 'Sesame' },
+          { value: 'other', label: 'Other' },
         ],
+      },
+      {
+        number: 5,
+        text: 'Any foods you never want in your meal plan?',
+        kind: 'text',
+        placeholder: 'e.g. Mushrooms, cilantro, olives',
       },
     ],
   },
@@ -210,9 +195,30 @@ export const QUESTIONNAIRE_STEPS: QuestionnaireStep[] = [
         options: [
           { value: 'mild', label: 'Mild' },
           { value: 'medium', label: 'Medium' },
-          // The iOS screenshot cuts off below "Medium" — the third option's
-          // real wording is unknown, so it is NOT invented.
-          { value: '__pending__', label: PLACEHOLDER_COPY, pendingCopy: true },
+          { value: 'hot', label: 'Hot' },
+        ],
+      },
+      {
+        number: 10,
+        text: 'How much time do you usually have to cook?',
+        kind: 'single',
+        columns: 1,
+        options: [
+          { value: 'under_20', label: 'Under 20 Minutes' },
+          { value: '20_40', label: '20-40 Minutes' },
+          { value: '40_plus', label: '40+ Minutes' },
+          { value: 'depends', label: 'Depends on the Day' },
+        ],
+      },
+      {
+        number: 11,
+        text: 'How comfortable are you in the kitchen?',
+        kind: 'single',
+        columns: 1,
+        options: [
+          { value: 'beginner', label: 'Beginner' },
+          { value: 'comfortable', label: 'Comfortable' },
+          { value: 'confident', label: 'Confident Cook' },
         ],
       },
     ],
@@ -222,7 +228,7 @@ export const QUESTIONNAIRE_STEPS: QuestionnaireStep[] = [
     position: 5,
     title: 'Meal Planning & Budget',
     subtitle: "Almost there! Let's set up your weekly plan.",
-    icon: 'card',
+    icon: 'dollar',
     questions: [
       {
         number: 12,
@@ -249,19 +255,34 @@ export const QUESTIONNAIRE_STEPS: QuestionnaireStep[] = [
         columns: 1,
         options: [
           { value: 'under_75', label: 'Under $75' },
-          { value: '75_150', label: '$75–$150' },
-          { value: '150_250', label: '$150–$250' },
+          { value: '75_150', label: '$75-$150' },
+          { value: '150_250', label: '$150-$250' },
+          { value: '250_plus', label: '$250+' },
+          { value: 'no_preference', label: 'No Preference' },
+        ],
+      },
+      {
+        number: 15,
+        text: 'How would you like to shop for your groceries?',
+        kind: 'single',
+        columns: 1,
+        options: [
+          { value: 'grocery_list', label: 'Give Me a Grocery List' },
+          { value: 'instacart', label: 'Shop with Instacart' },
+          { value: 'not_sure', label: "I'm Not Sure Yet" },
         ],
       },
     ],
   },
 ];
 
-/** Q14 options as typed budget-range values (labels are the exact iOS copy). */
+/** Q14 options as typed budget-range values (labels are the exact Figma copy). */
 export const BUDGET_RANGE_OPTIONS: { value: BudgetRangeKey; label: string }[] = [
   { value: 'under_75', label: 'Under $75' },
-  { value: '75_150', label: '$75–$150' },
-  { value: '150_250', label: '$150–$250' },
+  { value: '75_150', label: '$75-$150' },
+  { value: '150_250', label: '$150-$250' },
+  { value: '250_plus', label: '$250+' },
+  { value: 'no_preference', label: 'No Preference' },
 ];
 
 // ---------------------------------------------------------------------------
@@ -273,28 +294,40 @@ export interface IosQuestionnaireAnswers {
   children: number;
   diets: string[];
   allergies: string[];
+  /** Q5 — free-text foods to exclude. */
+  dislikedFoods: string;
   healthConsiderations: string[];
   goals: string[];
   cuisines: string[];
   spiceLevel: string | null;
+  /** Q10 — available cooking time. */
+  cookTime: string | null;
+  /** Q11 — cooking confidence. */
+  cookingConfidence: string | null;
   dinnersPerWeek: number;
   mealTypes: ('breakfast' | 'lunch' | 'dinner')[];
   budgetRange: BudgetRangeKey | null;
+  /** Q15 — grocery shopping preference. */
+  shoppingPreference: string | null;
 }
 
-/** Defaults mirror the iOS screenshots (Q1=2, Q2=0, Q12=5, Q13=Dinner, Q14=$75–$150). */
+/** Defaults mirror the Figma screens (Q1=2, Q2=0, Q12=5, Q13=Dinner, Q14=$75-$150). */
 export const DEFAULT_IOS_ANSWERS: IosQuestionnaireAnswers = {
   householdSize: 2,
   children: 0,
   diets: [],
   allergies: [],
+  dislikedFoods: '',
   healthConsiderations: [],
   goals: [],
   cuisines: [],
   spiceLevel: null,
+  cookTime: null,
+  cookingConfidence: null,
   dinnersPerWeek: 5,
   mealTypes: ['dinner'],
   budgetRange: '75_150',
+  shoppingPreference: null,
 };
 
 /**
@@ -337,6 +370,8 @@ const ALLERGY_LABEL_TO_ALLERGEN: Record<string, Allergen> = {
   gluten_wheat: 'wheat',
   shellfish: 'shellfish',
   fish: 'fish',
+  soy: 'soy',
+  sesame: 'sesame',
 };
 
 const CUISINE_LABEL_TO_VALUE: Record<string, string> = {
@@ -353,17 +388,26 @@ const CUISINE_LABEL_TO_VALUE: Record<string, string> = {
   surprise_me: 'surprise_me',
 };
 
+/** Q10 — available cooking time folded into the backend's max-minutes field. */
+const COOK_TIME_TO_MAX_MINUTES: Record<string, number | null> = {
+  under_20: 20,
+  '20_40': 40,
+  '40_plus': null,
+  depends: null,
+};
+
 function withoutNone(values: string[]): string[] {
   return values.filter((value) => value !== 'none');
 }
 
 /**
- * Folds the iOS answers into the `PlanRequest` the backend expects.
+ * Folds the questionnaire answers into the `PlanRequest` the backend expects.
  *
  * - Children count as full servings: household size is the serving count.
  * - Snacks are deferred (B/L/D only) — snack count is always 0.
  * - The Q14 range drives the budget: the range top becomes the plan budget so
  *   the existing "estimated cost fits inside budget" check stays meaningful.
+ *   Open-ended ranges ($250+, No Preference) carry no cap: budget disabled.
  */
 export function applyIosAnswers(
   request: PlanRequest,
@@ -382,6 +426,7 @@ export function applyIosAnswers(
   const budgetAmount = range?.maxCents != null ? range.maxCents / 100 : 0;
 
   const children = Math.max(0, Math.min(answers.children, answers.householdSize));
+  const dislikedFoods = answers.dislikedFoods.trim();
 
   return {
     ...request,
@@ -418,11 +463,28 @@ export function applyIosAnswers(
         .map((value) => CUISINE_LABEL_TO_VALUE[value] ?? value)
         .filter(Boolean),
     },
+    // Q5 free text also feeds the backend's existing dislikes field.
+    dislikes: {
+      ...request.dislikes,
+      freeText: dislikedFoods.length > 0 ? dislikedFoods : request.dislikes.freeText,
+    },
+    // Q10 folds into the backend's max-minutes cooking-time field.
+    cookingTime: {
+      ...request.cookingTime,
+      maxMinutes:
+        answers.cookTime !== null
+          ? (COOK_TIME_TO_MAX_MINUTES[answers.cookTime] ?? null)
+          : request.cookingTime.maxMinutes,
+    },
     healthConsiderations: withoutNone(answers.healthConsiderations),
     planGoals: withoutNone(answers.goals),
     spiceLevel: answers.spiceLevel,
+    cookTime: answers.cookTime,
+    cookingConfidence: answers.cookingConfidence,
+    dislikedFoods,
     dinnersPerWeek: answers.dinnersPerWeek,
     budgetRange: answers.budgetRange,
+    shoppingPreference: answers.shoppingPreference,
   };
 }
 

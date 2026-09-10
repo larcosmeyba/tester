@@ -21,7 +21,9 @@ export function WelcomeScreen({ nav }: { nav: Navigation }) {
     <Screen>
       <View style={styles.authShell}>
         <View style={styles.authCenter}>
-          <AppLogo source={logoSource} />
+          <View style={styles.welcomeLogoWrap}>
+            <AppLogo source={logoSource} size={190} />
+          </View>
           <Text style={styles.welcomeTitle}>Feed Your Family{'\n'}Smarter.</Text>
         </View>
         <View style={styles.authActions}>
@@ -353,9 +355,13 @@ const styles = StyleSheet.create({
   },
   welcomeTitle: {
     color: HiveColors.greenDark,
-    fontSize: 34,
+    fontSize: 36,
     fontWeight: '800',
     textAlign: 'center',
-    letterSpacing: 0,
+    letterSpacing: -0.5,
+  },
+  welcomeLogoWrap: {
+    borderRadius: 44,
+    overflow: 'hidden',
   },
 });

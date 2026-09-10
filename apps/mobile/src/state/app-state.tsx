@@ -41,6 +41,8 @@ export type GovernmentProfile = {
   monthlyIncome: string;
   housingStatus: string;
   monthlyRent: string;
+  /** Program ids the user selected on the Government Assistance screen. */
+  selectedPrograms: string[];
 };
 
 export type AppPreferences = {
@@ -121,6 +123,7 @@ const defaultGovernmentProfile: GovernmentProfile = {
   monthlyIncome: '',
   housingStatus: '',
   monthlyRent: '',
+  selectedPrograms: [],
 };
 
 const defaultPreferences: AppPreferences = {
