@@ -19,4 +19,11 @@ var (
 	ErrNotReady = errors.New("application is not ready")
 	// ErrAlreadyApproved: an approved application is final and is not refilled.
 	ErrAlreadyApproved = errors.New("application is already approved")
+	// ErrSignatureRequired: approval needs the applicant's typed name. The
+	// signature is never pre-filled, so a blank name is a refusal, not a
+	// default.
+	ErrSignatureRequired = errors.New("a typed signature is required to approve")
+	// ErrAttestationRequired: the applicant must accept the attestation to
+	// approve. Silence is not consent.
+	ErrAttestationRequired = errors.New("the attestation must be accepted to approve")
 )

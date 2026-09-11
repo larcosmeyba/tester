@@ -59,6 +59,10 @@ fragment BenefitsApplicationFields on BenefitsApplication {
   createdAt
   updatedAt
   approvedAt
+  signedName
+  signedAt
+  confirmationNumber
+  confirmationRecordedAt
 }
 
 fragment BenefitsProfileFields on BenefitsProfile {
@@ -148,10 +152,53 @@ mutation RefillBenefitsApplication($applicationId: ID!) {
   refillBenefitsApplication(applicationId: $applicationId) { ...BenefitsApplicationFields }
 }
 
-mutation ApproveBenefitsApplication($applicationId: ID!) {
-  approveBenefitsApplication(applicationId: $applicationId) { ...BenefitsApplicationFields }
+mutation ApproveBenefitsApplication($applicationId: ID!, $signedName: String!, $attestationAccepted: Boolean!) {
+  approveBenefitsApplication(applicationId: $applicationId, signedName: $signedName, attestationAccepted: $attestationAccepted) { ...BenefitsApplicationFields }
+}
+
+mutation RecordBenefitsConfirmation($applicationId: ID!, $confirmationNumber: String!) {
+  recordBenefitsConfirmation(applicationId: $applicationId, confirmationNumber: $confirmationNumber) { ...BenefitsApplicationFields }
 }
 
 mutation DeleteBenefitsApplication($applicationId: ID!) {
   deleteBenefitsApplication(applicationId: $applicationId)
+}
+
+# ---------------------------------------------------------------------------
+# Submission Phase 1: state detection, portal routing, guided checklist.
+#
+# The submission itself always happens on the official portal, in the user's
+# own session. These operations prepare the paperwork, route the user to the
+# right official door, and record what happened — nothing here submits to an
+# agency or invents a portal URL.
+# ---------------------------------------------------------------------------
+
+query BenefitsStateFromZip($zip: String!) {
+  benefitsStateFromZip(zip: $zip) {
+    zip
+    state
+    detail
+  }
+}
+
+query BenefitsPortal($program: String!, $state: String!) {
+  benefitsPortal(program: $program, state: $state) {
+    program
+    state
+    url
+    verified
+    fallbackGuidance
+  }
+}
+
+query BenefitsChecklist($program: String!, $state: String!) {
+  benefitsChecklist(program: $program, state: $state) {
+    phase
+    title
+    items {
+      label
+      detail
+      confirmOnPortal
+    }
+  }
 }

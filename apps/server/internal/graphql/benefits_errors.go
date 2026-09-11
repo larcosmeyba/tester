@@ -33,6 +33,16 @@ func benefitsError(err error) error {
 			Message:    "this application has already been approved",
 			Extensions: map[string]any{"code": "ALREADY_APPROVED"},
 		}
+	case errors.Is(err, domain.ErrSignatureRequired):
+		return &gqlerror.Error{
+			Message:    err.Error(),
+			Extensions: map[string]any{"code": "SIGNATURE_REQUIRED"},
+		}
+	case errors.Is(err, domain.ErrAttestationRequired):
+		return &gqlerror.Error{
+			Message:    err.Error(),
+			Extensions: map[string]any{"code": "ATTESTATION_REQUIRED"},
+		}
 	case errors.Is(err, domain.ErrUnknownFieldPath), errors.Is(err, domain.ErrDerivedFieldPath), errors.Is(err, domain.ErrInvalidValue):
 		return &gqlerror.Error{
 			Message:    err.Error(),

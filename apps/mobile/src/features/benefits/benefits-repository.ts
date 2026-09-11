@@ -21,14 +21,18 @@ import {
   ApproveBenefitsApplicationDocument,
   BenefitsApplicationDocument,
   BenefitsApplicationsDocument,
+  BenefitsChecklistDocument,
   BenefitsFieldVocabularyDocument,
   BenefitsFormsDocument,
+  BenefitsPortalDocument,
   BenefitsProfileDocument,
   BenefitsProgramRulesDocument,
   BenefitsRenewalsDocument,
+  BenefitsStateFromZipDocument,
   ConfirmBenefitsRenewalDeadlineDocument,
   DeleteBenefitsApplicationDocument,
   DismissBenefitsRenewalDocument,
+  RecordBenefitsConfirmationDocument,
   RefillBenefitsApplicationDocument,
   SaveBenefitsAnswersDocument,
   SaveBenefitsGroupDocument,
@@ -39,15 +43,19 @@ import {
 
 export type {
   BenefitsApplication,
+  BenefitsChecklistItem,
+  BenefitsChecklistSection,
   BenefitsFieldSpec,
   BenefitsFilledField,
   BenefitsForm,
   BenefitsMissingField,
+  BenefitsPortal,
   BenefitsProfileData,
   BenefitsProgramRule,
   BenefitsRenewal,
   BenefitsRenewalSource,
   BenefitsRenewalStatus,
+  BenefitsStateLookup,
 } from "@/features/benefits/benefits-types";
 export type { BenefitsAnswer } from "@/features/benefits/benefits-answers";
 
@@ -101,13 +109,69 @@ export async function refillBenefitsApplication(applicationId: string) {
 }
 
 /**
- * Approving flattens the document. The server refuses while anything required
- * is still missing, so this can fail and the screen must show why rather than
- * pretending it worked.
+ * Approving records the applicant's typed signature and attestation, then
+ * flattens the document. The signature is never pre-filled: the name must be
+ * typed by the applicant on the review screen, and the server refuses a blank
+ * name or a missing attestation. The server also refuses while anything
+ * required is still missing, so this can fail and the screen must show why
+ * rather than pretending it worked.
  */
-export async function approveBenefitsApplication(applicationId: string) {
-  const result = await graphqlClient.request(ApproveBenefitsApplicationDocument, { applicationId });
+export async function approveBenefitsApplication(
+  applicationId: string,
+  signedName: string,
+  attestationAccepted: boolean,
+) {
+  const result = await graphqlClient.request(ApproveBenefitsApplicationDocument, {
+    applicationId,
+    signedName,
+    attestationAccepted,
+  });
   return result.approveBenefitsApplication;
+}
+
+/**
+ * Records the confirmation number the applicant received after applying on
+ * the official portal. Feeds the renewal schedule: the renewal for this
+ * application becomes user-confirmed.
+ */
+export async function recordBenefitsConfirmation(applicationId: string, confirmationNumber: string) {
+  const result = await graphqlClient.request(RecordBenefitsConfirmationDocument, {
+    applicationId,
+    confirmationNumber,
+  });
+  return result.recordBenefitsConfirmation;
+}
+
+/**
+ * Submission Phase 1: state detection, portal routing, guided checklist.
+ *
+ * Detecting the state from a ZIP is what routes the applicant to the right
+ * official portal. An unknown ZIP returns state: null — never a guess — and
+ * the screen must say so rather than routing somewhere plausible.
+ */
+export async function fetchStateFromZip(zip: string) {
+  const result = await graphqlClient.request(BenefitsStateFromZipDocument, { zip });
+  return result.benefitsStateFromZip;
+}
+
+/**
+ * The official application portal for a program in a state. The URL is null
+ * when no verified URL is on file: the app shows fallback guidance instead of
+ * inventing one.
+ */
+export async function fetchBenefitsPortal(program: string, state: string) {
+  const result = await graphqlClient.request(BenefitsPortalDocument, { program, state });
+  return result.benefitsPortal;
+}
+
+/**
+ * The guided checklist for applying: what to have ready before, during, and
+ * after the application. Reference content from the server, not rules the app
+ * invents.
+ */
+export async function fetchBenefitsChecklist(program: string, state: string) {
+  const result = await graphqlClient.request(BenefitsChecklistDocument, { program, state });
+  return result.benefitsChecklist;
 }
 
 export async function deleteBenefitsApplication(applicationId: string) {
@@ -182,9 +246,11 @@ export {
   groupQuestions,
   moneyToCents,
   noneAnswer,
+  prefillAnswersFromProfile,
   questionsToAsk,
   requiredQuestionsToAsk,
 } from "@/features/benefits/benefits-answers";
+export type { LocalProfilePrefill } from "@/features/benefits/benefits-answers";
 
 /**
  * The full URL of a generated PDF. It reads the API base, which is why it lives
@@ -193,4 +259,15 @@ export {
 export function benefitsDocumentUrl(path: string): string {
   const base = process.env.EXPO_PUBLIC_API_URL ?? "http://localhost:8080/graphql";
   return joinDocumentUrl(base, path);
+}
+
+/**
+ * The filing kit for an application: the printable answer sheet for forms
+ * Help The Hive cannot auto-fill, plus where to send it. Same authed pattern
+ * as the PDFs — the viewer's own Bearer <redacted>, scoped to the viewer by the
+ * server, never a public link.
+ */
+export function benefitsFilingKitUrl(applicationId: string): string {
+  const base = process.env.EXPO_PUBLIC_API_URL ?? "http://localhost:8080/graphql";
+  return joinDocumentUrl(base, `/benefits/applications/${applicationId}/filing-kit`);
 }

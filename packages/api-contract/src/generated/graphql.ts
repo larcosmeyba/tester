@@ -148,6 +148,10 @@ export type BenefitsAnswerStatus =
 export type BenefitsApplication = {
   __typename?: 'BenefitsApplication';
   approvedAt?: Maybe<Scalars['String']['output']>;
+  /** Confirmation number captured after the applicant applied on the official portal. Null until recorded. */
+  confirmationNumber?: Maybe<Scalars['String']['output']>;
+  /** When the confirmation number was recorded. Null until recorded. */
+  confirmationRecordedAt?: Maybe<Scalars['String']['output']>;
   createdAt: Scalars['String']['output'];
   /**
    * Path to the draft PDF on this API, or null until one has been rendered.
@@ -167,6 +171,10 @@ export type BenefitsApplication = {
   missingFields: Array<BenefitsMissingField>;
   /** Answers that exist but cannot be written, for a person to look at. */
   problems: Array<BenefitsFieldProblem>;
+  /** When the applicant signed. Null until approved. */
+  signedAt?: Maybe<Scalars['String']['output']>;
+  /** The typed name the applicant signed with. Null until approved. Never pre-filled. */
+  signedName?: Maybe<Scalars['String']['output']>;
   /** Boxes deliberately left blank — signatures, and rows the household does not have. */
   skippedFields: Array<BenefitsSkippedField>;
   status: BenefitsApplicationStatus;
@@ -190,6 +198,24 @@ export type BenefitsApplicationStatus =
   | 'READY_FOR_REVIEW'
   /** Replaced by a newer run against the same form. */
   | 'SUPERSEDED';
+
+export type BenefitsChecklistItem = {
+  __typename?: 'BenefitsChecklistItem';
+  /** True when this step is state-specific and must be confirmed on the official portal. */
+  confirmOnPortal: Scalars['Boolean']['output'];
+  /** Why this matters, in plain language. */
+  detail?: Maybe<Scalars['String']['output']>;
+  label: Scalars['String']['output'];
+};
+
+/** One checklist section: what to have ready before, during, or after applying. */
+export type BenefitsChecklistSection = {
+  __typename?: 'BenefitsChecklistSection';
+  items: Array<BenefitsChecklistItem>;
+  /** before | during | after */
+  phase: Scalars['String']['output'];
+  title: Scalars['String']['output'];
+};
 
 export type BenefitsFieldProblem = {
   __typename?: 'BenefitsFieldProblem';
@@ -318,6 +344,19 @@ export type BenefitsMissingField = {
   strength: BenefitsFieldStrength;
 };
 
+/** Where to apply for a program in a state. */
+export type BenefitsPortal = {
+  __typename?: 'BenefitsPortal';
+  /** What to show when there is no verified URL yet. */
+  fallbackGuidance: Scalars['String']['output'];
+  program: Scalars['String']['output'];
+  state: Scalars['String']['output'];
+  /** The official application URL, or null when no verified URL is on file. Never invented. */
+  url?: Maybe<Scalars['String']['output']>;
+  /** True when the URL was verified against an official .gov source. */
+  verified: Scalars['Boolean']['output'];
+};
+
 export type BenefitsProfile = {
   __typename?: 'BenefitsProfile';
   answers: Array<BenefitsAnswer>;
@@ -373,6 +412,17 @@ export type BenefitsSkippedField = {
   fieldId: Scalars['String']['output'];
   note?: Maybe<Scalars['String']['output']>;
   reason: BenefitsSkipReason;
+};
+
+/** Result of detecting a U.S. state from a ZIP code. */
+export type BenefitsStateLookup = {
+  __typename?: 'BenefitsStateLookup';
+  /** Why the lookup succeeded or failed, for the UI to explain. */
+  detail: Scalars['String']['output'];
+  /** Two-letter state code, or null when the ZIP is not recognized. Never guessed. */
+  state?: Maybe<Scalars['String']['output']>;
+  /** The 5-digit ZIP that was looked up. */
+  zip: Scalars['String']['output'];
 };
 
 export type BenefitsTemplateKind =
@@ -809,7 +859,12 @@ export type Mutation = {
    */
   acceptRecipeImport: Recipe;
   addPantryItem: PantryItem;
-  /** Flattens the reviewed document. Refused while anything required is missing. */
+  /**
+   * Records the typed signature and attestation, then flattens the reviewed
+   * document. Refused while anything required is missing, the signed name is
+   * blank, or attestation is not accepted. The signature is never pre-filled:
+   * the name must be typed by the applicant on the review screen.
+   */
   approveBenefitsApplication: BenefitsApplication;
   /** Stops an import that has not finished. Already-finished imports are unchanged. */
   cancelRecipeImport: RecipeImport;
@@ -834,6 +889,12 @@ export type Mutation = {
   markPantryItemUsed: PantryItem;
   /** Moves a meal between slots. Never regenerates the week and never re-prices. */
   movePlannedMeal: MealPlan;
+  /**
+   * Records the confirmation number the user received after applying on the
+   * official portal. Feeds the renewal schedule: the renewal for this
+   * application becomes user-confirmed.
+   */
+  recordBenefitsConfirmation: BenefitsApplication;
   /** Re-runs the fill after the app has collected more answers. */
   refillBenefitsApplication: BenefitsApplication;
   /** Rebuilds one day from the stored questionnaire, leaving the rest of the week alone. */
@@ -894,6 +955,8 @@ export type MutationAddPantryItemArgs = {
 
 export type MutationApproveBenefitsApplicationArgs = {
   applicationId: Scalars['ID']['input'];
+  attestationAccepted: Scalars['Boolean']['input'];
+  signedName: Scalars['String']['input'];
 };
 
 
@@ -962,6 +1025,12 @@ export type MutationMarkPantryItemUsedArgs = {
 export type MutationMovePlannedMealArgs = {
   input: MoveMealInput;
   planId: Scalars['ID']['input'];
+};
+
+
+export type MutationRecordBenefitsConfirmationArgs = {
+  applicationId: Scalars['ID']['input'];
+  confirmationNumber: Scalars['String']['input'];
 };
 
 
@@ -1262,17 +1331,23 @@ export type Query = {
   __typename?: 'Query';
   benefitsApplication?: Maybe<BenefitsApplication>;
   benefitsApplications: Array<BenefitsApplication>;
+  /** Guided checklist for applying: what to have ready before, during, and after the application. */
+  benefitsChecklist: Array<BenefitsChecklistSection>;
   /** Every question the profile can hold, so the app renders questions rather than hardcoding them. */
   benefitsFieldVocabulary: Array<BenefitsFieldSpec>;
   benefitsForm?: Maybe<BenefitsForm>;
   /** The government forms this server can fill. Holds no user data. */
   benefitsForms: Array<BenefitsForm>;
+  /** The official application portal for a program in a state. Final submission always happens on the official portal, in the user's own session. */
+  benefitsPortal: BenefitsPortal;
   /** The viewer's reusable benefits profile. */
   benefitsProfile: BenefitsProfile;
   /** Reference certification-period rules per program, optionally filtered by program. Reference data — the same rows for every user. */
   benefitsProgramRules: Array<BenefitsProgramRule>;
   /** The viewer's benefits renewal reminders, soonest first. */
   benefitsRenewals: Array<BenefitsRenewal>;
+  /** Detect the U.S. state for a 5-digit ZIP code. Unknown ZIPs return state: null — never a guess. */
+  benefitsStateFromZip: BenefitsStateLookup;
   /** The plan the viewer is currently on, or null when they have none yet. */
   currentMealPlan?: Maybe<MealPlan>;
   /** The saved grocery list for a plan, or null before the plan is accepted. */
@@ -1312,6 +1387,12 @@ export type QueryBenefitsApplicationArgs = {
 };
 
 
+export type QueryBenefitsChecklistArgs = {
+  program: Scalars['String']['input'];
+  state: Scalars['String']['input'];
+};
+
+
 export type QueryBenefitsFormArgs = {
   formId: Scalars['ID']['input'];
 };
@@ -1323,8 +1404,19 @@ export type QueryBenefitsFormsArgs = {
 };
 
 
+export type QueryBenefitsPortalArgs = {
+  program: Scalars['String']['input'];
+  state: Scalars['String']['input'];
+};
+
+
 export type QueryBenefitsProgramRulesArgs = {
   program?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryBenefitsStateFromZipArgs = {
+  zip: Scalars['String']['input'];
 };
 
 
@@ -1581,7 +1673,7 @@ export type DeleteViewerDataMutation = { __typename?: 'Mutation', deleteViewerDa
 
 export type BenefitsFormFieldsFragment = { __typename?: 'BenefitsForm', id: string, key: string, status: BenefitsFormStatus, program: string, country: string, state?: string | null, formCode: string, formTitle: string, formVersion: string, revision: number, pageCount: number, templateKind: BenefitsTemplateKind, agencyUrl?: string | null, mappedFieldCount: number, fillableFieldCount: number, effectiveDate?: string | null, sourceUrl?: string | null, retrievedAt?: string | null };
 
-export type BenefitsApplicationFieldsFragment = { __typename?: 'BenefitsApplication', id: string, status: BenefitsApplicationStatus, failureReason?: string | null, draftDocumentPath?: string | null, finalDocumentPath?: string | null, createdAt: string, updatedAt: string, approvedAt?: string | null, form: { __typename?: 'BenefitsForm', id: string, key: string, status: BenefitsFormStatus, program: string, country: string, state?: string | null, formCode: string, formTitle: string, formVersion: string, revision: number, pageCount: number, templateKind: BenefitsTemplateKind, agencyUrl?: string | null, mappedFieldCount: number, fillableFieldCount: number, effectiveDate?: string | null, sourceUrl?: string | null, retrievedAt?: string | null }, filledFields: Array<{ __typename?: 'BenefitsFilledField', fieldId: string, label: string, fieldPath?: string | null, page: number, source: BenefitsValueSource, text?: string | null, checked?: boolean | null, isCheckbox: boolean, isSensitive: boolean }>, missingFields: Array<{ __typename?: 'BenefitsMissingField', fieldPath: string, label: string, question: string, group: string, answerKind: BenefitsValueKind, choices: Array<string>, strength: BenefitsFieldStrength, isSensitive: boolean, isDerived: boolean, formFieldIds: Array<string> }>, problems: Array<{ __typename?: 'BenefitsFieldProblem', fieldId: string, fieldPath?: string | null, reason: string }>, skippedFields: Array<{ __typename?: 'BenefitsSkippedField', fieldId: string, reason: BenefitsSkipReason, note?: string | null }> };
+export type BenefitsApplicationFieldsFragment = { __typename?: 'BenefitsApplication', id: string, status: BenefitsApplicationStatus, failureReason?: string | null, draftDocumentPath?: string | null, finalDocumentPath?: string | null, createdAt: string, updatedAt: string, approvedAt?: string | null, signedName?: string | null, signedAt?: string | null, confirmationNumber?: string | null, confirmationRecordedAt?: string | null, form: { __typename?: 'BenefitsForm', id: string, key: string, status: BenefitsFormStatus, program: string, country: string, state?: string | null, formCode: string, formTitle: string, formVersion: string, revision: number, pageCount: number, templateKind: BenefitsTemplateKind, agencyUrl?: string | null, mappedFieldCount: number, fillableFieldCount: number, effectiveDate?: string | null, sourceUrl?: string | null, retrievedAt?: string | null }, filledFields: Array<{ __typename?: 'BenefitsFilledField', fieldId: string, label: string, fieldPath?: string | null, page: number, source: BenefitsValueSource, text?: string | null, checked?: boolean | null, isCheckbox: boolean, isSensitive: boolean }>, missingFields: Array<{ __typename?: 'BenefitsMissingField', fieldPath: string, label: string, question: string, group: string, answerKind: BenefitsValueKind, choices: Array<string>, strength: BenefitsFieldStrength, isSensitive: boolean, isDerived: boolean, formFieldIds: Array<string> }>, problems: Array<{ __typename?: 'BenefitsFieldProblem', fieldId: string, fieldPath?: string | null, reason: string }>, skippedFields: Array<{ __typename?: 'BenefitsSkippedField', fieldId: string, reason: BenefitsSkipReason, note?: string | null }> };
 
 export type BenefitsProfileFieldsFragment = { __typename?: 'BenefitsProfile', vocabularyVersion: number, answers: Array<{ __typename?: 'BenefitsAnswer', fieldPath: string, rowId?: string | null, status: BenefitsAnswerStatus, kind: BenefitsValueKind, source: BenefitsValueSource, isSensitive: boolean, text?: string | null, number?: number | null, moneyCents?: number | null, date?: string | null, bool?: boolean | null, list?: Array<string> | null, hint?: string | null }>, groups: Array<{ __typename?: 'BenefitsGroup', groupPath: string, collected: boolean, rows: Array<{ __typename?: 'BenefitsGroupRow', rowId: string, answers: Array<{ __typename?: 'BenefitsAnswer', fieldPath: string, rowId?: string | null, status: BenefitsAnswerStatus, kind: BenefitsValueKind, source: BenefitsValueSource, isSensitive: boolean, text?: string | null, number?: number | null, moneyCents?: number | null, date?: string | null, bool?: boolean | null, list?: Array<string> | null, hint?: string | null }> }> }> };
 
@@ -1601,14 +1693,14 @@ export type BenefitsFormsQuery = { __typename?: 'Query', benefitsForms: Array<{ 
 export type BenefitsApplicationsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type BenefitsApplicationsQuery = { __typename?: 'Query', benefitsApplications: Array<{ __typename?: 'BenefitsApplication', id: string, status: BenefitsApplicationStatus, failureReason?: string | null, draftDocumentPath?: string | null, finalDocumentPath?: string | null, createdAt: string, updatedAt: string, approvedAt?: string | null, form: { __typename?: 'BenefitsForm', id: string, key: string, status: BenefitsFormStatus, program: string, country: string, state?: string | null, formCode: string, formTitle: string, formVersion: string, revision: number, pageCount: number, templateKind: BenefitsTemplateKind, agencyUrl?: string | null, mappedFieldCount: number, fillableFieldCount: number, effectiveDate?: string | null, sourceUrl?: string | null, retrievedAt?: string | null }, filledFields: Array<{ __typename?: 'BenefitsFilledField', fieldId: string, label: string, fieldPath?: string | null, page: number, source: BenefitsValueSource, text?: string | null, checked?: boolean | null, isCheckbox: boolean, isSensitive: boolean }>, missingFields: Array<{ __typename?: 'BenefitsMissingField', fieldPath: string, label: string, question: string, group: string, answerKind: BenefitsValueKind, choices: Array<string>, strength: BenefitsFieldStrength, isSensitive: boolean, isDerived: boolean, formFieldIds: Array<string> }>, problems: Array<{ __typename?: 'BenefitsFieldProblem', fieldId: string, fieldPath?: string | null, reason: string }>, skippedFields: Array<{ __typename?: 'BenefitsSkippedField', fieldId: string, reason: BenefitsSkipReason, note?: string | null }> }> };
+export type BenefitsApplicationsQuery = { __typename?: 'Query', benefitsApplications: Array<{ __typename?: 'BenefitsApplication', id: string, status: BenefitsApplicationStatus, failureReason?: string | null, draftDocumentPath?: string | null, finalDocumentPath?: string | null, createdAt: string, updatedAt: string, approvedAt?: string | null, signedName?: string | null, signedAt?: string | null, confirmationNumber?: string | null, confirmationRecordedAt?: string | null, form: { __typename?: 'BenefitsForm', id: string, key: string, status: BenefitsFormStatus, program: string, country: string, state?: string | null, formCode: string, formTitle: string, formVersion: string, revision: number, pageCount: number, templateKind: BenefitsTemplateKind, agencyUrl?: string | null, mappedFieldCount: number, fillableFieldCount: number, effectiveDate?: string | null, sourceUrl?: string | null, retrievedAt?: string | null }, filledFields: Array<{ __typename?: 'BenefitsFilledField', fieldId: string, label: string, fieldPath?: string | null, page: number, source: BenefitsValueSource, text?: string | null, checked?: boolean | null, isCheckbox: boolean, isSensitive: boolean }>, missingFields: Array<{ __typename?: 'BenefitsMissingField', fieldPath: string, label: string, question: string, group: string, answerKind: BenefitsValueKind, choices: Array<string>, strength: BenefitsFieldStrength, isSensitive: boolean, isDerived: boolean, formFieldIds: Array<string> }>, problems: Array<{ __typename?: 'BenefitsFieldProblem', fieldId: string, fieldPath?: string | null, reason: string }>, skippedFields: Array<{ __typename?: 'BenefitsSkippedField', fieldId: string, reason: BenefitsSkipReason, note?: string | null }> }> };
 
 export type BenefitsApplicationQueryVariables = Exact<{
   applicationId: Scalars['ID']['input'];
 }>;
 
 
-export type BenefitsApplicationQuery = { __typename?: 'Query', benefitsApplication?: { __typename?: 'BenefitsApplication', id: string, status: BenefitsApplicationStatus, failureReason?: string | null, draftDocumentPath?: string | null, finalDocumentPath?: string | null, createdAt: string, updatedAt: string, approvedAt?: string | null, form: { __typename?: 'BenefitsForm', id: string, key: string, status: BenefitsFormStatus, program: string, country: string, state?: string | null, formCode: string, formTitle: string, formVersion: string, revision: number, pageCount: number, templateKind: BenefitsTemplateKind, agencyUrl?: string | null, mappedFieldCount: number, fillableFieldCount: number, effectiveDate?: string | null, sourceUrl?: string | null, retrievedAt?: string | null }, filledFields: Array<{ __typename?: 'BenefitsFilledField', fieldId: string, label: string, fieldPath?: string | null, page: number, source: BenefitsValueSource, text?: string | null, checked?: boolean | null, isCheckbox: boolean, isSensitive: boolean }>, missingFields: Array<{ __typename?: 'BenefitsMissingField', fieldPath: string, label: string, question: string, group: string, answerKind: BenefitsValueKind, choices: Array<string>, strength: BenefitsFieldStrength, isSensitive: boolean, isDerived: boolean, formFieldIds: Array<string> }>, problems: Array<{ __typename?: 'BenefitsFieldProblem', fieldId: string, fieldPath?: string | null, reason: string }>, skippedFields: Array<{ __typename?: 'BenefitsSkippedField', fieldId: string, reason: BenefitsSkipReason, note?: string | null }> } | null };
+export type BenefitsApplicationQuery = { __typename?: 'Query', benefitsApplication?: { __typename?: 'BenefitsApplication', id: string, status: BenefitsApplicationStatus, failureReason?: string | null, draftDocumentPath?: string | null, finalDocumentPath?: string | null, createdAt: string, updatedAt: string, approvedAt?: string | null, signedName?: string | null, signedAt?: string | null, confirmationNumber?: string | null, confirmationRecordedAt?: string | null, form: { __typename?: 'BenefitsForm', id: string, key: string, status: BenefitsFormStatus, program: string, country: string, state?: string | null, formCode: string, formTitle: string, formVersion: string, revision: number, pageCount: number, templateKind: BenefitsTemplateKind, agencyUrl?: string | null, mappedFieldCount: number, fillableFieldCount: number, effectiveDate?: string | null, sourceUrl?: string | null, retrievedAt?: string | null }, filledFields: Array<{ __typename?: 'BenefitsFilledField', fieldId: string, label: string, fieldPath?: string | null, page: number, source: BenefitsValueSource, text?: string | null, checked?: boolean | null, isCheckbox: boolean, isSensitive: boolean }>, missingFields: Array<{ __typename?: 'BenefitsMissingField', fieldPath: string, label: string, question: string, group: string, answerKind: BenefitsValueKind, choices: Array<string>, strength: BenefitsFieldStrength, isSensitive: boolean, isDerived: boolean, formFieldIds: Array<string> }>, problems: Array<{ __typename?: 'BenefitsFieldProblem', fieldId: string, fieldPath?: string | null, reason: string }>, skippedFields: Array<{ __typename?: 'BenefitsSkippedField', fieldId: string, reason: BenefitsSkipReason, note?: string | null }> } | null };
 
 export type BenefitsFieldVocabularyQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1634,21 +1726,31 @@ export type StartBenefitsApplicationMutationVariables = Exact<{
 }>;
 
 
-export type StartBenefitsApplicationMutation = { __typename?: 'Mutation', startBenefitsApplication: { __typename?: 'BenefitsApplication', id: string, status: BenefitsApplicationStatus, failureReason?: string | null, draftDocumentPath?: string | null, finalDocumentPath?: string | null, createdAt: string, updatedAt: string, approvedAt?: string | null, form: { __typename?: 'BenefitsForm', id: string, key: string, status: BenefitsFormStatus, program: string, country: string, state?: string | null, formCode: string, formTitle: string, formVersion: string, revision: number, pageCount: number, templateKind: BenefitsTemplateKind, agencyUrl?: string | null, mappedFieldCount: number, fillableFieldCount: number, effectiveDate?: string | null, sourceUrl?: string | null, retrievedAt?: string | null }, filledFields: Array<{ __typename?: 'BenefitsFilledField', fieldId: string, label: string, fieldPath?: string | null, page: number, source: BenefitsValueSource, text?: string | null, checked?: boolean | null, isCheckbox: boolean, isSensitive: boolean }>, missingFields: Array<{ __typename?: 'BenefitsMissingField', fieldPath: string, label: string, question: string, group: string, answerKind: BenefitsValueKind, choices: Array<string>, strength: BenefitsFieldStrength, isSensitive: boolean, isDerived: boolean, formFieldIds: Array<string> }>, problems: Array<{ __typename?: 'BenefitsFieldProblem', fieldId: string, fieldPath?: string | null, reason: string }>, skippedFields: Array<{ __typename?: 'BenefitsSkippedField', fieldId: string, reason: BenefitsSkipReason, note?: string | null }> } };
+export type StartBenefitsApplicationMutation = { __typename?: 'Mutation', startBenefitsApplication: { __typename?: 'BenefitsApplication', id: string, status: BenefitsApplicationStatus, failureReason?: string | null, draftDocumentPath?: string | null, finalDocumentPath?: string | null, createdAt: string, updatedAt: string, approvedAt?: string | null, signedName?: string | null, signedAt?: string | null, confirmationNumber?: string | null, confirmationRecordedAt?: string | null, form: { __typename?: 'BenefitsForm', id: string, key: string, status: BenefitsFormStatus, program: string, country: string, state?: string | null, formCode: string, formTitle: string, formVersion: string, revision: number, pageCount: number, templateKind: BenefitsTemplateKind, agencyUrl?: string | null, mappedFieldCount: number, fillableFieldCount: number, effectiveDate?: string | null, sourceUrl?: string | null, retrievedAt?: string | null }, filledFields: Array<{ __typename?: 'BenefitsFilledField', fieldId: string, label: string, fieldPath?: string | null, page: number, source: BenefitsValueSource, text?: string | null, checked?: boolean | null, isCheckbox: boolean, isSensitive: boolean }>, missingFields: Array<{ __typename?: 'BenefitsMissingField', fieldPath: string, label: string, question: string, group: string, answerKind: BenefitsValueKind, choices: Array<string>, strength: BenefitsFieldStrength, isSensitive: boolean, isDerived: boolean, formFieldIds: Array<string> }>, problems: Array<{ __typename?: 'BenefitsFieldProblem', fieldId: string, fieldPath?: string | null, reason: string }>, skippedFields: Array<{ __typename?: 'BenefitsSkippedField', fieldId: string, reason: BenefitsSkipReason, note?: string | null }> } };
 
 export type RefillBenefitsApplicationMutationVariables = Exact<{
   applicationId: Scalars['ID']['input'];
 }>;
 
 
-export type RefillBenefitsApplicationMutation = { __typename?: 'Mutation', refillBenefitsApplication: { __typename?: 'BenefitsApplication', id: string, status: BenefitsApplicationStatus, failureReason?: string | null, draftDocumentPath?: string | null, finalDocumentPath?: string | null, createdAt: string, updatedAt: string, approvedAt?: string | null, form: { __typename?: 'BenefitsForm', id: string, key: string, status: BenefitsFormStatus, program: string, country: string, state?: string | null, formCode: string, formTitle: string, formVersion: string, revision: number, pageCount: number, templateKind: BenefitsTemplateKind, agencyUrl?: string | null, mappedFieldCount: number, fillableFieldCount: number, effectiveDate?: string | null, sourceUrl?: string | null, retrievedAt?: string | null }, filledFields: Array<{ __typename?: 'BenefitsFilledField', fieldId: string, label: string, fieldPath?: string | null, page: number, source: BenefitsValueSource, text?: string | null, checked?: boolean | null, isCheckbox: boolean, isSensitive: boolean }>, missingFields: Array<{ __typename?: 'BenefitsMissingField', fieldPath: string, label: string, question: string, group: string, answerKind: BenefitsValueKind, choices: Array<string>, strength: BenefitsFieldStrength, isSensitive: boolean, isDerived: boolean, formFieldIds: Array<string> }>, problems: Array<{ __typename?: 'BenefitsFieldProblem', fieldId: string, fieldPath?: string | null, reason: string }>, skippedFields: Array<{ __typename?: 'BenefitsSkippedField', fieldId: string, reason: BenefitsSkipReason, note?: string | null }> } };
+export type RefillBenefitsApplicationMutation = { __typename?: 'Mutation', refillBenefitsApplication: { __typename?: 'BenefitsApplication', id: string, status: BenefitsApplicationStatus, failureReason?: string | null, draftDocumentPath?: string | null, finalDocumentPath?: string | null, createdAt: string, updatedAt: string, approvedAt?: string | null, signedName?: string | null, signedAt?: string | null, confirmationNumber?: string | null, confirmationRecordedAt?: string | null, form: { __typename?: 'BenefitsForm', id: string, key: string, status: BenefitsFormStatus, program: string, country: string, state?: string | null, formCode: string, formTitle: string, formVersion: string, revision: number, pageCount: number, templateKind: BenefitsTemplateKind, agencyUrl?: string | null, mappedFieldCount: number, fillableFieldCount: number, effectiveDate?: string | null, sourceUrl?: string | null, retrievedAt?: string | null }, filledFields: Array<{ __typename?: 'BenefitsFilledField', fieldId: string, label: string, fieldPath?: string | null, page: number, source: BenefitsValueSource, text?: string | null, checked?: boolean | null, isCheckbox: boolean, isSensitive: boolean }>, missingFields: Array<{ __typename?: 'BenefitsMissingField', fieldPath: string, label: string, question: string, group: string, answerKind: BenefitsValueKind, choices: Array<string>, strength: BenefitsFieldStrength, isSensitive: boolean, isDerived: boolean, formFieldIds: Array<string> }>, problems: Array<{ __typename?: 'BenefitsFieldProblem', fieldId: string, fieldPath?: string | null, reason: string }>, skippedFields: Array<{ __typename?: 'BenefitsSkippedField', fieldId: string, reason: BenefitsSkipReason, note?: string | null }> } };
 
 export type ApproveBenefitsApplicationMutationVariables = Exact<{
   applicationId: Scalars['ID']['input'];
+  signedName: Scalars['String']['input'];
+  attestationAccepted: Scalars['Boolean']['input'];
 }>;
 
 
-export type ApproveBenefitsApplicationMutation = { __typename?: 'Mutation', approveBenefitsApplication: { __typename?: 'BenefitsApplication', id: string, status: BenefitsApplicationStatus, failureReason?: string | null, draftDocumentPath?: string | null, finalDocumentPath?: string | null, createdAt: string, updatedAt: string, approvedAt?: string | null, form: { __typename?: 'BenefitsForm', id: string, key: string, status: BenefitsFormStatus, program: string, country: string, state?: string | null, formCode: string, formTitle: string, formVersion: string, revision: number, pageCount: number, templateKind: BenefitsTemplateKind, agencyUrl?: string | null, mappedFieldCount: number, fillableFieldCount: number, effectiveDate?: string | null, sourceUrl?: string | null, retrievedAt?: string | null }, filledFields: Array<{ __typename?: 'BenefitsFilledField', fieldId: string, label: string, fieldPath?: string | null, page: number, source: BenefitsValueSource, text?: string | null, checked?: boolean | null, isCheckbox: boolean, isSensitive: boolean }>, missingFields: Array<{ __typename?: 'BenefitsMissingField', fieldPath: string, label: string, question: string, group: string, answerKind: BenefitsValueKind, choices: Array<string>, strength: BenefitsFieldStrength, isSensitive: boolean, isDerived: boolean, formFieldIds: Array<string> }>, problems: Array<{ __typename?: 'BenefitsFieldProblem', fieldId: string, fieldPath?: string | null, reason: string }>, skippedFields: Array<{ __typename?: 'BenefitsSkippedField', fieldId: string, reason: BenefitsSkipReason, note?: string | null }> } };
+export type ApproveBenefitsApplicationMutation = { __typename?: 'Mutation', approveBenefitsApplication: { __typename?: 'BenefitsApplication', id: string, status: BenefitsApplicationStatus, failureReason?: string | null, draftDocumentPath?: string | null, finalDocumentPath?: string | null, createdAt: string, updatedAt: string, approvedAt?: string | null, signedName?: string | null, signedAt?: string | null, confirmationNumber?: string | null, confirmationRecordedAt?: string | null, form: { __typename?: 'BenefitsForm', id: string, key: string, status: BenefitsFormStatus, program: string, country: string, state?: string | null, formCode: string, formTitle: string, formVersion: string, revision: number, pageCount: number, templateKind: BenefitsTemplateKind, agencyUrl?: string | null, mappedFieldCount: number, fillableFieldCount: number, effectiveDate?: string | null, sourceUrl?: string | null, retrievedAt?: string | null }, filledFields: Array<{ __typename?: 'BenefitsFilledField', fieldId: string, label: string, fieldPath?: string | null, page: number, source: BenefitsValueSource, text?: string | null, checked?: boolean | null, isCheckbox: boolean, isSensitive: boolean }>, missingFields: Array<{ __typename?: 'BenefitsMissingField', fieldPath: string, label: string, question: string, group: string, answerKind: BenefitsValueKind, choices: Array<string>, strength: BenefitsFieldStrength, isSensitive: boolean, isDerived: boolean, formFieldIds: Array<string> }>, problems: Array<{ __typename?: 'BenefitsFieldProblem', fieldId: string, fieldPath?: string | null, reason: string }>, skippedFields: Array<{ __typename?: 'BenefitsSkippedField', fieldId: string, reason: BenefitsSkipReason, note?: string | null }> } };
+
+export type RecordBenefitsConfirmationMutationVariables = Exact<{
+  applicationId: Scalars['ID']['input'];
+  confirmationNumber: Scalars['String']['input'];
+}>;
+
+
+export type RecordBenefitsConfirmationMutation = { __typename?: 'Mutation', recordBenefitsConfirmation: { __typename?: 'BenefitsApplication', id: string, status: BenefitsApplicationStatus, failureReason?: string | null, draftDocumentPath?: string | null, finalDocumentPath?: string | null, createdAt: string, updatedAt: string, approvedAt?: string | null, signedName?: string | null, signedAt?: string | null, confirmationNumber?: string | null, confirmationRecordedAt?: string | null, form: { __typename?: 'BenefitsForm', id: string, key: string, status: BenefitsFormStatus, program: string, country: string, state?: string | null, formCode: string, formTitle: string, formVersion: string, revision: number, pageCount: number, templateKind: BenefitsTemplateKind, agencyUrl?: string | null, mappedFieldCount: number, fillableFieldCount: number, effectiveDate?: string | null, sourceUrl?: string | null, retrievedAt?: string | null }, filledFields: Array<{ __typename?: 'BenefitsFilledField', fieldId: string, label: string, fieldPath?: string | null, page: number, source: BenefitsValueSource, text?: string | null, checked?: boolean | null, isCheckbox: boolean, isSensitive: boolean }>, missingFields: Array<{ __typename?: 'BenefitsMissingField', fieldPath: string, label: string, question: string, group: string, answerKind: BenefitsValueKind, choices: Array<string>, strength: BenefitsFieldStrength, isSensitive: boolean, isDerived: boolean, formFieldIds: Array<string> }>, problems: Array<{ __typename?: 'BenefitsFieldProblem', fieldId: string, fieldPath?: string | null, reason: string }>, skippedFields: Array<{ __typename?: 'BenefitsSkippedField', fieldId: string, reason: BenefitsSkipReason, note?: string | null }> } };
 
 export type DeleteBenefitsApplicationMutationVariables = Exact<{
   applicationId: Scalars['ID']['input'];
@@ -1656,6 +1758,29 @@ export type DeleteBenefitsApplicationMutationVariables = Exact<{
 
 
 export type DeleteBenefitsApplicationMutation = { __typename?: 'Mutation', deleteBenefitsApplication: boolean };
+
+export type BenefitsStateFromZipQueryVariables = Exact<{
+  zip: Scalars['String']['input'];
+}>;
+
+
+export type BenefitsStateFromZipQuery = { __typename?: 'Query', benefitsStateFromZip: { __typename?: 'BenefitsStateLookup', zip: string, state?: string | null, detail: string } };
+
+export type BenefitsPortalQueryVariables = Exact<{
+  program: Scalars['String']['input'];
+  state: Scalars['String']['input'];
+}>;
+
+
+export type BenefitsPortalQuery = { __typename?: 'Query', benefitsPortal: { __typename?: 'BenefitsPortal', program: string, state: string, url?: string | null, verified: boolean, fallbackGuidance: string } };
+
+export type BenefitsChecklistQueryVariables = Exact<{
+  program: Scalars['String']['input'];
+  state: Scalars['String']['input'];
+}>;
+
+
+export type BenefitsChecklistQuery = { __typename?: 'Query', benefitsChecklist: Array<{ __typename?: 'BenefitsChecklistSection', phase: string, title: string, items: Array<{ __typename?: 'BenefitsChecklistItem', label: string, detail?: string | null, confirmOnPortal: boolean }> }> };
 
 export type CostRangeFieldsFragment = { __typename?: 'CostRange', point: number, low: number, high: number, confidence: DataConfidence, tierMix?: any | null, basis?: string | null };
 

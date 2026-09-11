@@ -136,3 +136,54 @@ export function centsToMoney(cents: number): string {
 export function joinDocumentUrl(apiUrl: string, path: string): string {
   return apiUrl.replace(/\/graphql\/?$/, "").replace(/\/$/, "") + path;
 }
+
+/**
+ * The slice of the local app profile the questionnaire may pre-fill from:
+ * what the user already gave during onboarding or in their profile. Nothing
+ * here is sensitive, and nothing is invented — a blank local value pre-fills
+ * nothing.
+ */
+export type LocalProfilePrefill = {
+  firstName: string;
+  lastName: string;
+  phone: string;
+  zip: string;
+  householdSize: number;
+};
+
+/**
+ * Field paths the server's vocabulary uses for the facts the local profile
+ * already holds. Kept as an explicit allow-list: prefill must never reach
+ * for a question it does not understand.
+ */
+const PREFILL_PATHS: Record<string, (profile: LocalProfilePrefill) => string> = {
+  "applicant.first_name": (profile) => profile.firstName,
+  "applicant.last_name": (profile) => profile.lastName,
+  "contact.phone_primary": (profile) => profile.phone,
+  "address.residential.postal_code": (profile) => profile.zip,
+  "household.size": (profile) => (profile.householdSize > 0 ? String(profile.householdSize) : ""),
+};
+
+/**
+ * Seeds answers from the local profile so the applicant does not retype what
+ * they already gave. Only questions the server reports as missing are
+ * eligible, only non-blank local values are used, and anything already typed
+ * wins over the seed. The seeded text goes through answerFrom at save time,
+ * so NUMBER/MONEY/DATE validation still applies.
+ */
+export function prefillAnswersFromProfile(
+  fields: Pick<BenefitsMissingField, "fieldPath" | "answerKind">[],
+  profile: LocalProfilePrefill,
+  existing: Record<string, string>,
+): Record<string, string> {
+  const seeded: Record<string, string> = {};
+  for (const field of fields) {
+    const source = PREFILL_PATHS[field.fieldPath];
+    if (!source) continue;
+    if (existing[field.fieldPath] !== undefined && existing[field.fieldPath] !== "") continue;
+    const value = source(profile).trim();
+    if (value === "") continue;
+    seeded[field.fieldPath] = value;
+  }
+  return seeded;
+}

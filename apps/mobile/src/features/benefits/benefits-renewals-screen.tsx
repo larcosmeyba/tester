@@ -7,11 +7,14 @@
  * Program names appear here freely; they never appear in push copy.
  */
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { AppButton, AppHeader, Card, EmptyState, ScrollScreen, uiText } from '@/components/hive-ui';
 import { HiveColors, Spacing } from '@/constants/theme';
+import {
+  useBenefitsParams,
+  useBenefitsRouter,
+} from '@/features/benefits/benefits-shell-bridge';
 import {
   type BenefitsRenewal,
   dismissBenefitsRenewal,
@@ -46,8 +49,8 @@ function UrgencyChip({ daysRemaining }: { daysRemaining: number }) {
 }
 
 export default function BenefitsRenewalsScreen() {
-  const router = useRouter();
-  const { renewalId } = useLocalSearchParams<{ renewalId?: string }>();
+  const router = useBenefitsRouter();
+  const { renewalId } = useBenefitsParams<{ renewalId?: string }>();
 
   const [renewals, setRenewals] = useState<BenefitsRenewal[] | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);

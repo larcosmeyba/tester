@@ -220,6 +220,25 @@ func benefitsApplicationModel(application benefits.Application) *model.BenefitsA
 		approved := db.FormatTime(*record.ApprovedAt)
 		out.ApprovedAt = &approved
 	}
+	// The typed signature is the applicant's own act: it is surfaced so the
+	// app can show what was signed, and it is never pre-filled — null until
+	// the applicant approves.
+	if record.SignedName != nil {
+		name := *record.SignedName
+		out.SignedName = &name
+	}
+	if record.SignedAt != nil {
+		signed := db.FormatTime(*record.SignedAt)
+		out.SignedAt = &signed
+	}
+	if record.ConfirmationNumber != nil {
+		number := *record.ConfirmationNumber
+		out.ConfirmationNumber = &number
+	}
+	if record.ConfirmationRecordedAt != nil {
+		recorded := db.FormatTime(*record.ConfirmationRecordedAt)
+		out.ConfirmationRecordedAt = &recorded
+	}
 	if application.HasDraft {
 		path := benefitsDocumentPath(record.ID, "draft")
 		out.DraftDocumentPath = &path
@@ -472,4 +491,42 @@ func benefitsProgramRuleModel(rule db.BenefitsProgramRule) *model.BenefitsProgra
 		SourceCitation:   rule.SourceCitation,
 		Notes:            rule.Notes,
 	}
+}
+
+// ---------------------------------------------------------------------------
+// Submission Phase 1: state lookup, portal routing, checklist
+// ---------------------------------------------------------------------------
+
+func benefitsStateLookupModel(lookup benefits.StateLookup) *model.BenefitsStateLookup {
+	return &model.BenefitsStateLookup{
+		Zip:    lookup.Zip,
+		State:  lookup.State,
+		Detail: lookup.Detail,
+	}
+}
+
+func benefitsPortalModel(portal benefits.Portal) *model.BenefitsPortal {
+	return &model.BenefitsPortal{
+		Program:          portal.Program,
+		State:            portal.State,
+		URL:              portal.URL,
+		Verified:         portal.Verified,
+		FallbackGuidance: portal.FallbackGuidance,
+	}
+}
+
+func benefitsChecklistSectionModel(section benefits.ChecklistSection) *model.BenefitsChecklistSection {
+	out := &model.BenefitsChecklistSection{
+		Phase: section.Phase,
+		Title: section.Title,
+		Items: make([]*model.BenefitsChecklistItem, 0, len(section.Items)),
+	}
+	for _, item := range section.Items {
+		out.Items = append(out.Items, &model.BenefitsChecklistItem{
+			Label:           item.Label,
+			Detail:          item.Detail,
+			ConfirmOnPortal: item.ConfirmOnPortal,
+		})
+	}
+	return out
 }

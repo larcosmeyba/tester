@@ -7,16 +7,16 @@
  * renewal metadata lives only in memory, like the rest of the benefits data.
  */
 import { useEffect, useState } from 'react';
-import { useRouter } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { Card } from '@/components/hive-ui';
 import { HiveColors, Spacing } from '@/constants/theme';
 import { type BenefitsRenewal, fetchBenefitsRenewals } from '@/features/benefits/benefits-repository';
 import { renewalNeedsAttention } from '@/features/benefits/benefits-renewals';
+import { useBenefitsRouter } from '@/features/benefits/benefits-shell-bridge';
 
 export function BenefitsRenewalBanner() {
-  const router = useRouter();
+  const router = useBenefitsRouter();
   const [due, setDue] = useState<BenefitsRenewal[] | null>(null);
 
   useEffect(() => {

@@ -17,7 +17,6 @@
  * questions and filled by answering the ones it is derived from.
  */
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useLocalSearchParams, useRouter } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
 
 import {
@@ -32,16 +31,22 @@ import {
 } from '@/components/hive-ui';
 import { HiveColors, Spacing } from '@/constants/theme';
 import {
+  useBenefitsParams,
+  useBenefitsRouter,
+} from '@/features/benefits/benefits-shell-bridge';
+import {
   type BenefitsApplication,
   type BenefitsMissingField,
   answerFrom,
   fetchBenefitsApplication,
   groupQuestions,
   noneAnswer,
+  prefillAnswersFromProfile,
   questionsToAsk,
   refillBenefitsApplication,
   saveBenefitsAnswers,
 } from '@/features/benefits/benefits-repository';
+import { useAppState } from '@/state/app-state';
 
 const groupTitles: Record<string, string> = {
   applicant: 'About you',
@@ -59,8 +64,16 @@ const groupTitles: Record<string, string> = {
 };
 
 export default function BenefitsQuestionnaireScreen() {
-  const router = useRouter();
-  const { applicationId } = useLocalSearchParams<{ applicationId?: string }>();
+  const router = useBenefitsRouter();
+  const { applicationId } = useBenefitsParams<{ applicationId?: string }>();
+  const app = useAppState();
+  // Scalar fields, not the profile object, so the load effect only re-runs
+  // when something the prefill actually uses changes.
+  const { firstName, lastName, phone, zip, householdSize } = app.profile;
+  const prefillProfile = useMemo(
+    () => ({ firstName, lastName, phone, zip, householdSize }),
+    [firstName, lastName, phone, zip, householdSize],
+  );
 
   const [application, setApplication] = useState<BenefitsApplication | null>(null);
   const [answers, setAnswers] = useState<Record<string, string>>({});
@@ -84,6 +97,14 @@ export default function BenefitsQuestionnaireScreen() {
           return;
         }
         setApplication(result);
+        // Pre-fill from what the user already gave in onboarding or their
+        // profile, before the first save, so they don't retype it. The
+        // seeded values stay editable like any other answer, and anything
+        // already typed wins over the seed.
+        setAnswers((current) => ({
+          ...prefillAnswersFromProfile(questionsToAsk(result), prefillProfile, current),
+          ...current,
+        }));
       })
       .catch((cause: unknown) => {
         if (!cancelled) setError(cause instanceof Error ? cause.message : 'Could not load the application.');
@@ -91,7 +112,7 @@ export default function BenefitsQuestionnaireScreen() {
     return () => {
       cancelled = true;
     };
-  }, [applicationId]);
+  }, [applicationId, prefillProfile]);
 
   const sections = useMemo(
     () => (application ? groupQuestions(questionsToAsk(application)) : []),

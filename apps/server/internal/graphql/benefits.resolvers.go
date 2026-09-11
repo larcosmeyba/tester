@@ -79,7 +79,7 @@ func (r *mutationResolver) RefillBenefitsApplication(ctx context.Context, applic
 }
 
 // ApproveBenefitsApplication is the resolver for the approveBenefitsApplication field.
-func (r *mutationResolver) ApproveBenefitsApplication(ctx context.Context, applicationID string) (*model.BenefitsApplication, error) {
+func (r *mutationResolver) ApproveBenefitsApplication(ctx context.Context, applicationID string, signedName string, attestationAccepted bool) (*model.BenefitsApplication, error) {
 	identity, err := auth.RequireIdentity(ctx)
 	if err != nil {
 		return nil, err
@@ -87,7 +87,7 @@ func (r *mutationResolver) ApproveBenefitsApplication(ctx context.Context, appli
 	if err := r.benefits(); err != nil {
 		return nil, err
 	}
-	application, err := r.Benefits.Approve(ctx, identity, applicationID)
+	application, err := r.Benefits.Approve(ctx, identity, applicationID, signedName, attestationAccepted)
 	if err != nil {
 		return nil, benefitsError(err)
 	}
@@ -108,6 +108,22 @@ func (r *mutationResolver) DeleteBenefitsApplication(ctx context.Context, applic
 		return false, benefitsError(err)
 	}
 	return deleted, nil
+}
+
+// RecordBenefitsConfirmation is the resolver for the recordBenefitsConfirmation field.
+func (r *mutationResolver) RecordBenefitsConfirmation(ctx context.Context, applicationID string, confirmationNumber string) (*model.BenefitsApplication, error) {
+	identity, err := auth.RequireIdentity(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if err := r.benefits(); err != nil {
+		return nil, err
+	}
+	application, err := r.Benefits.RecordBenefitsConfirmation(ctx, identity, applicationID, confirmationNumber)
+	if err != nil {
+		return nil, benefitsError(err)
+	}
+	return benefitsApplicationModel(application), nil
 }
 
 // ConfirmBenefitsRenewalDeadline is the resolver for the confirmBenefitsRenewalDeadline field.
@@ -300,6 +316,45 @@ func (r *queryResolver) BenefitsProgramRules(ctx context.Context, program *strin
 	out := make([]*model.BenefitsProgramRule, 0, len(rules))
 	for _, rule := range rules {
 		out = append(out, benefitsProgramRuleModel(rule))
+	}
+	return out, nil
+}
+
+// BenefitsStateFromZip is the resolver for the benefitsStateFromZip field.
+// Reference data: the same for everybody, so no identity is required.
+func (r *queryResolver) BenefitsStateFromZip(ctx context.Context, zip string) (*model.BenefitsStateLookup, error) {
+	if err := r.benefits(); err != nil {
+		return nil, err
+	}
+	return benefitsStateLookupModel(r.Benefits.StateFromZip(zip)), nil
+}
+
+// BenefitsPortal is the resolver for the benefitsPortal field.
+// Reference data: the same for everybody, so no identity is required.
+func (r *queryResolver) BenefitsPortal(ctx context.Context, program string, state string) (*model.BenefitsPortal, error) {
+	if err := r.benefits(); err != nil {
+		return nil, err
+	}
+	portal, err := r.Benefits.PortalFor(program, state)
+	if err != nil {
+		return nil, benefitsError(err)
+	}
+	return benefitsPortalModel(portal), nil
+}
+
+// BenefitsChecklist is the resolver for the benefitsChecklist field.
+// Reference data: the same for everybody, so no identity is required.
+func (r *queryResolver) BenefitsChecklist(ctx context.Context, program string, state string) ([]*model.BenefitsChecklistSection, error) {
+	if err := r.benefits(); err != nil {
+		return nil, err
+	}
+	sections, err := r.Benefits.Checklist(program, state)
+	if err != nil {
+		return nil, benefitsError(err)
+	}
+	out := make([]*model.BenefitsChecklistSection, 0, len(sections))
+	for _, section := range sections {
+		out = append(out, benefitsChecklistSectionModel(section))
 	}
 	return out, nil
 }

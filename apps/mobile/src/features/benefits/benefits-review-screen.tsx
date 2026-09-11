@@ -12,11 +12,14 @@
  */
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Linking, StyleSheet, Text, View } from 'react-native';
-import { useLocalSearchParams, useRouter } from 'expo-router';
 
-import { AppButton, AppHeader, Card, ScrollScreen, uiText } from '@/components/hive-ui';
+import { AppButton, AppHeader, AppTextField, Card, CheckboxRow, ScrollScreen, uiText } from '@/components/hive-ui';
 import { HiveColors, Spacing } from '@/constants/theme';
 import { BenefitsDatePicker } from '@/features/benefits/benefits-date-picker';
+import {
+  useBenefitsParams,
+  useBenefitsRouter,
+} from '@/features/benefits/benefits-shell-bridge';
 import {
   type BenefitsApplication,
   approveBenefitsApplication,
@@ -32,15 +35,26 @@ import {
   ruleForProgram,
   typicalPeriodLabel,
 } from '@/features/benefits/benefits-renewals';
+import { isSignatureComplete } from '@/features/benefits/benefits-signature';
 
 export default function BenefitsReviewScreen() {
-  const router = useRouter();
-  const { programId } = useLocalSearchParams<{ programId?: string }>();
-  const applicationId = programId;
+  const router = useBenefitsRouter();
+  // The expo route is /resources/applications/[programId] (a legacy name —
+  // the value has always been the application id); the shell passes
+  // applicationId directly. Either is accepted.
+  const { programId, applicationId: shellApplicationId } = useBenefitsParams<{
+    programId?: string;
+    applicationId?: string;
+  }>();
+  const applicationId = shellApplicationId ?? programId;
 
   const [application, setApplication] = useState<BenefitsApplication | null>(null);
   const [error, setError] = useState('');
   const [approving, setApproving] = useState(false);
+  // The signature is typed, never pre-filled: the server refuses a blank
+  // name, and pre-filling would sign the applicant's name for them.
+  const [signedName, setSignedName] = useState('');
+  const [attestationAccepted, setAttestationAccepted] = useState(false);
   // The post-approval deadline prompt. Shown once, right after approval, so the
   // user can confirm the certification end that the renewal schedule will use.
   // Skipping is safe: the renewal already exists with the rule-derived default.
@@ -132,10 +146,17 @@ export default function BenefitsReviewScreen() {
 
   const approve = useCallback(async () => {
     if (!application) return;
+    // Belt and braces: the button is disabled until the signature is
+    // complete, but the handler refuses anyway rather than trusting the UI.
+    if (!isSignatureComplete(signedName, attestationAccepted)) return;
     setApproving(true);
     setError('');
     try {
-      const approved = await approveBenefitsApplication(application.id);
+      const approved = await approveBenefitsApplication(
+        application.id,
+        signedName.trim(),
+        attestationAccepted,
+      );
       setApplication(approved);
       if (approved.status === 'COMPLETED') {
         void promptForRenewalDeadline(approved);
@@ -145,7 +166,7 @@ export default function BenefitsReviewScreen() {
     } finally {
       setApproving(false);
     }
-  }, [application, promptForRenewalDeadline]);
+  }, [application, attestationAccepted, promptForRenewalDeadline, signedName]);
 
   const confirmDeadline = useCallback(async () => {
     if (!deadlinePrompt || confirmingDeadline) return;
@@ -283,13 +304,45 @@ export default function BenefitsReviewScreen() {
           </Card>
         ))}
 
-        <Card>
-          <Text style={uiText.subtitle}>Signature</Text>
-          <Text style={uiText.muted}>
-            The signature and the date beside it are left blank on purpose. Help The Hive does not
-            sign an application for you — you sign it, and you submit it to the agency yourself.
-          </Text>
-        </Card>
+        {approved ? (
+          <Card>
+            <Text style={uiText.subtitle}>Signature</Text>
+            <Text style={uiText.muted}>
+              Signed by {application.signedName ?? 'you'}
+              {application.signedAt ? ` on ${new Date(application.signedAt).toLocaleDateString()}` : ''}.
+              The completed PDF is final and can no longer be edited.
+            </Text>
+            <AppButton
+              title="Continue to the official portal"
+              onPress={() => router.push(`/resources/benefits-zip?applicationId=${application.id}`)}
+            />
+            <Text style={uiText.muted}>
+              Nothing has been submitted to an agency. You apply on the state&apos;s own website —
+              Help The Hive never sees your login and never submits for you.
+            </Text>
+          </Card>
+        ) : (
+          <Card>
+            <Text style={uiText.subtitle}>Sign to finish</Text>
+            <Text style={uiText.muted}>
+              Type your full name exactly as it should appear on the application. It is never
+              filled in for you — only you can sign.
+            </Text>
+            <AppTextField
+              label="Full name"
+              value={signedName}
+              onChangeText={setSignedName}
+              placeholder="Type your full name"
+              autoCapitalize="words"
+            />
+            <CheckboxRow
+              title="I've reviewed everything above"
+              subtitle="I understand this prepares my application paperwork — it does not submit anything to an agency. I apply on the official portal myself."
+              selected={attestationAccepted}
+              onPress={() => setAttestationAccepted((current) => !current)}
+            />
+          </Card>
+        )}
 
         {error !== '' ? <Text style={styles.error}>{error}</Text> : null}
 
@@ -300,17 +353,18 @@ export default function BenefitsReviewScreen() {
           />
         ) : null}
 
-        {approved ? (
-          <Text style={styles.approved}>
-            Approved. The completed PDF is final and can no longer be edited.
-          </Text>
-        ) : (
+        {!approved ? (
           <AppButton
             title={approving ? 'Finishing…' : 'Approve and finish'}
-            onPress={approve}
-            disabled={approving || outstanding.length > 0 || application.problems.length > 0}
+            onPress={() => void approve()}
+            disabled={
+              approving ||
+              outstanding.length > 0 ||
+              application.problems.length > 0 ||
+              !isSignatureComplete(signedName, attestationAccepted)
+            }
           />
-        )}
+        ) : null}
       </View>
     </ScrollScreen>
   );
@@ -326,5 +380,4 @@ const styles = StyleSheet.create({
   rowValue: { color: HiveColors.text, fontSize: 15 },
   rowNote: { color: HiveColors.textSecondary, fontSize: 11, fontStyle: 'italic' },
   error: { color: HiveColors.danger, fontSize: 13 },
-  approved: { color: HiveColors.success, fontSize: 13 },
 });

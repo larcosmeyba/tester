@@ -15,13 +15,23 @@ import { useAuth } from '@/auth/auth-context';
 import { AppButton, AppLogo, ModalSheet, PennyImage, Screen, uiText } from '@/components/hive-ui';
 import { FloatingTabBar, type TabItem } from '@/components/hive-navigation';
 import { MealPlanScreen as WeeklyMealPlanScreen } from '@/features/meals/meal-plan-screen';
-import { allVideos, type BenefitProgram, type MealRecipe, type ResourceItem, transactions, type VideoItem } from '@/data/mock-data';
+import { allVideos, type MealRecipe, type ResourceItem, transactions, type VideoItem } from '@/data/mock-data';
 import { useAppState } from '@/state/app-state';
 import { ForgotPasswordScreen, LoginScreen, SignUpScreen, VerifyScreen, WelcomeScreen } from '@/features/auth/auth-screens';
 import { OnboardingScreen } from '@/features/onboarding/onboarding-screens';
 import { HomeScreen } from '@/features/home/home-screen';
 import { PennyScreen } from '@/features/penny/penny-screen';
-import { BenefitsQuestionnaireScreen, GovernmentScreen, ProgramApplicationScreen, ResourceDetailsScreen, ResourceSearchScreen, ResourcesScreen, VideoDetailScreen, VideoHubScreen } from '@/features/resources/resources-screens';
+import { ResourceDetailsScreen, ResourceSearchScreen, ResourcesScreen, VideoDetailScreen, VideoHubScreen } from '@/features/resources/resources-screens';
+import {
+  BenefitsChecklistShellRoute,
+  BenefitsConfirmationShellRoute,
+  BenefitsPortalShellRoute,
+  BenefitsQuestionnaireShellRoute,
+  BenefitsRenewalsShellRoute,
+  BenefitsReviewShellRoute,
+  BenefitsZipShellRoute,
+  GovernmentShellRoute,
+} from '@/features/benefits/benefits-shell-routes';
 import { BudgetSettingsScreen, ConnectAccountScreen, FinanceScreen, SpendingReportScreen, TransactionsScreen } from '@/features/budget/budget-screens';
 import { AddPantryScreen, PantryScreen, ScanPantryScreen } from '@/features/pantry/pantry-screens';
 import { AccountScreen, ChangeEmailScreen, DeleteAccountScreen, EditHandleScreen, EditProfileScreen, FeedbackScreen, NotificationsScreen } from '@/features/profile/profile-screens';
@@ -135,11 +145,21 @@ export default function AppRoot({ initialPublicScreen }: { initialPublicScreen?:
     case 'resourceDetails':
       return <ResourceDetailsScreen nav={nav} resource={route.params?.resource as ResourceItem | undefined} />;
     case 'government':
-      return <GovernmentScreen nav={nav} />;
+      return <GovernmentShellRoute nav={nav} params={route.params} />;
     case 'benefitsQuestionnaire':
-      return <BenefitsQuestionnaireScreen nav={nav} programs={route.params?.programs as string[] | undefined} />;
-    case 'programApplication':
-      return <ProgramApplicationScreen nav={nav} program={route.params?.program as BenefitProgram | undefined} />;
+      return <BenefitsQuestionnaireShellRoute nav={nav} params={route.params} />;
+    case 'benefitsReview':
+      return <BenefitsReviewShellRoute nav={nav} params={route.params} />;
+    case 'benefitsRenewals':
+      return <BenefitsRenewalsShellRoute nav={nav} params={route.params} />;
+    case 'benefitsZip':
+      return <BenefitsZipShellRoute nav={nav} params={route.params} />;
+    case 'benefitsPortal':
+      return <BenefitsPortalShellRoute nav={nav} params={route.params} />;
+    case 'benefitsConfirmation':
+      return <BenefitsConfirmationShellRoute nav={nav} params={route.params} />;
+    case 'benefitsChecklist':
+      return <BenefitsChecklistShellRoute nav={nav} params={route.params} />;
     case 'financeHub':
       return <VideoHubScreen nav={nav} title="Finance Learning Hub" videos={allVideos.filter((video) => video.category === 'finance')} />;
     case 'spendingReport':

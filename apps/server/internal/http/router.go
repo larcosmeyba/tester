@@ -67,6 +67,10 @@ func NewRouter(cfg config.Config, verifier *auth.Verifier, readiness readinessCh
 	// the service — never a public or signed link to somebody's application.
 	router.With(auth.Middleware(verifier)).
 		Get("/benefits/applications/{applicationID}/pdf", BenefitsDocuments(resolver.Benefits, nil))
+	// The filing-kit answer sheet carries the same household data as the
+	// application, so it is served under the same auth and scoping.
+	router.With(auth.Middleware(verifier)).
+		Get("/benefits/applications/{applicationID}/filing-kit", BenefitsFilingKit(resolver.Benefits, nil))
 
 	// Penny. Two mounts, because the two callers are not the same kind of
 	// thing. /penny is a person holding a bearer token. /internal/penny/tools

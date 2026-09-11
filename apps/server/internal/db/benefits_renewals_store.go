@@ -152,6 +152,42 @@ func (s *Store) SetBenefitsRenewalStatus(ctx context.Context, userID, renewalID,
 	return tag.RowsAffected() > 0, nil
 }
 
+// BenefitsRenewalForApplication finds the renewal row keyed off one final
+// application, if any. The renewal is created at approval, so a completed
+// application normally has exactly one; older applications (from before the
+// renewal system existed) may have none.
+func (s *Store) BenefitsRenewalForApplication(ctx context.Context, userID, applicationID string) (BenefitsRenewal, error) {
+	row := s.pool.QueryRow(ctx, `
+		SELECT id, user_id, application_id, program, state, form_id,
+			certification_ends_at, renewal_due_at, source, status, reminder_stage,
+			created_at, updated_at
+		FROM benefits_renewals
+		WHERE user_id = $1 AND application_id = $2
+		ORDER BY created_at DESC
+		LIMIT 1
+	`, userID, applicationID)
+	return scanBenefitsRenewal(row)
+}
+
+// SetBenefitsRenewalSource changes where a renewal's deadline came from. It is
+// how recording a portal confirmation number feeds the renewal schedule: the
+// dates are untouched — only the source becomes user-confirmed — because the
+// deadline itself is never invented here.
+func (s *Store) SetBenefitsRenewalSource(ctx context.Context, userID, renewalID, source string) error {
+	tag, err := s.pool.Exec(ctx, `
+		UPDATE benefits_renewals
+		SET source = $3, updated_at = now()
+		WHERE id = $1 AND user_id = $2
+	`, renewalID, userID, source)
+	if err != nil {
+		return err
+	}
+	if tag.RowsAffected() == 0 {
+		return pgx.ErrNoRows
+	}
+	return nil
+}
+
 // DueBenefitsRenewalsForReminder is the sweep query. It returns renewals whose
 // due date is within the stage's offset and whose stage has not been sent yet.
 //

@@ -463,13 +463,18 @@ func (s *Service) fill(ctx context.Context, userID string, record db.BenefitsApp
 	}, nil
 }
 
-// Approve finalises an application: it flattens the document the applicant
-// reviewed and locks the record.
+// Approve finalises an application: it records the applicant's typed
+// signature and attestation, flattens the document the applicant reviewed,
+// and locks the record.
+//
+// The signature is never pre-filled: the server accepts only what the
+// applicant typed on the review screen. A blank name or a missing attestation
+// refuses the approval before anything is rendered or stored.
 //
 // An application with a required answer still missing, or with a field that
 // could not be written, cannot be approved. Submitting an incomplete or
 // mangled benefits form is worse for the applicant than not submitting one.
-func (s *Service) Approve(ctx context.Context, identity auth.Identity, applicationID string) (Application, error) {
+func (s *Service) Approve(ctx context.Context, identity auth.Identity, applicationID, signedName string, attestationAccepted bool) (Application, error) {
 	userID, err := s.userID(ctx, identity)
 	if err != nil {
 		return Application{}, err
@@ -483,6 +488,13 @@ func (s *Service) Approve(ctx context.Context, identity auth.Identity, applicati
 	}
 	if record.Status == StatusCompleted {
 		return Application{}, domain.ErrAlreadyApproved
+	}
+	// The signature is the applicant's own act, so its validity is checked
+	// before the form is even loaded: a refusal here costs nothing and leaves
+	// nothing half-written.
+	name, err := validateSignature(signedName, attestationAccepted)
+	if err != nil {
+		return Application{}, err
 	}
 	form, err := s.formFor(record)
 	if err != nil {
@@ -517,13 +529,21 @@ func (s *Service) Approve(ctx context.Context, identity auth.Identity, applicati
 		return Application{}, err
 	}
 
+	// One moment, one clock read: the approval time is the signature time.
 	approvedAt := s.now().UTC()
-	if err := s.store.SaveBenefitsApplicationOutcome(ctx, userID, record.ID, StatusCompleted, "", &approvedAt, auditFields(resolution)); err != nil {
+	// Status, signature and audit trail land in a single transaction, so an
+	// application can never read as approved without the signature it was
+	// approved with.
+	if err := s.store.SaveBenefitsApproval(ctx, userID, record.ID, name, approvedAt, &approvedAt, auditFields(resolution)); err != nil {
 		return Application{}, err
 	}
 	record.Status = StatusCompleted
 	record.ApprovedAt = &approvedAt
+	record.SignedName = &name
+	record.SignedAt = &approvedAt
 
+	// The log carries ids and hashes, never the signed name: the signature is
+	// the applicant's, not the operator's to read.
 	s.logger.Info("benefits application approved",
 		"application_id", record.ID,
 		"form", form.Key(),

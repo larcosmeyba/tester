@@ -56,6 +56,17 @@ type BenefitsApplication struct {
 	CreatedAt     time.Time
 	UpdatedAt     time.Time
 	ApprovedAt    *time.Time
+	// SignedName is the name the applicant typed on the review screen. It is
+	// never pre-filled: the server records only what the applicant typed.
+	SignedName *string
+	// SignedAt is when the applicant approved. Null until approved.
+	SignedAt *time.Time
+	// ConfirmationNumber is the confirmation number the applicant received
+	// after applying on the official portal, recorded verbatim. Null until
+	// the applicant records it.
+	ConfirmationNumber *string
+	// ConfirmationRecordedAt is when the confirmation number was recorded.
+	ConfirmationRecordedAt *time.Time
 }
 
 // BenefitsApplicationField is the audit trail: which profile answer fed which
@@ -263,14 +274,16 @@ func (s *Store) CreateBenefitsApplication(ctx context.Context, application Benef
 	row := s.pool.QueryRow(ctx, `
 		INSERT INTO benefits_applications (id, user_id, form_id, form_version, form_revision, status)
 		VALUES ($1, $2, $3, $4, $5, $6)
-		RETURNING id, user_id, form_id, form_version, form_revision, status, failure_reason, created_at, updated_at, approved_at
+		RETURNING id, user_id, form_id, form_version, form_revision, status, failure_reason, created_at, updated_at, approved_at,
+		          signed_name, signed_at, confirmation_number, confirmation_recorded_at
 	`, NewID(), application.UserID, application.FormID, application.FormVersion, application.FormRevision, application.Status)
 	return scanBenefitsApplication(row)
 }
 
 func (s *Store) BenefitsApplication(ctx context.Context, userID, applicationID string) (BenefitsApplication, error) {
 	row := s.pool.QueryRow(ctx, `
-		SELECT id, user_id, form_id, form_version, form_revision, status, failure_reason, created_at, updated_at, approved_at
+		SELECT id, user_id, form_id, form_version, form_revision, status, failure_reason, created_at, updated_at, approved_at,
+		       signed_name, signed_at, confirmation_number, confirmation_recorded_at
 		FROM benefits_applications
 		WHERE id = $1 AND user_id = $2
 	`, applicationID, userID)
@@ -279,7 +292,8 @@ func (s *Store) BenefitsApplication(ctx context.Context, userID, applicationID s
 
 func (s *Store) ListBenefitsApplications(ctx context.Context, userID string) ([]BenefitsApplication, error) {
 	rows, err := s.pool.Query(ctx, `
-		SELECT id, user_id, form_id, form_version, form_revision, status, failure_reason, created_at, updated_at, approved_at
+		SELECT id, user_id, form_id, form_version, form_revision, status, failure_reason, created_at, updated_at, approved_at,
+		       signed_name, signed_at, confirmation_number, confirmation_recorded_at
 		FROM benefits_applications
 		WHERE user_id = $1
 		ORDER BY updated_at DESC
@@ -336,6 +350,69 @@ func (s *Store) SaveBenefitsApplicationOutcome(ctx context.Context, userID, appl
 		}
 	}
 	return tx.Commit(ctx)
+}
+
+// SaveBenefitsApproval records an approval atomically: status, the flattened
+// document's approval time, the applicant's typed signature and the per-field
+// audit trail are written in one transaction, so an application can never read
+// as approved without the signature it was approved with.
+//
+// The signed name arrives here already validated (non-blank). The store does
+// not pre-fill, correct or normalise it beyond what the service stored: what
+// the applicant typed is what is recorded.
+func (s *Store) SaveBenefitsApproval(ctx context.Context, userID, applicationID, signedName string, signedAt time.Time, approvedAt *time.Time, fields []BenefitsApplicationField) error {
+	tx, err := s.pool.Begin(ctx)
+	if err != nil {
+		return err
+	}
+	defer rollback(ctx, tx)
+
+	tag, err := tx.Exec(ctx, `
+		UPDATE benefits_applications
+		SET status = $3, failure_reason = '', approved_at = $4,
+		    signed_name = $5, signed_at = $6, updated_at = now()
+		WHERE id = $1 AND user_id = $2
+	`, applicationID, userID, "completed", approvedAt, signedName, signedAt)
+	if err != nil {
+		return err
+	}
+	if tag.RowsAffected() == 0 {
+		return pgx.ErrNoRows
+	}
+
+	if _, err := tx.Exec(ctx,
+		`DELETE FROM benefits_application_fields WHERE application_id = $1`, applicationID); err != nil {
+		return err
+	}
+	for _, field := range fields {
+		if _, err := tx.Exec(ctx, `
+			INSERT INTO benefits_application_fields
+				(application_id, field_id, outcome, field_path, value_source, page, detail, is_sensitive)
+			VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
+		`, applicationID, field.FieldID, field.Outcome, field.FieldPath, field.ValueSource, field.Page, field.Detail, field.IsSensitive); err != nil {
+			return err
+		}
+	}
+	return tx.Commit(ctx)
+}
+
+// RecordBenefitsConfirmation stores the confirmation number the applicant
+// received after applying on the official portal, verbatim. The number arrives
+// already trimmed and non-empty; nothing here validates it against anything
+// external — Help The Hive never submits and never checks a portal.
+func (s *Store) RecordBenefitsConfirmation(ctx context.Context, userID, applicationID, confirmationNumber string, recordedAt time.Time) error {
+	tag, err := s.pool.Exec(ctx, `
+		UPDATE benefits_applications
+		SET confirmation_number = $3, confirmation_recorded_at = $4, updated_at = now()
+		WHERE id = $1 AND user_id = $2
+	`, applicationID, userID, confirmationNumber, recordedAt)
+	if err != nil {
+		return err
+	}
+	if tag.RowsAffected() == 0 {
+		return pgx.ErrNoRows
+	}
+	return nil
 }
 
 // BenefitsApplicationFields reads a run's audit trail.
@@ -478,7 +555,9 @@ func scanBenefitsApplication(row scanner) (BenefitsApplication, error) {
 	var application BenefitsApplication
 	err := row.Scan(&application.ID, &application.UserID, &application.FormID, &application.FormVersion,
 		&application.FormRevision, &application.Status, &application.FailureReason,
-		&application.CreatedAt, &application.UpdatedAt, &application.ApprovedAt)
+		&application.CreatedAt, &application.UpdatedAt, &application.ApprovedAt,
+		&application.SignedName, &application.SignedAt,
+		&application.ConfirmationNumber, &application.ConfirmationRecordedAt)
 	return application, err
 }
 

@@ -20,14 +20,22 @@ import type {
   BenefitsApplicationQueryVariables,
   BenefitsApplicationsQuery,
   BenefitsApplicationsQueryVariables,
+  BenefitsChecklistQuery,
+  BenefitsChecklistQueryVariables,
   BenefitsFieldVocabularyQuery,
   BenefitsFieldVocabularyQueryVariables,
   BenefitsFormsQuery,
   BenefitsFormsQueryVariables,
+  BenefitsPortalQuery,
+  BenefitsPortalQueryVariables,
   BenefitsProfileQuery,
   BenefitsProfileQueryVariables,
+  BenefitsStateFromZipQuery,
+  BenefitsStateFromZipQueryVariables,
   DeleteBenefitsApplicationMutation,
   DeleteBenefitsApplicationMutationVariables,
+  RecordBenefitsConfirmationMutation,
+  RecordBenefitsConfirmationMutationVariables,
   RefillBenefitsApplicationMutation,
   RefillBenefitsApplicationMutationVariables,
   SaveBenefitsAnswersMutation,
@@ -288,6 +296,10 @@ const APPLICATION_FIELDS = `
     createdAt
     updatedAt
     approvedAt
+    signedName
+    signedAt
+    confirmationNumber
+    confirmationRecordedAt
   }
 `;
 
@@ -365,10 +377,17 @@ export const RefillBenefitsApplicationDocument = `
 
 export const ApproveBenefitsApplicationDocument = `
   ${APPLICATION_FIELDS}
-  mutation ApproveBenefitsApplication($applicationId: ID!) {
-    approveBenefitsApplication(applicationId: $applicationId) { ...BenefitsApplicationFields }
+  mutation ApproveBenefitsApplication($applicationId: ID!, $signedName: String!, $attestationAccepted: Boolean!) {
+    approveBenefitsApplication(applicationId: $applicationId, signedName: $signedName, attestationAccepted: $attestationAccepted) { ...BenefitsApplicationFields }
   }
 ` as GraphQLDocument<ApproveBenefitsApplicationMutation, ApproveBenefitsApplicationMutationVariables>;
+
+export const RecordBenefitsConfirmationDocument = `
+  ${APPLICATION_FIELDS}
+  mutation RecordBenefitsConfirmation($applicationId: ID!, $confirmationNumber: String!) {
+    recordBenefitsConfirmation(applicationId: $applicationId, confirmationNumber: $confirmationNumber) { ...BenefitsApplicationFields }
+  }
+` as GraphQLDocument<RecordBenefitsConfirmationMutation, RecordBenefitsConfirmationMutationVariables>;
 
 export const DeleteBenefitsApplicationDocument = `
   mutation DeleteBenefitsApplication($applicationId: ID!) {
@@ -390,3 +409,48 @@ export const StartBenefitsRenewalApplicationDocument = `
   StartBenefitsRenewalApplicationMutation,
   StartBenefitsRenewalApplicationMutationVariables
 >;
+
+/**
+ * Submission Phase 1 documents: state detection from ZIP, the official
+ * portal for a program in a state, and the guided before/during/after
+ * checklist. Types come from the generated contract; the document text
+ * mirrors `packages/api-contract/operations/benefits.graphql`.
+ *
+ * The portal URL is never invented: it arrives verified against an official
+ * .gov source, or it is null and the app shows fallback guidance instead.
+ */
+export const BenefitsStateFromZipDocument = `
+  query BenefitsStateFromZip($zip: String!) {
+    benefitsStateFromZip(zip: $zip) {
+      zip
+      state
+      detail
+    }
+  }
+` as GraphQLDocument<BenefitsStateFromZipQuery, BenefitsStateFromZipQueryVariables>;
+
+export const BenefitsPortalDocument = `
+  query BenefitsPortal($program: String!, $state: String!) {
+    benefitsPortal(program: $program, state: $state) {
+      program
+      state
+      url
+      verified
+      fallbackGuidance
+    }
+  }
+` as GraphQLDocument<BenefitsPortalQuery, BenefitsPortalQueryVariables>;
+
+export const BenefitsChecklistDocument = `
+  query BenefitsChecklist($program: String!, $state: String!) {
+    benefitsChecklist(program: $program, state: $state) {
+      phase
+      title
+      items {
+        label
+        detail
+        confirmOnPortal
+      }
+    }
+  }
+` as GraphQLDocument<BenefitsChecklistQuery, BenefitsChecklistQueryVariables>;

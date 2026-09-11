@@ -6,12 +6,12 @@
  * server change rather than an app release.
  */
 import { useCallback, useEffect, useState } from 'react';
-import { useRouter } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { AppButton, AppHeader, Card, EmptyState, ScrollScreen, uiText } from '@/components/hive-ui';
 import { HiveColors, Spacing } from '@/constants/theme';
 import { BenefitsRenewalBanner } from '@/features/benefits/benefits-renewal-banner';
+import { useBenefitsRouter } from '@/features/benefits/benefits-shell-bridge';
 import {
   type BenefitsForm,
   fetchBenefitsForms,
@@ -19,7 +19,7 @@ import {
 } from '@/features/benefits/benefits-repository';
 
 export default function BenefitsProgramsScreen() {
-  const router = useRouter();
+  const router = useBenefitsRouter();
   const [forms, setForms] = useState<BenefitsForm[] | null>(null);
   const [error, setError] = useState('');
   const [starting, setStarting] = useState('');
