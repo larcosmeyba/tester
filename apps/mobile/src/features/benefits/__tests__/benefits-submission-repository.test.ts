@@ -27,6 +27,13 @@ jest.mock('@/graphql/client', () => ({
   graphqlClient: { request: jest.fn() },
 }));
 
+// The repository now gates on useMockServices from @/constants/env, whose
+// chain (dev-preview) reads the __DEV__ global that jest does not define.
+// Pin the flag false here: this suite tests the production GraphQL contract.
+jest.mock('@/constants/env', () => ({
+  useMockServices: false,
+}));
+
 // babel-preset-expo rewrites process.env.EXPO_PUBLIC_* to read from the
 // virtual env module, which is ESM and cannot load under jest's CJS runtime.
 // Mocking it also pins the API base the URL helpers build from.

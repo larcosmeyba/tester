@@ -10,11 +10,22 @@
  * Benefits answers are the most sensitive data in the product, so unlike the
  * rest of the app none of it is cached to AsyncStorage. It is fetched when a
  * screen needs it and held in memory only.
+ *
+ * Preview mode: when `useMockServices` is true (developer preview only, never
+ * production), every server call below delegates to the in-memory
+ * `./benefits-mock` service instead, so the whole flow works with no backend
+ * deployed. Production GraphQL behavior is unchanged.
  */
-import type { SaveBenefitsGroupInput } from "@helpthehive/api-contract";
+import type {
+  BenefitsAnswerInput,
+  SaveBenefitsGroupInput,
+} from "@helpthehive/api-contract";
 
 import type { BenefitsAnswer } from "@/features/benefits/benefits-answers";
 import { joinDocumentUrl } from "@/features/benefits/benefits-answers";
+import * as mockBenefits from "@/features/benefits/benefits-mock";
+
+import { useMockServices } from "@/constants/env";
 
 import { graphqlClient } from "@/graphql/client";
 import {
@@ -60,21 +71,25 @@ export type {
 export type { BenefitsAnswer } from "@/features/benefits/benefits-answers";
 
 export async function fetchBenefitsProfile() {
+  if (useMockServices) return mockBenefits.fetchBenefitsProfile();
   const result = await graphqlClient.request(BenefitsProfileDocument);
   return result.benefitsProfile;
 }
 
 export async function fetchBenefitsForms(state?: string, program?: string) {
+  if (useMockServices) return mockBenefits.fetchBenefitsForms(state, program);
   const result = await graphqlClient.request(BenefitsFormsDocument, { state, program });
   return result.benefitsForms;
 }
 
 export async function fetchBenefitsApplications() {
+  if (useMockServices) return mockBenefits.fetchBenefitsApplications();
   const result = await graphqlClient.request(BenefitsApplicationsDocument);
   return result.benefitsApplications;
 }
 
 export async function fetchBenefitsApplication(applicationId: string) {
+  if (useMockServices) return mockBenefits.fetchBenefitsApplication(applicationId);
   const result = await graphqlClient.request(BenefitsApplicationDocument, { applicationId });
   return result.benefitsApplication;
 }
@@ -84,26 +99,33 @@ export async function fetchBenefitsApplication(applicationId: string) {
  * is a server change rather than an app release.
  */
 export async function fetchBenefitsVocabulary() {
+  if (useMockServices) return mockBenefits.fetchBenefitsVocabulary();
   const result = await graphqlClient.request(BenefitsFieldVocabularyDocument);
   return result.benefitsFieldVocabulary;
 }
 
 export async function saveBenefitsAnswers(input: BenefitsAnswer[]) {
+  if (useMockServices) {
+    return mockBenefits.saveBenefitsAnswers(input as unknown as BenefitsAnswerInput[]);
+  }
   const result = await graphqlClient.request(SaveBenefitsAnswersDocument, { input });
   return result.saveBenefitsAnswers;
 }
 
 export async function saveBenefitsGroup(input: SaveBenefitsGroupInput) {
+  if (useMockServices) return mockBenefits.saveBenefitsGroup(input);
   const result = await graphqlClient.request(SaveBenefitsGroupDocument, { input });
   return result.saveBenefitsGroup;
 }
 
 export async function startBenefitsApplication(formId: string) {
+  if (useMockServices) return mockBenefits.startBenefitsApplication(formId);
   const result = await graphqlClient.request(StartBenefitsApplicationDocument, { formId });
   return result.startBenefitsApplication;
 }
 
 export async function refillBenefitsApplication(applicationId: string) {
+  if (useMockServices) return mockBenefits.refillBenefitsApplication(applicationId);
   const result = await graphqlClient.request(RefillBenefitsApplicationDocument, { applicationId });
   return result.refillBenefitsApplication;
 }
@@ -121,6 +143,7 @@ export async function approveBenefitsApplication(
   signedName: string,
   attestationAccepted: boolean,
 ) {
+  if (useMockServices) return mockBenefits.approveBenefitsApplication(applicationId, signedName);
   const result = await graphqlClient.request(ApproveBenefitsApplicationDocument, {
     applicationId,
     signedName,
@@ -135,6 +158,7 @@ export async function approveBenefitsApplication(
  * application becomes user-confirmed.
  */
 export async function recordBenefitsConfirmation(applicationId: string, confirmationNumber: string) {
+  if (useMockServices) return mockBenefits.recordBenefitsConfirmation(applicationId, confirmationNumber);
   const result = await graphqlClient.request(RecordBenefitsConfirmationDocument, {
     applicationId,
     confirmationNumber,
@@ -150,6 +174,7 @@ export async function recordBenefitsConfirmation(applicationId: string, confirma
  * the screen must say so rather than routing somewhere plausible.
  */
 export async function fetchStateFromZip(zip: string) {
+  if (useMockServices) return mockBenefits.fetchStateFromZip(zip);
   const result = await graphqlClient.request(BenefitsStateFromZipDocument, { zip });
   return result.benefitsStateFromZip;
 }
@@ -160,6 +185,7 @@ export async function fetchStateFromZip(zip: string) {
  * inventing one.
  */
 export async function fetchBenefitsPortal(program: string, state: string) {
+  if (useMockServices) return mockBenefits.fetchBenefitsPortal(program, state);
   const result = await graphqlClient.request(BenefitsPortalDocument, { program, state });
   return result.benefitsPortal;
 }
@@ -170,11 +196,13 @@ export async function fetchBenefitsPortal(program: string, state: string) {
  * invents.
  */
 export async function fetchBenefitsChecklist(program: string, state: string) {
+  if (useMockServices) return mockBenefits.fetchBenefitsChecklist(program, state);
   const result = await graphqlClient.request(BenefitsChecklistDocument, { program, state });
   return result.benefitsChecklist;
 }
 
 export async function deleteBenefitsApplication(applicationId: string) {
+  if (useMockServices) return mockBenefits.deleteBenefitsApplication(applicationId);
   const result = await graphqlClient.request(DeleteBenefitsApplicationDocument, { applicationId });
   return result.deleteBenefitsApplication;
 }
@@ -186,11 +214,13 @@ export async function deleteBenefitsApplication(applicationId: string) {
  */
 
 export async function fetchBenefitsRenewals() {
+  if (useMockServices) return mockBenefits.fetchBenefitsRenewals();
   const result = await graphqlClient.request(BenefitsRenewalsDocument);
   return result.benefitsRenewals;
 }
 
 export async function fetchBenefitsProgramRules(program?: string) {
+  if (useMockServices) return mockBenefits.fetchBenefitsProgramRules(program);
   const result = await graphqlClient.request(BenefitsProgramRulesDocument, { program });
   return result.benefitsProgramRules;
 }
@@ -206,6 +236,7 @@ export async function confirmBenefitsRenewalDeadline(
   renewalDueAt: string,
   certificationEndsAt?: string | null,
 ) {
+  if (useMockServices) return mockBenefits.confirmBenefitsRenewalDeadline(renewalId, renewalDueAt);
   const result = await graphqlClient.request(ConfirmBenefitsRenewalDeadlineDocument, {
     renewalId,
     renewalDueAt,
@@ -220,11 +251,13 @@ export async function confirmBenefitsRenewalDeadline(
  * one tap turns a reminder into a renewal draft.
  */
 export async function startBenefitsRenewalApplication(renewalId: string) {
+  if (useMockServices) return mockBenefits.startBenefitsRenewalApplication(renewalId);
   const result = await graphqlClient.request(StartBenefitsRenewalApplicationDocument, { renewalId });
   return result.startBenefitsRenewalApplication;
 }
 
 export async function dismissBenefitsRenewal(renewalId: string) {
+  if (useMockServices) return mockBenefits.dismissBenefitsRenewal(renewalId);
   const result = await graphqlClient.request(DismissBenefitsRenewalDocument, { renewalId });
   return result.dismissBenefitsRenewal;
 }
@@ -233,6 +266,9 @@ export async function updateBenefitsRenewalPreferences(
   renewalAlertsEnabled: boolean,
   discreetLockScreen: boolean,
 ) {
+  if (useMockServices) {
+    return mockBenefits.updateBenefitsRenewalPreferences(renewalAlertsEnabled, discreetLockScreen);
+  }
   const result = await graphqlClient.request(UpdateBenefitsRenewalPreferencesDocument, {
     renewalAlertsEnabled,
     discreetLockScreen,
