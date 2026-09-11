@@ -78,7 +78,7 @@ function ContinueCard({ application, nav }: { application: BenefitsApplication; 
 export function HomeScreen({ nav }: { nav: Navigation }) {
   const app = useAppState();
   const tabBarSpace = useFloatingTabBarSpace();
-  const firstName = app.profile.firstName || 'there';
+  const firstName = app.profile.firstName?.trim() || '';
   const greeting = greetingForHour(new Date().getHours());
 
   const [draft, setDraft] = useState<BenefitsApplication | null>(null);
@@ -119,7 +119,7 @@ export function HomeScreen({ nav }: { nav: Navigation }) {
         </View>
 
         <Text style={styles.homeGreeting}>
-          {greeting}, {firstName}
+          {firstName ? `${greeting}, ${firstName}` : greeting}
         </Text>
 
         <LinearGradient

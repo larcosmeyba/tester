@@ -72,7 +72,6 @@ export function AccountScreen({ nav }: { nav: Navigation }) {
       <View style={settingsStyles.statRow}>
         <StatBadge value="June 12, 2011" label="MEMBER SINCE" />
         <StatBadge value="$847.30" label="TOTAL SAVED" />
-        <StatBadge value="142" label="MEALS PLANNED" />
       </View>
 
       <AccountSection title="ACCOUNT" />
@@ -85,9 +84,8 @@ export function AccountScreen({ nav }: { nav: Navigation }) {
 
       <AccountSection title="PREFERENCES" />
       <View style={settingsStyles.group}>
-        <SettingsRow icon="sparkle" title="Hive Plus" subtitle="Unlimited plans, Penny & more" onPress={() => nav.push('paywall')} />
-        <SettingsRow icon="bell" title="Notification Settings" onPress={() => nav.push('notifications')} />
-        <SettingsRow icon="dollar" title="Budget Settings" onPress={() => nav.push('budgetSettings')} last />
+        <SettingsRow icon="sparkle" title="Hive Plus" subtitle="More help from Penny & priority support" onPress={() => nav.push('paywall')} />
+        <SettingsRow icon="bell" title="Notification Settings" onPress={() => nav.push('notifications')} last />
       </View>
 
       <AccountSection title="SUPPORT" />
