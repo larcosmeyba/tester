@@ -13,8 +13,8 @@
 // The model is shown the blank form's structure and the field vocabulary, and
 // nothing else. No applicant data exists in this program.
 //
-//	BENEFITS_AI_PROVIDER=openai_compatible \
-//	BENEFITS_AI_BASE_URL=... BENEFITS_AI_MODEL=... BENEFITS_AI_API_KEY=... \
+//	BENEFITS_AI_PROVIDER=anthropic \
+//	BENEFITS_AI_API_KEY=... \
 //	go run ./cmd/benefits-draft-mapping \
 //	  -program SNAP -state CA -code "CF 285" -version 2026.01 \
 //	  -out forms/us/ca/snap/cf285/2026.01/mapping.draft.json \

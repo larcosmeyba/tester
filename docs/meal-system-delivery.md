@@ -173,7 +173,7 @@ backend does not depend on the app's assets.
 Server (`apps/server/.env.example`):
 
 ```
-MEAL_AI_PROVIDER=      # unset = deterministic; "openai_compatible" to enable
+MEAL_AI_PROVIDER=      # unset = deterministic; "openai_compatible" or "anthropic" to enable
 MEAL_AI_BASE_URL=
 MEAL_AI_MODEL=
 MEAL_AI_API_KEY=       # server secret; never an EXPO_PUBLIC_* variable
