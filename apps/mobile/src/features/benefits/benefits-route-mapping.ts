@@ -23,6 +23,8 @@ export const EXPO_PATH_TO_SHELL: Record<string, ScreenName> = {
   '/resources/benefits-portal': 'benefitsPortal',
   '/resources/benefits-confirmation': 'benefitsConfirmation',
   '/resources/benefits-checklist': 'benefitsChecklist',
+  // Penny chat, reachable as a contextual entry from inside the benefits flow.
+  '/penny': 'penny',
 };
 
 function parseQuery(raw: string): Record<string, string> {

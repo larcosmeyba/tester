@@ -14,14 +14,14 @@ import { Text, View } from 'react-native';
 import { useAuth } from '@/auth/auth-context';
 import { AppButton, AppLogo, ModalSheet, PennyImage, Screen, uiText } from '@/components/hive-ui';
 import { FloatingTabBar, type TabItem } from '@/components/hive-navigation';
-import { MealPlanScreen as WeeklyMealPlanScreen } from '@/features/meals/meal-plan-screen';
-import { allVideos, type MealRecipe, type ResourceItem, transactions, type VideoItem } from '@/data/mock-data';
+import { allVideos, type MealRecipe, type ResourceItem, type VideoItem } from '@/data/mock-data';
 import { useAppState } from '@/state/app-state';
 import { ForgotPasswordScreen, LoginScreen, SignUpScreen, VerifyScreen, WelcomeScreen } from '@/features/auth/auth-screens';
 import { OnboardingScreen } from '@/features/onboarding/onboarding-screens';
 import { HomeScreen } from '@/features/home/home-screen';
+import { ApplicationsScreen } from '@/features/benefits/benefits-applications-screen';
 import { PennyScreen } from '@/features/penny/penny-screen';
-import { ResourceDetailsScreen, ResourceSearchScreen, ResourcesScreen, VideoDetailScreen, VideoHubScreen } from '@/features/resources/resources-screens';
+import { ResourceDetailsScreen, ResourceSearchScreen, VideoDetailScreen, VideoHubScreen } from '@/features/resources/resources-screens';
 import {
   BenefitsChecklistShellRoute,
   BenefitsConfirmationShellRoute,
@@ -32,7 +32,7 @@ import {
   BenefitsZipShellRoute,
   GovernmentShellRoute,
 } from '@/features/benefits/benefits-shell-routes';
-import { BudgetSettingsScreen, ConnectAccountScreen, FinanceScreen, SpendingReportScreen, TransactionsScreen } from '@/features/budget/budget-screens';
+import { BudgetSettingsScreen, ConnectAccountScreen, SpendingReportScreen, TransactionsScreen } from '@/features/budget/budget-screens';
 import { AddPantryScreen, PantryScreen, ScanPantryScreen } from '@/features/pantry/pantry-screens';
 import { AccountScreen, ChangeEmailScreen, DeleteAccountScreen, EditHandleScreen, EditProfileScreen, FeedbackScreen, NotificationsScreen } from '@/features/profile/profile-screens';
 import { DealsScreen, RecipeScreen } from '@/features/meals/recipe-deals-screens';
@@ -47,10 +47,9 @@ const pennySource = require('@/assets/images/hive/penny.png');
 const logoSource = require('@/assets/images/hive/logo.png');
 const tabs: TabItem[] = [
   { label: 'Home', icon: 'home' },
-  { label: 'Meal Plan', icon: 'calendar' },
-  { label: 'Penny', icon: 'penny' },
-  { label: 'Resources', icon: 'resources' },
-  { label: 'Finance', icon: 'finance' },
+  { label: 'Applications', icon: 'applications' },
+  { label: 'Alerts', icon: 'alerts' },
+  { label: 'Profile', icon: 'profile' },
 ];
 const publicScreens = new Set<ScreenName>(['welcome', 'signup', 'login', 'forgot', 'verify']);
 
@@ -108,6 +107,8 @@ export default function AppRoot({ initialPublicScreen }: { initialPublicScreen?:
       return <OnboardingScreen nav={nav} />;
     case 'main':
       return <MainTabs nav={nav} />;
+    case 'penny':
+      return <PennyScreen nav={nav} />;
     case 'pantry':
       return <PantryScreen nav={nav} />;
     case 'addPantry':
@@ -179,32 +180,45 @@ export default function AppRoot({ initialPublicScreen }: { initialPublicScreen?:
 function MainTabs({ nav }: { nav: Navigation }) {
   const app = useAppState();
   const [showTour, setShowTour] = useState(!app.hasSeenTour);
+  // Persisted tab indexes from the old five-tab layout are clamped to the
+  // four-tab benefits layout so a stored index can never point past the end.
+  const tabIndex = tabs[app.selectedTab] ? app.selectedTab : 0;
+  const profileNav = useMemo<Navigation>(
+    () => ({ ...nav, back: () => app.setSelectedTab(0) }),
+    [nav, app],
+  );
 
   function closeTour() {
     app.markTourSeen();
     setShowTour(false);
   }
 
+  function acceptTour() {
+    closeTour();
+    nav.push('government');
+  }
+
   return (
     <Screen>
       <View style={styles.tabShell}>
         <View style={styles.tabContent}>
-          {app.selectedTab === 0 ? <HomeScreen nav={nav} /> : null}
-          {app.selectedTab === 1 ? <WeeklyMealPlanScreen /> : null}
-          {app.selectedTab === 2 ? <PennyScreen nav={nav} /> : null}
-          {app.selectedTab === 3 ? <ResourcesScreen nav={nav} /> : null}
-          {app.selectedTab === 4 ? <FinanceScreen nav={nav} /> : null}
+          {tabIndex === 0 ? <HomeScreen nav={nav} /> : null}
+          {tabIndex === 1 ? <ApplicationsScreen nav={nav} /> : null}
+          {tabIndex === 2 ? <BenefitsRenewalsShellRoute nav={nav} /> : null}
+          {tabIndex === 3 ? <AccountScreen nav={profileNav} /> : null}
         </View>
-        <FloatingTabBar tabs={tabs} selectedIndex={app.selectedTab} onSelect={app.setSelectedTab} />
+        <FloatingTabBar tabs={tabs} selectedIndex={tabIndex} onSelect={app.setSelectedTab} />
       </View>
       <ModalSheet visible={showTour} onClose={closeTour}>
         <View style={styles.tourContent}>
           <PennyImage source={pennySource} size={82} />
           <Text style={uiText.subtitle}>Meet Penny</Text>
           <Text style={[uiText.muted, sharedStyles.centerText]}>
-            Penny helps you find local resources, build budget-friendly meals, track pantry items, and understand benefits.
+            Penny helps you check what benefits you qualify for, prepares your
+            application paperwork, and reminds you about renewals — you just
+            review and sign.
           </Text>
-          <AppButton title="Start Saving" onPress={closeTour} style={sharedStyles.fullWidth} />
+          <AppButton title="Check what I qualify for" onPress={acceptTour} style={sharedStyles.fullWidth} />
         </View>
       </ModalSheet>
     </Screen>

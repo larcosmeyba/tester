@@ -1,11 +1,12 @@
 // Pure, UI-free model for the signup onboarding flow.
 //
-// The flow mirrors the Xcode app's 6-step onboarding exactly:
-//   1. grocery budget -> 2. bank/EBT connection -> 3. finance topics
-//   -> 4. resources -> 5. benefits help -> 6. profile photo
+// Benefits-first: the flow is 3 steps —
+//   1. resources (food, healthcare, bills, and more) -> 2. benefits help
+//   -> 3. profile photo
 // then an all-set screen, a notifications permission prompt, and a location
-// permission prompt. The meal questionnaire is intentionally NOT part of
-// onboarding; it runs at meal-plan generation time.
+// permission prompt. The shelved meal-planning and finance steps (grocery
+// budget, bank/EBT connection, finance topics) keep their components and
+// storage fields but are no longer part of the flow.
 
 export const BUDGET_MIN = 25;
 export const BUDGET_MAX = 300;
@@ -19,9 +20,6 @@ export function formatBudgetDollars(dollars: number): string {
 
 /** Ordered route hrefs of the signup onboarding flow (expo-router group paths). */
 export const ONBOARDING_ROUTES = [
-  '/(onboarding)/budget',
-  '/(onboarding)/connect-ebt',
-  '/(onboarding)/finance-topics',
   '/(onboarding)/resources',
   '/(onboarding)/benefits',
   '/(onboarding)/profile-photo',

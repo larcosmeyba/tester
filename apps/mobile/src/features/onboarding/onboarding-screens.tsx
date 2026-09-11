@@ -38,11 +38,11 @@ const financeTopics: { title: string; subtitle: string; icon: HiveIconName }[] =
 
 const resourceOptions: { title: string; subtitle: string; icon: HiveIconName }[] = [
   { title: 'Food Assistance', subtitle: 'Food pantries, free meals, and grocery programs', icon: 'fork' },
-  { title: 'Housing Help', subtitle: 'Housing assistance programs', icon: 'home' },
   { title: 'Healthcare', subtitle: 'How to apply to medicaid and other programs.', icon: 'heart' },
   { title: 'Utility Assistance', subtitle: 'Help with electric, gas, water, and phone bills', icon: 'bolt' },
-  { title: 'Job', subtitle: 'Career programs, resume help, and places hiring.', icon: 'job' },
+  { title: 'Housing Help', subtitle: 'Housing assistance programs', icon: 'home' },
   { title: 'Childcare', subtitle: 'Daycare assistance and after-school programs', icon: 'child' },
+  { title: 'Job', subtitle: 'Career programs, resume help, and places hiring.', icon: 'job' },
 ];
 
 const benefitPrograms = ['SNAP', 'WIC', 'Medicaid', 'LIHEAP'];
@@ -276,7 +276,7 @@ export function FinanceTopicsStep({
 }
 
 // ---------------------------------------------------------------------------
-// Step 4 — resources
+// Step 1 — resources
 // ---------------------------------------------------------------------------
 
 export function ResourcesStep({
@@ -288,12 +288,14 @@ export function ResourcesStep({
   selected: string[];
   onToggle: (resource: string) => void;
   onNext: () => void;
-  onBack: () => void;
+  onBack?: () => void;
 }) {
   return (
-    <OnboardingStepScreen current={4} total={6} onBack={onBack}>
-      <Text style={styles.stepTitle}>What resources do you need?</Text>
-      <Text style={styles.stepSubtitle}>Select all that apply. We'll match you with resources near you.</Text>
+    <OnboardingStepScreen current={1} total={3} onBack={onBack}>
+      <Text style={styles.stepTitle}>What kind of help do you need?</Text>
+      <Text style={styles.stepSubtitle}>
+        Select all that apply — food, healthcare, bills, and more. We&apos;ll match you with help near you.
+      </Text>
       {resourceOptions.map((resource) => (
         <CheckboxRow
           key={resource.title}
@@ -311,7 +313,7 @@ export function ResourcesStep({
 }
 
 // ---------------------------------------------------------------------------
-// Step 5 — benefits help
+// Step 2 — benefits help
 // ---------------------------------------------------------------------------
 
 export function BenefitsStep({
@@ -326,9 +328,11 @@ export function BenefitsStep({
   onBack: () => void;
 }) {
   return (
-    <OnboardingStepScreen current={5} total={6} onBack={onBack}>
+    <OnboardingStepScreen current={2} total={3} onBack={onBack}>
       <Text style={styles.stepTitle}>Would you like help applying for benefits?</Text>
-      <Text style={styles.stepSubtitle}>Penny can help you prepare applications for government programs you may qualify for.</Text>
+      <Text style={styles.stepSubtitle}>
+        Penny prepares your paperwork for food, healthcare, and energy assistance — you just review and sign.
+      </Text>
       <View style={sharedStyles.chipRow}>
         {benefitPrograms.map((program) => (
           <Chip key={program} label={program} tone="green" />
@@ -340,14 +344,14 @@ export function BenefitsStep({
         onPress={() => onChange(true)}
       />
       <SelectionRow title="I'll explore this on my own" selected={value === false} onPress={() => onChange(false)} />
-      <Text style={styles.footnote}>You can always find these programs in the Resources tab.</Text>
+      <Text style={styles.footnote}>You can always find these programs on the Home tab.</Text>
       <AppButton title="Next" onPress={onNext} />
     </OnboardingStepScreen>
   );
 }
 
 // ---------------------------------------------------------------------------
-// Step 6 — profile photo
+// Step 3 — profile photo
 // ---------------------------------------------------------------------------
 
 export function ProfilePhotoStep({
@@ -362,7 +366,7 @@ export function ProfilePhotoStep({
   onBack: () => void;
 }) {
   return (
-    <OnboardingStepScreen current={6} total={6} onBack={onBack}>
+    <OnboardingStepScreen current={3} total={3} onBack={onBack}>
       <Text style={styles.stepTitle}>Upload a Profile Picture</Text>
       <Text style={styles.stepSubtitle}>Add a photo so Penny can greet you personally.</Text>
       <Pressable
@@ -465,7 +469,7 @@ export function NotificationsPermissionStep({
       icon="bell"
       iconCircleColor={HiveColors.cream}
       title="Stay in the loop"
-      subtitle="Get reminders for your meal plan and budget — plus new benefits you may qualify for."
+      subtitle="Get renewal reminders and alerts about benefits you may qualify for."
       primaryLabel="Turn on notifications"
       secondaryLabel="Maybe later"
       onPrimary={onPrimary}
@@ -512,8 +516,8 @@ export function LocationPermissionStep({
 export function OnboardingScreen({ nav }: { nav: Navigation }) {
   const app = useAppState();
   const [step, setStep] = useState(0);
-  const [budgetDollars, setBudgetDollars] = useState(DEFAULT_BUDGET_DOLLARS);
-  const [selectedFinanceTopics, setSelectedFinanceTopics] = useState<string[]>(app.preferences.preferredFinanceTopics);
+  const [budgetDollars] = useState(DEFAULT_BUDGET_DOLLARS);
+  const [selectedFinanceTopics] = useState<string[]>(app.preferences.preferredFinanceTopics);
   const [selectedResources, setSelectedResources] = useState<string[]>(app.preferences.preferredResources);
   const [wantsGovAssistance, setWantsGovAssistance] = useState<boolean | null>(app.preferences.wantsGovAssistance);
   const [profileImageUri, setProfileImageUri] = useState(app.profile.profileImageUri);
@@ -544,7 +548,7 @@ export function OnboardingScreen({ nav }: { nav: Navigation }) {
       setNotificationsEnabled(false);
       setStatusMessage('Push notifications are unavailable in Expo Go. You can enable them in a development build.');
     }
-    setStep(7);
+    setStep(4);
   }
 
   async function requestLocationAndFinish() {
@@ -584,53 +588,39 @@ export function OnboardingScreen({ nav }: { nav: Navigation }) {
 
   const back = () => setStep((current) => Math.max(0, current - 1));
 
+  // Benefits-first: resources -> benefits -> profile photo, then all-set and
+  // the permission prompts. The shelved budget/EBT/finance-topic steps keep
+  // their components and saved defaults, but are no longer asked.
   if (step === 0) {
-    return <BudgetStep value={budgetDollars} onChange={setBudgetDollars} onNext={() => setStep(1)} />;
-  }
-  if (step === 1) {
-    return <ConnectEbtStep onNext={() => setStep(2)} onBack={back} />;
-  }
-  if (step === 2) {
-    return (
-      <FinanceTopicsStep
-        selected={selectedFinanceTopics}
-        onToggle={(topic) => toggleList(topic, selectedFinanceTopics, setSelectedFinanceTopics)}
-        onNext={() => setStep(3)}
-        onBack={back}
-      />
-    );
-  }
-  if (step === 3) {
     return (
       <ResourcesStep
         selected={selectedResources}
         onToggle={(resource) => toggleList(resource, selectedResources, setSelectedResources)}
-        onNext={() => setStep(4)}
-        onBack={back}
+        onNext={() => setStep(1)}
       />
     );
   }
-  if (step === 4) {
+  if (step === 1) {
     return (
       <BenefitsStep
         value={wantsGovAssistance}
         onChange={setWantsGovAssistance}
-        onNext={() => setStep(5)}
+        onNext={() => setStep(2)}
         onBack={back}
       />
     );
   }
-  if (step === 5) {
-    return <ProfilePhotoStep imageUri={profileImageUri} onPick={() => void pickImage()} onNext={() => setStep(6)} onBack={back} />;
+  if (step === 2) {
+    return <ProfilePhotoStep imageUri={profileImageUri} onPick={() => void pickImage()} onNext={() => setStep(3)} onBack={back} />;
   }
-  if (step === 6) {
-    return <AllSetStep onNext={() => setStep(7)} />;
+  if (step === 3) {
+    return <AllSetStep onNext={() => setStep(4)} />;
   }
-  if (step === 7) {
+  if (step === 4) {
     return (
       <NotificationsPermissionStep
         onPrimary={() => void requestNotifications()}
-        onSecondary={() => setStep(8)}
+        onSecondary={() => setStep(5)}
         busy={isFinishing}
       />
     );

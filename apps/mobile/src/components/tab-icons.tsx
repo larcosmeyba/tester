@@ -11,7 +11,15 @@
 
 import { View } from 'react-native';
 
-export type TabIconName = 'home' | 'calendar' | 'penny' | 'resources' | 'finance';
+export type TabIconName =
+  | 'home'
+  | 'applications'
+  | 'alerts'
+  | 'profile'
+  | 'calendar'
+  | 'penny'
+  | 'resources'
+  | 'finance';
 
 const GRID = 24;
 
@@ -241,8 +249,160 @@ function BookGlyph({ color }: { color: string }) {
   );
 }
 
-function WalletGlyph({ color }: { color: string }) {
+function ApplicationsGlyph({ color }: { color: string }) {
   const sw = 2.2;
+  return (
+    <View style={{ width: GRID, height: GRID }}>
+      {/* Clipboard board. */}
+      <View
+        style={{
+          position: 'absolute',
+          left: 5,
+          top: 4.5,
+          width: 14,
+          height: 17,
+          borderWidth: sw,
+          borderColor: color,
+          borderRadius: 2.5,
+        }}
+      />
+      {/* Clip. */}
+      <View
+        style={{
+          position: 'absolute',
+          left: 9.5,
+          top: 3,
+          width: 5,
+          height: 3.5,
+          borderRadius: 1.75,
+          backgroundColor: color,
+        }}
+      />
+      {/* Check mark: short arm then long arm. */}
+      <View
+        style={{
+          position: 'absolute',
+          left: 8.3,
+          top: 12.4,
+          width: 4.5,
+          height: sw,
+          borderRadius: sw / 2,
+          backgroundColor: color,
+          transform: [{ rotate: '-45deg' }],
+        }}
+      />
+      <View
+        style={{
+          position: 'absolute',
+          left: 10.6,
+          top: 10.4,
+          width: 8,
+          height: sw,
+          borderRadius: sw / 2,
+          backgroundColor: color,
+          transform: [{ rotate: '45deg' }],
+        }}
+      />
+    </View>
+  );
+}
+
+function BellGlyph({ color }: { color: string }) {
+  const sw = 2.2;
+  return (
+    <View style={{ width: GRID, height: GRID }}>
+      {/* Top knob. */}
+      <View
+        style={{
+          position: 'absolute',
+          left: 10.9,
+          top: 2.5,
+          width: sw,
+          height: 3,
+          borderRadius: sw / 2,
+          backgroundColor: color,
+        }}
+      />
+      {/* Bell dome. */}
+      <View
+        style={{
+          position: 'absolute',
+          left: 5,
+          top: 5.5,
+          width: 14,
+          height: 11,
+          borderWidth: sw,
+          borderBottomWidth: 0,
+          borderColor: color,
+          borderTopLeftRadius: 7,
+          borderTopRightRadius: 7,
+        }}
+      />
+      {/* Bell rim. */}
+      <View
+        style={{
+          position: 'absolute',
+          left: 3.5,
+          top: 15.5,
+          width: 17,
+          height: sw,
+          borderRadius: sw / 2,
+          backgroundColor: color,
+        }}
+      />
+      {/* Clapper. */}
+      <View
+        style={{
+          position: 'absolute',
+          left: 10.2,
+          top: 19,
+          width: 3.6,
+          height: 3.6,
+          borderRadius: 1.8,
+          backgroundColor: color,
+        }}
+      />
+    </View>
+  );
+}
+
+function ProfileGlyph({ color }: { color: string }) {
+  const sw = 2.2;
+  return (
+    <View style={{ width: GRID, height: GRID }}>
+      {/* Head. */}
+      <View
+        style={{
+          position: 'absolute',
+          left: 8,
+          top: 3.5,
+          width: 8,
+          height: 8,
+          borderRadius: 4,
+          borderWidth: sw,
+          borderColor: color,
+        }}
+      />
+      {/* Shoulders. */}
+      <View
+        style={{
+          position: 'absolute',
+          left: 4,
+          top: 13.5,
+          width: 16,
+          height: 8.5,
+          borderWidth: sw,
+          borderBottomWidth: 0,
+          borderColor: color,
+          borderTopLeftRadius: 8,
+          borderTopRightRadius: 8,
+        }}
+      />
+    </View>
+  );
+}
+
+function WalletGlyph({ color }: { color: string }) {  const sw = 2.2;
   return (
     <View style={{ width: GRID, height: GRID }}>
       <View
@@ -290,6 +450,12 @@ export function TabIcon({ name, size = 22, color }: { name: TabIconName; size?: 
           <PennyGlyph color={color} />
         ) : name === 'resources' ? (
           <BookGlyph color={color} />
+        ) : name === 'applications' ? (
+          <ApplicationsGlyph color={color} />
+        ) : name === 'alerts' ? (
+          <BellGlyph color={color} />
+        ) : name === 'profile' ? (
+          <ProfileGlyph color={color} />
         ) : (
           <WalletGlyph color={color} />
         )}

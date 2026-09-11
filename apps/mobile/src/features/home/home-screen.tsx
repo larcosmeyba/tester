@@ -1,222 +1,369 @@
-// The Home tab.
+// The Home tab — benefits-first.
 //
-// Extracted verbatim from app-root.tsx; markup unchanged.
+// Header with the hive logo and greeting, a gold hero card leading into the
+// eligibility check, the in-progress application (wired to the real benefits
+// draft state), a Programs grid into the existing benefits flow, and a
+// floating "Ask Penny" pill opening Penny chat. Meal, pantry, and finance
+// surfaces are shelved: their code stays in the repo, but nothing on this
+// screen reaches them anymore.
 
+import { useEffect, useState } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
-import { router } from 'expo-router';
 import { Pressable, ScrollView, Text, View } from 'react-native';
-import { AvatarButton, Card, HiveIcon, SectionHeader, rowStyles } from '@/components/hive-ui';
-import { AlertBanner, ActionGradients, ComingSoonCard, GradientActionCard, GradientActionRow, SoftGreenPanel } from '@/components/hive-cards';
-import { FloatingPill, FloatingPillRow } from '@/components/hive-navigation';
-import { useAppState } from '@/state/app-state';
 import { StyleSheet } from 'react-native';
+
+import {
+  AppLogo,
+  AvatarButton,
+  HiveIcon,
+  PennyImage,
+  type HiveIconName,
+} from '@/components/hive-ui';
+import { FLOATING_TAB_BAR_HEIGHT, useFloatingTabBarSpace } from '@/components/hive-navigation';
+import { useAppState } from '@/state/app-state';
 import { sharedStyles } from '@/features/app/app-shared';
 import { type Navigation } from '@/features/app/navigation-types';
 import { HiveColors } from '@/constants/theme';
-import { FLOATING_TAB_BAR_HEIGHT } from '@/components/hive-navigation';
-import { usePantry } from '@/features/pantry/pantry-context';
+import {
+  applicationPercentComplete,
+  applicationProgramLabel,
+  isApplicationInProgress,
+} from '@/features/benefits/benefits-applications-screen';
+import {
+  fetchBenefitsApplications,
+  type BenefitsApplication,
+} from '@/features/benefits/benefits-repository';
+
+const logoSource = require('@/assets/images/hive/logo.png');
+const pennySource = require('@/assets/images/hive/penny.png');
+
+const PROGRAMS: { name: string; subtitle: string; icon: HiveIconName }[] = [
+  { name: 'SNAP', subtitle: 'Groceries', icon: 'cart' },
+  { name: 'WIC', subtitle: 'Nutrition', icon: 'child' },
+  { name: 'Medicaid', subtitle: 'Health coverage', icon: 'ambulance' },
+  { name: 'LIHEAP', subtitle: 'Energy assistance', icon: 'bolt' },
+];
+
+function greetingForHour(hour: number): string {
+  if (hour < 12) return 'Good morning';
+  if (hour < 18) return 'Good afternoon';
+  return 'Good evening';
+}
+
+function ContinueCard({ application, nav }: { application: BenefitsApplication; nav: Navigation }) {
+  const pct = applicationPercentComplete(application);
+  return (
+    <View style={styles.continueCard}>
+      <View style={styles.continueIcon}>
+        <HiveIcon name="doc" size={22} color={HiveColors.green} />
+      </View>
+      <View style={sharedStyles.flexOne}>
+        <Text style={styles.continueTitle}>{applicationProgramLabel(application)} application</Text>
+        <Text style={styles.continueMeta}>{pct}% complete</Text>
+        <View style={styles.progressTrack}>
+          <View style={[styles.progressFill, { width: `${pct}%` }]} />
+        </View>
+      </View>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel="Resume application"
+        onPress={() => nav.push('benefitsQuestionnaire', { applicationId: application.id })}
+        style={({ pressed }) => [styles.resumeButton, pressed && sharedStyles.pressed]}>
+        <Text style={styles.resumeText}>Resume</Text>
+      </Pressable>
+    </View>
+  );
+}
 
 export function HomeScreen({ nav }: { nav: Navigation }) {
   const app = useAppState();
-  const pantry = usePantry();
+  const tabBarSpace = useFloatingTabBarSpace();
   const firstName = app.profile.firstName || 'there';
+  const greeting = greetingForHour(new Date().getHours());
+
+  const [draft, setDraft] = useState<BenefitsApplication | null>(null);
+  const [draftsChecked, setDraftsChecked] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetchBenefitsApplications()
+      .then((list) => {
+        if (cancelled) return;
+        const inProgress = (list ?? [])
+          .filter(isApplicationInProgress)
+          .sort((a, b) => String(b.updatedAt ?? '').localeCompare(String(a.updatedAt ?? '')));
+        setDraft(inProgress[0] ?? null);
+        setDraftsChecked(true);
+      })
+      .catch(() => {
+        // No backend in preview mode: the section simply stays hidden.
+        if (!cancelled) setDraftsChecked(true);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   return (
     <View style={sharedStyles.tabScreen}>
       <ScrollView contentContainerStyle={styles.homeContent} showsVerticalScrollIndicator={false}>
         <View style={styles.homeHeader}>
-          <View style={sharedStyles.flexOne}>
-            <Text style={styles.homeGreeting}>Hi {firstName},</Text>
-            <Text style={styles.homeSubGreeting}>Ready to save some money today?</Text>
-          </View>
-          <AvatarButton imageUri={app.profile.profileImageUri} onPress={() => nav.push('account')} accessibilityLabel="View account" />
+          <AppLogo source={logoSource} size={40} />
+          <Text style={styles.homeTitle}>Help The Hive</Text>
+          <View style={sharedStyles.flexOne} />
+          <AvatarButton
+            imageUri={app.profile.profileImageUri}
+            onPress={() => nav.push('account')}
+            accessibilityLabel="View account"
+          />
         </View>
 
-        {app.ebtConnected ? (
-          <LinearGradient
-            colors={ActionGradients.ebt}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={styles.ebtConnected}>
-            <View style={rowStyles.spread}>
-              <Text style={styles.ebtLight}>EBT Balance</Text>
-              <HiveIcon name="card" size={20} color="rgba(255,255,255,0.6)" />
-            </View>
-            <Text style={styles.ebtBalance}>$234.00</Text>
-            <Text style={styles.ebtMeta}>Updated today · Next deposit Aug 1</Text>
-            <Pressable onPress={() => app.setSelectedTab(4)} style={styles.ebtDetailsButton}>
-              <Text style={styles.ebtDetailsText}>See details</Text>
-            </Pressable>
-          </LinearGradient>
-        ) : (
-          <SoftGreenPanel
-            icon="card"
-            title="EBT Card Balance"
-            subtitle="Coming soon — balance & deposit tracking"
-            badge="Coming Soon"
-            onPress={() => nav.push('connectAccount')}
-            style={styles.homeBlock}
-          />
-        )}
+        <Text style={styles.homeGreeting}>
+          {greeting}, {firstName}
+        </Text>
 
-        {pantry.expiringItems.length > 0 ? (
-          <AlertBanner
-            emoji="🐝"
-            title="Use It Soon 🐝"
-            subtitle={`${pantry.expiringItems.length} pantry item${pantry.expiringItems.length === 1 ? '' : 's'} expiring in the next 5 days`}
-            onPress={() => nav.push('pantry')}
-            style={styles.homeBlock}
-          />
+        <LinearGradient
+          colors={[HiveColors.yellow, HiveColors.yellowDark]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.heroCard}>
+          <Text style={styles.heroHeadline}>Penny does the paperwork.{'\n'}You just sign.</Text>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Check what you qualify for"
+            onPress={() => nav.push('government')}
+            style={({ pressed }) => [styles.heroButton, pressed && sharedStyles.pressed]}>
+            <Text style={styles.heroButtonText}>Check what you qualify for</Text>
+          </Pressable>
+        </LinearGradient>
+
+        {draft ? (
+          <View>
+            <Text style={styles.sectionTitle}>Continue your application</Text>
+            <ContinueCard application={draft} nav={nav} />
+          </View>
+        ) : draftsChecked ? (
+          <View style={styles.emptyCard}>
+            <Text style={styles.emptyTitle}>No applications in progress</Text>
+            <Text style={styles.emptySubtitle}>
+              Answer a few questions and Penny will prepare your paperwork.
+            </Text>
+          </View>
         ) : null}
 
-        <Text style={styles.homeQuestion}>What would you like to do first?</Text>
-
-        <View style={styles.actionStack}>
-          <GradientActionRow
-            icon="doc"
-            gradient="benefits"
-            title="Start Government Assistance Applications"
-            subtitle="Get help preparing applications for benefits you may qualify for."
-            onPress={() => nav.push('government')}
-          />
-          <GradientActionRow
-            icon="fork"
-            gradient="meals"
-            title="Create this week's meal plan"
-            onPress={() => router.push('/meals/questionnaire')}
-          />
+        <Text style={styles.sectionTitle}>Programs</Text>
+        <View style={styles.programGrid}>
+          {PROGRAMS.map((program) => (
+            <Pressable
+              key={program.name}
+              accessibilityRole="button"
+              accessibilityLabel={`${program.name} — ${program.subtitle}`}
+              onPress={() => nav.push('government')}
+              style={({ pressed }) => [styles.programCard, pressed && sharedStyles.pressed]}>
+              <View style={styles.programIcon}>
+                <HiveIcon name={program.icon} size={24} color={HiveColors.green} />
+              </View>
+              <Text style={styles.programName}>{program.name}</Text>
+              <Text style={styles.programSubtitle}>{program.subtitle}</Text>
+            </Pressable>
+          ))}
         </View>
-
-        <View style={styles.actionPair}>
-          <GradientActionCard
-            icon="fridge"
-            gradient="pantry"
-            title="Cook what I have"
-            onPress={() => nav.push('pantry')}
-          />
-          <GradientActionCard
-            icon="map"
-            gradient="resources"
-            title="Find Resources near me"
-            onPress={() => app.setSelectedTab(3)}
-          />
-        </View>
-
-        <Text style={sharedStyles.homeSectionTitle}>Weekly Best Deals</Text>
-        <ComingSoonCard
-          icon="cart"
-          title="Coming Soon"
-          subtitle="Curated EBT-friendly deals near you — launching soon!"
-          onPress={() => nav.push('deals')}
-          showChevron
-          style={styles.homeBlock}
-        />
-
-        <SectionHeader title="Education Hub" onPress={() => nav.push('educationHub')} />
-        <ComingSoonCard
-          emoji="🎓"
-          title="Educational Video Content"
-          subtitle="Coming soon — money tips, cooking guides & more"
-          onPress={() => nav.push('educationHub')}
-          showChevron
-          style={styles.homeBlock}
-        />
       </ScrollView>
 
-      <FloatingPillRow>
-        {app.cart.length > 0 ? (
-          <FloatingPill
-            icon="cart"
-            tone="light"
-            align="left"
-            label={`${app.cart.length} item cart · Clear`}
-            onPress={app.clearCart}
-          />
-        ) : null}
-        <FloatingPill icon="plus" label="Add to Pantry" onPress={() => nav.push('pantry')} />
-      </FloatingPillRow>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel="Ask Penny"
+        onPress={() => nav.push('penny')}
+        style={({ pressed }) => [
+          styles.pennyPill,
+          { bottom: tabBarSpace + 16 },
+          pressed && sharedStyles.pressed,
+        ]}>
+        <PennyImage source={pennySource} size={30} />
+        <Text style={styles.pennyPillText}>Ask Penny</Text>
+      </Pressable>
     </View>
   );
 }
 
-
 const styles = StyleSheet.create({
-  actionPair: {
-    flexDirection: 'row',
-    gap: 10,
-    paddingHorizontal: 20,
-    marginTop: 10,
-    marginBottom: 28,
-  },
-  actionStack: {
-    gap: 10,
-    paddingHorizontal: 20,
-    marginBottom: 4,
-  },
-  ebtBalance: {
-    color: HiveColors.white,
-    fontSize: 38,
-    fontWeight: '700',
-  },
-  ebtConnected: {
-    marginHorizontal: 20,
-    marginBottom: 22,
-    padding: 20,
-    borderRadius: 18,
-    gap: 4,
-  },
-  ebtDetailsButton: {
-    alignSelf: 'flex-end',
-    marginTop: 10,
-    borderRadius: 20,
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    paddingHorizontal: 14,
-    paddingVertical: 7,
-  },
-  ebtDetailsText: {
-    color: HiveColors.white,
-    fontSize: 13,
-    fontWeight: '700',
-  },
-  ebtLight: {
-    color: 'rgba(255,255,255,0.85)',
-    fontSize: 13,
-    fontWeight: '500',
-  },
-  ebtMeta: {
-    color: 'rgba(255,255,255,0.7)',
-    fontSize: 12,
-  },
-  homeBlock: {
-    marginHorizontal: 20,
-    marginBottom: 18,
-  },
   homeContent: {
     paddingBottom: FLOATING_TAB_BAR_HEIGHT + 110,
-  },
-  homeGreeting: {
-    color: HiveColors.text,
-    fontSize: 24,
-    fontWeight: '800',
   },
   homeHeader: {
     paddingHorizontal: 20,
     paddingTop: 16,
-    paddingBottom: 20,
+    paddingBottom: 12,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    gap: 10,
   },
-  homeQuestion: {
+  homeTitle: {
     color: HiveColors.text,
-    fontSize: 16,
+    fontSize: 20,
+    fontWeight: '800',
+  },
+  homeGreeting: {
+    color: HiveColors.text,
+    fontSize: 22,
+    fontWeight: '700',
+    paddingHorizontal: 20,
+    marginBottom: 14,
+  },
+  heroCard: {
+    marginHorizontal: 20,
+    marginBottom: 22,
+    padding: 22,
+    borderRadius: 20,
+    gap: 14,
+  },
+  heroHeadline: {
+    color: HiveColors.text,
+    fontSize: 24,
+    fontWeight: '800',
+    lineHeight: 30,
+  },
+  heroButton: {
+    alignSelf: 'flex-start',
+    backgroundColor: HiveColors.cream,
+    borderRadius: 24,
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+  },
+  heroButtonText: {
+    color: HiveColors.text,
+    fontSize: 15,
+    fontWeight: '700',
+  },
+  sectionTitle: {
+    color: HiveColors.text,
+    fontSize: 18,
     fontWeight: '800',
     paddingHorizontal: 20,
     marginBottom: 12,
   },
-  homeSubGreeting: {
+  continueCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    marginHorizontal: 20,
+    marginBottom: 22,
+    backgroundColor: HiveColors.card,
+    borderRadius: 18,
+    padding: 16,
+  },
+  continueIcon: {
+    width: 46,
+    height: 46,
+    borderRadius: 23,
+    backgroundColor: HiveColors.greenLight,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  continueTitle: {
+    color: HiveColors.text,
+    fontSize: 15,
+    fontWeight: '700',
+  },
+  continueMeta: {
     color: HiveColors.textSecondary,
-    fontSize: 14,
+    fontSize: 13,
     marginTop: 2,
+  },
+  progressTrack: {
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: HiveColors.border,
+    marginTop: 8,
+    overflow: 'hidden',
+  },
+  progressFill: {
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: HiveColors.green,
+  },
+  resumeButton: {
+    borderRadius: 18,
+    borderWidth: 1.5,
+    borderColor: HiveColors.green,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+  },
+  resumeText: {
+    color: HiveColors.green,
+    fontSize: 14,
+    fontWeight: '700',
+  },
+  emptyCard: {
+    marginHorizontal: 20,
+    marginBottom: 22,
+    backgroundColor: HiveColors.card,
+    borderRadius: 18,
+    padding: 18,
+    gap: 4,
+  },
+  emptyTitle: {
+    color: HiveColors.text,
+    fontSize: 15,
+    fontWeight: '700',
+  },
+  emptySubtitle: {
+    color: HiveColors.textSecondary,
+    fontSize: 13,
+  },
+  programGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+    paddingHorizontal: 20,
+  },
+  programCard: {
+    flexBasis: '48%',
+    flexGrow: 1,
+    backgroundColor: HiveColors.card,
+    borderRadius: 18,
+    padding: 18,
+    alignItems: 'center',
+    gap: 6,
+  },
+  programIcon: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    backgroundColor: HiveColors.cream,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 4,
+  },
+  programName: {
+    color: HiveColors.text,
+    fontSize: 16,
+    fontWeight: '800',
+  },
+  programSubtitle: {
+    color: HiveColors.textSecondary,
+    fontSize: 13,
+  },
+  pennyPill: {
+    position: 'absolute',
+    right: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    backgroundColor: HiveColors.cream,
+    borderRadius: 28,
+    paddingLeft: 10,
+    paddingRight: 18,
+    paddingVertical: 8,
+    shadowColor: '#000',
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 4,
+  },
+  pennyPillText: {
+    color: HiveColors.text,
+    fontSize: 15,
+    fontWeight: '700',
   },
 });

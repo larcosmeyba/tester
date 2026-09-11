@@ -13,7 +13,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Linking, StyleSheet, Text, View } from 'react-native';
 
-import { AppButton, AppHeader, AppTextField, Card, CheckboxRow, ScrollScreen, uiText } from '@/components/hive-ui';
+import { AppButton, AppHeader, AppTextField, AskPennyLink, Card, CheckboxRow, ScrollScreen, uiText } from '@/components/hive-ui';
 import { HiveColors, Spacing } from '@/constants/theme';
 import { BenefitsDatePicker } from '@/features/benefits/benefits-date-picker';
 import {
@@ -212,6 +212,10 @@ export default function BenefitsReviewScreen() {
           {application.form.state ? ` · ${application.form.state}` : ''} ·{' '}
           {application.form.formCode} · {application.form.pageCount} pages
         </Text>
+        <AskPennyLink
+          message="Questions about this form? Ask Penny"
+          onPress={() => router.push('/penny')}
+        />
 
         {deadlinePrompt ? (
           <Card>

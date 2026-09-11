@@ -23,6 +23,7 @@ import {
   AppButton,
   AppHeader,
   AppTextField,
+  AskPennyLink,
   Card,
   Chip,
   ProgressBar,
@@ -221,6 +222,10 @@ export default function BenefitsQuestionnaireScreen() {
         <Text style={styles.progressLabel}>
           Section {sectionIndex + 1} of {sections.length}
         </Text>
+        <AskPennyLink
+          message="Confused by a question? Ask Penny"
+          onPress={() => router.push('/penny')}
+        />
       </View>
 
       <View style={styles.body}>

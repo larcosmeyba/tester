@@ -33,11 +33,8 @@ describe('onboarding budget model', () => {
 });
 
 describe('onboarding route order', () => {
-  it('runs the Xcode 6-step flow, then all-set, then permissions', () => {
+  it('runs the benefits-first 3-step flow, then all-set, then permissions', () => {
     expect(ONBOARDING_ROUTES).toEqual([
-      '/(onboarding)/budget',
-      '/(onboarding)/connect-ebt',
-      '/(onboarding)/finance-topics',
       '/(onboarding)/resources',
       '/(onboarding)/benefits',
       '/(onboarding)/profile-photo',

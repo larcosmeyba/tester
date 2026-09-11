@@ -119,7 +119,11 @@ describe('expo href to shell route', () => {
     });
   });
 
-  it('covers exactly the eight benefits route keys', () => {
+  it('maps the Penny chat entry to the shell penny route', () => {
+    expect(benefitsHrefToShellRoute('/penny')).toEqual({ name: 'penny', params: {} });
+  });
+
+  it('covers exactly the nine route keys (eight benefits steps plus Penny)', () => {
     const names = new Set<string>([
       ...Object.values(EXPO_PATH_TO_SHELL),
       benefitsHrefToShellRoute('/resources/applications/x')!.name,
@@ -134,6 +138,7 @@ describe('expo href to shell route', () => {
         'benefitsReview',
         'benefitsZip',
         'government',
+        'penny',
       ].sort(),
     );
   });

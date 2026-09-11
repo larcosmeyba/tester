@@ -16,6 +16,7 @@ export type ScreenName =
   | 'verify'
   | 'onboarding'
   | 'main'
+  | 'penny'
   | 'pantry'
   | 'addPantry'
   | 'scanPantry'

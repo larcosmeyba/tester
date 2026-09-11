@@ -559,8 +559,25 @@ export function EmptyState({
   );
 }
 
-export const uiText = StyleSheet.create({
-  title: {
+/**
+ * A contextual Penny entry point: a subtle row with the Penny glyph and a
+ * short message, opening Penny chat. Used around the benefits flow so help
+ * is one tap away without rebuilding her.
+ */
+export function AskPennyLink({ message, onPress }: { message: string; onPress: PressHandler }) {
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel="Ask Penny"
+      onPress={onPress}
+      style={({ pressed }) => [styles.askPenny, pressed && styles.askPennyPressed]}>
+      <HiveIcon name="penny" size={18} color={HiveColors.green} />
+      <Text style={styles.askPennyText}>{message}</Text>
+    </Pressable>
+  );
+}
+
+export const uiText = StyleSheet.create({  title: {
     color: HiveColors.text,
     fontSize: 28,
     fontWeight: '800',
@@ -1068,6 +1085,21 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '800',
     textAlign: 'center',
+  },
+  askPenny: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    alignSelf: 'flex-start',
+    paddingVertical: 6,
+  },
+  askPennyPressed: {
+    opacity: 0.7,
+  },
+  askPennyText: {
+    color: HiveColors.green,
+    fontSize: 14,
+    fontWeight: '700',
   },
   emptySubtitle: {
     color: HiveColors.textSecondary,
