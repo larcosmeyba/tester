@@ -147,11 +147,14 @@ func TestGenerateBlankRows(t *testing.T) {
 	if row.State != RowBlank || row.Note != "fill in by hand" {
 		t.Fatalf("middle_name row = %+v, want blank fill-in-by-hand", row)
 	}
-	// The SSN fields are sensitive and unanswered: blank lines, marked
-	// sensitive so a future redaction pass can find them.
+	// The SSN fields are never collected: blank lines with an explicit note,
+	// marked sensitive so a future redaction pass can find them.
 	row = findRow(findSection(kit, "D"), "applicant.ssn")
 	if row.State != RowBlank || !row.Sensitive {
 		t.Fatalf("ssn row = %+v, want blank sensitive", row)
+	}
+	if row.Note != "fill in by hand — Help The Hive never asks for or stores this number" {
+		t.Fatalf("ssn note = %q, want the never-collected note", row.Note)
 	}
 }
 
