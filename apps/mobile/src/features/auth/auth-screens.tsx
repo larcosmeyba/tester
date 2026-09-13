@@ -21,8 +21,10 @@ export function WelcomeScreen({ nav }: { nav: Navigation }) {
     <Screen>
       <View style={styles.authShell}>
         <View style={styles.authCenter}>
-          <AppLogo source={logoSource} />
-          <Text style={styles.welcomeTitle}>Feed Your Family{'\n'}Smarter.</Text>
+          <View style={styles.welcomeLogoWrap}>
+            <AppLogo source={logoSource} size={120} />
+          </View>
+          <Text style={styles.welcomeTitle}>Penny does the paperwork.{'\n'}You just sign.</Text>
         </View>
         <View style={styles.authActions}>
           <AppButton title="Get Started" onPress={() => nav.push('signup')} />
@@ -330,7 +332,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 32,
+    gap: 24,
   },
   authShell: {
     flex: 1,
@@ -351,9 +353,13 @@ const styles = StyleSheet.create({
   formStack: {
     gap: 14,
   },
+  welcomeLogoWrap: {
+    borderRadius: 44,
+    overflow: 'hidden',
+  },
   welcomeTitle: {
     color: HiveColors.greenDark,
-    fontSize: 34,
+    fontSize: 28,
     fontWeight: '800',
     textAlign: 'center',
     letterSpacing: 0,
