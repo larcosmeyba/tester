@@ -1,0 +1,98 @@
+name: Deploy dev
+
+# Every push to main ships the dev environment to Google Cloud:
+#   1. DB migrations run first (inside each service's Cloud Build, via the
+#      migrate-if-needed step in cloudbuild.{auth,server}.yaml — the build
+#      fails before any new code deploys if migrations fail).
+#   2. Then the auth and api Cloud Run services are rebuilt and deployed.
+#
+# This is the "GitHub + Google Cloud are updated" half of Marcos's loop:
+# change -> push -> this workflow -> review in Expo.
+#
+# Dev only. No production, no store listings, nothing public.
+#
+# TODO (open items, need Marcos / a follow-up pass):
+# - CORS_ALLOWED_ORIGINS still defaults to the placeholder
+#   https://dev.example.invalid inside scripts/deploy-gcp.sh. Set the real
+#   dev origin via the CORS_ALLOWED_ORIGINS env var below once approved.
+# - Confirm the WIF-impersonated service account (GCP_SERVICE_ACCOUNT) has:
+#     * roles/cloudbuild.builds.editor (or cloudbuild.builds.create) on the project
+#     * iam.serviceAccounts.actAs on helpthehive-dev-build@... (Cloud Build SA),
+#       helpthehive-dev-{auth,api}-run@... (runtime SAs), and
+#       helpthehive-dev-{auth,api}-migrate@... (migration job SAs)
+#   The WIF connectivity test only proved `run.services.list`; the first real
+#   deploy run will surface any missing grant loudly (this workflow fails).
+# - Penny is intentionally NOT deployed here. It has its own deploy path
+#   (`./scripts/deploy-gcp.sh penny dev <project>`) plus 3 Penny secrets that
+#   are not in Secret Manager yet. Deploying the API first is safe: the API
+#   discovers PENNY_AGENT_URL only if Penny already exists.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Deploys must never overlap: queue them, do NOT cancel one in flight.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  GCP_PROJECT_ID: project-b610ee4c-584c-4fc7-853
+  GCP_REGION: us-central1
+
+jobs:
+  deploy:
+    name: Migrate + deploy dev (auth, api)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Authenticate to GCP (Workload Identity Federation)
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WIF_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+      - name: Set up gcloud
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Verify GCP identity
+        run: |
+          gcloud auth list --format='value(account)'
+          gcloud config set project "$GCP_PROJECT_ID"
+
+      # Auth service first: the API depends on it. Each invocation runs that
+      # service's pending migrations (migrate-if-needed) BEFORE deploying the
+      # new revision, and the whole Cloud Build fails loudly on any error.
+      - name: Deploy auth service (migrations first)
+        run: ./scripts/deploy-gcp.sh auth dev "$GCP_PROJECT_ID"
+
+      - name: Deploy api service (migrations first)
+        run: ./scripts/deploy-gcp.sh api dev "$GCP_PROJECT_ID"
+
+      - name: Smoke check dev services
+        run: |
+          for svc in helpthehive-dev-auth helpthehive-dev-api; do
+            url=$(gcloud run services describe "$svc" \
+              --project="$GCP_PROJECT_ID" --region="$GCP_REGION" \
+              --format='value(status.url)')
+            ready=$(gcloud run services describe "$svc" \
+              --project="$GCP_PROJECT_ID" --region="$GCP_REGION" \
+              --format=json | python3 -c "
+          import json, sys
+          conds = json.load(sys.stdin)['status']['conditions']
+          print([c['status'] for c in conds if c['type'] == 'Ready'][0])
+          ")
+            echo "$svc -> $url (Ready=$ready)"
+            if [ "$ready" != "True" ]; then
+              echo "ERROR: $svc is not Ready after deploy." >&2
+              exit 1
+            fi
+          done
