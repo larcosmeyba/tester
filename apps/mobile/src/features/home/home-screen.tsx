@@ -165,6 +165,7 @@ export function HomeScreen({ nav }: { nav: Navigation }) {
 
         <ScrollView
           horizontal
+          nestedScrollEnabled
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.resourceCarousel}
           snapToInterval={264}
