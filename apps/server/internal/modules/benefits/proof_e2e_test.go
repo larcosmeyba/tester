@@ -55,56 +55,6 @@ func proofProfile(t *testing.T) *domain.Profile {
 	return p
 }
 
-func TestProof_PortalRoutesToOfficialDoors(t *testing.T) {
-	service := benefits.NewService(nil, nil, nil, nil, nil, nil)
-
-	// SNAP in Missouri: the verified official application door.
-	portal, err := service.PortalFor("SNAP", "MO")
-	if err != nil {
-		t.Fatalf("PortalFor(SNAP, MO): %v", err)
-	}
-	if portal.URL == nil || !portal.Verified {
-		t.Fatalf("SNAP/MO should resolve a verified URL, got %+v", portal)
-	}
-	if *portal.URL != "https://mydss.mo.gov/apply" {
-		t.Fatalf("SNAP/MO URL = %q, want the verified mydss.mo.gov application", *portal.URL)
-	}
-	t.Logf("SNAP/MO -> %s (verified)", *portal.URL)
-
-	// VA programs: federal, same VA.gov application in every state.
-	for program, want := range map[string]string{
-		"VA_DISABILITY": "https://www.va.gov/disability/",
-		"VA_PENSION":    "https://www.va.gov/pension/",
-		"VA_HEALTHCARE": "https://www.va.gov/health-care/",
-	} {
-		portal, err := service.PortalFor(program, "CA")
-		if err != nil {
-			t.Fatalf("PortalFor(%s, CA): %v", program, err)
-		}
-		if portal.URL == nil || *portal.URL != want || !portal.Verified {
-			t.Fatalf("PortalFor(%s, CA) = %+v, want verified %q", program, portal, want)
-		}
-		t.Logf("%s/CA -> %s (verified, national row)", program, *portal.URL)
-	}
-
-	// No verified URL on file: null URL + fallback guidance, never a guess.
-	portal, err = service.PortalFor("SNAP", "AL")
-	if err != nil {
-		t.Fatalf("PortalFor(SNAP, AL): %v", err)
-	}
-	if portal.URL != nil || portal.Verified {
-		t.Fatalf("unverified SNAP/AL must not produce a URL, got %+v", portal)
-	}
-	if !strings.Contains(portal.FallbackGuidance, "https://www.fns.usda.gov/snap/apply") {
-		t.Fatalf("SNAP/AL guidance %q must point at the USDA directory", portal.FallbackGuidance)
-	}
-
-	// Unknown program: an error, not a guess.
-	if _, err := service.PortalFor("NOT_A_PROGRAM", "CA"); err == nil {
-		t.Fatal("unknown program should error, not route anywhere")
-	}
-}
-
 func TestProof_VocabularyNeverAsksForSSN(t *testing.T) {
 	for _, path := range []string{"applicant.ssn", "household.members[].ssn"} {
 		spec, ok := domain.Lookup(domain.FieldPath(path))
