@@ -33816,52 +33816,6 @@ func (ec *executionContext) _BenefitsSkippedField(ctx context.Context, sel ast.S
 	return out
 }
 
-var benefitsStateLookupImplementors = []string{"BenefitsStateLookup"}
-
-func (ec *executionContext) _BenefitsStateLookup(ctx context.Context, sel ast.SelectionSet, obj *model.BenefitsStateLookup) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, benefitsStateLookupImplementors)
-
-	out := graphql.NewFieldSet(fields)
-	deferred := make(map[string]*graphql.FieldSet)
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("BenefitsStateLookup")
-		case "zip":
-			out.Values[i] = ec._BenefitsStateLookup_zip(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		case "state":
-			out.Values[i] = ec._BenefitsStateLookup_state(ctx, field, obj)
-		case "detail":
-			out.Values[i] = ec._BenefitsStateLookup_detail(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch(ctx)
-	if out.Invalids > 0 {
-		return graphql.Null
-	}
-
-	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
-
-	for label, dfs := range deferred {
-		ec.processDeferredGroup(graphql.DeferredGroup{
-			Label:    label,
-			Path:     graphql.GetPath(ctx),
-			FieldSet: dfs,
-			Context:  ctx,
-		})
-	}
-
-	return out
-}
-
 var budgetImplementors = []string{"Budget"}
 
 func (ec *executionContext) _Budget(ctx context.Context, sel ast.SelectionSet, obj *model.Budget) graphql.Marshaler {
