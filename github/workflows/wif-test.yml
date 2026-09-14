@@ -1,0 +1,26 @@
+name: wif-connectivity-test
+
+# Temporary read-only verification of the GitHub -> GCP keyless auth chain.
+# Delete this file once it goes green.
+
+on:
+  push:
+    branches: [main, wif-test-temp]
+    paths: [.github/workflows/wif-test.yml]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WIF_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+      - uses: google-github-actions/setup-gcloud@v2
+
+      - name: Read-only GCP check
+        run: gcloud run services list --project=project-b610ee4c-584c-4fc7-853 --region=us-central1 --format='value(metadata.name)'
