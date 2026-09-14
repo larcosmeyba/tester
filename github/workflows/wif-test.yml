@@ -6,7 +6,7 @@ name: wif-connectivity-test
 on:
   push:
     branches: [main, wif-test-temp]
-    paths: [.github/workflows/wif-test.yml]
+    paths: [github/workflows/wif-test.yml]
 
 jobs:
   test:
