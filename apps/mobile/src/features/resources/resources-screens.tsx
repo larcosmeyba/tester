@@ -140,11 +140,17 @@ export function ResourceDetailsScreen({ nav, resource }: { nav: Navigation; reso
         <Chip label={chosen.tag} tone="green" />
         <Text style={uiText.subtitle}>{chosen.name}</Text>
         <Text style={uiText.muted}>{chosen.description}</Text>
-        <InfoRow icon="map" title={chosen.address} subtitle={chosen.distance} />
+        <InfoRow icon="map" title={chosen.address ?? chosen.distance} subtitle={chosen.address ? chosen.distance : undefined} />
         <InfoRow icon="bell" title={chosen.hours} />
-        <InfoRow icon="chat" title={chosen.phone} />
-        <InfoRow icon="resources" title={chosen.website} onPress={() => Linking.openURL(`https://${chosen.website}`)} />
-        <AppButton title="Call Resource" onPress={() => Linking.openURL(`tel:${chosen.phone}`)} />
+        {chosen.phone ? (
+          <InfoRow icon="chat" title={chosen.phone} />
+        ) : null}
+        {chosen.website ? (
+          <InfoRow icon="resources" title={chosen.website} onPress={() => Linking.openURL(`https://${chosen.website}`)} />
+        ) : null}
+        {chosen.phone ? (
+          <AppButton title="Call Resource" onPress={() => Linking.openURL(`tel:${chosen.phone}`)} />
+        ) : null}
       </View>
     </ScrollScreen>
   );

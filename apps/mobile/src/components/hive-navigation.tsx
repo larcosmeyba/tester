@@ -6,24 +6,33 @@
  * rebuilt here — and using it on Android too keeps the two platforms looking
  * like the same product, which the migration brief asks for.
  */
-import { Pressable, StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
+import { Image, Pressable, StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { HiveIcon, type HiveIconName } from '@/components/hive-ui';
+import { FOOTER_TABS, SELECTED_PILL, type FooterTabAsset } from '@/components/footer-tabs';
 import { HiveColors, Shadows } from '@/constants/theme';
 
-export type TabItem = { label: string; icon: HiveIconName };
+export type { FooterTabAsset };
+export { FOOTER_TABS };
+/** Back-compat alias: tabs are now the exact Figma footer assets. */
+export type TabItem = FooterTabAsset;
 
 /**
- * Inset, rounded tab bar. Sits above the home indicator with its own shadow,
- * rather than spanning the full width like a stock Android bar.
+ * Inset, rounded tab bar — Marcos's approved Figma footer, built from the
+ * exact Section 2 ZIP assets (see footer-tabs.ts for the verified mapping).
+ * Icons only, no text labels. Selected tab shows the grey rounded pill behind
+ * the green glyph, exactly as designed.
+ *
+ * The bar floats: it sits above the bottom safe area with visible space
+ * underneath, never attached to the bottom edge.
  */
 export function FloatingTabBar({
   tabs,
   selectedIndex,
   onSelect,
 }: {
-  tabs: readonly TabItem[];
+  tabs: readonly FooterTabAsset[];
   selectedIndex: number;
   onSelect: (index: number) => void;
 }) {
@@ -38,24 +47,31 @@ export function FloatingTabBar({
           const selected = index === selectedIndex;
           return (
             <Pressable
-              key={tab.label}
+              key={tab.id}
               accessibilityRole="tab"
               accessibilityState={{ selected }}
               accessibilityLabel={tab.label}
               onPress={() => onSelect(index)}
               style={styles.tabButton}>
-              <View style={[styles.tabIcon, selected && styles.tabIconSelected]}>
-                <HiveIcon
-                  name={tab.icon}
-                  size={21}
-                  color={selected ? HiveColors.green : HiveColors.textSecondary}
+              {selected && tab.drawsSelectedPill ? (
+                <View style={styles.pennySelectedPill}>
+                  <Image
+                    source={tab.selected}
+                    style={{ width: 32, height: 32 }}
+                    resizeMode="contain"
+                  />
+                </View>
+              ) : (
+                <Image
+                  source={selected ? tab.selected : tab.unselected}
+                  style={
+                    selected
+                      ? { width: tab.selectedSize.width, height: tab.selectedSize.height }
+                      : { width: tab.unselectedSize.width, height: tab.unselectedSize.height }
+                  }
+                  resizeMode="contain"
                 />
-              </View>
-              <Text
-                numberOfLines={1}
-                style={[styles.tabLabel, selected && styles.tabLabelSelected]}>
-                {tab.label}
-              </Text>
+              )}
             </Pressable>
           );
         })}
@@ -146,17 +162,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 6,
     ...Shadows.soft,
   },
-  tabButton: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 2, paddingVertical: 6 },
-  tabIcon: {
-    width: 42,
-    height: 26,
-    borderRadius: 13,
+  tabButton: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingVertical: 8 },
+  pennySelectedPill: {
+    width: SELECTED_PILL.width,
+    height: SELECTED_PILL.height,
+    borderRadius: SELECTED_PILL.borderRadius,
+    backgroundColor: SELECTED_PILL.backgroundColor,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  tabIconSelected: { backgroundColor: HiveColors.greenLight },
-  tabLabel: { fontSize: 10, fontWeight: '600', color: HiveColors.textSecondary },
-  tabLabelSelected: { color: HiveColors.green },
 
   pillRow: {
     position: 'absolute',

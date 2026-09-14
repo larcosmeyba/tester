@@ -29,6 +29,7 @@ export type ScreenName =
   | 'feedback'
   | 'deals'
   | 'recipe'
+  | 'resources'
   | 'educationHub'
   | 'video'
   | 'resourcesHub'

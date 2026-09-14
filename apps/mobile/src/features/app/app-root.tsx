@@ -12,9 +12,9 @@
 import { useMemo, useState } from 'react';
 import { Text, View } from 'react-native';
 import { useAuth } from '@/auth/auth-context';
-import { AppButton, type HiveIconName, ModalSheet, PennyImage, Screen, uiText } from '@/components/hive-ui';
+import { AppButton, ModalSheet, PennyImage, Screen, uiText } from '@/components/hive-ui';
 import { SplashVideoScreen } from '@/features/app/splash-video-screen';
-import { FloatingTabBar } from '@/components/hive-navigation';
+import { FloatingTabBar, FOOTER_TABS } from '@/components/hive-navigation';
 import { MealPlanScreen as WeeklyMealPlanScreen } from '@/features/meals/meal-plan-screen';
 import { allVideos, type BenefitProgram, type MealRecipe, type ResourceItem, transactions, type VideoItem } from '@/data/mock-data';
 import { useAppState } from '@/state/app-state';
@@ -34,13 +34,12 @@ import { HiveColors } from '@/constants/theme';
 
 const pennySource = require('@/assets/images/hive/penny.png');
 
-const tabs: { label: string; icon: HiveIconName }[] = [
-  { label: 'Home', icon: 'home' },
-  { label: 'Meal Plan', icon: 'calendar' },
-  { label: 'Penny', icon: 'penny' },
-  { label: 'Resources', icon: 'resources' },
-  { label: 'Finance', icon: 'finance' },
-];
+/**
+ * Footer tab order — Marcos's approved Figma footer (Section 2):
+ * Home | Meal Plan (book) | Penny (bee) | Budget (calendar) | Profile (person).
+ * Icons are the exact ZIP assets (see components/footer-tabs.ts).
+ */
+const tabs = FOOTER_TABS;
 const publicScreens = new Set<ScreenName>(['welcome', 'signup', 'login', 'forgot', 'verify']);
 
 export default function AppRoot({ initialPublicScreen }: { initialPublicScreen?: 'login' | 'forgot' }) {
@@ -153,6 +152,8 @@ export default function AppRoot({ initialPublicScreen }: { initialPublicScreen?:
       return <VideoDetailScreen nav={nav} video={route.params?.video as VideoItem | undefined} />;
     case 'resourcesHub':
       return <VideoHubScreen nav={nav} title="Resource How-To Videos" videos={allVideos.filter((video) => video.category === 'resources')} />;
+    case 'resources':
+      return <ResourcesScreen nav={nav} />;
     case 'resourceSearch':
       return <ResourceSearchScreen nav={nav} />;
     case 'resourceDetails':
@@ -193,8 +194,8 @@ function MainTabs({ nav }: { nav: Navigation }) {
           {app.selectedTab === 0 ? <HomeScreen nav={nav} /> : null}
           {app.selectedTab === 1 ? <WeeklyMealPlanScreen /> : null}
           {app.selectedTab === 2 ? <PennyScreen nav={nav} /> : null}
-          {app.selectedTab === 3 ? <ResourcesScreen nav={nav} /> : null}
-          {app.selectedTab === 4 ? <FinanceScreen nav={nav} /> : null}
+          {app.selectedTab === 3 ? <FinanceScreen nav={nav} /> : null}
+          {app.selectedTab === 4 ? <AccountScreen nav={nav} /> : null}
         </View>
         <FloatingTabBar tabs={tabs} selectedIndex={app.selectedTab} onSelect={app.setSelectedTab} />
       </View>
