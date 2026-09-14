@@ -25,6 +25,7 @@ import {
   AppHeader,
   AppLogo,
   AppTextField,
+  HiveIcon,
   Screen,
   ScrollScreen,
   TextLink,
@@ -90,6 +91,46 @@ function splitName(fullName: string): { firstName: string; lastName: string } {
   return { firstName: parts[0] ?? '', lastName: parts.slice(1).join(' ') };
 }
 
+// Marcos's SignUp/Login Xcode design: inline validation hints appear under a
+// field once it is non-empty and invalid.
+const EMAIL_REGEX = /^[A-Z0-9a-z._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}$/;
+
+function ValidatedField({
+  label,
+  value,
+  onChangeText,
+  placeholder,
+  hint,
+  isValid,
+  ...rest
+}: {
+  label: string;
+  value: string;
+  onChangeText: (value: string) => void;
+  placeholder: string;
+  hint: string;
+  isValid: boolean;
+} & Partial<React.ComponentProps<typeof AppTextField>>) {
+  const showHint = value.length > 0 && !isValid;
+  return (
+    <View style={styles.validatedField}>
+      <AppTextField
+        label={label}
+        value={value}
+        onChangeText={onChangeText}
+        placeholder={placeholder}
+        {...rest}
+      />
+      {showHint ? (
+        <View style={styles.hintRow}>
+          <HiveIcon name="warning" size={12} color={HiveColors.danger} />
+          <Text style={styles.hintText}>{hint}</Text>
+        </View>
+      ) : null}
+    </View>
+  );
+}
+
 export function SignUpScreen({ nav }: { nav: Navigation }) {
   const app = useAppState();
   const auth = useAuth();
@@ -101,11 +142,18 @@ export function SignUpScreen({ nav }: { nav: Navigation }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
+  // Validation mirrors Marcos's SignUpView: hints appear under non-empty
+  // invalid fields; the button enables only when everything is valid.
+  const isNameValid = fullName.trim().length >= 2;
+  const isEmailValid = EMAIL_REGEX.test(email);
+  const isPhoneValid = phone.replace(/\D/g, '').length >= 10;
+  const isPasswordValid = password.length >= 8;
+
   const canSubmit =
-    fullName.trim().length > 0 &&
-    email.includes('@') &&
-    phone.trim().length > 0 &&
-    password.length >= 8 &&
+    isNameValid &&
+    isEmailValid &&
+    isPhoneValid &&
+    isPasswordValid &&
     termsAccepted &&
     !isSubmitting;
 
@@ -158,26 +206,39 @@ export function SignUpScreen({ nav }: { nav: Navigation }) {
         <AuthHero mode="signup" />
         <Text style={styles.formHeading}>Sign up</Text>
         <View style={styles.formStack}>
-          <AppTextField label="Full Name" value={fullName} onChangeText={setFullName} placeholder="Full Name" />
-          <AppTextField
+          <ValidatedField
+            label="Full Name"
+            value={fullName}
+            onChangeText={setFullName}
+            placeholder="Full Name"
+            hint="Enter at least 2 characters"
+            isValid={isNameValid}
+          />
+          <ValidatedField
             label="Email Address"
             value={email}
             onChangeText={setEmail}
             placeholder="email@example.com"
+            hint="Enter a valid email address"
+            isValid={isEmailValid}
             keyboardType="email-address"
           />
-          <AppTextField
+          <ValidatedField
             label="Phone Number"
             value={phone}
             onChangeText={setPhone}
             placeholder="(555) 000-0000"
+            hint="Must be at least 10 digits"
+            isValid={isPhoneValid}
             keyboardType="phone-pad"
           />
-          <AppTextField
+          <ValidatedField
             label="Password"
             value={password}
             onChangeText={setPassword}
             placeholder="At least 8 characters"
+            hint="Must be at least 8 characters"
+            isValid={isPasswordValid}
             secureTextEntry
             showSecureToggle
           />
@@ -189,7 +250,7 @@ export function SignUpScreen({ nav }: { nav: Navigation }) {
           disabled={!canSubmit}
           onPress={() => void submit()}
         />
-        <TextLink label="Already have an account?" linkText="Log In" onPress={() => nav.replace('login')} />
+        <TextLink label="Already a member?" linkText="Login" onPress={() => nav.replace('login')} />
       </View>
     </ScrollScreen>
   );
@@ -247,7 +308,7 @@ export function LoginScreen({ nav }: { nav: Navigation }) {
             label="Password"
             value={password}
             onChangeText={setPassword}
-            placeholder="Password"
+            placeholder="••••••••"
             secureTextEntry
             showSecureToggle
           />
@@ -617,12 +678,25 @@ const styles = StyleSheet.create({
   },
   formHeading: {
     color: HiveColors.text,
-    fontSize: 28,
+    fontSize: 30,
     fontWeight: '800',
     letterSpacing: -0.3,
   },
   formStack: {
     gap: 14,
+  },
+  validatedField: {
+    gap: 4,
+  },
+  hintRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingLeft: 4,
+  },
+  hintText: {
+    color: HiveColors.danger,
+    fontSize: 12,
   },
   notice: {
     color: HiveColors.greenDark,
