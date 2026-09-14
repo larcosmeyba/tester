@@ -6,6 +6,7 @@ import {
   Alert,
   Animated,
   Image,
+  Linking,
   PanResponder,
   Pressable,
   ScrollView,
@@ -20,6 +21,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AvatarButton, HiveIcon } from '@/components/hive-ui';
 import { FloatingPill, useFloatingTabBarSpace, FLOATING_TAB_BAR_HEIGHT } from '@/components/hive-navigation';
 import { useAppState } from '@/state/app-state';
+import { usePantry } from '@/features/pantry/pantry-context';
 import { StyleSheet } from 'react-native';
 import { sharedStyles } from '@/features/app/app-shared';
 import { type Navigation } from '@/features/app/navigation-types';
@@ -87,6 +89,8 @@ export function HomeScreen({ nav }: { nav: Navigation }) {
           <AvatarButton imageUri={app.profile.profileImageUri} onPress={onAvatarPress} accessibilityLabel="Change profile photo" />
         </View>
 
+        <ExpiringSoonBanner onPress={() => nav.push('pantry')} />
+
         <Text style={styles.homeQuestion}>What would you like to do first?</Text>
 
         <View style={styles.actionStack}>
@@ -142,6 +146,7 @@ export function HomeScreen({ nav }: { nav: Navigation }) {
                   See recipes based on what{'\n'}you already have at home
                 </Text>
               </View>
+              <HiveIcon name="carrot" size={34} color="rgba(255,255,255,0.30)" />
               <HiveIcon name="next" size={18} color="rgba(255,255,255,0.9)" />
             </View>
           </Pressable>
@@ -191,6 +196,36 @@ export function HomeScreen({ nav }: { nav: Navigation }) {
   );
 }
 
+/**
+ * "Use It Soon" banner — shows when pantry items expire within 5 days.
+ * Marcos's HomeView design; taps through to the pantry.
+ */
+function ExpiringSoonBanner({ onPress }: { onPress: () => void }) {
+  const { expiringItems } = usePantry();
+  const expiringCount = expiringItems.length;
+  if (expiringCount === 0) {
+    return null;
+  }
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={`Use it soon, ${expiringCount} pantry items expiring`}
+      onPress={onPress}
+      style={({ pressed }) => [styles.expiringBanner, pressed && sharedStyles.pressed]}>
+      <View style={styles.expiringIconCircle}>
+        <Text style={styles.expiringIcon}>🐝</Text>
+      </View>
+      <View style={sharedStyles.flexOne}>
+        <Text style={styles.expiringTitle}>Use It Soon 🐝</Text>
+        <Text style={styles.expiringSubtitle}>
+          {expiringCount} pantry item{expiringCount === 1 ? '' : 's'} expiring in the next 5 days
+        </Text>
+      </View>
+      <HiveIcon name="next" size={16} color={HiveColors.orange} />
+    </Pressable>
+  );
+}
+
 function HomeResourceCard({ resource, onPress }: { resource: ResourceItem; onPress: () => void }) {
   const badge = BADGE_TONES[resource.badgeTone ?? 'green'];
   const [days, time] = resource.hours.split('·').map((part) => part.trim());
@@ -215,11 +250,27 @@ function HomeResourceCard({ resource, onPress }: { resource: ResourceItem; onPre
         <Text style={styles.resMetaText}>{time}</Text>
       </View>
       <Text style={styles.resDescription} numberOfLines={3}>{resource.description}</Text>
-      <View style={styles.learnMoreButton}>
+      <Pressable
+        accessibilityRole="link"
+        accessibilityLabel={`Learn more about ${resource.name}`}
+        onPress={(event) => {
+          event.stopPropagation();
+          openResourceWebsite(resource.website);
+        }}
+        style={({ pressed }) => [styles.learnMoreButton, pressed && sharedStyles.pressed]}>
         <Text style={styles.learnMoreText}>Learn More</Text>
-      </View>
+      </Pressable>
     </Pressable>
   );
+}
+
+/** Marcos: Learn More goes straight to the resource's website. */
+function openResourceWebsite(website?: string) {
+  if (!website) {
+    return;
+  }
+  const url = website.startsWith('http') ? website : `https://${website}`;
+  void Linking.openURL(url);
 }
 
 /**
@@ -464,6 +515,40 @@ const styles = StyleSheet.create({
     color: HiveColors.white,
     fontSize: 15,
     fontWeight: '700',
+  },
+  expiringBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+    marginHorizontal: 20,
+    marginTop: 16,
+    marginBottom: 4,
+    padding: 14,
+    backgroundColor: '#FFF0CC',
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(255,149,0,0.4)',
+  },
+  expiringIconCircle: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: 'rgba(255,149,0,0.15)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  expiringIcon: {
+    fontSize: 22,
+  },
+  expiringTitle: {
+    color: '#8C4700',
+    fontSize: 15,
+    fontWeight: '800',
+  },
+  expiringSubtitle: {
+    color: '#8C5900',
+    fontSize: 13,
+    marginTop: 3,
   },
   cartPillRow: {
     position: 'absolute',
