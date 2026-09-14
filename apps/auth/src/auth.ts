@@ -54,7 +54,12 @@ export const auth = betterAuth({
   },
   emailAndPassword: {
     enabled: true,
-    requireEmailVerification: true,
+    // The app's one-time verification codes (API requestVerificationCode /
+    // verifyCode) are the single verification of record — see the Sign Up /
+    // Login / Onboarding v2 spec. better-auth must not gate sign-in or send
+    // its own verification emails, or new users can never establish a
+    // session. (Marcos: confirm; auth service needs a redeploy.)
+    requireEmailVerification: false,
     resetPasswordTokenExpiresIn: 60 * 60,
     revokeSessionsOnPasswordReset: true,
     sendResetPassword: async ({ user, url }) => {
@@ -63,7 +68,10 @@ export const auth = betterAuth({
   },
   emailVerification: {
     expiresIn: 60 * 60,
-    sendOnSignUp: true,
+    // Disabled: the API's verification codes are the single verification
+    // flow. (Explicit changeEmail verification still uses
+    // sendVerificationEmail below.)
+    sendOnSignUp: false,
     sendOnSignIn: true,
     autoSignInAfterVerification: false,
     sendVerificationEmail: async ({ user, url }) => {

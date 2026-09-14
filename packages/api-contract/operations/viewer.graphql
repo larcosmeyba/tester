@@ -23,6 +23,8 @@ query Viewer {
       preferredFinanceTopics
       preferredResources
       wantsGovAssistance
+      selectedBenefitPrograms
+      locationPermissionStatus
       lastMealPlanDate
       notificationsEnabled
       expiringPantryNotificationsEnabled
@@ -34,8 +36,26 @@ query Viewer {
     onboardingState {
       hasCompletedOnboarding
       completedAt
+      currentStep
       createdAt
       updatedAt
+    }
+    questionnaireAnswers {
+      weeklyBudget
+      financeTopics
+      resources
+      primaryGoal
+      householdSize
+      incomeBracket
+      updatedAt
+    }
+    verification {
+      verified
+      verifiedAt
+      method
+    }
+    consent {
+      emailMarketingOptIn
     }
   }
 }
@@ -60,6 +80,8 @@ mutation UpdatePreferences($input: UpdatePreferencesInput!) {
     preferredFinanceTopics
     preferredResources
     wantsGovAssistance
+    selectedBenefitPrograms
+    locationPermissionStatus
     lastMealPlanDate
     notificationsEnabled
     expiringPantryNotificationsEnabled
@@ -95,6 +117,8 @@ mutation CompleteOnboarding($input: CompleteOnboardingInput!) {
       preferredFinanceTopics
       preferredResources
       wantsGovAssistance
+      selectedBenefitPrograms
+      locationPermissionStatus
       lastMealPlanDate
       notificationsEnabled
       expiringPantryNotificationsEnabled

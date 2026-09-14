@@ -1,6 +1,7 @@
 import type {
   CompleteOnboardingMutationVariables,
   HandleAvailabilityQuery,
+  RecordConsentMutationVariables,
   PushPlatform,
   UpdatePreferencesMutationVariables,
   UpdateProfileMutationVariables,
@@ -16,6 +17,7 @@ import {
   UpdateHandleDocument,
   UpdatePreferencesDocument,
   UpdateProfileDocument,
+  RecordConsentDocument,
   RegisterPushTokenDocument,
   ViewerDocument,
 } from '@/graphql/operations';
@@ -69,6 +71,13 @@ export async function deletePushToken(token: string) {
 export async function completeOnboarding(input: CompleteOnboardingUpdate) {
   const result = await graphqlClient.request(CompleteOnboardingDocument, { input });
   return result.completeOnboarding;
+}
+
+export type ConsentRecord = RecordConsentMutationVariables['input'];
+
+export async function recordConsent(input: ConsentRecord) {
+  const result = await graphqlClient.request(RecordConsentDocument, { input });
+  return result.recordConsent;
 }
 
 export async function checkHandleAvailability(handle: string) {

@@ -240,7 +240,7 @@ func (f *fakeUsers) Viewer(context.Context, auth.Identity) (db.Viewer, error) {
 	}, nil
 }
 
-func (f *fakeUsers) UpdatePreferences(_ context.Context, _ auth.Identity, patch db.PreferencesPatch) (db.Preferences, error) {
+func (f *fakeUsers) UpdatePreferences(_ context.Context, _ auth.Identity, patch db.PreferencesPatch, _ *bool) (db.Preferences, error) {
 	out := db.Preferences{}
 	if patch.WeeklyBudget != nil {
 		out.WeeklyBudget = *patch.WeeklyBudget

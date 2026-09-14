@@ -79,7 +79,7 @@ func (r *mutationResolver) UpdatePreferences(ctx context.Context, input model.Up
 	if err != nil {
 		return nil, err
 	}
-	preferences, err := r.Users.UpdatePreferences(ctx, identity, patch)
+	preferences, err := r.Users.UpdatePreferences(ctx, identity, patch, input.EmailMarketingOptIn)
 	if err != nil {
 		return nil, err
 	}
@@ -101,18 +101,32 @@ func (r *mutationResolver) CompleteOnboarding(ctx context.Context, input model.C
 
 	var preferencesPatch db.PreferencesPatch
 	hasPreferences := input.Preferences != nil
+	var emailMarketingOptIn *bool
 	if input.Preferences != nil {
 		preferencesPatch, err = preferencesPatchFromInput(*input.Preferences)
 		if err != nil {
 			return nil, err
 		}
+		emailMarketingOptIn = input.Preferences.EmailMarketingOptIn
 	}
 
-	viewer, err := r.Users.CompleteOnboarding(ctx, identity, profilePatch, preferencesPatch, hasProfile, hasPreferences)
+	viewer, err := r.Users.CompleteOnboarding(ctx, identity, profilePatch, preferencesPatch, hasProfile, hasPreferences, emailMarketingOptIn)
 	if err != nil {
 		return nil, err
 	}
-	return viewerModel(viewer), nil
+	return r.extendedViewerModel(ctx, identity, viewer)
+}
+
+// RecordConsent is the resolver for the recordConsent field.
+func (r *mutationResolver) RecordConsent(ctx context.Context, input model.RecordConsentInput) (bool, error) {
+	identity, err := auth.RequireIdentity(ctx)
+	if err != nil {
+		return false, err
+	}
+	if _, err := r.Users.RecordConsent(ctx, identity, input.TermsVersion, input.PrivacyVersion, input.EmailMarketingOptIn); err != nil {
+		return false, err
+	}
+	return true, nil
 }
 
 // AddPantryItem is the resolver for the addPantryItem field.
@@ -206,6 +220,90 @@ func (r *mutationResolver) DeletePushToken(ctx context.Context, token string) (b
 	return r.Users.DeletePushToken(ctx, identity, token)
 }
 
+// RequestVerificationCode is the resolver for the requestVerificationCode field.
+func (r *mutationResolver) RequestVerificationCode(ctx context.Context, input model.RequestVerificationCodeInput) (bool, error) {
+	identity, err := auth.RequireIdentity(ctx)
+	if err != nil {
+		return false, err
+	}
+	purpose := model.VerificationPurposeSignup
+	if input.Purpose != nil {
+		purpose = *input.Purpose
+	}
+	if err := r.Users.RequestVerificationCode(ctx, identity, string(input.Method), string(purpose), input.NewEmail, input.NewPhone); err != nil {
+		return false, err
+	}
+	return true, nil
+}
+
+// VerifyCode is the resolver for the verifyCode field.
+func (r *mutationResolver) VerifyCode(ctx context.Context, code string) (bool, error) {
+	identity, err := auth.RequireIdentity(ctx)
+	if err != nil {
+		return false, err
+	}
+	if err := r.Users.VerifyCode(ctx, identity, code); err != nil {
+		return false, err
+	}
+	return true, nil
+}
+
+// SaveQuestionnaire is the resolver for the saveQuestionnaire field.
+func (r *mutationResolver) SaveQuestionnaire(ctx context.Context, input model.SaveQuestionnaireInput) (*model.QuestionnaireAnswers, error) {
+	identity, err := auth.RequireIdentity(ctx)
+	if err != nil {
+		return nil, err
+	}
+	answers, err := r.Users.SaveQuestionnaire(ctx, identity, db.QuestionnairePatch{
+		WeeklyBudget:  input.WeeklyBudget,
+		FinanceTopics: input.FinanceTopics,
+		Resources:     input.Resources,
+		PrimaryGoal:   input.PrimaryGoal,
+		HouseholdSize: input.HouseholdSize,
+		IncomeBracket: input.IncomeBracket,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return questionnaireAnswersModel(answers), nil
+}
+
+// SaveOnboardingStep is the resolver for the saveOnboardingStep field.
+func (r *mutationResolver) SaveOnboardingStep(ctx context.Context, step string) (bool, error) {
+	identity, err := auth.RequireIdentity(ctx)
+	if err != nil {
+		return false, err
+	}
+	if err := r.Users.SaveOnboardingStep(ctx, identity, step); err != nil {
+		return false, err
+	}
+	return true, nil
+}
+
+// UpdateCommunicationConsents is the resolver for the updateCommunicationConsents field.
+func (r *mutationResolver) UpdateCommunicationConsents(ctx context.Context, input model.UpdateCommunicationConsentsInput) (bool, error) {
+	identity, err := auth.RequireIdentity(ctx)
+	if err != nil {
+		return false, err
+	}
+	if err := r.Users.UpdateCommunicationConsents(ctx, identity, input.EmailConsent, input.PhoneCallConsent); err != nil {
+		return false, err
+	}
+	return true, nil
+}
+
+// SaveLocationFallback is the resolver for the saveLocationFallback field.
+func (r *mutationResolver) SaveLocationFallback(ctx context.Context, zip string) (bool, error) {
+	identity, err := auth.RequireIdentity(ctx)
+	if err != nil {
+		return false, err
+	}
+	if err := r.Users.SaveLocationFallback(ctx, identity, zip); err != nil {
+		return false, err
+	}
+	return true, nil
+}
+
 // Viewer is the resolver for the viewer field.
 func (r *queryResolver) Viewer(ctx context.Context) (*model.Viewer, error) {
 	identity, err := auth.RequireIdentity(ctx)
@@ -216,7 +314,7 @@ func (r *queryResolver) Viewer(ctx context.Context) (*model.Viewer, error) {
 	if err != nil {
 		return nil, err
 	}
-	return viewerModel(viewer), nil
+	return r.extendedViewerModel(ctx, identity, viewer)
 }
 
 // HandleAvailability is the resolver for the handleAvailability field.
@@ -318,6 +416,8 @@ func preferencesPatchFromInput(input model.UpdatePreferencesInput) (db.Preferenc
 		ExpiringPantryNotificationsEnabled:   input.ExpiringPantryNotificationsEnabled,
 		WeeklyMealPlanNotificationsEnabled:   input.WeeklyMealPlanNotificationsEnabled,
 		ResourceReminderNotificationsEnabled: input.ResourceReminderNotificationsEnabled,
+		SelectedBenefitPrograms:              input.SelectedBenefitPrograms,
+		LocationPermissionStatus:             input.LocationPermissionStatus,
 	}, nil
 }
 func pantryFilterFromInput(input *model.PantryItemFilterInput) db.PantryFilter {
@@ -372,6 +472,7 @@ func viewerModel(viewer db.Viewer) *model.Viewer {
 		Profile:         profileModel(viewer.Profile),
 		Preferences:     preferencesModel(viewer.Preferences),
 		OnboardingState: onboardingStateModel(viewer.OnboardingState),
+		Consent:         consentModel(viewer.Consent),
 	}
 }
 func userModel(user db.User) *model.User {
@@ -409,16 +510,74 @@ func preferencesModel(preferences db.Preferences) *model.AppPreferences {
 		ResourceReminderNotificationsEnabled: preferences.ResourceReminderNotificationsEnabled,
 		BenefitsRenewalNotificationsEnabled:  preferences.BenefitsRenewalNotificationsEnabled,
 		BenefitsRenewalDiscreetLockScreen:    preferences.BenefitsRenewalDiscreetLockScreen,
+		SelectedBenefitPrograms:              preferences.SelectedBenefitPrograms,
+		LocationPermissionStatus:             preferences.LocationPermissionStatus,
 		CreatedAt:                            db.FormatTime(preferences.CreatedAt),
 		UpdatedAt:                            db.FormatTime(preferences.UpdatedAt),
+	}
+}
+func consentModel(consent *db.Consent) *model.Consent {
+	if consent == nil {
+		return nil
+	}
+	return &model.Consent{
+		TermsVersion:            consent.TermsVersion,
+		TermsAcceptedAt:         db.FormatTime(consent.TermsAcceptedAt),
+		PrivacyVersion:          consent.PrivacyVersion,
+		PrivacyAcceptedAt:       db.FormatTime(consent.PrivacyAcceptedAt),
+		EmailMarketingOptIn:     consent.EmailMarketingOptIn,
+		EmailMarketingUpdatedAt: db.FormatTime(consent.EmailMarketingUpdatedAt),
 	}
 }
 func onboardingStateModel(onboarding db.OnboardingState) *model.OnboardingState {
 	return &model.OnboardingState{
 		HasCompletedOnboarding: onboarding.HasCompletedOnboarding,
 		CompletedAt:            timeStringPtr(onboarding.CompletedAt),
+		CurrentStep:            onboarding.CurrentStep,
 		CreatedAt:              db.FormatTime(onboarding.CreatedAt),
 		UpdatedAt:              db.FormatTime(onboarding.UpdatedAt),
+	}
+}
+func (r *Resolver) extendedViewerModel(ctx context.Context, identity auth.Identity, viewer db.Viewer) (*model.Viewer, error) {
+	result := viewerModel(viewer)
+	answers, err := r.Users.QuestionnaireAnswers(ctx, identity)
+	if err != nil {
+		return nil, err
+	}
+	result.QuestionnaireAnswers = questionnaireAnswersModel(answers)
+	status, err := r.Users.VerificationStatus(ctx, identity)
+	if err != nil {
+		return nil, err
+	}
+	result.Verification = verificationStatusModel(status)
+	return result, nil
+}
+func questionnaireAnswersModel(answers db.QuestionnaireAnswers) *model.QuestionnaireAnswers {
+	return &model.QuestionnaireAnswers{
+		WeeklyBudget:  answers.WeeklyBudget,
+		FinanceTopics: answers.FinanceTopics,
+		Resources:     answers.Resources,
+		PrimaryGoal:   answers.PrimaryGoal,
+		HouseholdSize: answers.HouseholdSize,
+		IncomeBracket: answers.IncomeBracket,
+		UpdatedAt:     db.FormatTime(answers.UpdatedAt),
+	}
+}
+func verificationStatusModel(status db.VerificationStatus) *model.VerificationStatus {
+	var method *model.VerificationMethod
+	if status.Method != nil {
+		// The database stores the lowercase channel ("email"); the
+		// contract exposes the enum (EMAIL).
+		switch *status.Method {
+		case db.VerificationMethodEmail:
+			m := model.VerificationMethodEmail
+			method = &m
+		}
+	}
+	return &model.VerificationStatus{
+		Verified:   status.Verified,
+		VerifiedAt: timeStringPtr(status.VerifiedAt),
+		Method:     method,
 	}
 }
 func (r *Resolver) pantryItemModel(item db.PantryItem) *model.PantryItem {

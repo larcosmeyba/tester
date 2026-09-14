@@ -78,10 +78,12 @@ export type AppPreferences = {
   createdAt: Scalars['String']['output'];
   expiringPantryNotificationsEnabled: Scalars['Boolean']['output'];
   lastMealPlanDate?: Maybe<Scalars['String']['output']>;
+  locationPermissionStatus: Scalars['String']['output'];
   notificationsEnabled: Scalars['Boolean']['output'];
   preferredFinanceTopics: Array<Scalars['String']['output']>;
   preferredResources: Array<Scalars['String']['output']>;
   resourceReminderNotificationsEnabled: Scalars['Boolean']['output'];
+  selectedBenefitPrograms: Array<Scalars['String']['output']>;
   updatedAt: Scalars['String']['output'];
   wantsGovAssistance: Scalars['Boolean']['output'];
   weeklyBudget: Scalars['String']['output'];
@@ -417,6 +419,16 @@ export type BudgetMode =
 export type CompleteOnboardingInput = {
   preferences?: InputMaybe<UpdatePreferencesInput>;
   profile?: InputMaybe<UpdateProfileInput>;
+};
+
+export type Consent = {
+  __typename?: 'Consent';
+  emailMarketingOptIn: Scalars['Boolean']['output'];
+  emailMarketingUpdatedAt: Scalars['String']['output'];
+  privacyAcceptedAt: Scalars['String']['output'];
+  privacyVersion: Scalars['String']['output'];
+  termsAcceptedAt: Scalars['String']['output'];
+  termsVersion: Scalars['String']['output'];
 };
 
 export type CookingStyle =
@@ -834,6 +846,7 @@ export type Mutation = {
   markPantryItemUsed: PantryItem;
   /** Moves a meal between slots. Never regenerates the week and never re-prices. */
   movePlannedMeal: MealPlan;
+  recordConsent: Scalars['Boolean']['output'];
   /** Re-runs the fill after the app has collected more answers. */
   refillBenefitsApplication: BenefitsApplication;
   /** Rebuilds one day from the stored questionnaire, leaving the rest of the week alone. */
@@ -843,10 +856,12 @@ export type Mutation = {
   registerPushToken: PushToken;
   /** Puts a specific recipe in a slot. The recipe is still checked against the viewer's filters. */
   replaceMeal: MealPlan;
+  requestVerificationCode: Scalars['Boolean']['output'];
   /** Records scalar answers. Repeating groups go through saveBenefitsGroup. */
   saveBenefitsAnswers: BenefitsProfile;
   /** Replaces a repeating group. An empty rows list is how a household says it has none of these. */
   saveBenefitsGroup: BenefitsProfile;
+  saveLocationFallback: Scalars['Boolean']['output'];
   /** Makes a plan the viewer's active one, archiving whichever plan held that place. */
   saveMealPlan: MealPlan;
   /**
@@ -854,6 +869,8 @@ export type Mutation = {
    * accumulation: saving without a dislike removes it.
    */
   saveMealProfile: MealProfile;
+  saveOnboardingStep: Scalars['Boolean']['output'];
+  saveQuestionnaire: QuestionnaireAnswers;
   saveRecipe: Scalars['Boolean']['output'];
   setGroceryItemChecked: Scalars['Boolean']['output'];
   /** Ticks one task off. False when there was nothing to tick. */
@@ -867,12 +884,14 @@ export type Mutation = {
   unsaveRecipe: Scalars['Boolean']['output'];
   /** Sets the two renewal notification flags. */
   updateBenefitsRenewalPreferences: Scalars['Boolean']['output'];
+  updateCommunicationConsents: Scalars['Boolean']['output'];
   updateHandle: Profile;
   updatePantryItem: PantryItem;
   updatePreferences: AppPreferences;
   updateProfile: Profile;
   /** Changes how much food one slot is cooked for. The week is re-priced. */
   updateServings: MealPlan;
+  verifyCode: Scalars['Boolean']['output'];
 };
 
 
@@ -965,6 +984,9 @@ export type MutationMovePlannedMealArgs = {
 };
 
 
+export type MutationRecordConsentArgs = {
+  input: RecordConsentInput;
+};
 export type MutationRefillBenefitsApplicationArgs = {
   applicationId: Scalars['ID']['input'];
 };
@@ -992,6 +1014,11 @@ export type MutationReplaceMealArgs = {
 };
 
 
+export type MutationRequestVerificationCodeArgs = {
+  input: RequestVerificationCodeInput;
+};
+
+
 export type MutationSaveBenefitsAnswersArgs = {
   input: Array<BenefitsAnswerInput>;
 };
@@ -1002,6 +1029,11 @@ export type MutationSaveBenefitsGroupArgs = {
 };
 
 
+export type MutationSaveLocationFallbackArgs = {
+  zip: Scalars['String']['input'];
+};
+
+
 export type MutationSaveMealPlanArgs = {
   planId: Scalars['ID']['input'];
 };
@@ -1009,6 +1041,16 @@ export type MutationSaveMealPlanArgs = {
 
 export type MutationSaveMealProfileArgs = {
   input: MealProfileInput;
+};
+
+
+export type MutationSaveOnboardingStepArgs = {
+  step: Scalars['String']['input'];
+};
+
+
+export type MutationSaveQuestionnaireArgs = {
+  input: SaveQuestionnaireInput;
 };
 
 
@@ -1057,6 +1099,11 @@ export type MutationUpdateBenefitsRenewalPreferencesArgs = {
 };
 
 
+export type MutationUpdateCommunicationConsentsArgs = {
+  input: UpdateCommunicationConsentsInput;
+};
+
+
 export type MutationUpdateHandleArgs = {
   handle: Scalars['String']['input'];
 };
@@ -1081,6 +1128,11 @@ export type MutationUpdateProfileArgs = {
 export type MutationUpdateServingsArgs = {
   input: UpdateServingsInput;
   planId: Scalars['ID']['input'];
+};
+
+
+export type MutationVerifyCodeArgs = {
+  code: Scalars['String']['input'];
 };
 
 export type NutritionGoal =
@@ -1129,6 +1181,7 @@ export type OnboardingState = {
   __typename?: 'OnboardingState';
   completedAt?: Maybe<Scalars['String']['output']>;
   createdAt: Scalars['String']['output'];
+  currentStep?: Maybe<Scalars['String']['output']>;
   hasCompletedOnboarding: Scalars['Boolean']['output'];
   updatedAt: Scalars['String']['output'];
 };
@@ -1378,6 +1431,17 @@ export type QueryRecipesArgs = {
   query?: InputMaybe<RecipeQueryInput>;
 };
 
+export type QuestionnaireAnswers = {
+  __typename?: 'QuestionnaireAnswers';
+  financeTopics: Array<Scalars['String']['output']>;
+  householdSize?: Maybe<Scalars['String']['output']>;
+  incomeBracket?: Maybe<Scalars['String']['output']>;
+  primaryGoal?: Maybe<Scalars['String']['output']>;
+  resources: Array<Scalars['String']['output']>;
+  updatedAt: Scalars['String']['output'];
+  weeklyBudget?: Maybe<Scalars['String']['output']>;
+};
+
 /**
  * The Standard HTH Recipe Object. One format for library, AI-generated, imported
  * and hand-entered recipes; `sourceType` is a field, not a second type.
@@ -1463,6 +1527,12 @@ export type RecipeQueryInput = {
   tagIds?: InputMaybe<Array<Scalars['String']['input']>>;
 };
 
+export type RecordConsentInput = {
+  emailMarketingOptIn: Scalars['Boolean']['input'];
+  privacyVersion: Scalars['String']['input'];
+  termsVersion: Scalars['String']['input'];
+};
+
 export type RegisterPushTokenInput = {
   deviceId?: InputMaybe<Scalars['String']['input']>;
   platform: PushPlatform;
@@ -1474,9 +1544,25 @@ export type ReplaceMealInput = {
   slot: MealSlotInput;
 };
 
+export type RequestVerificationCodeInput = {
+  method: VerificationMethod;
+  newEmail?: InputMaybe<Scalars['String']['input']>;
+  newPhone?: InputMaybe<Scalars['String']['input']>;
+  purpose?: InputMaybe<VerificationPurpose>;
+};
+
 export type SaveBenefitsGroupInput = {
   groupPath: Scalars['String']['input'];
   rows: Array<BenefitsGroupRowInput>;
+};
+
+export type SaveQuestionnaireInput = {
+  financeTopics?: InputMaybe<Array<Scalars['String']['input']>>;
+  householdSize?: InputMaybe<Scalars['String']['input']>;
+  incomeBracket?: InputMaybe<Scalars['String']['input']>;
+  primaryGoal?: InputMaybe<Scalars['String']['input']>;
+  resources?: InputMaybe<Array<Scalars['String']['input']>>;
+  weeklyBudget?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type StorageLocation =
@@ -1502,6 +1588,11 @@ export type SwapMealInput = {
   slot: MealSlotInput;
 };
 
+export type UpdateCommunicationConsentsInput = {
+  emailConsent?: InputMaybe<Scalars['Boolean']['input']>;
+  phoneCallConsent?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
 export type UpdatePantryItemInput = {
   category?: InputMaybe<Scalars['String']['input']>;
   expirationDate?: InputMaybe<Scalars['String']['input']>;
@@ -1516,12 +1607,15 @@ export type UpdatePantryItemInput = {
 };
 
 export type UpdatePreferencesInput = {
+  emailMarketingOptIn?: InputMaybe<Scalars['Boolean']['input']>;
   expiringPantryNotificationsEnabled?: InputMaybe<Scalars['Boolean']['input']>;
   lastMealPlanDate?: InputMaybe<Scalars['String']['input']>;
+  locationPermissionStatus?: InputMaybe<Scalars['String']['input']>;
   notificationsEnabled?: InputMaybe<Scalars['Boolean']['input']>;
   preferredFinanceTopics?: InputMaybe<Array<Scalars['String']['input']>>;
   preferredResources?: InputMaybe<Array<Scalars['String']['input']>>;
   resourceReminderNotificationsEnabled?: InputMaybe<Scalars['Boolean']['input']>;
+  selectedBenefitPrograms?: InputMaybe<Array<Scalars['String']['input']>>;
   wantsGovAssistance?: InputMaybe<Scalars['Boolean']['input']>;
   weeklyBudget?: InputMaybe<Scalars['String']['input']>;
   weeklyMealPlanNotificationsEnabled?: InputMaybe<Scalars['Boolean']['input']>;
@@ -1557,12 +1651,31 @@ export type ValueConfidence =
   | 'missing'
   | 'source';
 
+export type VerificationMethod =
+  | 'EMAIL';
+
+export type VerificationPurpose =
+  | 'EMAIL_CHANGE'
+  | 'PHONE_CHANGE'
+  | 'RECOVERY'
+  | 'SIGNUP';
+
+export type VerificationStatus = {
+  __typename?: 'VerificationStatus';
+  method?: Maybe<VerificationMethod>;
+  verified: Scalars['Boolean']['output'];
+  verifiedAt?: Maybe<Scalars['String']['output']>;
+};
+
 export type Viewer = {
   __typename?: 'Viewer';
+  consent?: Maybe<Consent>;
   onboardingState: OnboardingState;
   preferences: AppPreferences;
   profile: Profile;
+  questionnaireAnswers: QuestionnaireAnswers;
   user: User;
+  verification: VerificationStatus;
 };
 
 export type WasteStats = {
@@ -1578,6 +1691,55 @@ export type DeleteViewerDataMutationVariables = Exact<{ [key: string]: never; }>
 
 
 export type DeleteViewerDataMutation = { __typename?: 'Mutation', deleteViewerData: boolean };
+
+export type RecordConsentMutationVariables = Exact<{
+  input: RecordConsentInput;
+}>;
+
+
+export type RecordConsentMutation = { __typename?: 'Mutation', recordConsent: boolean };
+
+export type RequestVerificationCodeMutationVariables = Exact<{
+  input: RequestVerificationCodeInput;
+}>;
+
+
+export type RequestVerificationCodeMutation = { __typename?: 'Mutation', requestVerificationCode: boolean };
+
+export type VerifyCodeMutationVariables = Exact<{
+  code: Scalars['String']['input'];
+}>;
+
+
+export type VerifyCodeMutation = { __typename?: 'Mutation', verifyCode: boolean };
+
+export type SaveQuestionnaireMutationVariables = Exact<{
+  input: SaveQuestionnaireInput;
+}>;
+
+
+export type SaveQuestionnaireMutation = { __typename?: 'Mutation', saveQuestionnaire: { __typename?: 'QuestionnaireAnswers', weeklyBudget?: string | null, financeTopics: Array<string>, resources: Array<string>, primaryGoal?: string | null, householdSize?: string | null, incomeBracket?: string | null, updatedAt: string } };
+
+export type SaveOnboardingStepMutationVariables = Exact<{
+  step: Scalars['String']['input'];
+}>;
+
+
+export type SaveOnboardingStepMutation = { __typename?: 'Mutation', saveOnboardingStep: boolean };
+
+export type UpdateCommunicationConsentsMutationVariables = Exact<{
+  input: UpdateCommunicationConsentsInput;
+}>;
+
+
+export type UpdateCommunicationConsentsMutation = { __typename?: 'Mutation', updateCommunicationConsents: boolean };
+
+export type SaveLocationFallbackMutationVariables = Exact<{
+  zip: Scalars['String']['input'];
+}>;
+
+
+export type SaveLocationFallbackMutation = { __typename?: 'Mutation', saveLocationFallback: boolean };
 
 export type BenefitsFormFieldsFragment = { __typename?: 'BenefitsForm', id: string, key: string, status: BenefitsFormStatus, program: string, country: string, state?: string | null, formCode: string, formTitle: string, formVersion: string, revision: number, pageCount: number, templateKind: BenefitsTemplateKind, agencyUrl?: string | null, mappedFieldCount: number, fillableFieldCount: number, effectiveDate?: string | null, sourceUrl?: string | null, retrievedAt?: string | null };
 
@@ -1838,7 +2000,7 @@ export type DeletePushTokenMutation = { __typename?: 'Mutation', deletePushToken
 export type ViewerQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type ViewerQuery = { __typename?: 'Query', viewer: { __typename?: 'Viewer', user: { __typename?: 'User', id: string, authSubject: string, email?: string | null, createdAt: string, updatedAt: string }, profile: { __typename?: 'Profile', handle?: string | null, firstName: string, lastName: string, phone: string, zip: string, householdSize: number, profileImageUri?: string | null, createdAt: string, updatedAt: string }, preferences: { __typename?: 'AppPreferences', weeklyBudget: string, preferredFinanceTopics: Array<string>, preferredResources: Array<string>, wantsGovAssistance: boolean, lastMealPlanDate?: string | null, notificationsEnabled: boolean, expiringPantryNotificationsEnabled: boolean, weeklyMealPlanNotificationsEnabled: boolean, resourceReminderNotificationsEnabled: boolean, createdAt: string, updatedAt: string }, onboardingState: { __typename?: 'OnboardingState', hasCompletedOnboarding: boolean, completedAt?: string | null, createdAt: string, updatedAt: string } } };
+export type ViewerQuery = { __typename?: 'Query', viewer: { __typename?: 'Viewer', user: { __typename?: 'User', id: string, authSubject: string, email?: string | null, createdAt: string, updatedAt: string }, profile: { __typename?: 'Profile', handle?: string | null, firstName: string, lastName: string, phone: string, zip: string, householdSize: number, profileImageUri?: string | null, createdAt: string, updatedAt: string }, preferences: { __typename?: 'AppPreferences', weeklyBudget: string, preferredFinanceTopics: Array<string>, preferredResources: Array<string>, wantsGovAssistance: boolean, selectedBenefitPrograms: Array<string>, locationPermissionStatus: string, lastMealPlanDate?: string | null, notificationsEnabled: boolean, expiringPantryNotificationsEnabled: boolean, weeklyMealPlanNotificationsEnabled: boolean, resourceReminderNotificationsEnabled: boolean, createdAt: string, updatedAt: string }, onboardingState: { __typename?: 'OnboardingState', hasCompletedOnboarding: boolean, completedAt?: string | null, currentStep?: string | null, createdAt: string, updatedAt: string }, questionnaireAnswers: { __typename?: 'QuestionnaireAnswers', weeklyBudget?: string | null, financeTopics: Array<string>, resources: Array<string>, primaryGoal?: string | null, householdSize?: string | null, incomeBracket?: string | null, updatedAt: string }, verification: { __typename?: 'VerificationStatus', verified: boolean, verifiedAt?: string | null, method?: VerificationMethod | null }, consent?: { __typename?: 'Consent', emailMarketingOptIn: boolean } | null } };
 
 export type UpdateProfileMutationVariables = Exact<{
   input: UpdateProfileInput;
@@ -1852,14 +2014,14 @@ export type UpdatePreferencesMutationVariables = Exact<{
 }>;
 
 
-export type UpdatePreferencesMutation = { __typename?: 'Mutation', updatePreferences: { __typename?: 'AppPreferences', weeklyBudget: string, preferredFinanceTopics: Array<string>, preferredResources: Array<string>, wantsGovAssistance: boolean, lastMealPlanDate?: string | null, notificationsEnabled: boolean, expiringPantryNotificationsEnabled: boolean, weeklyMealPlanNotificationsEnabled: boolean, resourceReminderNotificationsEnabled: boolean, createdAt: string, updatedAt: string } };
+export type UpdatePreferencesMutation = { __typename?: 'Mutation', updatePreferences: { __typename?: 'AppPreferences', weeklyBudget: string, preferredFinanceTopics: Array<string>, preferredResources: Array<string>, wantsGovAssistance: boolean, selectedBenefitPrograms: Array<string>, locationPermissionStatus: string, lastMealPlanDate?: string | null, notificationsEnabled: boolean, expiringPantryNotificationsEnabled: boolean, weeklyMealPlanNotificationsEnabled: boolean, resourceReminderNotificationsEnabled: boolean, createdAt: string, updatedAt: string } };
 
 export type CompleteOnboardingMutationVariables = Exact<{
   input: CompleteOnboardingInput;
 }>;
 
 
-export type CompleteOnboardingMutation = { __typename?: 'Mutation', completeOnboarding: { __typename?: 'Viewer', user: { __typename?: 'User', id: string, authSubject: string, email?: string | null, createdAt: string, updatedAt: string }, profile: { __typename?: 'Profile', handle?: string | null, firstName: string, lastName: string, phone: string, zip: string, householdSize: number, profileImageUri?: string | null, createdAt: string, updatedAt: string }, preferences: { __typename?: 'AppPreferences', weeklyBudget: string, preferredFinanceTopics: Array<string>, preferredResources: Array<string>, wantsGovAssistance: boolean, lastMealPlanDate?: string | null, notificationsEnabled: boolean, expiringPantryNotificationsEnabled: boolean, weeklyMealPlanNotificationsEnabled: boolean, resourceReminderNotificationsEnabled: boolean, createdAt: string, updatedAt: string }, onboardingState: { __typename?: 'OnboardingState', hasCompletedOnboarding: boolean, completedAt?: string | null, createdAt: string, updatedAt: string } } };
+export type CompleteOnboardingMutation = { __typename?: 'Mutation', completeOnboarding: { __typename?: 'Viewer', user: { __typename?: 'User', id: string, authSubject: string, email?: string | null, createdAt: string, updatedAt: string }, profile: { __typename?: 'Profile', handle?: string | null, firstName: string, lastName: string, phone: string, zip: string, householdSize: number, profileImageUri?: string | null, createdAt: string, updatedAt: string }, preferences: { __typename?: 'AppPreferences', weeklyBudget: string, preferredFinanceTopics: Array<string>, preferredResources: Array<string>, wantsGovAssistance: boolean, selectedBenefitPrograms: Array<string>, locationPermissionStatus: string, lastMealPlanDate?: string | null, notificationsEnabled: boolean, expiringPantryNotificationsEnabled: boolean, weeklyMealPlanNotificationsEnabled: boolean, resourceReminderNotificationsEnabled: boolean, createdAt: string, updatedAt: string }, onboardingState: { __typename?: 'OnboardingState', hasCompletedOnboarding: boolean, completedAt?: string | null, createdAt: string, updatedAt: string } } };
 
 export type HandleAvailabilityQueryVariables = Exact<{
   handle: Scalars['String']['input'];

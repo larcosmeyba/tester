@@ -54,3 +54,19 @@ func TestNormalizeAndValidateHandle(t *testing.T) {
 		})
 	}
 }
+
+func TestValidatePreferencesPatchLocationStatus(t *testing.T) {
+	for _, status := range []string{"unset", "granted", "denied"} {
+		value := status
+		if err := validatePreferencesPatch(db.PreferencesPatch{LocationPermissionStatus: &value}); err != nil {
+			t.Fatalf("validatePreferencesPatch(%q) error = %v, want nil", status, err)
+		}
+	}
+	bogus := "maybe"
+	if err := validatePreferencesPatch(db.PreferencesPatch{LocationPermissionStatus: &bogus}); err == nil {
+		t.Fatal("validatePreferencesPatch(\"maybe\") = nil, want an error")
+	}
+	if err := validatePreferencesPatch(db.PreferencesPatch{}); err != nil {
+		t.Fatalf("validatePreferencesPatch(empty) error = %v, want nil", err)
+	}
+}

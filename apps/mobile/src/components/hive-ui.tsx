@@ -1,6 +1,6 @@
 import { SymbolView, type SymbolViewProps } from 'expo-symbols';
 import { LinearGradient } from 'expo-linear-gradient';
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import {
   Image,
   type ImageSourcePropType,
@@ -304,6 +304,7 @@ export function AppTextField({
   onChangeText,
   placeholder,
   secureTextEntry,
+  showSecureToggle,
   keyboardType,
   multiline,
   autoCapitalize,
@@ -315,7 +316,12 @@ export function AppTextField({
   label: string;
   value: string;
   onChangeText: (value: string) => void;
+  /** Show a "Show"/"Hide" text toggle inside password fields. (The HiveIcon
+      set has no eye glyph, so the toggle is text rather than an icon.) */
+  showSecureToggle?: boolean;
 }) {
+  const [revealed, setRevealed] = useState(false);
+  const effectivelySecure = secureTextEntry && !revealed;
   return (
     <View style={styles.fieldWrap}>
       <Text style={styles.fieldLabel}>{label}</Text>
@@ -325,7 +331,7 @@ export function AppTextField({
           onChangeText={onChangeText}
           placeholder={placeholder}
           placeholderTextColor={HiveColors.placeholder}
-          secureTextEntry={secureTextEntry}
+          secureTextEntry={effectivelySecure}
           keyboardType={keyboardType}
           autoCapitalize={autoCapitalize ?? (keyboardType === 'email-address' ? 'none' : undefined)}
           autoCorrect={autoCorrect ?? (keyboardType === 'email-address' ? false : undefined)}
@@ -335,7 +341,17 @@ export function AppTextField({
           multiline={multiline}
           style={[styles.input, multiline && styles.inputMultiline]}
         />
-        {!secureTextEntry && value.length > 0 ? <HiveIcon name="check" size={16} color={HiveColors.green} /> : null}
+        {secureTextEntry && showSecureToggle ? (
+          <Pressable
+            onPress={() => setRevealed((current) => !current)}
+            accessibilityRole="button"
+            accessibilityLabel={revealed ? 'Hide password' : 'Show password'}
+            style={styles.secureToggle}>
+            <Text style={styles.secureToggleLabel}>{revealed ? 'Hide' : 'Show'}</Text>
+          </Pressable>
+        ) : !effectivelySecure && value.length > 0 ? (
+          <HiveIcon name="check" size={16} color={HiveColors.green} />
+        ) : null}
       </View>
     </View>
   );
@@ -810,6 +826,15 @@ const styles = StyleSheet.create({
     minHeight: 104,
     alignItems: 'flex-start',
     paddingVertical: 10,
+  },
+  secureToggle: {
+    paddingVertical: 6,
+    paddingLeft: 10,
+  },
+  secureToggleLabel: {
+    color: HiveColors.greenDark,
+    fontSize: 14,
+    fontWeight: '700',
   },
   input: {
     flex: 1,

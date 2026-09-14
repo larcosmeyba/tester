@@ -241,12 +241,15 @@ export function EditProfileScreen({ nav }: { nav: Navigation }) {
     setIsSaving(true);
     setSaveError('');
     try {
+      // profileImageUri is sent to the backend so the choice persists with
+      // the account; display keeps using the device-local URI below.
       await app.saveProfile({
         firstName: firstName.trim(),
         lastName: lastName.trim(),
         phone: phone.trim(),
         zip: zip.trim(),
         householdSize: parsedHouseholdSize,
+        profileImageUri: imageUri ?? null,
       });
       app.setLocalProfileImage(imageUri);
       nav.back();
@@ -265,6 +268,11 @@ export function EditProfileScreen({ nav }: { nav: Navigation }) {
           <AvatarButton imageUri={imageUri} onPress={pickImage} size={90} />
           <AppButton title="Choose Photo" variant="plain" onPress={pickImage} />
         </View>
+        {imageUri ? (
+          <View style={styles.removePhotoWrap}>
+            <AppButton title="Remove photo" variant="plain" onPress={() => setImageUri(undefined)} />
+          </View>
+        ) : null}
         <AppTextField label="First name" value={firstName} onChangeText={setFirstName} />
         <AppTextField label="Last name" value={lastName} onChangeText={setLastName} />
         <AppTextField label="Phone" value={phone} onChangeText={setPhone} keyboardType="phone-pad" />
@@ -341,6 +349,7 @@ export function NotificationsScreen({ nav }: { nav: Navigation }) {
   // saved via their own mutation; there is no local copy until first save.
   const [renewalAlerts, setRenewalAlerts] = useState(true);
   const [discreetLockScreen, setDiscreetLockScreen] = useState(true);
+  const [emailUpdates, setEmailUpdates] = useState(app.preferences.emailMarketingOptIn);
   const [isSaving, setIsSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState('');
   const [saveError, setSaveError] = useState('');
@@ -355,6 +364,7 @@ export function NotificationsScreen({ nav }: { nav: Navigation }) {
         expiringPantryNotificationsEnabled: pantry,
         weeklyMealPlanNotificationsEnabled: meals,
         resourceReminderNotificationsEnabled: resources,
+        emailMarketingOptIn: emailUpdates,
       });
       await updateBenefitsRenewalPreferences(renewalAlerts, discreetLockScreen);
       if (enabled) {
@@ -398,6 +408,12 @@ export function NotificationsScreen({ nav }: { nav: Navigation }) {
           subtitle="Keeps program names off your lock screen"
           selected={discreetLockScreen}
           onPress={() => setDiscreetLockScreen(!discreetLockScreen)}
+        />
+        <CheckboxRow
+          title="Email updates"
+          subtitle="Product news and offers from Help The Hive"
+          selected={emailUpdates}
+          onPress={() => setEmailUpdates(!emailUpdates)}
         />
         {saveMessage ? <Text style={uiText.muted}>{saveMessage}</Text> : null}
         {saveError ? <Text style={sharedStyles.authError}>{saveError}</Text> : null}
@@ -469,6 +485,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingBottom: 18,
   },
+  removePhotoWrap: { alignItems: 'center', marginTop: -8, marginBottom: 8 },
   centeredCompact: {
     alignItems: 'center',
     gap: 8,

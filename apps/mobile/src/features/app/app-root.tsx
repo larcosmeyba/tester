@@ -12,7 +12,8 @@
 import { useMemo, useState } from 'react';
 import { Text, View } from 'react-native';
 import { useAuth } from '@/auth/auth-context';
-import { AppButton, AppLogo, type HiveIconName, ModalSheet, PennyImage, Screen, uiText } from '@/components/hive-ui';
+import { AppButton, type HiveIconName, ModalSheet, PennyImage, Screen, uiText } from '@/components/hive-ui';
+import { SplashVideoScreen } from '@/features/app/splash-video-screen';
 import { FloatingTabBar } from '@/components/hive-navigation';
 import { MealPlanScreen as WeeklyMealPlanScreen } from '@/features/meals/meal-plan-screen';
 import { allVideos, type BenefitProgram, type MealRecipe, type ResourceItem, transactions, type VideoItem } from '@/data/mock-data';
@@ -33,7 +34,6 @@ import { HiveColors } from '@/constants/theme';
 
 const pennySource = require('@/assets/images/hive/penny.png');
 
-const logoSource = require('@/assets/images/hive/logo.png');
 const tabs: { label: string; icon: HiveIconName }[] = [
   { label: 'Home', icon: 'home' },
   { label: 'Meal Plan', icon: 'calendar' },
@@ -47,11 +47,26 @@ export default function AppRoot({ initialPublicScreen }: { initialPublicScreen?:
   const app = useAppState();
   const auth = useAuth();
   const [stack, setStack] = useState<Route[]>([]);
-  const initialRouteName: ScreenName = auth.isAuthenticated
-    ? app.hasCompletedOnboarding
-      ? 'main'
-      : 'onboarding'
-    : initialPublicScreen ?? 'welcome';
+  // The brand splash video plays once on every cold start — new users and
+  // returning logins alike — before any navigation renders.
+  const [splashFinished, setSplashFinished] = useState(false);
+  // Only new users see the questionnaire: routing comes from the viewer's
+  // onboarding state, not local markers. Completed onboarding -> main app;
+  // incomplete -> resume at onboardingState.currentStep; logged out -> the
+  // public auth screens. Verification is enforced for accounts the API
+  // reports as unverified (pre-v2 accounts are grandfathered as verified by
+  // migration 00016): an authenticated but unverified user always lands on
+  // the verify screen and cannot reach onboarding or main until the code
+  // checks out. A normal login never re-verifies a verified user.
+  const needsVerification =
+    auth.isAuthenticated && app.verificationStatus != null && !app.verificationStatus.verified;
+  const initialRouteName: ScreenName = !auth.isAuthenticated
+    ? (initialPublicScreen ?? 'welcome')
+    : needsVerification
+      ? 'verify'
+      : app.hasCompletedOnboarding
+        ? 'main'
+        : 'onboarding';
 
   const nav = useMemo<Navigation>(
     () => ({
@@ -65,24 +80,27 @@ export default function AppRoot({ initialPublicScreen }: { initialPublicScreen?:
     [initialRouteName]
   );
 
+  if (!splashFinished) {
+    return <SplashVideoScreen onDone={() => setSplashFinished(true)} />;
+  }
+
   if (!app.isReady || !auth.isReady) {
-    return (
-      <Screen>
-        <View style={styles.centered}>
-          <AppLogo source={logoSource} size={92} />
-          <Text style={styles.loadingText}>Loading Help The Hive</Text>
-        </View>
-      </Screen>
-    );
+    // The video finished but the providers are still warming up (rare):
+    // hold on black rather than flashing any loader.
+    return <View style={styles.splashHold} />;
   }
 
   const activeStack = stack.length > 0 ? stack : [{ name: initialRouteName }];
   const requestedRoute = activeStack[activeStack.length - 1];
+  // Unverified users are fenced into the verify screen (params may be absent
+  // on a cold start — the screen falls back to the viewer/auth email+phone).
   const route = !auth.isAuthenticated && !publicScreens.has(requestedRoute.name)
     ? { name: 'welcome' as const }
-    : auth.isAuthenticated && publicScreens.has(requestedRoute.name)
-      ? { name: initialRouteName }
-      : requestedRoute;
+    : auth.isAuthenticated && needsVerification && requestedRoute.name !== 'verify'
+      ? { name: 'verify' as const }
+      : auth.isAuthenticated && publicScreens.has(requestedRoute.name) && requestedRoute.name !== 'verify'
+        ? { name: initialRouteName }
+        : requestedRoute;
 
   switch (route.name) {
     case 'signup':
@@ -92,9 +110,15 @@ export default function AppRoot({ initialPublicScreen }: { initialPublicScreen?:
     case 'forgot':
       return <ForgotPasswordScreen nav={nav} initialEmail={route.params?.email as string | undefined} />;
     case 'verify':
-      return <VerifyScreen nav={nav} email={route.params?.email as string | undefined} />;
+      return (
+        <VerifyScreen
+          nav={nav}
+          email={(route.params?.email as string | undefined) ?? auth.user?.email ?? ''}
+          phone={(route.params?.phone as string | undefined) ?? app.profile.phone ?? ''}
+        />
+      );
     case 'onboarding':
-      return <OnboardingScreen nav={nav} />;
+      return <OnboardingScreen nav={nav} initialStepKey={app.onboardingCurrentStep} />;
     case 'main':
       return <MainTabs nav={nav} />;
     case 'pantry':
@@ -189,16 +213,9 @@ function MainTabs({ nav }: { nav: Navigation }) {
 }
 
 const styles = StyleSheet.create({
-  centered: {
+  splashHold: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 16,
-  },
-  loadingText: {
-    color: HiveColors.textSecondary,
-    fontSize: 14,
-    fontWeight: '600',
+    backgroundColor: '#000000',
   },
   tabContent: {
     flex: 1,

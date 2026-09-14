@@ -60,6 +60,8 @@ type AppPreferences struct {
 	ResourceReminderNotificationsEnabled bool     `json:"resourceReminderNotificationsEnabled"`
 	BenefitsRenewalNotificationsEnabled  bool     `json:"benefitsRenewalNotificationsEnabled"`
 	BenefitsRenewalDiscreetLockScreen    bool     `json:"benefitsRenewalDiscreetLockScreen"`
+	SelectedBenefitPrograms              []string `json:"selectedBenefitPrograms"`
+	LocationPermissionStatus             string   `json:"locationPermissionStatus"`
 	CreatedAt                            string   `json:"createdAt"`
 	UpdatedAt                            string   `json:"updatedAt"`
 }
@@ -294,6 +296,15 @@ type BudgetInput struct {
 type CompleteOnboardingInput struct {
 	Profile     *UpdateProfileInput     `json:"profile,omitempty"`
 	Preferences *UpdatePreferencesInput `json:"preferences,omitempty"`
+}
+
+type Consent struct {
+	TermsVersion            string `json:"termsVersion"`
+	TermsAcceptedAt         string `json:"termsAcceptedAt"`
+	PrivacyVersion          string `json:"privacyVersion"`
+	PrivacyAcceptedAt       string `json:"privacyAcceptedAt"`
+	EmailMarketingOptIn     bool   `json:"emailMarketingOptIn"`
+	EmailMarketingUpdatedAt string `json:"emailMarketingUpdatedAt"`
 }
 
 type CookingTime struct {
@@ -613,6 +624,7 @@ type OnboardingState struct {
 	CompletedAt            *string `json:"completedAt,omitempty"`
 	CreatedAt              string  `json:"createdAt"`
 	UpdatedAt              string  `json:"updatedAt"`
+	CurrentStep            *string `json:"currentStep,omitempty"`
 }
 
 type PantryItem struct {
@@ -729,6 +741,16 @@ type PushToken struct {
 type Query struct {
 }
 
+type QuestionnaireAnswers struct {
+	WeeklyBudget  *string  `json:"weeklyBudget,omitempty"`
+	FinanceTopics []string `json:"financeTopics"`
+	Resources     []string `json:"resources"`
+	PrimaryGoal   *string  `json:"primaryGoal,omitempty"`
+	HouseholdSize *string  `json:"householdSize,omitempty"`
+	IncomeBracket *string  `json:"incomeBracket,omitempty"`
+	UpdatedAt     string   `json:"updatedAt"`
+}
+
 // The Standard HTH Recipe Object. One format for library, AI-generated, imported
 // and hand-entered recipes; `sourceType` is a field, not a second type.
 type Recipe struct {
@@ -799,6 +821,12 @@ type RecipeQueryInput struct {
 	Limit    *int      `json:"limit,omitempty"`
 }
 
+type RecordConsentInput struct {
+	TermsVersion        string `json:"termsVersion"`
+	PrivacyVersion      string `json:"privacyVersion"`
+	EmailMarketingOptIn bool   `json:"emailMarketingOptIn"`
+}
+
 type RegisterPushTokenInput struct {
 	Token    string       `json:"token"`
 	Platform PushPlatform `json:"platform"`
@@ -810,15 +838,36 @@ type ReplaceMealInput struct {
 	RecipeID string         `json:"recipeId"`
 }
 
+type RequestVerificationCodeInput struct {
+	Method   VerificationMethod   `json:"method"`
+	Purpose  *VerificationPurpose `json:"purpose,omitempty"`
+	NewEmail *string              `json:"newEmail,omitempty"`
+	NewPhone *string              `json:"newPhone,omitempty"`
+}
+
 type SaveBenefitsGroupInput struct {
 	GroupPath string                   `json:"groupPath"`
 	Rows      []*BenefitsGroupRowInput `json:"rows"`
+}
+
+type SaveQuestionnaireInput struct {
+	WeeklyBudget  *string  `json:"weeklyBudget,omitempty"`
+	FinanceTopics []string `json:"financeTopics,omitempty"`
+	Resources     []string `json:"resources,omitempty"`
+	PrimaryGoal   *string  `json:"primaryGoal,omitempty"`
+	HouseholdSize *string  `json:"householdSize,omitempty"`
+	IncomeBracket *string  `json:"incomeBracket,omitempty"`
 }
 
 type SwapMealInput struct {
 	Slot       *MealSlotInput `json:"slot"`
 	Action     SwapAction     `json:"action"`
 	KeepBasket *bool          `json:"keepBasket,omitempty"`
+}
+
+type UpdateCommunicationConsentsInput struct {
+	EmailConsent     *bool `json:"emailConsent,omitempty"`
+	PhoneCallConsent *bool `json:"phoneCallConsent,omitempty"`
 }
 
 type UpdatePantryItemInput struct {
@@ -844,6 +893,9 @@ type UpdatePreferencesInput struct {
 	ExpiringPantryNotificationsEnabled   *bool    `json:"expiringPantryNotificationsEnabled,omitempty"`
 	WeeklyMealPlanNotificationsEnabled   *bool    `json:"weeklyMealPlanNotificationsEnabled,omitempty"`
 	ResourceReminderNotificationsEnabled *bool    `json:"resourceReminderNotificationsEnabled,omitempty"`
+	SelectedBenefitPrograms              []string `json:"selectedBenefitPrograms,omitempty"`
+	LocationPermissionStatus             *string  `json:"locationPermissionStatus,omitempty"`
+	EmailMarketingOptIn                  *bool    `json:"emailMarketingOptIn,omitempty"`
 }
 
 type UpdateProfileInput struct {
@@ -868,11 +920,20 @@ type User struct {
 	UpdatedAt   string  `json:"updatedAt"`
 }
 
+type VerificationStatus struct {
+	Verified   bool                `json:"verified"`
+	VerifiedAt *string             `json:"verifiedAt,omitempty"`
+	Method     *VerificationMethod `json:"method,omitempty"`
+}
+
 type Viewer struct {
-	User            *User            `json:"user"`
-	Profile         *Profile         `json:"profile"`
-	Preferences     *AppPreferences  `json:"preferences"`
-	OnboardingState *OnboardingState `json:"onboardingState"`
+	User                 *User                 `json:"user"`
+	Profile              *Profile              `json:"profile"`
+	Preferences          *AppPreferences       `json:"preferences"`
+	OnboardingState      *OnboardingState      `json:"onboardingState"`
+	Consent              *Consent              `json:"consent,omitempty"`
+	QuestionnaireAnswers *QuestionnaireAnswers `json:"questionnaireAnswers"`
+	Verification         *VerificationStatus   `json:"verification"`
 }
 
 type WasteStats struct {
@@ -2141,5 +2202,89 @@ func (e *ValueConfidence) UnmarshalGQL(v interface{}) error {
 }
 
 func (e ValueConfidence) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+type VerificationMethod string
+
+const (
+	VerificationMethodEmail VerificationMethod = "EMAIL"
+)
+
+var AllVerificationMethod = []VerificationMethod{
+	VerificationMethodEmail,
+}
+
+func (e VerificationMethod) IsValid() bool {
+	switch e {
+	case VerificationMethodEmail:
+		return true
+	}
+	return false
+}
+
+func (e VerificationMethod) String() string {
+	return string(e)
+}
+
+func (e *VerificationMethod) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = VerificationMethod(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid VerificationMethod", str)
+	}
+	return nil
+}
+
+func (e VerificationMethod) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+type VerificationPurpose string
+
+const (
+	VerificationPurposeSignup      VerificationPurpose = "SIGNUP"
+	VerificationPurposeEmailChange VerificationPurpose = "EMAIL_CHANGE"
+	VerificationPurposePhoneChange VerificationPurpose = "PHONE_CHANGE"
+	VerificationPurposeRecovery    VerificationPurpose = "RECOVERY"
+)
+
+var AllVerificationPurpose = []VerificationPurpose{
+	VerificationPurposeSignup,
+	VerificationPurposeEmailChange,
+	VerificationPurposePhoneChange,
+	VerificationPurposeRecovery,
+}
+
+func (e VerificationPurpose) IsValid() bool {
+	switch e {
+	case VerificationPurposeSignup, VerificationPurposeEmailChange, VerificationPurposePhoneChange, VerificationPurposeRecovery:
+		return true
+	}
+	return false
+}
+
+func (e VerificationPurpose) String() string {
+	return string(e)
+}
+
+func (e *VerificationPurpose) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = VerificationPurpose(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid VerificationPurpose", str)
+	}
+	return nil
+}
+
+func (e VerificationPurpose) MarshalGQL(w io.Writer) {
 	fmt.Fprint(w, strconv.Quote(e.String()))
 }
