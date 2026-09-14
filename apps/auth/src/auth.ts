@@ -6,7 +6,6 @@ import { betterAuth } from "better-auth";
 import { jwt } from "better-auth/plugins/jwt";
 import { Pool } from "pg";
 
-import { generateAppleClientSecret } from "./apple.js";
 import { env } from "./env.js";
 import {
   DevelopmentEmailDispatcher,
@@ -21,37 +20,9 @@ export const pool = new Pool({ connectionString: env.databaseURL });
 const emailDispatcher = env.resendAPIKey && env.authEmailFrom
   ? new ResendEmailDispatcher(env.resendAPIKey, env.authEmailFrom)
   : new DevelopmentEmailDispatcher();
-const apple = env.apple;
-const google = env.google;
-
 export const auth = betterAuth({
   appName: "Help The Hive",
   database: pool,
-  socialProviders: {
-    ...(apple
-      ? {
-          apple: async () => ({
-            clientId: apple.clientId,
-            clientSecret: await generateAppleClientSecret(
-              apple.clientId,
-              apple.teamId,
-              apple.keyId,
-              apple.privateKey,
-            ),
-            appBundleIdentifier: apple.appBundleIdentifier,
-          }),
-        }
-      : {}),
-    ...(google
-      ? {
-          google: {
-            clientId: google.clientId,
-            clientSecret: google.clientSecret,
-            prompt: "select_account",
-          },
-        }
-      : {}),
-  },
   emailAndPassword: {
     enabled: true,
     // The app's one-time verification codes (API requestVerificationCode /
@@ -90,7 +61,6 @@ export const auth = betterAuth({
     },
   },
   trustedOrigins: [
-    "https://appleid.apple.com",
     "helpthehive://",
     "helpthehive://*",
     env.mobileAuthCallbackURL,

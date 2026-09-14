@@ -85,7 +85,7 @@ steps:
           --image='${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPOSITORY}/auth:$BUILD_ID' \
           --service-account='${_RUNTIME_SERVICE_ACCOUNT}' \
           --set-cloudsql-instances='${_INSTANCE_CONNECTION_NAME}' \
-          --set-secrets='DATABASE_URL=${_DATABASE_SECRET}:latest,BETTER_AUTH_SECRET=${_BETTER_AUTH_SECRET}:latest,BETTER_AUTH_API_KEY=${_BETTER_AUTH_API_KEY}:latest,RESEND_API_KEY=${_RESEND_API_KEY}:latest,APPLE_CLIENT_ID=${_APPLE_CLIENT_ID}:latest,APPLE_TEAM_ID=${_APPLE_TEAM_ID}:latest,APPLE_KEY_ID=${_APPLE_KEY_ID}:latest,APPLE_PRIVATE_KEY=${_APPLE_PRIVATE_KEY}:latest,APPLE_APP_BUNDLE_IDENTIFIER=${_APPLE_APP_BUNDLE_IDENTIFIER}:latest,GOOGLE_CLIENT_ID=${_GOOGLE_CLIENT_ID}:latest,GOOGLE_CLIENT_SECRET=${_GOOGLE_CLIENT_SECRET}:latest' \
+          --set-secrets='DATABASE_URL=${_DATABASE_SECRET}:latest,BETTER_AUTH_SECRET=${_BETTER_AUTH_SECRET}:latest,BETTER_AUTH_API_KEY=${_BETTER_AUTH_API_KEY}:latest,RESEND_API_KEY=${_RESEND_API_KEY}:latest' \
           --set-env-vars="NODE_ENV=production,BETTER_AUTH_URL=$${AUTH_URL},BETTER_AUTH_AUDIENCE=${_BETTER_AUTH_AUDIENCE},AUTH_CORS_ALLOWED_ORIGINS=${_AUTH_CORS_ALLOWED_ORIGINS},MOBILE_AUTH_CALLBACK_URL=${_MOBILE_AUTH_CALLBACK_URL},AUTH_EMAIL_FROM=${_AUTH_EMAIL_FROM}" \
           --port=8080 \
           --startup-probe='initialDelaySeconds=0,timeoutSeconds=3,periodSeconds=3,failureThreshold=10,httpGet.port=8080,httpGet.path=/healthz' \
