@@ -1,7 +1,7 @@
 // The Home tab — Marcos's approved Section 2 home screen
 // ("Home Screen Update .png"). Source of truth for layout/copy.
 
-import { useRef } from 'react';
+import { useState } from 'react';
 import {
   Alert,
   Animated,
@@ -283,9 +283,10 @@ function AskPennyFab({ onPress }: { onPress: () => void }) {
   const insets = useSafeAreaInsets();
 
   const initial = { x: screenWidth - 208, y: screenHeight - barSpace - 92 };
-  const base = useRef(initial);
-  const pan = useRef(new Animated.ValueXY(initial)).current;
-  const moved = useRef(false);
+  // Mutable drag state lives in a plain container (not a React ref): it is only
+  // touched from the PanResponder's event handlers, never during render.
+  const [drag] = useState(() => ({ base: initial, moved: false }));
+  const [pan] = useState(() => new Animated.ValueXY(initial));
 
   const minX = 12;
   const maxX = screenWidth - 208;
@@ -293,35 +294,35 @@ function AskPennyFab({ onPress }: { onPress: () => void }) {
   const maxY = screenHeight - barSpace - 96;
   const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
 
-  const responder = useRef(
+  const [responder] = useState(() =>
     PanResponder.create({
       onStartShouldSetPanResponder: () => true,
       onMoveShouldSetPanResponder: () => true,
       onPanResponderGrant: () => {
-        moved.current = false;
+        drag.moved = false;
       },
       onPanResponderMove: (_, gesture) => {
         if (Math.abs(gesture.dx) + Math.abs(gesture.dy) > 8) {
-          moved.current = true;
+          drag.moved = true;
         }
         pan.setValue({
-          x: clamp(base.current.x + gesture.dx, minX, maxX),
-          y: clamp(base.current.y + gesture.dy, minY, maxY),
+          x: clamp(drag.base.x + gesture.dx, minX, maxX),
+          y: clamp(drag.base.y + gesture.dy, minY, maxY),
         });
       },
       onPanResponderRelease: (_, gesture) => {
         const next = {
-          x: clamp(base.current.x + gesture.dx, minX, maxX),
-          y: clamp(base.current.y + gesture.dy, minY, maxY),
+          x: clamp(drag.base.x + gesture.dx, minX, maxX),
+          y: clamp(drag.base.y + gesture.dy, minY, maxY),
         };
-        base.current = next;
+        drag.base = next;
         Animated.spring(pan, { toValue: next, useNativeDriver: false, speed: 20 }).start();
-        if (!moved.current) {
+        if (!drag.moved) {
           onPress();
         }
       },
     }),
-  ).current;
+  );
 
   return (
     <Animated.View

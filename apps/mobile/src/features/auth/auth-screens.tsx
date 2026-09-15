@@ -15,7 +15,7 @@
 // the code is the credential for the verifyCode step. On success the screen
 // routes into onboarding.
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useEffectEvent, useRef, useState } from 'react';
 import { Linking, Pressable, Text, TextInput, View } from 'react-native';
 import { PRIVACY_URL, PRIVACY_VERSION, TERMS_URL, TERMS_VERSION } from '@/constants/legal';
 import { GraphQLAuthTokenError } from '@/auth/auth-client';
@@ -471,7 +471,7 @@ export function VerifyScreen({
   // now that the session exists (signup signs in immediately). Auth failures
   // here are unexpected and ignored; anything else surfaces. The email code
   // is requested once the session is up.
-  useEffect(() => {
+  const initVerification = useEffectEvent(() => {
     if (didInit.current) {
       return;
     }
@@ -496,8 +496,15 @@ export function VerifyScreen({
       }
     })();
     void sendCode();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  });
+
+  /* eslint-disable react-hooks/set-state-in-effect -- one-shot post-signup init:
+     consent + phone + verification code are requested once the session exists.
+     The setState calls below run a single time, not on every render. */
+  useEffect(() => {
+    initVerification();
   }, []);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   useEffect(() => {
     if (!codeSent || canResend) {

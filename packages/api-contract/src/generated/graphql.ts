@@ -987,6 +987,8 @@ export type MutationMovePlannedMealArgs = {
 export type MutationRecordConsentArgs = {
   input: RecordConsentInput;
 };
+
+
 export type MutationRefillBenefitsApplicationArgs = {
   applicationId: Scalars['ID']['input'];
 };

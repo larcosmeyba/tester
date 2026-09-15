@@ -80,7 +80,8 @@ func TestQuestionnaireAnswersModelNilNewFields(t *testing.T) {
 	}
 }
 
-func TestConsentModelMapsRecord(t *testing.T) {	accepted := time.Date(2026, 9, 13, 12, 0, 0, 0, time.UTC)
+func TestConsentModelMapsRecord(t *testing.T) {
+	accepted := time.Date(2026, 9, 13, 12, 0, 0, 0, time.UTC)
 	mapped := consentModel(&db.Consent{
 		TermsVersion:            "2026-09-01",
 		TermsAcceptedAt:         accepted,

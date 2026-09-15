@@ -16,7 +16,7 @@
 
 import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
-import { useRef, useState, type ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { Image, Linking, PanResponder, Pressable, StyleSheet, Text, View } from 'react-native';
 import { PRIVACY_URL, TERMS_URL } from '@/constants/legal';
 import {
@@ -161,14 +161,14 @@ export function BudgetSlider({ value, onChange }: { value: number; onChange: (do
     onChange(Math.round(raw / BUDGET_STEP) * BUDGET_STEP);
   };
 
-  const pan = useRef(
+  const [pan] = useState(() =>
     PanResponder.create({
       onStartShouldSetPanResponder: () => true,
       onMoveShouldSetPanResponder: () => true,
       onPanResponderGrant: (event) => setFromX(event.nativeEvent.locationX),
       onPanResponderMove: (event) => setFromX(event.nativeEvent.locationX),
     }),
-  ).current;
+  );
 
   const fraction = (value - BUDGET_MIN) / (BUDGET_MAX - BUDGET_MIN);
   const thumbOffset = { left: `${Math.min(100, Math.max(0, fraction * 100))}%` } as const;
@@ -226,7 +226,7 @@ export function BudgetStep({
 }) {
   return (
     <OnboardingStepScreen current={1} total={7}>
-      <Text style={styles.stepTitle}>What's your weekly grocery budget?</Text>
+      <Text style={styles.stepTitle}>What&apos;s your weekly grocery budget?</Text>
       <Text style={styles.stepSubtitle}>This helps us plan meals that fit around your budget.</Text>
       <View style={styles.amountCard}>
         <Text style={styles.amountText}>{formatBudgetDisplay(value)}</Text>
