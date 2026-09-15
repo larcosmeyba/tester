@@ -12,7 +12,7 @@
  *  - Shop with Instacart — the list is handed to the backend's Instacart
  *    integration. No Instacart credentials exist in this app.
  */
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
@@ -20,12 +20,26 @@ import { AppButton, AppHeader, Card, EmptyState, HiveIcon, ScrollScreen, uiText 
 import { HiveColors, Radii, Spacing } from '@/constants/theme';
 import { PRICING_NOTICE } from '@/features/meals/pricing-notice';
 import { useMealPlan } from '@/features/meals/meal-plan-context';
+import {
+  loadCookGroceryAdditions,
+  removeCookGroceryAddition,
+  subscribeCookGroceryAdditions,
+  type CookGroceryAddition,
+} from '@/features/meals/cook-grocery-additions';
 import type { GroceryItem } from '@/features/meals/meal-plan-model';
 
 export function GroceryListScreen() {
   const router = useRouter();
   const { plan } = useMealPlan();
   const [checked, setChecked] = useState<string[]>([]);
+  // Missing ingredients one-tap-added from Cook What I Have (Audit Section 5).
+  // Client-side only — the plan's server-derived list is untouched.
+  const [cookAdditions, setCookAdditions] = useState<CookGroceryAddition[]>([]);
+
+  useEffect(() => {
+    void loadCookGroceryAdditions().then(setCookAdditions).catch(() => undefined);
+    return subscribeCookGroceryAdditions(setCookAdditions);
+  }, []);
 
   const sections = useMemo(() => plan?.groceryList ?? [], [plan]);
   const toBuy = useMemo(
@@ -56,6 +70,7 @@ export function GroceryListScreen() {
             subtitle="Build a meal plan or pick some recipes and we'll put the list together."
           />
           <AppButton title="Build my meal plan" onPress={() => router.push('/meals/questionnaire')} />
+          <CookAdditionsSection additions={cookAdditions} />
         </View>
       </ScrollScreen>
     );
@@ -130,8 +145,35 @@ export function GroceryListScreen() {
             onPress={() => router.push('/meals/shop-own')}
           />
         </View>
+
+        {cookAdditions.length > 0 ? <CookAdditionsSection additions={cookAdditions} /> : null}
       </View>
     </ScrollScreen>
+  );
+}
+
+/** Missing ingredients one-tap-added from Cook What I Have. Additive only. */
+function CookAdditionsSection({ additions }: { additions: CookGroceryAddition[] }) {
+  if (additions.length === 0) return null;
+  return (
+    <View style={styles.section}>
+      <Text style={styles.aisleTitle}>From Cook What I Have</Text>
+      {additions.map((item) => (
+        <View key={item.ingredientId} style={styles.row}>
+          <View style={styles.flexOne}>
+            <Text style={uiText.body}>{item.displayName}</Text>
+            <Text style={uiText.small}>
+              {item.neededQty} {item.unit}
+            </Text>
+          </View>
+          <AppButton
+            title="Remove"
+            variant="plain"
+            onPress={() => void removeCookGroceryAddition(item.ingredientId).catch(() => undefined)}
+          />
+        </View>
+      ))}
+    </View>
   );
 }
 
