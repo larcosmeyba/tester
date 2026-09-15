@@ -101,7 +101,7 @@ export function HomeScreen({ nav }: { nav: Navigation }) {
           <Pressable
             accessibilityRole="button"
             accessibilityLabel="Apply for Benefits"
-            onPress={() => nav.push('benefitsState')}
+            onPress={() => nav.push('government')}
             style={({ pressed }) => [styles.card, styles.greenCard, pressed && sharedStyles.pressed]}>
             <View style={styles.cardTopRow}>
               <View style={[styles.cardIconCircle, styles.greenCircle]}>
