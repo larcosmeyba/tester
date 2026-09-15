@@ -15,7 +15,7 @@
 // the code is the credential for the verifyCode step. On success the screen
 // routes into onboarding.
 
-import { useEffect, useEffectEvent, useRef, useState } from 'react';
+import { useMemo, useEffect, useEffectEvent, useRef, useState } from 'react';
 import { Linking, Pressable, Text, TextInput, View } from 'react-native';
 import { PRIVACY_URL, PRIVACY_VERSION, TERMS_URL, TERMS_VERSION } from '@/constants/legal';
 import { GraphQLAuthTokenError } from '@/auth/auth-client';
@@ -43,10 +43,12 @@ import {
 } from '@/features/onboarding/onboarding-repository';
 import { updateProfile as updateProfileRemote } from '@/features/profile/profile-repository';
 import { HiveColors } from '@/constants/theme';
+import { useResponsive } from '@/constants/responsive';
 
 const logoSource = require('@/assets/images/hive/logo.png');
 
 export function WelcomeScreen({ nav }: { nav: Navigation }) {
+  const styles = useAuthStyles();
   return (
     <Screen>
       <View style={styles.authShell}>
@@ -66,6 +68,7 @@ export function WelcomeScreen({ nav }: { nav: Navigation }) {
 }
 
 function TermsCheckbox({ accepted, onToggle }: { accepted: boolean; onToggle: () => void }) {
+  const styles = useAuthStyles();
   return (
     <Pressable
       onPress={onToggle}
@@ -111,6 +114,7 @@ function ValidatedField({
   hint: string;
   isValid: boolean;
 } & Partial<React.ComponentProps<typeof AppTextField>>) {
+  const styles = useAuthStyles();
   const showHint = value.length > 0 && !isValid;
   return (
     <View style={styles.validatedField}>
@@ -132,6 +136,7 @@ function ValidatedField({
 }
 
 export function SignUpScreen({ nav }: { nav: Navigation }) {
+  const styles = useAuthStyles();
   const app = useAppState();
   const auth = useAuth();
   const [fullName, setFullName] = useState('');
@@ -257,6 +262,7 @@ export function SignUpScreen({ nav }: { nav: Navigation }) {
 }
 
 export function LoginScreen({ nav }: { nav: Navigation }) {
+  const styles = useAuthStyles();
   const app = useAppState();
   const auth = useAuth();
   const [email, setEmail] = useState(app.pendingSignupProfile?.email ?? '');
@@ -399,6 +405,7 @@ function CodeBoxes({
   onChange: (index: number, value: string) => void;
   inputRefs: React.RefObject<Array<TextInput | null>>;
 }) {
+  const styles = useAuthStyles();
   return (
     <View style={styles.codeRow}>
       {digits.map((digit, index) => (
@@ -436,6 +443,7 @@ export function VerifyScreen({
   email?: string;
   phone?: string;
 }) {
+  const styles = useAuthStyles();
   const app = useAppState();
   const auth = useAuth();
   const [digits, setDigits] = useState<string[]>(Array(CODE_LENGTH).fill(''));
@@ -596,132 +604,139 @@ export function VerifyScreen({
   );
 }
 
-const styles = StyleSheet.create({
-  alignStart: {
-    alignSelf: 'flex-start',
-  },
-  authActions: {
-    gap: 14,
-  },
-  authCenter: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 24,
-  },
-  authShell: {
-    flex: 1,
-    paddingHorizontal: 24,
-    paddingBottom: 52,
-  },
-  codeBox: {
-    width: 48,
-    height: 56,
-    borderRadius: 14,
-    borderWidth: 1.5,
-    borderColor: HiveColors.border,
-    backgroundColor: HiveColors.white,
-    textAlign: 'center',
-    fontSize: 24,
-    fontWeight: '800',
-    color: HiveColors.text,
-  },
-  codeBoxFilled: {
-    borderColor: HiveColors.green,
-  },
-  codeRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginVertical: 8,
-  },
-  consentBlock: {
-    gap: 12,
-    marginTop: 4,
-  },
-  consentRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: 10,
-  },
-  consentBox: {
-    width: 22,
-    height: 22,
-    borderRadius: 6,
-    borderWidth: 1.5,
-    borderColor: HiveColors.border,
-    backgroundColor: HiveColors.card,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 1,
-  },
-  consentBoxChecked: {
-    backgroundColor: HiveColors.green,
-    borderColor: HiveColors.green,
-  },
-  consentCheck: {
-    color: '#fff',
-    fontSize: 13,
-    fontWeight: '800',
-  },
-  consentText: {
-    flex: 1,
-    color: HiveColors.textSecondary,
-    fontSize: 13,
-    lineHeight: 19,
-  },
-  consentLink: {
-    color: HiveColors.greenDark,
-    fontWeight: '600',
-    textDecorationLine: 'underline',
-  },
-  flexOne: {
-    flex: 1,
-  },
-  forgotLink: {
-    color: HiveColors.greenDark,
-    fontSize: 14,
-    fontWeight: '600',
-    textDecorationLine: 'underline',
-  },
-  formHeading: {
-    color: HiveColors.text,
-    fontSize: 30,
-    fontWeight: '800',
-    letterSpacing: -0.3,
-  },
-  formStack: {
-    gap: 14,
-  },
-  validatedField: {
-    gap: 4,
-  },
-  hintRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    paddingLeft: 4,
-  },
-  hintText: {
-    color: HiveColors.danger,
-    fontSize: 12,
-  },
-  notice: {
-    color: HiveColors.greenDark,
-    fontSize: 14,
-    lineHeight: 20,
-    backgroundColor: HiveColors.greenLight,
-    borderRadius: 12,
-    padding: 12,
-  },
-  welcomeTitle: {
-    color: HiveColors.greenDark,
-    fontSize: 28,
-    fontWeight: '800',
-    textAlign: 'center',
-    letterSpacing: -0.5,
-  },
-  welcomeLogoWrap: {
-    borderRadius: 44,
-    overflow: 'hidden',
-  },
-});
+function useAuthStyles() {
+  const { s, vs, ms } = useResponsive();
+  return useMemo(
+    () =>
+      StyleSheet.create({
+      alignStart: {
+      alignSelf: 'flex-start',
+      },
+      authActions: {
+      gap: s(14),
+      },
+      authCenter: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: s(24),
+      },
+      authShell: {
+      flex: 1,
+      paddingHorizontal: s(24),
+      paddingBottom: vs(52),
+      },
+      codeBox: {
+      width: s(48),
+      height: vs(56),
+      borderRadius: s(14),
+      borderWidth: s(1.5),
+      borderColor: HiveColors.border,
+      backgroundColor: HiveColors.white,
+      textAlign: 'center',
+      fontSize: ms(24),
+      fontWeight: '800',
+      color: HiveColors.text,
+      },
+      codeBoxFilled: {
+      borderColor: HiveColors.green,
+      },
+      codeRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      marginVertical: vs(8),
+      },
+      consentBlock: {
+      gap: s(12),
+      marginTop: vs(4),
+      },
+      consentRow: {
+      flexDirection: 'row',
+      alignItems: 'flex-start',
+      gap: s(10),
+      },
+      consentBox: {
+      width: s(22),
+      height: vs(22),
+      borderRadius: s(6),
+      borderWidth: s(1.5),
+      borderColor: HiveColors.border,
+      backgroundColor: HiveColors.card,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginTop: vs(1),
+      },
+      consentBoxChecked: {
+      backgroundColor: HiveColors.green,
+      borderColor: HiveColors.green,
+      },
+      consentCheck: {
+      color: '#fff',
+      fontSize: ms(13),
+      fontWeight: '800',
+      },
+      consentText: {
+      flex: 1,
+      color: HiveColors.textSecondary,
+      fontSize: ms(13),
+      lineHeight: ms(19),
+      },
+      consentLink: {
+      color: HiveColors.greenDark,
+      fontWeight: '600',
+      textDecorationLine: 'underline',
+      },
+      flexOne: {
+      flex: 1,
+      },
+      forgotLink: {
+      color: HiveColors.greenDark,
+      fontSize: ms(14),
+      fontWeight: '600',
+      textDecorationLine: 'underline',
+      },
+      formHeading: {
+      color: HiveColors.text,
+      fontSize: ms(30),
+      fontWeight: '800',
+      letterSpacing: -0.3,
+      },
+      formStack: {
+      gap: s(14),
+      },
+      validatedField: {
+      gap: s(4),
+      },
+      hintRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: s(4),
+      paddingLeft: s(4),
+      },
+      hintText: {
+      color: HiveColors.danger,
+      fontSize: ms(12),
+      },
+      notice: {
+      color: HiveColors.greenDark,
+      fontSize: ms(14),
+      lineHeight: ms(20),
+      backgroundColor: HiveColors.greenLight,
+      borderRadius: s(12),
+      padding: 12,
+      },
+      welcomeTitle: {
+      color: HiveColors.greenDark,
+      fontSize: ms(28),
+      fontWeight: '800',
+      textAlign: 'center',
+      letterSpacing: -0.5,
+      },
+      welcomeLogoWrap: {
+      borderRadius: s(44),
+      overflow: 'hidden',
+      },
+      }),
+    [s, vs, ms],
+  );
+}

@@ -321,10 +321,14 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     // including children — and they live on the server now, behind the
     // viewer's token, fetched by the benefits screens when needed. Anything
     // already written to this key by an older build is overwritten below.
+    // selectedTab is session UI state, not persisted: every cold start lands
+    // on the Home tab (the designed front door), never on whichever tab was
+    // open when the app was last backgrounded.
     const {
       pendingSignupProfile: _pendingSignupProfile,
       profile: _profile,
       governmentProfile: _governmentProfile,
+      selectedTab: _selectedTab,
       ...nonSensitiveState
     } = state;
     AsyncStorage.setItem(storageKey, JSON.stringify(nonSensitiveState)).catch(() => undefined);

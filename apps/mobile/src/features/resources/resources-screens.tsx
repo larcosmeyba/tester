@@ -16,7 +16,7 @@ import { AppButton, AppHeader, AppTextField, AvatarButton, Card, Chip, EmptyStat
 import { HiveColors } from '@/constants/theme';
 import { ComingSoonRow, GradientActionRow } from '@/components/hive-cards';
 import { allVideos, benefitPrograms, type BenefitProgram, nearbyResources, type ResourceItem, type VideoItem } from '@/data/mock-data';
-import { getHomeResources } from '@/features/home/home-resources';
+import { getHomeResources, getResourceDataSource } from '@/features/home/home-resources';
 import { BenefitsRenewalBanner } from '@/features/benefits/benefits-renewal-banner';
 import { ResourcesApplicationsSection } from '@/features/resources/resources-applications';
 import { useAppState } from '@/state/app-state';
@@ -37,6 +37,7 @@ export function ResourcesScreen({ nav }: { nav: Navigation }) {
       selectedCategory === 'All' ||
       resource.tag.toLowerCase().includes(selectedCategory.toLowerCase()),
   );
+  const resourceSource = getResourceDataSource(app.preferences.locationPermissionStatus, app.profile.zip);
 
   return (
     <View style={sharedStyles.tabScreen}>
@@ -87,7 +88,7 @@ export function ResourcesScreen({ nav }: { nav: Navigation }) {
           ))}
         </HorizontalScroller>
 
-        <SectionHeader title="Resources Near You" onPress={() => nav.push('resourceSearch')} />
+        <SectionHeader title={resourceSource.title} subtitle={resourceSource.subtitle} onPress={() => nav.push('resourceSearch')} />
         {nearYouResources.length > 0 ? (
           <HorizontalScroller>
             {nearYouResources.map((resource) => (
