@@ -148,7 +148,8 @@ export function MealQuestionnaire() {
   async function confirmPlan() {
     // Fresh answers next time; the generated plan lives in context.
     await clearQuestionnaireAnswers();
-    router.replace('/meals/plan');
+    // Swift flow: review → grocery choice (GroceryChoiceView).
+    router.replace('/meals/grocery-list');
   }
 
   if (phase === 'working') {

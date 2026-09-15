@@ -363,7 +363,7 @@ export function MealPlanScreen() {
       if (go) {
         router.push('/pantry');
       } else if (choice === 'new') {
-        router.push('/meals/questionnaire');
+        router.push('/meals/source');
       }
     },
     [pendingResetChoice, router],
@@ -509,7 +509,7 @@ export function MealPlanScreen() {
             <Text style={styles.dayLabel}>{dayHeadingLabel(selectedDate)}</Text>
 
             {!plan ? (
-              <NoPlanState onGenerate={() => router.push('/meals/questionnaire')} />
+              <NoPlanState onGenerate={() => router.push('/meals/source')} />
             ) : dayRows.length === 0 ? (
               <EmptyDayState />
             ) : (
