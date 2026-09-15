@@ -200,6 +200,7 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: '600',
     marginTop: 2,
+    textAlign: 'center',
   },
   tabLabelSelected: {
     color: HiveColors.green,
