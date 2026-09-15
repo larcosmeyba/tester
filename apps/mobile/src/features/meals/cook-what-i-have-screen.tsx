@@ -1,32 +1,36 @@
 /**
- * Cook What I Have (Audit Section 5).
+ * Cook What I Have — Generate a Meal, from Marcos's SwiftUI GenerateMealSheet.
  *
- * Generates a single meal from what's already in the pantry, prioritizing
- * items that expire soonest. The generation reuses the existing meal-plan
+ * Same screens, same flow, same copy as the Swift: pick Breakfast / Lunch /
+ * Dinner -> "Let Penny cook for a minute!" -> the recipe result with "From
+ * your Pantry + Fridge" and "You'll need to buy" sections, plus the
+ * limit-reached view.
+ *
+ * What did NOT change underneath: generation still calls the real meal-plan
  * backend (`generateMealPlan` with days: 1, one meal slot, and the real
- * `use_what_i_have` cooking-style enum) on top of the user's saved
- * questionnaire preferences — no new API, no invented recipes.
+ * `use_what_i_have` cooking style) on the user's saved questionnaire
+ * preferences. The Swift's mock generation is design reference only — the
+ * recipes here are real. The single-meal allowance still comes from the
+ * shared ai-usage-limits counters, and every success is saved to the cook
+ * history.
  *
  * Locked rules: B/L/D only (snacks deferred — no snack option here), kids
  * count as full servings (the questionnaire household already encodes that).
- * The single-meal allowance comes from the shared ai-usage-limits counters.
  */
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import {
   AppButton,
   AppHeader,
-  Card,
-  Chip,
-  EmptyState,
   HiveIcon,
+  type HiveIconName,
   ModalSheet,
   PennyImage,
   ScrollScreen,
   uiText,
 } from '@/components/hive-ui';
-import { HiveColors, Spacing } from '@/constants/theme';
+import { HiveColors } from '@/constants/theme';
 import { sharedStyles } from '@/features/app/app-shared';
 import type { Navigation } from '@/features/app/navigation-types';
 import { useAuth } from '@/auth/auth-context';
@@ -49,7 +53,6 @@ import type { IngredientLine, Recipe } from '@/features/meals/recipe-model';
 import {
   addCookGroceryAddition,
   loadCookGroceryAdditions,
-  type CookGroceryAddition,
 } from '@/features/meals/cook-grocery-additions';
 import {
   loadCookHistory,
@@ -63,9 +66,13 @@ import { describeError } from '@/services/api-error';
 const pennyCookingSource = require('@/assets/images/hive/penny-money.png');
 
 type MealKind = 'breakfast' | 'lunch' | 'dinner';
-const MEAL_KINDS: MealKind[] = ['breakfast', 'lunch', 'dinner'];
+const MEAL_KINDS: { kind: MealKind; icon: HiveIconName; accent: string }[] = [
+  { kind: 'breakfast', icon: 'sunrise', accent: HiveColors.orange },
+  { kind: 'lunch', icon: 'sun', accent: HiveColors.green },
+  { kind: 'dinner', icon: 'moon', accent: HiveColors.blue },
+];
 
-type Phase = 'choose' | 'generating' | 'result';
+type Phase = 'choose' | 'generating' | 'result' | 'limit';
 
 export function CookWhatIHaveScreen({
   nav,
@@ -84,7 +91,10 @@ export function CookWhatIHaveScreen({
   const [error, setError] = useState('');
   const [recipe, setRecipe] = useState<Recipe | null>(null);
   const [why, setWhy] = useState<string | null>(null);
-  const [limitGate, setLimitGate] = useState<AiUsage | null>(null);
+  const [resultSaved, setResultSaved] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [limitUsage, setLimitUsage] = useState<AiUsage | null>(null);
+  const [paywallOpen, setPaywallOpen] = useState(false);
   const [history, setHistory] = useState<CookedMealRecord[]>([]);
   const [addedIds, setAddedIds] = useState<string[]>([]);
 
@@ -110,7 +120,8 @@ export function CookWhatIHaveScreen({
     setError('');
     // The gate fires AT the limit — checked before any AI work is requested.
     if (!(await hasAiUsageRemaining('single_meal'))) {
-      setLimitGate(await getAiUsage('single_meal'));
+      setLimitUsage(await getAiUsage('single_meal'));
+      setPhase('limit');
       return;
     }
     setPhase('generating');
@@ -147,19 +158,34 @@ export function CookWhatIHaveScreen({
       const fullRecipe = await recipeService.get(meal.recipeId);
       setWhy(meal.why ?? null);
       setRecipe(fullRecipe);
-      // The AI work succeeded — this is what consumes the allowance.
+      setResultSaved(false);
+      // The AI work succeeded — this is what consumes the allowance. Saving
+      // to the cook history is the user's explicit choice on the result
+      // screen's "Save Recipe" button.
       await recordAiUsage('single_meal');
-      const nextHistory = await saveCookedMeal({
-        recipeId: fullRecipe.recipeId,
-        title: fullRecipe.title,
-        slot,
-        pantryIngredientIds: prioritized.ingredientIds,
-      });
-      setHistory(nextHistory);
       setPhase('result');
     } catch (caught) {
       setError(describeError(caught).message);
       setPhase('choose');
+    }
+  }
+
+  async function saveRecipe() {
+    if (!recipe || resultSaved || saving) return;
+    setSaving(true);
+    try {
+      const nextHistory = await saveCookedMeal({
+        recipeId: recipe.recipeId,
+        title: recipe.title,
+        slot,
+        pantryIngredientIds: prioritized.ingredientIds,
+      });
+      setHistory(nextHistory);
+      setResultSaved(true);
+    } catch (caught) {
+      setError(describeError(caught).message);
+    } finally {
+      setSaving(false);
     }
   }
 
@@ -170,6 +196,7 @@ export function CookWhatIHaveScreen({
       setWhy(null);
       setRecipe(fullRecipe);
       setSlot(record.slot);
+      setResultSaved(true);
       setPhase('result');
     } catch (caught) {
       setError(describeError(caught).message);
@@ -185,94 +212,95 @@ export function CookWhatIHaveScreen({
     [prioritizedIds, pantryWords],
   );
 
+  const haveLines = useMemo(() => (recipe ? recipe.ingredients.filter((line) => isHave(line)) : []), [recipe, isHave]);
   const missingLines = useMemo(
     () => (recipe ? recipe.ingredients.filter((line) => !line.isOptional && !isHave(line)) : []),
     [recipe, isHave],
   );
 
   const addMissingToGroceryList = useCallback(async (line: IngredientLine) => {
-    const addition: CookGroceryAddition = {
+    const next = await addCookGroceryAddition({
       ingredientId: line.ingredientId ?? `cook:${line.rawText}`,
       displayName: line.displayName ?? line.rawText,
       neededQty: line.quantity ?? 1,
       unit: line.unit ?? '',
-    };
-    const next = await addCookGroceryAddition(addition);
+    });
     setAddedIds(next.map((item) => item.ingredientId));
   }, []);
 
   function chooseBody() {
     return (
       <View style={styles.body}>
-        <Text style={uiText.subtitle}>What meal are we making?</Text>
-        <View style={sharedStyles.filterRow}>
-          {MEAL_KINDS.map((kind) => (
-            <Chip
-              key={kind}
-              label={kind.charAt(0).toUpperCase() + kind.slice(1)}
-              selected={slot === kind}
-              onPress={() => setSlot(kind)}
-            />
-          ))}
-        </View>
+        <Text style={styles.bigTitle}>What are you making?</Text>
+        <Text style={uiText.muted}>
+          Penny will build one recipe from what&apos;s in your Pantry + Fridge — using up ingredients that
+          expire soon first.
+        </Text>
 
-        <Card style={styles.pantryCard}>
-          <Text style={uiText.subtitle}>Cooking with what you have</Text>
-          {hasPantry ? (
-            <>
-              <Text style={uiText.muted}>
-                {prioritized.detail.length} pantry {prioritized.detail.length === 1 ? 'item' : 'items'} —
-                expiring first:
+        {MEAL_KINDS.map(({ kind, icon, accent }) => {
+          const selected = slot === kind;
+          return (
+            <Pressable
+              key={kind}
+              accessibilityRole="radio"
+              accessibilityState={{ selected }}
+              onPress={() => setSlot(kind)}
+              style={[styles.mealCard, selected && styles.mealCardSelected]}>
+              <HiveIcon name={icon} size={20} color={accent} />
+              <Text style={[styles.mealCardText, sharedStyles.flexOne]}>
+                {kind.charAt(0).toUpperCase() + kind.slice(1)}
               </Text>
-              {prioritized.detail.slice(0, 5).map((item) => (
-                <View key={item.pantryItem.id} style={styles.haveRow}>
-                  <HiveIcon name="check" size={14} color={HiveColors.green} />
-                  <Text style={uiText.body} numberOfLines={1}>
-                    {item.displayName}
-                  </Text>
-                  <Text style={uiText.small}>
-                    {item.daysUntilExpiry <= 0 ? 'use now' : `${item.daysUntilExpiry}d left`}
-                  </Text>
-                </View>
-              ))}
-              {focusIngredient ? (
-                <Text style={uiText.small}>Suggested for “{focusIngredient}” from your pantry.</Text>
-              ) : null}
-            </>
-          ) : (
-            <Text style={uiText.muted}>
-              Your pantry is empty — add what&apos;s in your kitchen and Penny will cook from it.
+              {selected ? <HiveIcon name="checkCircle" size={20} color={HiveColors.green} /> : null}
+            </Pressable>
+          );
+        })}
+
+        {pantry.expiringItems.length > 0 ? (
+          <View style={styles.expiringNote}>
+            <Text style={styles.expiringBee}>🐝</Text>
+            <Text style={[uiText.small, sharedStyles.flexOne, styles.expiringNoteText]}>
+              {pantry.expiringItems.length} item{pantry.expiringItems.length === 1 ? '' : 's'} expiring
+              soon — Penny will try to use them first.
             </Text>
-          )}
-        </Card>
+          </View>
+        ) : null}
+
+        {focusIngredient ? (
+          <Text style={uiText.small}>Suggested for “{focusIngredient}” from your pantry.</Text>
+        ) : null}
 
         {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
         <AppButton
-          title="Generate my meal"
+          title="Generate My Meal 🐝"
           disabled={!hasPantry || pantry.isMutating}
           onPress={() => void generate()}
         />
         {!hasPantry ? (
-          <AppButton title="Add pantry items" variant="secondary" onPress={() => nav.push('addPantry')} />
+          <>
+            <Text style={[uiText.muted, sharedStyles.centerText]}>
+              Your pantry is empty — add what&apos;s in your kitchen and Penny will cook from it.
+            </Text>
+            <AppButton title="Add pantry items" variant="secondary" onPress={() => nav.push('addPantry')} />
+          </>
         ) : null}
 
         {history.length > 0 ? (
           <View style={styles.historySection}>
-            <Text style={uiText.subtitle}>Recently cooked</Text>
-            {history.map((record) => (
-              <Card key={`${record.recipeId}:${record.createdAt}`} style={styles.historyCard}>
-                <View style={sharedStyles.flexOne}>
-                  <Text style={sharedStyles.cardTitle} numberOfLines={1}>
-                    {record.title}
-                  </Text>
-                  <Text style={sharedStyles.miniMuted}>
-                    {record.slot.charAt(0).toUpperCase() + record.slot.slice(1)} ·{' '}
-                    {new Date(record.createdAt).toLocaleDateString()}
-                  </Text>
-                </View>
-                <AppButton title="View" variant="secondary" onPress={() => void openHistoryRecipe(record)} />
-              </Card>
+            <Text style={styles.sectionTitle}>Your Saved Recipes</Text>
+            {history.slice(0, 5).map((record) => (
+              <Pressable
+                key={`${record.recipeId}:${record.createdAt}`}
+                accessibilityRole="button"
+                onPress={() => void openHistoryRecipe(record)}
+                style={styles.historyRow}>
+                <HiveIcon name="fork" size={14} color={HiveColors.green} />
+                <Text style={[uiText.body, sharedStyles.flexOne]} numberOfLines={1}>
+                  {record.title}
+                </Text>
+                <Text style={uiText.small}>{record.slot.charAt(0).toUpperCase() + record.slot.slice(1)}</Text>
+                <HiveIcon name="next" size={12} color={HiveColors.textSecondary} />
+              </Pressable>
             ))}
           </View>
         ) : null}
@@ -283,11 +311,11 @@ export function CookWhatIHaveScreen({
   function generatingBody() {
     return (
       <View style={styles.centerBody}>
-        <PennyImage source={pennyCookingSource} size={120} />
-        <Text style={uiText.subtitle}>Let Penny cook for a minute!</Text>
-        <Text style={[uiText.muted, styles.centerText]}>
-          Checking your pantry and putting together a {slot} from what expires soonest.
-        </Text>
+        <View style={styles.pennyCircle}>
+          <PennyImage source={pennyCookingSource} size={70} />
+        </View>
+        <Text style={styles.bigTitle}>Let Penny cook for a minute!</Text>
+        <Text style={[uiText.muted, sharedStyles.centerText]}>Checking your Pantry + Fridge…</Text>
         <ActivityIndicator size="large" color={HiveColors.green} />
       </View>
     );
@@ -295,87 +323,117 @@ export function CookWhatIHaveScreen({
 
   function resultBody() {
     if (!recipe) return null;
+    const totalMinutes = (recipe.prepTimeMinutes ?? 0) + (recipe.cookTimeMinutes ?? 0);
     return (
       <View style={styles.body}>
-        <View style={styles.resultHeader}>
-          <Chip label={slot.charAt(0).toUpperCase() + slot.slice(1)} selected onPress={() => undefined} />
-        </View>
-        <Text style={uiText.title}>{recipe.title}</Text>
-        {recipe.description ? <Text style={uiText.muted}>{recipe.description}</Text> : null}
-        {why ? <Text style={uiText.body}>🐝 {why}</Text> : null}
+        <Text style={styles.bigTitle}>{recipe.title}</Text>
 
         <View style={styles.metaRow}>
+          {totalMinutes > 0 ? (
+            <View style={styles.metaItem}>
+              <HiveIcon name="clock" size={14} color={HiveColors.textSecondary} />
+              <Text style={uiText.small}>{totalMinutes} min</Text>
+            </View>
+          ) : null}
           {recipe.servings != null ? (
-            <Text style={uiText.small}>Serves {recipe.servings}</Text>
-          ) : null}
-          {recipe.prepTimeMinutes != null ? (
-            <Text style={uiText.small}>Prep {recipe.prepTimeMinutes} min</Text>
-          ) : null}
-          {recipe.cookTimeMinutes != null ? (
-            <Text style={uiText.small}>Cook {recipe.cookTimeMinutes} min</Text>
+            <View style={styles.metaItem}>
+              <HiveIcon name="user" size={14} color={HiveColors.textSecondary} />
+              <Text style={uiText.small}>{recipe.servings} servings</Text>
+            </View>
           ) : null}
         </View>
 
-        <Text style={uiText.subtitle}>Ingredients</Text>
-        {recipe.ingredients.map((line) => {
-          const have = isHave(line);
-          return (
-            <View key={line.position} style={styles.ingredientRow}>
-              <HiveIcon
-                name={have ? 'check' : 'cart'}
-                size={16}
-                color={have ? HiveColors.green : HiveColors.textSecondary}
-              />
-              <View style={sharedStyles.flexOne}>
+        {why ? <Text style={uiText.body}>🐝 {why}</Text> : null}
+
+        {haveLines.length > 0 ? (
+          <View style={styles.haveCard}>
+            <Text style={styles.haveTitle}>From your Pantry + Fridge</Text>
+            {haveLines.map((line) => (
+              <View key={line.position} style={styles.haveRow}>
+                <HiveIcon name="checkCircle" size={14} color={HiveColors.green} />
                 <Text style={uiText.body}>{line.displayName ?? line.rawText}</Text>
-                {line.quantity != null && line.unit ? (
-                  <Text style={uiText.small}>
-                    {line.quantity} {line.unit}
-                    {line.preparation ? `, ${line.preparation}` : ''}
-                  </Text>
-                ) : null}
               </View>
-              <Text style={[uiText.small, have ? styles.haveBadge : styles.needBadge]}>
-                {have ? 'Have it' : 'Need it'}
-              </Text>
-            </View>
-          );
-        })}
+            ))}
+          </View>
+        ) : null}
 
         {missingLines.length > 0 ? (
-          <Card style={styles.missingCard}>
-            <Text style={uiText.subtitle}>Missing from your pantry</Text>
+          <View style={styles.buyCard}>
+            <Text style={styles.buyTitle}>You&apos;ll need to buy</Text>
             {missingLines.map((line) => {
               const id = line.ingredientId ?? `cook:${line.rawText}`;
               const added = addedIds.includes(id);
               return (
-                <View key={line.position} style={styles.missingRow}>
+                <View key={line.position} style={styles.buyRow}>
+                  <HiveIcon name="cart" size={14} color={HiveColors.orange} />
                   <Text style={[uiText.body, sharedStyles.flexOne]} numberOfLines={1}>
                     {line.displayName ?? line.rawText}
                   </Text>
-                  <AppButton
-                    title={added ? 'Added ✓' : 'Add to grocery list'}
-                    variant="secondary"
+                  <Pressable
+                    accessibilityRole="button"
                     disabled={added}
                     onPress={() => void addMissingToGroceryList(line)}
-                  />
+                    hitSlop={8}>
+                    <Text style={[styles.addToList, added && styles.addedToList]}>
+                      {added ? 'Added' : 'Add to list'}
+                    </Text>
+                  </Pressable>
                 </View>
               );
             })}
-          </Card>
+          </View>
         ) : (
           <Text style={uiText.muted}>Everything you need is already in your pantry. 🎉</Text>
         )}
 
-        <Text style={uiText.subtitle}>Steps</Text>
-        {recipe.instructions.map((step, index) => (
-          <View key={step.step} style={styles.stepRow}>
-            <Text style={styles.stepNumber}>{index + 1}</Text>
-            <Text style={[uiText.body, sharedStyles.flexOne]}>{step.text}</Text>
-          </View>
-        ))}
+        <Text style={styles.sectionTitle}>Ingredients</Text>
+        <View style={styles.bulletList}>
+          {recipe.ingredients.map((line) => (
+            <View key={line.position} style={styles.bulletRow}>
+              <View style={styles.bullet} />
+              <Text style={[uiText.body, sharedStyles.flexOne]}>{line.displayName ?? line.rawText}</Text>
+            </View>
+          ))}
+        </View>
 
-        <AppButton title="Generate another" variant="secondary" onPress={() => void generate()} />
+        <Text style={styles.sectionTitle}>Instructions</Text>
+        <View style={styles.stepsList}>
+          {recipe.instructions.map((step, index) => (
+            <View key={step.step} style={styles.stepRow}>
+              <View style={styles.stepNumber}>
+                <Text style={styles.stepNumberText}>{index + 1}</Text>
+              </View>
+              <Text style={[uiText.body, sharedStyles.flexOne]}>{step.text}</Text>
+            </View>
+          ))}
+        </View>
+
+        <AppButton
+          title={saving ? 'Saving…' : resultSaved ? 'Saved to Your Recipes' : 'Save Recipe'}
+          disabled={resultSaved || saving}
+          onPress={() => void saveRecipe()}
+        />
+        <Pressable
+          accessibilityRole="button"
+          onPress={() => void generate()}
+          style={styles.tryDifferentWrap}>
+          <Text style={styles.tryDifferent}>Try a Different Recipe</Text>
+        </Pressable>
+      </View>
+    );
+  }
+
+  function limitBody() {
+    return (
+      <View style={styles.centerBody}>
+        <View style={styles.pennyCircle}>
+          <PennyImage source={pennyCookingSource} size={70} />
+        </View>
+        <Text style={[styles.bigTitle, sharedStyles.centerText]}>You&apos;ve used your free{'\n'}meals this month</Text>
+        <Text style={[uiText.muted, sharedStyles.centerText]}>
+          Free members get {limitUsage?.limit ?? ''} pantry meal generations each month.
+        </Text>
+        <AppButton title="See Premium Options" onPress={() => setPaywallOpen(true)} style={styles.fullWidth} />
       </View>
     );
   }
@@ -383,20 +441,19 @@ export function CookWhatIHaveScreen({
   return (
     <ScrollScreen>
       <AppHeader
-        title="Cook What I Have"
-        onBack={phase === 'result' ? () => setPhase('choose') : nav.back}
+        title="Generate a Meal"
+        onBack={phase === 'result' || phase === 'limit' ? () => setPhase('choose') : nav.back}
         onAvatar={() => nav.push('account')}
         profileImageUri={app.profile.profileImageUri}
       />
-      {phase === 'choose' ? (
-        chooseBody()
-      ) : phase === 'generating' ? (
-        generatingBody()
-      ) : (
-        resultBody()
-      )}
-      <ModalSheet visible={limitGate !== null} onClose={() => setLimitGate(null)}>
-        {limitGate ? <AiLimitGate usage={limitGate} onClose={() => setLimitGate(null)} /> : null}
+      {phase === 'choose' ? chooseBody() : null}
+      {phase === 'generating' ? generatingBody() : null}
+      {phase === 'result' ? resultBody() : null}
+      {phase === 'limit' ? limitBody() : null}
+      <ModalSheet visible={paywallOpen} onClose={() => setPaywallOpen(false)}>
+        {limitUsage ? (
+          <AiLimitGate usage={limitUsage} onClose={() => setPaywallOpen(false)} />
+        ) : null}
       </ModalSheet>
     </ScrollScreen>
   );
@@ -404,29 +461,96 @@ export function CookWhatIHaveScreen({
 
 const styles = StyleSheet.create({
   body: { paddingHorizontal: 20, paddingTop: 16, gap: 14, paddingBottom: 32 },
+  bigTitle: { color: HiveColors.text, fontSize: 24, fontWeight: '800' },
   centerBody: { alignItems: 'center', gap: 14, paddingVertical: 48, paddingHorizontal: 32 },
-  centerText: { textAlign: 'center' },
-  pantryCard: { gap: 8 },
-  haveRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  errorText: { ...uiText.muted, color: HiveColors.danger },
-  historySection: { gap: 10, marginTop: 4 },
-  historyCard: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  resultHeader: { flexDirection: 'row' },
-  metaRow: { flexDirection: 'row', gap: 16 },
-  ingredientRow: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 6 },
-  haveBadge: { color: HiveColors.green, fontWeight: '700' },
-  needBadge: { color: HiveColors.textSecondary, fontWeight: '700' },
-  missingCard: { gap: 10 },
-  missingRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  stepRow: { flexDirection: 'row', gap: 12, paddingVertical: 6 },
-  stepNumber: {
-    width: 26,
-    height: 26,
-    borderRadius: 13,
+  pennyCircle: {
+    width: 110,
+    height: 110,
+    borderRadius: 55,
     backgroundColor: HiveColors.greenLight,
-    color: HiveColors.green,
-    textAlign: 'center',
-    lineHeight: 26,
-    fontWeight: '800',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
+  errorText: { ...uiText.muted, color: HiveColors.danger },
+  mealCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    backgroundColor: HiveColors.card,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: HiveColors.border,
+    padding: 14,
+  },
+  mealCardSelected: {
+    backgroundColor: HiveColors.greenLight,
+    borderColor: HiveColors.green,
+  },
+  mealCardText: {
+    color: HiveColors.text,
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  expiringNote: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    backgroundColor: HiveColors.orangeBanner,
+    borderRadius: 10,
+    padding: 10,
+  },
+  expiringBee: { fontSize: 14 },
+  expiringNoteText: { color: '#8C5A00', fontSize: 12 },
+  historySection: { gap: 8, marginTop: 4 },
+  historyRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    backgroundColor: HiveColors.card,
+    borderRadius: 10,
+    padding: 10,
+  },
+  sectionTitle: { color: HiveColors.text, fontSize: 16, fontWeight: '700' },
+  metaRow: { flexDirection: 'row', gap: 16 },
+  metaItem: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  haveCard: {
+    gap: 8,
+    backgroundColor: HiveColors.greenLight,
+    borderRadius: 12,
+    padding: 12,
+  },
+  haveTitle: { color: HiveColors.green, fontSize: 14, fontWeight: '700' },
+  haveRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  buyCard: {
+    gap: 8,
+    backgroundColor: HiveColors.orangeSoft,
+    borderRadius: 12,
+    padding: 12,
+  },
+  buyTitle: { color: HiveColors.orange, fontSize: 14, fontWeight: '700' },
+  buyRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  addToList: { color: HiveColors.green, fontSize: 13, fontWeight: '700' },
+  addedToList: { color: HiveColors.textSecondary, fontWeight: '500' },
+  bulletList: { gap: 8 },
+  bulletRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 10 },
+  bullet: { width: 6, height: 6, borderRadius: 3, backgroundColor: HiveColors.green, marginTop: 7 },
+  stepsList: { gap: 12 },
+  stepRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 10 },
+  stepNumber: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    backgroundColor: HiveColors.green,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  stepNumberText: { color: HiveColors.white, fontSize: 12, fontWeight: '700' },
+  tryDifferentWrap: { alignItems: 'center' },
+  tryDifferent: {
+    color: HiveColors.green,
+    fontSize: 16,
+    fontWeight: '700',
+    textAlign: 'center',
+  },
+  fullWidth: { alignSelf: 'stretch' },
 });
