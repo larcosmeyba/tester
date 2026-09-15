@@ -578,14 +578,6 @@ export function VerifyScreen({
           disabled={isChecking}
           onPress={() => void checkVerified()}
         />
-        <TextLink
-          label="Testing only"
-          linkText="Skip verification"
-          onPress={() => {
-            app.consumeTransientSignupPassword();
-            nav.reset('onboarding');
-          }}
-        />
       </View>
     </ScrollScreen>
   );
