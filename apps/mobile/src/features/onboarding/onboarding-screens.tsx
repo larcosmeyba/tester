@@ -693,7 +693,7 @@ export function EmailConsentStep({
     <ConsentScreen
       icon="send"
       title="Stay in the loop by email"
-      body="Get helpful updates, reminders, newsletters, and offers from Help The Hive by email. We'll never spam you, and you can unsubscribe anytime."
+      body="Get app updates, reminders, newsletters, helpful information, and marketing communications from Help The Hive by email. We'll never spam you, and you can unsubscribe anytime."
       primaryLabel="Yes, email me"
       onPrimary={onPrimary}
       onSecondary={onSecondary}
@@ -803,7 +803,7 @@ export function ConsentStep({
             .
           </ConsentRow>
           <ConsentRow checked={emailOptIn} onToggle={() => setEmailOptIn((v) => !v)}>
-            I&apos;d like to receive Help The Hive updates, reminders, newsletters, and helpful information by email.
+            I&apos;d like to receive Help The Hive app updates, reminders, newsletters, helpful information, and marketing communications by email.
           </ConsentRow>
         </View>
         <View style={styles.flexSpacer} />

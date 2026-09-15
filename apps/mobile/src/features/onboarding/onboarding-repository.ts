@@ -2,6 +2,13 @@
 // email verification, per-step questionnaire saves, onboarding step markers,
 // and communication consents. The GraphQL contract lives in
 // packages/api-contract (backend-owned); this file only wraps it.
+//
+// TODO(backend/read-back): the Viewer query's consent selection only fetches
+// emailMarketingOptIn. The backend `Consent` type already stores
+// termsVersion/termsAcceptedAt/privacyVersion/privacyAcceptedAt (server
+// stamps accepted_at on recordConsent), so when Settings needs to show
+// acceptance history, add those four fields to the Viewer query's consent
+// selection and surface them in app-state.
 
 import type {
   SaveQuestionnaireMutationVariables,
@@ -96,6 +103,14 @@ export async function saveOnboardingStep(step: string): Promise<void> {
 
 export type CommunicationConsentsUpdate = UpdateCommunicationConsentsMutationVariables['input'];
 
+// TODO(backend): phone-call consent is currently write-only. The
+// UpdateCommunicationConsentsInput.phoneCallConsent mutation persists the
+// choice, but the backend `Consent` output type has no matching
+// `phoneCallConsent` field and the Viewer query does not select it, so the
+// app cannot read the saved preference back (e.g. for Settings). Backend
+// needs `phoneCallConsent: Boolean!` on `Consent` (mirroring the input) plus
+// the field added to the Viewer query's consent selection; then surface it
+// in app-state alongside emailMarketingOptIn.
 export async function updateCommunicationConsents(input: CommunicationConsentsUpdate): Promise<void> {
   await graphqlClient.request(UpdateCommunicationConsentsDocument, { input });
 }
