@@ -8,7 +8,8 @@ import * as Location from 'expo-location';
 import { useEffect, useState } from 'react';
 import { Linking, Pressable, Text, View } from 'react-native';
 import { useAuth } from '@/auth/auth-context';
-import { AppButton, AppHeader, AppTextField, AvatarButton, Card, CheckboxRow, HiveIcon, InfoRow, ScrollScreen, StatBadge, uiText } from '@/components/hive-ui';
+import { AppButton, AppHeader, AppTextField, AvatarButton, Card, CheckboxRow, HiveIcon, InfoRow, ModalSheet, ScrollScreen, StatBadge, uiText } from '@/components/hive-ui';
+import { PRIVACY_URL, PRIVACY_VERSION, TERMS_URL, TERMS_VERSION } from '@/constants/legal';
 import { requestAndRegisterPushToken, unregisterStoredPushToken } from '@/features/notifications/notification-service';
 import { deleteViewerData, HandleUpdateError, type HandleAvailability } from '@/features/profile/profile-repository';
 import { updateBenefitsRenewalPreferences } from '@/features/benefits/benefits-repository';
@@ -328,13 +329,121 @@ export function ChangeEmailScreen({ nav }: { nav: Navigation }) {
 }
 
 export function SettingsScreen({ nav }: { nav: Navigation }) {
+  const app = useAppState();
+  const [showSubscription, setShowSubscription] = useState(false);
+  const [locationBusy, setLocationBusy] = useState(false);
+
+  const locationStatus = app.preferences.locationPermissionStatus;
+  const locationLabel =
+    locationStatus === 'granted' ? 'Allowed' : locationStatus === 'denied' ? 'Denied' : 'Not set';
+
+  async function handleLocationPress() {
+    if (locationBusy) return;
+    // Once denied, the OS will not show the native prompt again — the user
+    // has to flip it back in system settings. Never a fake in-app toggle.
+    if (locationStatus === 'denied') {
+      await Linking.openSettings();
+      return;
+    }
+    setLocationBusy(true);
+    try {
+      const result = await Location.requestForegroundPermissionsAsync();
+      await app.savePreferences({
+        locationPermissionStatus: result.granted ? 'granted' : 'denied',
+      });
+    } catch {
+      // Fail-open: keep showing the last known status.
+    } finally {
+      setLocationBusy(false);
+    }
+  }
+
   return (
     <ScrollScreen>
       <AppHeader title="App Settings" onBack={nav.back} />
-      <InfoRow icon="bell" title="Notifications" subtitle="Meal, pantry, resource, and benefits reminders" onPress={() => nav.push('notifications')} />
-      <InfoRow icon="finance" title="Budget Settings" subtitle="Weekly grocery budget and finance topics" onPress={() => nav.push('budgetSettings')} />
-      <InfoRow icon="map" title="Location" subtitle="Used for nearby resources" />
-      <InfoRow icon="shield" title="Privacy" subtitle="Local prototype data only" />
+      <AccountSection title="PROFILE" />
+      <InfoRow
+        icon="user"
+        title="Edit Profile"
+        subtitle="Name, photo, phone, ZIP, household"
+        onPress={() => nav.push('editProfile')}
+      />
+      <InfoRow
+        icon="chat"
+        title="Public Handle"
+        subtitle={app.profile.handle ? `@${app.profile.handle}` : 'Choose a handle'}
+        onPress={() => nav.push('editHandle')}
+      />
+      <AccountSection title="NOTIFICATIONS & COMMUNICATION" />
+      <InfoRow
+        icon="bell"
+        title="Notification Settings"
+        subtitle="Meal, pantry, resource, and benefits reminders"
+        onPress={() => nav.push('notifications')}
+      />
+      {/*
+        Phone-call consent is collected during signup and written to the
+        backend via updateCommunicationConsents, but the backend Consent type
+        does not expose it yet (Slice 1 TODO: add phoneCallConsent to Consent
+        and select it in the Viewer query). Display-only until the read path
+        exists — no toggle that writes nowhere.
+      */}
+      <InfoRow
+        title="Phone call consent"
+        subtitle="Managed at signup — changes coming soon"
+      />
+      <AccountSection title="LOCATION" />
+      <InfoRow
+        icon="map"
+        title="Location access"
+        subtitle={locationBusy ? 'Requesting…' : `${locationLabel} — used for nearby resources`}
+        onPress={handleLocationPress}
+      />
+      <AccountSection title="PRIVACY & TERMS" />
+      {/*
+        TODO: the backend stamps terms/privacy versions + accepted_at at
+        signup, but the Viewer query doesn't select them yet, so per-version
+        acceptance history can't be displayed. The subtitles below show the
+        pinned versions from constants/legal — currently UNAPPROVED
+        placeholders (Marcos must approve the real helpthehive.com URLs and
+        version numbers before launch).
+      */}
+      <InfoRow
+        icon="shield"
+        title="Terms of Service"
+        subtitle={`Version ${TERMS_VERSION}`}
+        onPress={() => void Linking.openURL(TERMS_URL)}
+      />
+      <InfoRow
+        icon="shield"
+        title="Privacy Policy"
+        subtitle={`Version ${PRIVACY_VERSION}`}
+        onPress={() => void Linking.openURL(PRIVACY_URL)}
+      />
+      <AccountSection title="SUBSCRIPTION" />
+      {/*
+        Hive Plus purchase is scaffolded only — no purchase flow is active.
+        This row states the plan honestly instead of selling something that
+        doesn't exist yet.
+      */}
+      <InfoRow
+        icon="card"
+        title="Hive Plus"
+        subtitle="Free plan — purchases coming soon"
+        onPress={() => setShowSubscription(true)}
+      />
+      <ModalSheet visible={showSubscription} onClose={() => setShowSubscription(false)}>
+        <View style={styles.subscriptionSheet}>
+          <Text style={uiText.subtitle}>Hive Plus</Text>
+          <Text style={uiText.muted}>You&apos;re on the free plan.</Text>
+          <Text style={sharedStyles.helperText}>
+            Free includes 5 AI meal plans and 5 video imports a month, 10 single-meal
+            generations a month, and 10 Penny questions a day. Hive Plus will add
+            more of each — purchases aren&apos;t available yet.
+          </Text>
+          <AppButton title="Close" variant="secondary" onPress={() => setShowSubscription(false)} />
+        </View>
+      </ModalSheet>
     </ScrollScreen>
   );
 }
@@ -486,6 +595,7 @@ const styles = StyleSheet.create({
     paddingBottom: 18,
   },
   removePhotoWrap: { alignItems: 'center', marginTop: -8, marginBottom: 8 },
+  subscriptionSheet: { gap: 12, paddingHorizontal: 4, paddingBottom: 8 },
   centeredCompact: {
     alignItems: 'center',
     gap: 8,
