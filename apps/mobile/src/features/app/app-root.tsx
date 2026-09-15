@@ -213,7 +213,13 @@ export default function AppRoot({ initialPublicScreen }: { initialPublicScreen?:
         />
       );
     case 'benefitsPreparing':
-      return <BenefitsPreparingScreen nav={nav} />;
+      return (
+        <BenefitsPreparingScreen
+          nav={nav}
+          applicationIds={route.params?.applicationIds as string[] | undefined}
+          state={route.params?.state as string | undefined}
+        />
+      );
     case 'financeHub':
       return <VideoHubScreen nav={nav} title="Finance Learning Hub" videos={allVideos.filter((video) => video.category === 'finance')} />;
     case 'spendingReport':
