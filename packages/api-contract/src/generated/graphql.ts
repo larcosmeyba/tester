@@ -857,6 +857,7 @@ export type Mutation = {
   /** Puts a specific recipe in a slot. The recipe is still checked against the viewer's filters. */
   replaceMeal: MealPlan;
   requestVerificationCode: Scalars['Boolean']['output'];
+  requestVerificationLink: Scalars['Boolean']['output'];
   /** Records scalar answers. Repeating groups go through saveBenefitsGroup. */
   saveBenefitsAnswers: BenefitsProfile;
   /** Replaces a repeating group. An empty rows list is how a household says it has none of these. */
@@ -1018,6 +1019,11 @@ export type MutationReplaceMealArgs = {
 
 export type MutationRequestVerificationCodeArgs = {
   input: RequestVerificationCodeInput;
+};
+
+
+export type MutationRequestVerificationLinkArgs = {
+  purpose: VerificationPurpose;
 };
 
 
@@ -1639,11 +1645,13 @@ export type UpdateServingsInput = {
 
 export type User = {
   __typename?: 'User';
+  accountVerifiedAt?: Maybe<Scalars['String']['output']>;
   authSubject: Scalars['String']['output'];
   createdAt: Scalars['String']['output'];
   email?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   updatedAt: Scalars['String']['output'];
+  verificationMethod?: Maybe<Scalars['String']['output']>;
 };
 
 /** How a single recipe value was established. `missing` is never guessed away. */
@@ -1707,6 +1715,13 @@ export type RequestVerificationCodeMutationVariables = Exact<{
 
 
 export type RequestVerificationCodeMutation = { __typename?: 'Mutation', requestVerificationCode: boolean };
+
+export type RequestVerificationLinkMutationVariables = Exact<{
+  purpose: VerificationPurpose;
+}>;
+
+
+export type RequestVerificationLinkMutation = { __typename?: 'Mutation', requestVerificationLink: boolean };
 
 export type VerifyCodeMutationVariables = Exact<{
   code: Scalars['String']['input'];
@@ -2002,7 +2017,7 @@ export type DeletePushTokenMutation = { __typename?: 'Mutation', deletePushToken
 export type ViewerQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type ViewerQuery = { __typename?: 'Query', viewer: { __typename?: 'Viewer', user: { __typename?: 'User', id: string, authSubject: string, email?: string | null, createdAt: string, updatedAt: string }, profile: { __typename?: 'Profile', handle?: string | null, firstName: string, lastName: string, phone: string, zip: string, householdSize: number, profileImageUri?: string | null, createdAt: string, updatedAt: string }, preferences: { __typename?: 'AppPreferences', weeklyBudget: string, preferredFinanceTopics: Array<string>, preferredResources: Array<string>, wantsGovAssistance: boolean, selectedBenefitPrograms: Array<string>, locationPermissionStatus: string, lastMealPlanDate?: string | null, notificationsEnabled: boolean, expiringPantryNotificationsEnabled: boolean, weeklyMealPlanNotificationsEnabled: boolean, resourceReminderNotificationsEnabled: boolean, createdAt: string, updatedAt: string }, onboardingState: { __typename?: 'OnboardingState', hasCompletedOnboarding: boolean, completedAt?: string | null, currentStep?: string | null, createdAt: string, updatedAt: string }, questionnaireAnswers: { __typename?: 'QuestionnaireAnswers', weeklyBudget?: string | null, financeTopics: Array<string>, resources: Array<string>, primaryGoal?: string | null, householdSize?: string | null, incomeBracket?: string | null, updatedAt: string }, verification: { __typename?: 'VerificationStatus', verified: boolean, verifiedAt?: string | null, method?: VerificationMethod | null }, consent?: { __typename?: 'Consent', emailMarketingOptIn: boolean } | null } };
+export type ViewerQuery = { __typename?: 'Query', viewer: { __typename?: 'Viewer', user: { __typename?: 'User', id: string, authSubject: string, email?: string | null, createdAt: string, updatedAt: string, accountVerifiedAt?: string | null, verificationMethod?: string | null }, profile: { __typename?: 'Profile', handle?: string | null, firstName: string, lastName: string, phone: string, zip: string, householdSize: number, profileImageUri?: string | null, createdAt: string, updatedAt: string }, preferences: { __typename?: 'AppPreferences', weeklyBudget: string, preferredFinanceTopics: Array<string>, preferredResources: Array<string>, wantsGovAssistance: boolean, selectedBenefitPrograms: Array<string>, locationPermissionStatus: string, lastMealPlanDate?: string | null, notificationsEnabled: boolean, expiringPantryNotificationsEnabled: boolean, weeklyMealPlanNotificationsEnabled: boolean, resourceReminderNotificationsEnabled: boolean, createdAt: string, updatedAt: string }, onboardingState: { __typename?: 'OnboardingState', hasCompletedOnboarding: boolean, completedAt?: string | null, currentStep?: string | null, createdAt: string, updatedAt: string }, questionnaireAnswers: { __typename?: 'QuestionnaireAnswers', weeklyBudget?: string | null, financeTopics: Array<string>, resources: Array<string>, primaryGoal?: string | null, householdSize?: string | null, incomeBracket?: string | null, updatedAt: string }, verification: { __typename?: 'VerificationStatus', verified: boolean, verifiedAt?: string | null, method?: VerificationMethod | null }, consent?: { __typename?: 'Consent', emailMarketingOptIn: boolean } | null } };
 
 export type UpdateProfileMutationVariables = Exact<{
   input: UpdateProfileInput;
@@ -2023,7 +2038,7 @@ export type CompleteOnboardingMutationVariables = Exact<{
 }>;
 
 
-export type CompleteOnboardingMutation = { __typename?: 'Mutation', completeOnboarding: { __typename?: 'Viewer', user: { __typename?: 'User', id: string, authSubject: string, email?: string | null, createdAt: string, updatedAt: string }, profile: { __typename?: 'Profile', handle?: string | null, firstName: string, lastName: string, phone: string, zip: string, householdSize: number, profileImageUri?: string | null, createdAt: string, updatedAt: string }, preferences: { __typename?: 'AppPreferences', weeklyBudget: string, preferredFinanceTopics: Array<string>, preferredResources: Array<string>, wantsGovAssistance: boolean, selectedBenefitPrograms: Array<string>, locationPermissionStatus: string, lastMealPlanDate?: string | null, notificationsEnabled: boolean, expiringPantryNotificationsEnabled: boolean, weeklyMealPlanNotificationsEnabled: boolean, resourceReminderNotificationsEnabled: boolean, createdAt: string, updatedAt: string }, onboardingState: { __typename?: 'OnboardingState', hasCompletedOnboarding: boolean, completedAt?: string | null, createdAt: string, updatedAt: string } } };
+export type CompleteOnboardingMutation = { __typename?: 'Mutation', completeOnboarding: { __typename?: 'Viewer', user: { __typename?: 'User', id: string, authSubject: string, email?: string | null, createdAt: string, updatedAt: string, accountVerifiedAt?: string | null, verificationMethod?: string | null }, profile: { __typename?: 'Profile', handle?: string | null, firstName: string, lastName: string, phone: string, zip: string, householdSize: number, profileImageUri?: string | null, createdAt: string, updatedAt: string }, preferences: { __typename?: 'AppPreferences', weeklyBudget: string, preferredFinanceTopics: Array<string>, preferredResources: Array<string>, wantsGovAssistance: boolean, selectedBenefitPrograms: Array<string>, locationPermissionStatus: string, lastMealPlanDate?: string | null, notificationsEnabled: boolean, expiringPantryNotificationsEnabled: boolean, weeklyMealPlanNotificationsEnabled: boolean, resourceReminderNotificationsEnabled: boolean, createdAt: string, updatedAt: string }, onboardingState: { __typename?: 'OnboardingState', hasCompletedOnboarding: boolean, completedAt?: string | null, createdAt: string, updatedAt: string } } };
 
 export type HandleAvailabilityQueryVariables = Exact<{
   handle: Scalars['String']['input'];

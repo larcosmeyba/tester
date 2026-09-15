@@ -3,6 +3,8 @@ import { useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { useAuth } from '@/auth/auth-context';
+import { useAppState } from '@/state/app-state';
+import { fetchViewer } from '@/features/profile/profile-repository';
 import { AppButton, AppHeader, AppTextField, HiveIcon, Screen, ScrollScreen, uiText } from '@/components/hive-ui';
 import { HiveColors } from '@/constants/theme';
 
@@ -17,18 +19,55 @@ function validToken(value: string | undefined) {
 export function VerificationResultScreen() {
   const router = useRouter();
   const auth = useAuth();
+  const app = useAppState();
   const params = useLocalSearchParams<{ error?: string | string[]; flow?: string | string[] }>();
   const error = singleParam(params.error);
-  const isEmailChange = singleParam(params.flow) === 'email-change';
+  const flow = singleParam(params.flow);
+  const isEmailChange = flow === 'email-change';
+  const isSignup = flow === 'signup';
   const succeeded = !error;
   const refreshed = useRef(false);
+  const [verified, setVerified] = useState<boolean | null>(null);
 
   useEffect(() => {
     if (succeeded && !refreshed.current) {
       refreshed.current = true;
       void auth.refreshSession();
+      // Signup magic link: the API already consumed the token when the user
+      // tapped Verify in the email. Re-read the viewer verification status so
+      // the Continue button routes correctly without another tap.
+      if (isSignup) {
+        void fetchViewer()
+          .then((viewer) => setVerified(Boolean(viewer.verification?.verified)))
+          .catch(() => setVerified(false));
+      }
     }
-  }, [auth, succeeded]);
+  }, [auth, succeeded, isSignup]);
+
+  async function continueFromSignup() {
+    // The session was established at signup; verification just flips the
+    // verified flag. (The transient password is cleared; never persisted.)
+    // Refresh the viewer first so the root router sees the verified status
+    // and routes to onboarding instead of fencing back to the verify screen.
+    app.consumeTransientSignupPassword();
+    await app.hydrateViewer().catch(() => undefined);
+    router.replace('/');
+  }
+
+  const title = succeeded
+    ? isSignup
+      ? "You're verified!"
+      : 'Email link processed'
+    : 'Link unavailable';
+  const message = succeeded
+    ? isSignup
+      ? verified === false
+        ? 'That link has expired or was already used. Return to the app and request a new verification email.'
+        : 'Your email is confirmed. Continue to finish setting up your account.'
+      : isEmailChange
+        ? 'If the link was valid, your login email has been updated. Continue to log in with your new address.'
+        : 'If the link was valid, your email is verified. Return to Help The Hive and log in to continue.'
+    : 'This verification link is invalid or has expired. Request a new link from the login screen.';
 
   return (
     <Screen>
@@ -36,15 +75,13 @@ export function VerificationResultScreen() {
         <View style={styles.iconCircle}>
           <HiveIcon name={succeeded ? 'check' : 'close'} size={32} color={succeeded ? HiveColors.green : HiveColors.orange} />
         </View>
-        <Text style={uiText.title}>{succeeded ? 'Email link processed' : 'Link unavailable'}</Text>
-        <Text style={[uiText.muted, styles.centerText]}>
-          {succeeded
-            ? isEmailChange
-              ? 'If the link was valid, your login email has been updated. Continue to log in with your new address.'
-              : 'If the link was valid, your email is verified. Return to Help The Hive and log in to continue.'
-            : 'This verification link is invalid or has expired. Request a new link from the login screen.'}
-        </Text>
-        <AppButton title="Continue to Login" onPress={() => router.replace({ pathname: '/', params: { screen: 'login' } })} style={styles.fullWidth} />
+        <Text style={uiText.title}>{title}</Text>
+        <Text style={[uiText.muted, styles.centerText]}>{message}</Text>
+        {isSignup && succeeded ? (
+          <AppButton title="Continue" onPress={continueFromSignup} style={styles.fullWidth} />
+        ) : (
+          <AppButton title="Continue to Login" onPress={() => router.replace({ pathname: '/', params: { screen: 'login' } })} style={styles.fullWidth} />
+        )}
       </View>
     </Screen>
   );

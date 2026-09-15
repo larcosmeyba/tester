@@ -6,7 +6,6 @@ import {
   Alert,
   Animated,
   Image,
-  Linking,
   PanResponder,
   Pressable,
   ScrollView,
@@ -49,8 +48,8 @@ const BADGE_TONES = {
 export function HomeScreen({ nav }: { nav: Navigation }) {
   const app = useAppState();
   const styles = useHomeStyles();
+  const firstName = app.profile.firstName.trim() || 'there';
   const resourceSource = getResourceDataSource(app.preferences.locationPermissionStatus, app.profile.zip);
-  const firstName = app.profile.firstName || 'there';
 
   async function pickAndSavePhoto() {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -99,7 +98,7 @@ export function HomeScreen({ nav }: { nav: Navigation }) {
 
         <ExpiringSoonBanner onPress={() => nav.push('pantry')} />
 
-        <Text style={styles.homeQuestion}>What would you like to do first?</Text>
+        <Text style={styles.homeQuestion}>What would you like to do today?</Text>
 
         <View style={styles.actionStack}>
           <Pressable
@@ -196,8 +195,8 @@ export function HomeScreen({ nav }: { nav: Navigation }) {
             icon="cart"
             tone="light"
             align="left"
-            label={`${app.cart.length} item cart · Clear`}
-            onPress={app.clearCart}
+            label={`${app.cart.length} item${app.cart.length === 1 ? '' : 's'} · Send to Instacart`}
+            onPress={() => router.push('/meals/instacart')}
           />
         </View>
       ) : null}
@@ -269,26 +268,14 @@ function HomeResourceCard({ resource, onPress }: { resource: ResourceItem; onPre
       </View>
       <Text style={styles.resDescription} numberOfLines={3}>{resource.description}</Text>
       <Pressable
-        accessibilityRole="link"
+        accessibilityRole="button"
         accessibilityLabel={`Learn more about ${resource.name}`}
-        onPress={(event) => {
-          event.stopPropagation();
-          openResourceWebsite(resource.website);
-        }}
+        onPress={onPress}
         style={({ pressed }) => [styles.learnMoreButton, pressed && sharedStyles.pressed]}>
         <Text style={styles.learnMoreText}>Learn More</Text>
       </Pressable>
     </Pressable>
   );
-}
-
-/** Marcos: Learn More goes straight to the resource's website. */
-function openResourceWebsite(website?: string) {
-  if (!website) {
-    return;
-  }
-  const url = website.startsWith('http') ? website : `https://${website}`;
-  void Linking.openURL(url);
 }
 
 /**
@@ -500,12 +487,11 @@ function useHomeStyles() {
       },
       resCard: {
       width: s(252),
-      backgroundColor: HiveColors.white,
+      backgroundColor: HiveColors.card,
       borderRadius: s(16),
-      borderWidth: StyleSheet.hairlineWidth,
-      borderColor: HiveColors.border,
-      padding: 14,
+      padding: s(14),
       gap: s(8),
+      ...Shadows.soft,
       },
       resBadge: {
       alignSelf: 'flex-start',
@@ -586,7 +572,8 @@ function useHomeStyles() {
       cartPillRow: {
       position: 'absolute',
       left: s(16),
-      right: s(16),
+      // Keep clear of the Ask Penny FAB (right edge, ~196pt wide).
+      right: s(220),
       bottom: tabBarSpace + vs(68),
       flexDirection: 'row',
       alignItems: 'flex-end',

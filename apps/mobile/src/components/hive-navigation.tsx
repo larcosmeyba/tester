@@ -95,6 +95,7 @@ export function FloatingTabBar({
                   resizeMode="contain"
                 />
               )}
+              <Text style={[styles.tabLabel, selected && styles.tabLabelSelected]}>{tab.label}</Text>
             </Pressable>
           );
         })}
@@ -161,7 +162,7 @@ export function FloatingPillRow({ children }: { children: React.ReactNode }) {
 }
 
 /** Height of the bar itself, excluding the safe-area inset beneath it. */
-export const FLOATING_TAB_BAR_HEIGHT = 68;
+export const FLOATING_TAB_BAR_HEIGHT = 84;
 
 /**
  * Total space the tab bar occupies, inset included. Anything pinned above the
@@ -194,6 +195,15 @@ const styles = StyleSheet.create({
     ...Shadows.soft,
   },
   tabButton: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingVertical: 8 },
+  tabLabel: {
+    color: HiveColors.textSecondary,
+    fontSize: 10,
+    fontWeight: '600',
+    marginTop: 2,
+  },
+  tabLabelSelected: {
+    color: HiveColors.green,
+  },
   pennySelectedPill: {
     width: SELECTED_PILL.width,
     height: SELECTED_PILL.height,

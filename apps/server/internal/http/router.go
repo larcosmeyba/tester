@@ -68,6 +68,21 @@ func NewRouter(cfg config.Config, verifier *auth.Verifier, readiness readinessCh
 	router.With(auth.Middleware(verifier)).
 		Get("/benefits/applications/{applicationID}/pdf", BenefitsDocuments(resolver.Benefits, nil))
 
+	// Magic verification links (signup). Unauthenticated by design: the
+	// single-use token in the URL is the credential. No rate limiting beyond
+	// the token's own single-use + 24h expiry — a forged token just renders
+	// the "link unavailable" page.
+	router.Get("/auth/verify", VerifyEmailLink(resolver.Users, cfg.PublicBaseURL, logger))
+	// iOS universal-link / Android app-link association files. Scoped to
+	// /auth/verified* so the token-bearing /auth/verify link keeps opening
+	// in the browser. Served only when the signing identities are
+	// configured (APPLE_TEAM_ID / ANDROID_SHA256_FINGERPRINTS).
+	router.Get("/.well-known/apple-app-site-association", WellKnownLinks(cfg, logger))
+	router.Get("/.well-known/assetlinks.json", WellKnownLinks(cfg, logger))
+	// Browser fallback for the universal link: when the app isn't installed
+	// the OS leaves https://<host>/auth/verified?flow=signup in the browser.
+	router.Get("/auth/verified", VerifyAppFallback(logger))
+
 	// Penny. Two mounts, because the two callers are not the same kind of
 	// thing. /penny is a person holding a bearer token. /internal/penny/tools
 	// is the agent calling back with a token this server minted for one turn —

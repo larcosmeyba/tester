@@ -914,6 +914,172 @@ func (s *Store) DeleteVerificationCodesForUser(ctx context.Context, userID strin
 	return err
 }
 
+// VerificationLinkTTL is how long a magic link stays valid after creation.
+// Links live much longer than codes: the user may not open the email for
+// hours, and the link is single-use and unguessable (256 bits).
+const VerificationLinkTTL = 24 * time.Hour
+
+// verificationLinkPrefixLength is how many leading hex chars of the token are
+// stored in plaintext for lookup. The verify handler is unauthenticated, so
+// the full token hash cannot be the lookup key.
+const verificationLinkPrefixLength = 8
+
+// Verification errors returned by the magic-link flow. The users module maps
+// these to public client-facing messages.
+var (
+	ErrVerificationLinkInvalid = errors.New("invalid verification link")
+	ErrVerificationLinkExpired = errors.New("verification link expired")
+)
+
+// verificationLinkRow is an unconsumed magic-link row, used by
+// ConsumeVerificationLink. It never carries the plain token.
+type verificationLinkRow struct {
+	ID        string
+	UserID    string
+	TokenHash string
+	ExpiresAt time.Time
+}
+
+// CreateVerificationLink issues a magic-link token for the user and returns
+// the PLAIN token to the caller (the service embeds it in the emailed URL).
+// Only salt$sha256(salt || token) is persisted; the plain token is never
+// logged. It rejects the request when an unconsumed link was created less
+// than VerificationCodeMinInterval ago (same anti-spam cadence as codes).
+func (s *Store) CreateVerificationLink(ctx context.Context, userID, purpose string) (string, error) {
+	var recent bool
+	if err := s.pool.QueryRow(ctx, `
+		SELECT EXISTS (
+			SELECT 1 FROM verification_links
+			WHERE user_id = $1
+			  AND consumed_at IS NULL
+			  AND created_at > now() - ($2::text || ' seconds')::interval
+		)
+	`, userID, strconv.Itoa(int(VerificationCodeMinInterval.Seconds()))).Scan(&recent); err != nil {
+		return "", err
+	}
+	if recent {
+		return "", ErrVerificationRateLimited
+	}
+
+	tokenBytes := make([]byte, 32)
+	if _, err := rand.Read(tokenBytes); err != nil {
+		return "", err
+	}
+	token := hex.EncodeToString(tokenBytes)
+	salt := make([]byte, 16)
+	if _, err := rand.Read(salt); err != nil {
+		return "", err
+	}
+	tokenHash := hex.EncodeToString(salt) + "$" + hex.EncodeToString(hashVerificationCode(salt, token))
+
+	if _, err := s.pool.Exec(ctx, `
+		INSERT INTO verification_links (user_id, token_hash, token_prefix, purpose, expires_at)
+		VALUES ($1, $2, $3, $4, now() + ($5::text || ' seconds')::interval)
+	`, userID, tokenHash, token[:verificationLinkPrefixLength], purpose, strconv.Itoa(int(VerificationLinkTTL.Seconds()))); err != nil {
+		return "", err
+	}
+	return token, nil
+}
+
+// ConsumeVerificationLink validates a magic-link token, consumes the link,
+// and stamps users.account_verified_at. Single-use: the first tap wins, and
+// an expired link is consumed so it can never be retried. Returns the owning
+// user ID. It never re-verifies on normal login — only this handler routes
+// here.
+func (s *Store) ConsumeVerificationLink(ctx context.Context, token string) (string, error) {
+	token = strings.TrimSpace(token)
+	if len(token) < verificationLinkPrefixLength {
+		return "", ErrVerificationLinkInvalid
+	}
+	prefix := token[:verificationLinkPrefixLength]
+
+	tx, err := s.pool.Begin(ctx)
+	if err != nil {
+		return "", err
+	}
+	defer rollback(ctx, tx)
+
+	rows, err := tx.Query(ctx, `
+		SELECT id, user_id, token_hash, expires_at
+		FROM verification_links
+		WHERE token_prefix = $1 AND consumed_at IS NULL
+		ORDER BY created_at DESC
+		FOR UPDATE
+	`, prefix)
+	if err != nil {
+		return "", err
+	}
+	var candidates []verificationLinkRow
+	for rows.Next() {
+		var row verificationLinkRow
+		if err := rows.Scan(&row.ID, &row.UserID, &row.TokenHash, &row.ExpiresAt); err != nil {
+			rows.Close()
+			return "", err
+		}
+		candidates = append(candidates, row)
+	}
+	rows.Close()
+	if err := rows.Err(); err != nil {
+		return "", err
+	}
+
+	var match *verificationLinkRow
+	for i := range candidates {
+		if compareVerificationCode(candidates[i].TokenHash, token) {
+			match = &candidates[i]
+			break
+		}
+	}
+	if match == nil {
+		// No hash matched: either a forged/unknown token or one already
+		// consumed (consumed rows are excluded from the lookup).
+		return "", ErrVerificationLinkInvalid
+	}
+
+	if s.now().After(match.ExpiresAt) {
+		if _, err := tx.Exec(ctx, `UPDATE verification_links SET consumed_at = now() WHERE id = $1`, match.ID); err != nil {
+			return "", err
+		}
+		if err := tx.Commit(ctx); err != nil {
+			return "", err
+		}
+		return "", ErrVerificationLinkExpired
+	}
+
+	// Success: consume the link and mark the account verified.
+	user, err := scanUser(tx.QueryRow(ctx, `
+		UPDATE users
+		SET account_verified_at = COALESCE(account_verified_at, now()),
+		    verification_method = 'email',
+		    updated_at = now()
+		WHERE id = $1
+		RETURNING id, auth_subject, email, created_at, updated_at,
+		          phone_number, account_verified_at, verification_method,
+		          email_consent, phone_call_consent, notification_permission_status,
+		          location_zip_fallback, onboarding_completed_at, onboarding_current_step
+	`, match.UserID))
+	if err != nil {
+		return "", err
+	}
+	if _, err := tx.Exec(ctx, `UPDATE verification_links SET consumed_at = now() WHERE id = $1`, match.ID); err != nil {
+		return "", err
+	}
+	if err := tx.Commit(ctx); err != nil {
+		return "", err
+	}
+	return user.ID, nil
+}
+
+// DeleteVerificationLinksForUser removes a user's pending links. Used when a
+// send fails so the user can retry immediately instead of hitting the rate
+// limit with a link they never received.
+func (s *Store) DeleteVerificationLinksForUser(ctx context.Context, userID string) error {
+	_, err := s.pool.Exec(ctx, `
+		DELETE FROM verification_links WHERE user_id = $1 AND consumed_at IS NULL
+	`, userID)
+	return err
+}
+
 func randomVerificationCode() (string, error) {
 	maximum := new(big.Int).SetInt64(1000000)
 	value, err := rand.Int(rand.Reader, maximum)

@@ -61,12 +61,21 @@ func (e *HandleError) Error() string {
 }
 
 type Service struct {
-	store       *db.Store
-	codeSenders map[string]CodeSender
+	store         *db.Store
+	codeSenders   map[string]CodeSender
+	linkSender    LinkSender
+	publicBaseURL string
 }
 
 func NewService(store *db.Store) *Service {
-	return &Service{store: store, codeSenders: DefaultCodeSenders()}
+	return &Service{store: store, codeSenders: DefaultCodeSenders(), linkSender: NewResendEmailSender()}
+}
+
+// WithPublicBaseURL sets the externally reachable base URL of the API,
+// used to build magic verification links. Empty disables magic links.
+func (s *Service) WithPublicBaseURL(url string) *Service {
+	s.publicBaseURL = strings.TrimSuffix(strings.TrimSpace(url), "/")
+	return s
 }
 
 // WithCodeSender overrides the sender used for the email verification
@@ -76,6 +85,13 @@ func (s *Service) WithCodeSender(method string, sender CodeSender) *Service {
 		s.codeSenders = map[string]CodeSender{}
 	}
 	s.codeSenders[method] = sender
+	return s
+}
+
+// WithLinkSender overrides the sender used for magic verification links.
+// Tests use this to capture links without sending them.
+func (s *Service) WithLinkSender(sender LinkSender) *Service {
+	s.linkSender = sender
 	return s
 }
 
@@ -337,6 +353,68 @@ func (s *Service) RequestVerificationCode(ctx context.Context, identity auth.Ide
 		// The code never reached the user: delete it so the 60s rate limit
 		// does not block an immediate retry.
 		_ = s.store.DeleteVerificationCodesForUser(ctx, viewer.User.ID)
+		return err
+	}
+	return nil
+}
+
+// RequestVerificationLink emails a magic verification link for signup: the
+// Verify button opens GET /auth/verify?token=... on the API, which consumes
+// the link and marks the account verified. Only the signup purpose is
+// supported — recovery and email/phone changes stay on one-time codes.
+// Never re-verified on normal login.
+func (s *Service) RequestVerificationLink(ctx context.Context, identity auth.Identity, purpose string) error {
+	viewer, err := s.Viewer(ctx, identity)
+	if err != nil {
+		return err
+	}
+
+	purpose = strings.ToLower(strings.TrimSpace(purpose))
+	if purpose != db.VerificationPurposeSignup {
+		return apperrors.Public("verification links are only sent for signup")
+	}
+	if s.publicBaseURL == "" {
+		return apperrors.Public("email verification is not configured yet — please try again later")
+	}
+	email := strings.TrimSpace(derefString(viewer.User.Email))
+	if email == "" {
+		return apperrors.Public("add an email address before verifying by email")
+	}
+
+	token, err := s.store.CreateVerificationLink(ctx, viewer.User.ID, purpose)
+	if err != nil {
+		if errors.Is(err, db.ErrVerificationRateLimited) {
+			return apperrors.Public("a link was just sent — please wait a minute before requesting another")
+		}
+		return err
+	}
+
+	linkURL := s.publicBaseURL + "/auth/verify?token=" + token
+	sender := s.linkSender
+	if sender == nil {
+		sender = NewResendEmailSender()
+	}
+	if err := sender.SendVerificationLink(ctx, email, linkURL); err != nil {
+		// The link never reached the user: delete it so the 60s rate limit
+		// does not block an immediate retry.
+		_ = s.store.DeleteVerificationLinksForUser(ctx, viewer.User.ID)
+		return err
+	}
+	return nil
+}
+
+// ConsumeVerificationLink validates a magic-link token from the emailed URL
+// and marks the account verified. Unauthenticated by design: the unguessable
+// single-use token is the credential. Used by the GET /auth/verify handler,
+// not by GraphQL.
+func (s *Service) ConsumeVerificationLink(ctx context.Context, token string) error {
+	if _, err := s.store.ConsumeVerificationLink(ctx, token); err != nil {
+		switch {
+		case errors.Is(err, db.ErrVerificationLinkExpired):
+			return apperrors.Public("that link has expired — request a new one from the app")
+		case errors.Is(err, db.ErrVerificationLinkInvalid):
+			return apperrors.Public("that link is invalid or has already been used")
+		}
 		return err
 	}
 	return nil

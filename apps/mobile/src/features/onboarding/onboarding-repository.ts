@@ -20,6 +20,7 @@ import type {
 import { GraphQLRequestError, graphqlClient } from '@/graphql/client';
 import {
   RequestVerificationCodeDocument,
+  RequestVerificationLinkDocument,
   SaveLocationFallbackDocument,
   SaveOnboardingStepDocument,
   SaveQuestionnaireDocument,
@@ -71,6 +72,18 @@ export async function requestVerificationCode(
   await verificationClient.request(RequestVerificationCodeDocument, {
     input: { method: 'EMAIL' as VerificationMethod, purpose, newEmail, newPhone },
   });
+}
+
+/**
+ * Requests a magic verification link for signup. The API emails a Verify
+ * button that opens GET /auth/verify?token=... — tapping it marks the
+ * account verified and returns to the app. The link is single-use, expires
+ * in 24 hours, and is rate-limited to one per minute.
+ */
+export async function requestVerificationLink(
+  purpose: VerificationPurpose = 'SIGNUP',
+): Promise<void> {
+  await verificationClient.request(RequestVerificationLinkDocument, { purpose });
 }
 
 export async function verifyCode(code: string): Promise<void> {

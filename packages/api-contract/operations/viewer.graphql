@@ -6,6 +6,8 @@ query Viewer {
       email
       createdAt
       updatedAt
+      accountVerifiedAt
+      verificationMethod
     }
     profile {
       handle
@@ -100,6 +102,8 @@ mutation CompleteOnboarding($input: CompleteOnboardingInput!) {
       email
       createdAt
       updatedAt
+      accountVerifiedAt
+      verificationMethod
     }
     profile {
       handle

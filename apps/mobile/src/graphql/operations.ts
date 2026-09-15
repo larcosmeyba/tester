@@ -9,6 +9,8 @@ import type {
   RecordConsentMutationVariables,
   RequestVerificationCodeMutation,
   RequestVerificationCodeMutationVariables,
+  RequestVerificationLinkMutation,
+  RequestVerificationLinkMutationVariables,
   SaveLocationFallbackMutation,
   SaveLocationFallbackMutationVariables,
   SaveOnboardingStepMutation,
@@ -68,6 +70,8 @@ export const ViewerDocument = `
         email
         createdAt
         updatedAt
+        accountVerifiedAt
+        verificationMethod
       }
       profile {
         handle
@@ -168,6 +172,8 @@ export const CompleteOnboardingDocument = `
         email
         createdAt
         updatedAt
+        accountVerifiedAt
+        verificationMethod
       }
       profile {
         handle
@@ -216,6 +222,12 @@ export const RequestVerificationCodeDocument = `
     requestVerificationCode(input: $input)
   }
 ` as GraphQLDocument<RequestVerificationCodeMutation, RequestVerificationCodeMutationVariables>;
+
+export const RequestVerificationLinkDocument = `
+  mutation RequestVerificationLink($purpose: VerificationPurpose!) {
+    requestVerificationLink(purpose: $purpose)
+  }
+` as GraphQLDocument<RequestVerificationLinkMutation, RequestVerificationLinkMutationVariables>;
 
 export const VerifyCodeDocument = `
   mutation VerifyCode($code: String!) {

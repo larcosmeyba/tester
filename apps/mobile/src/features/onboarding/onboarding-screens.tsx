@@ -1,201 +1,76 @@
-// Signup onboarding flow (Sign Up / Login / Onboarding v2).
+// Signup onboarding flow (September 2026 redesign, from Marcos's Xcode flow).
 //
-// Step order: 7 questionnaire steps (budget -> finance help -> resources ->
-// primary goal -> household size -> household income -> profile photo), then
-// the native push permission prompt, the location explainer + native prompt
-// (ZIP fallback when denied), the email consent, the phone-call consent, and
-// the all-set screen.
+// Six questionnaire steps — resources, household size, intent, household
+// income, finance topics, profile photo — then the all-set screen, then the
+// push permission prompt, then the location explainer (ZIP fallback when
+// denied). Steps 1-4 require a selection; steps 5-6 are optional.
 //
-// Copy comes from the screenshot designs. Each questionnaire step saves its
-// answers (saveQuestionnaire) and a step marker (saveOnboardingStep) as it
-// completes, so an interrupted onboarding resumes at
-// `onboardingState.currentStep` via `resumeIndexForStepKey`.
-//
-// The expo-router (onboarding) group is not part of the app shell's flow;
-// AppRoot renders the standalone OnboardingScreen below.
+// Each step saves server-side as it completes (saveQuestionnaire for the
+// answers, saveOnboardingStep for the step marker), so an interrupted
+// onboarding resumes via resumeIndexForStepKey. Answers are pre-filled from
+// any saved questionnaire. No social sign-in anywhere (Marcos, 2026-09-13).
 
 import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
-import { useState, type ReactNode } from 'react';
-import { Image, Linking, PanResponder, Pressable, StyleSheet, Text, View } from 'react-native';
-import { PRIVACY_URL, TERMS_URL } from '@/constants/legal';
+import { useEffect, useState } from 'react';
+import { ActivityIndicator, Image, Pressable, Text, TextInput, View } from 'react-native';
+
+import { useAuth } from '@/auth/auth-context';
 import {
   AppButton,
-  AppTextField,
   CheckboxRow,
   HiveIcon,
-  type HiveIconName,
+  PennyImage,
   Screen,
   ScrollScreen,
   SelectionRow,
+  TextLink,
+  uiText,
 } from '@/components/hive-ui';
 import { HiveColors } from '@/constants/theme';
-import { sharedStyles } from '@/features/app/app-shared';
 import { requestAndRegisterPushToken } from '@/features/notifications/notification-service';
-import { useAppState, type AppPreferences } from '@/state/app-state';
+import { useAppState } from '@/state/app-state';
+import { StyleSheet } from 'react-native';
+import { sharedStyles } from '@/features/app/app-shared';
 import { type Navigation } from '@/features/app/navigation-types';
 import {
-  BUDGET_MAX,
-  BUDGET_MIN,
-  BUDGET_STEP,
-  DEFAULT_BUDGET_DOLLARS,
   HOUSEHOLD_SIZE_OPTIONS,
   INCOME_BRACKET_OPTIONS,
   PRIMARY_GOAL_APPLY_BENEFITS,
   PRIMARY_GOAL_BUDGET_MEALS,
-  formatBudgetDollars,
-  parseBudgetDollars,
+  QUESTIONNAIRE_STEP_COUNT,
+  STEP_ALL_SET,
+  STEP_COUNT,
+  STEP_FINANCE_TOPICS,
+  STEP_HOUSEHOLD_SIZE,
+  STEP_INCOME,
+  STEP_INTENT,
+  STEP_LOCATION,
+  STEP_PROFILE_PHOTO,
+  STEP_PUSH_PERMISSION,
+  STEP_RESOURCES,
   resumeIndexForStepKey,
-} from './onboarding-model';
+} from '@/features/onboarding/onboarding-model';
 import {
   saveLocationFallback,
   saveOnboardingStep,
   saveQuestionnaire,
-  updateCommunicationConsents,
-} from './onboarding-repository';
-import { updateProfile as updateProfileRemote } from '@/features/profile/profile-repository';
+  type QuestionnaireUpdate,
+} from '@/features/onboarding/onboarding-repository';
 
-const financeTopics: { title: string; subtitle: string; icon: HiveIconName }[] = [
-  { title: 'How to Open a Roth IRA', subtitle: 'Learn the basics of tax-free retirement savings', icon: 'chart' },
-  { title: 'How to Save for Kids College', subtitle: '529 plans, education savings, and strategies', icon: 'resources' },
-  { title: 'How to Save for Retirement', subtitle: 'Build a plan for long-term financial security', icon: 'calendar' },
-  { title: 'Budgeting & Money Management', subtitle: 'Track spending, reduce debt, and save more', icon: 'card' },
-  { title: 'Building an Emergency Fund', subtitle: 'How to prepare for unexpected expenses', icon: 'shield' },
-];
+const pennyWaveSource = require('@/assets/images/hive/penny-wave.png');
 
-const resourceOptions: { title: string; subtitle: string; icon: HiveIconName }[] = [
-  { title: 'Food Assistance', subtitle: 'Food pantries, free meals, and grocery programs', icon: 'fork' },
-  { title: 'Housing Help', subtitle: 'Housing assistance programs', icon: 'home' },
-  { title: 'Healthcare', subtitle: 'How to apply to medicaid and other programs.', icon: 'heart' },
-  { title: 'Utility Assistance', subtitle: 'Help with electric, gas, water, and phone bills', icon: 'bolt' },
-  { title: 'Job', subtitle: 'Career programs, resume help, and places hiring.', icon: 'job' },
-  { title: 'Childcare', subtitle: 'Daycare assistance and after-school programs', icon: 'child' },
-];
+type StepComponentProps = {
+  initial: QuestionnaireUpdate;
+  onNext: (patch: QuestionnaireUpdate, stepKey: string) => Promise<void> | void;
+  onBack: () => void;
+  busy: boolean;
+};
 
-const primaryGoals: { code: string; title: string }[] = [
-  { code: PRIMARY_GOAL_APPLY_BENEFITS, title: 'Apply for Benefits' },
-  { code: PRIMARY_GOAL_BUDGET_MEALS, title: 'Create budget-friendly meals for myself or my family' },
-];
-
-export function formatBudgetDisplay(dollars: number): string {
-  return formatBudgetDollars(dollars);
-}
-
-export async function pickProfileImage(): Promise<string | undefined> {
-  const result = await ImagePicker.launchImageLibraryAsync({
-    mediaTypes: ['images'],
-    allowsEditing: true,
-    aspect: [1, 1],
-    quality: 0.85,
-  });
-  if (!result.canceled && result.assets[0]) {
-    return result.assets[0].uri;
-  }
-  return undefined;
-}
-
-export function OnboardingTopBar({ current, total, onBack }: { current: number; total: number; onBack?: () => void }) {
+function ComingSoonBadge() {
   return (
-    <View style={styles.topBar}>
-      <View style={styles.topRow}>
-        {onBack ? (
-          <Pressable onPress={onBack} style={styles.backButton} accessibilityRole="button" accessibilityLabel="Go back">
-            <HiveIcon name="back" size={18} color={HiveColors.text} />
-          </Pressable>
-        ) : (
-          <View style={styles.backButton} />
-        )}
-        <Text style={styles.stepLabel}>
-          STEP {current} OF {total}
-        </Text>
-      </View>
-      <View style={styles.pills} accessibilityLabel={`Step ${current} of ${total}`}>
-        {Array.from({ length: total }).map((_, index) => (
-          <View key={index} style={[styles.pill, index < current && styles.pillDone]} />
-        ))}
-      </View>
-    </View>
-  );
-}
-
-export function OnboardingStepScreen({
-  current,
-  total,
-  onBack,
-  children,
-}: {
-  current: number;
-  total: number;
-  onBack?: () => void;
-  children: ReactNode;
-}) {
-  return (
-    <ScrollScreen contentStyle={styles.content}>
-      <OnboardingTopBar current={current} total={total} onBack={onBack} />
-      <View style={styles.body}>{children}</View>
-    </ScrollScreen>
-  );
-}
-
-export function ComingSoonBadge() {
-  // The HiveIcon set has no clock glyph, so the badge is text-only rather
-  // than inventing an icon.
-  return (
-    <View style={styles.comingSoonBadge} accessibilityLabel="Coming soon">
+    <View style={styles.comingSoonBadge}>
       <Text style={styles.comingSoonText}>Coming Soon</Text>
-    </View>
-  );
-}
-
-const SLIDER_TICKS = 11;
-
-export function BudgetSlider({ value, onChange }: { value: number; onChange: (dollars: number) => void }) {
-  const [trackWidth, setTrackWidth] = useState(0);
-
-  const setFromX = (x: number) => {
-    if (trackWidth <= 0) {
-      return;
-    }
-    const fraction = Math.min(1, Math.max(0, x / trackWidth));
-    const raw = BUDGET_MIN + fraction * (BUDGET_MAX - BUDGET_MIN);
-    onChange(Math.round(raw / BUDGET_STEP) * BUDGET_STEP);
-  };
-
-  const [pan] = useState(() =>
-    PanResponder.create({
-      onStartShouldSetPanResponder: () => true,
-      onMoveShouldSetPanResponder: () => true,
-      onPanResponderGrant: (event) => setFromX(event.nativeEvent.locationX),
-      onPanResponderMove: (event) => setFromX(event.nativeEvent.locationX),
-    }),
-  );
-
-  const fraction = (value - BUDGET_MIN) / (BUDGET_MAX - BUDGET_MIN);
-  const thumbOffset = { left: `${Math.min(100, Math.max(0, fraction * 100))}%` } as const;
-
-  return (
-    <View style={styles.sliderBlock}>
-      <View
-        style={styles.sliderTrack}
-        onLayout={(event) => setTrackWidth(event.nativeEvent.layout.width)}
-        {...pan.panHandlers}
-        accessibilityRole="adjustable"
-        accessibilityLabel="Weekly grocery budget"
-        accessibilityValue={{ text: `${formatBudgetDisplay(value)} per week` }}>
-        <View style={[styles.sliderFill, { width: `${fraction * 100}%` }]} />
-        {Array.from({ length: SLIDER_TICKS }).map((_, index) => (
-          <View
-            key={index}
-            style={[styles.sliderTick, { left: `${(index / (SLIDER_TICKS - 1)) * 100}%` }]}
-            pointerEvents="none"
-          />
-        ))}
-        <View style={[styles.sliderThumb, thumbOffset]} pointerEvents="none" />
-      </View>
-      <View style={styles.sliderLabels}>
-        <Text style={styles.sliderLabel}>$25</Text>
-        <Text style={styles.sliderLabel}>$300+</Text>
-      </View>
     </View>
   );
 }
@@ -207,1244 +82,966 @@ function StepError({ message }: { message: string }) {
   return <Text style={sharedStyles.authError}>{message}</Text>;
 }
 
-// ---------------------------------------------------------------------------
-// Step 1 — grocery budget
-// ---------------------------------------------------------------------------
-
-export function BudgetStep({
-  value,
-  onChange,
-  onNext,
-  busy,
-  error,
+/** Full-width progress bar with the "STEP X OF 6" label, per the designs. */
+function OnboardingTopBar({
+  current,
+  total,
+  onBack,
 }: {
-  value: number;
-  onChange: (dollars: number) => void;
-  onNext: () => void;
-  busy: boolean;
-  error: string;
+  current: number;
+  total: number;
+  onBack?: () => void;
 }) {
+  const progress = Math.min(1, Math.max(0, current / total));
   return (
-    <OnboardingStepScreen current={1} total={7}>
-      <Text style={styles.stepTitle}>What&apos;s your weekly grocery budget?</Text>
-      <Text style={styles.stepSubtitle}>This helps us plan meals that fit around your budget.</Text>
-      <View style={styles.amountCard}>
-        <Text style={styles.amountText}>{formatBudgetDisplay(value)}</Text>
-        <Text style={styles.amountLabel}>per week</Text>
+    <View style={styles.topBar}>
+      <View style={styles.topBarRow}>
+        {onBack ? (
+          <Pressable onPress={onBack} hitSlop={12} accessibilityRole="button" accessibilityLabel="Back">
+            <HiveIcon name="back" size={20} color={HiveColors.text} />
+          </Pressable>
+        ) : (
+          <View style={styles.topBarSpacer} />
+        )}
+        <Text style={styles.topBarLabel}>
+          STEP {current} OF {total}
+        </Text>
+        <View style={styles.topBarSpacer} />
       </View>
-      <BudgetSlider value={value} onChange={onChange} />
-      <View style={styles.buttonSpacer} />
-      <StepError message={error} />
-      <AppButton title={busy ? 'Saving…' : 'Continue'} onPress={onNext} disabled={busy} />
-    </OnboardingStepScreen>
+      <View style={styles.progressTrack}>
+        <View style={[styles.progressFill, { flex: progress }]} />
+        <View style={{ flex: 1 - progress }} />
+      </View>
+    </View>
   );
 }
 
-// ---------------------------------------------------------------------------
-// Step 2 — finance help (coming soon)
-// ---------------------------------------------------------------------------
-
-export function FinanceHelpStep({
-  selected,
-  onToggle,
-  onNext,
+/** Step container: light card background, top progress bar, scrollable body. */
+function OnboardingStepScreen({
+  stepNumber,
   onBack,
-  busy,
-  error,
+  children,
 }: {
-  selected: string[];
-  onToggle: (topic: string) => void;
-  onNext: () => void;
-  onBack: () => void;
-  busy: boolean;
-  error: string;
+  stepNumber: number;
+  onBack?: () => void;
+  children: React.ReactNode;
 }) {
   return (
-    <OnboardingStepScreen current={2} total={7} onBack={onBack}>
-      <Text style={styles.stepTitle}>What financial help do you want to learn?</Text>
-      <ComingSoonBadge />
-      <Text style={styles.stepSubtitle}>
+    <ScrollScreen contentStyle={styles.stepScreenContent}>
+      <OnboardingTopBar current={stepNumber} total={QUESTIONNAIRE_STEP_COUNT} onBack={onBack} />
+      <View style={styles.stepBody}>{children}</View>
+    </ScrollScreen>
+  );
+}
+
+function StepTitle({ children }: { children: React.ReactNode }) {
+  return <Text style={styles.stepTitle}>{children}</Text>;
+}
+
+function StepSubtitle({ children }: { children: React.ReactNode }) {
+  return <Text style={styles.stepSubtitle}>{children}</Text>;
+}
+
+function StepFootnote({ children }: { children: React.ReactNode }) {
+  return <Text style={styles.stepFootnote}>{children}</Text>;
+}
+
+function NextButton({
+  title = 'Next',
+  disabled,
+  busy,
+  onPress,
+}: {
+  title?: string;
+  disabled?: boolean;
+  busy?: boolean;
+  onPress: () => void;
+}) {
+  return (
+    <AppButton
+      title={busy ? 'Saving…' : title}
+      disabled={disabled || busy}
+      onPress={onPress}
+      style={styles.nextButton}
+    />
+  );
+}
+
+const financeTopics: Array<{ title: string; subtitle: string }> = [
+  { title: 'Budgeting Basics', subtitle: 'Learn how to create and stick to a budget' },
+  { title: 'Saving Strategies', subtitle: 'Tips to build your emergency fund' },
+  { title: 'Debt Management', subtitle: 'Get out of debt faster' },
+  { title: 'Investing 101', subtitle: 'Start growing your money' },
+  { title: 'Credit Scores', subtitle: 'Understand and improve your credit' },
+];
+
+function FinanceHelpStep({ initial, onNext, onBack, busy }: StepComponentProps) {
+  const [selectedFinanceTopics, setSelectedFinanceTopics] = useState<string[]>(initial.financeTopics ?? []);
+  const [errorMessage, setErrorMessage] = useState('');
+
+  function toggle(topic: string) {
+    setSelectedFinanceTopics((current) =>
+      current.includes(topic) ? current.filter((item) => item !== topic) : [...current, topic],
+    );
+  }
+
+  async function next() {
+    setErrorMessage('');
+    try {
+      await onNext({ financeTopics: selectedFinanceTopics }, 'questionnaire:5');
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : 'Unable to save your choices.');
+    }
+  }
+
+  return (
+    <OnboardingStepScreen stepNumber={5} onBack={onBack}>
+      <StepTitle>What financial help do you want to learn?</StepTitle>
+      <StepSubtitle>
         This feature is launching soon! Tell us what you&apos;re interested in and we&apos;ll personalize your
         experience when it&apos;s ready.
-      </Text>
-      {financeTopics.map((topic) => (
-        <CheckboxRow
-          key={topic.title}
-          title={topic.title}
-          subtitle={topic.subtitle}
-          icon={topic.icon}
-          selected={selected.includes(topic.title)}
-          onPress={() => onToggle(topic.title)}
-        />
-      ))}
-      <Text style={styles.footnote}>You can always change this later in settings</Text>
-      <StepError message={error} />
-      <AppButton title={busy ? 'Saving…' : 'Next'} onPress={onNext} disabled={busy || selected.length === 0} />
+      </StepSubtitle>
+      <View style={styles.optionsList}>
+        {financeTopics.map((topic) => (
+          <View key={topic.title} style={styles.financeRow}>
+            <View style={styles.financeRowMain}>
+              <CheckboxRow
+                title={topic.title}
+                subtitle={topic.subtitle}
+                selected={selectedFinanceTopics.includes(topic.title)}
+                onPress={() => toggle(topic.title)}
+              />
+            </View>
+            <View style={styles.financeBadgeSlot}>
+              <ComingSoonBadge />
+            </View>
+          </View>
+        ))}
+      </View>
+      <StepFootnote>You can always change this later in settings</StepFootnote>
+      <StepError message={errorMessage} />
+      <NextButton busy={busy} onPress={() => void next()} />
     </OnboardingStepScreen>
   );
 }
 
-// ---------------------------------------------------------------------------
-// Step 3 — resources
-// ---------------------------------------------------------------------------
+const resourceOptions: Array<{ title: string; subtitle: string; icon: 'fork' | 'home' | 'heart' | 'bolt' | 'job' | 'child' }> = [
+  { title: 'Food Assistance', subtitle: 'Food pantries, free meals, and grocery programs', icon: 'fork' },
+  { title: 'Housing Help', subtitle: 'Housing assistance programs', icon: 'home' },
+  { title: 'Healthcare', subtitle: 'How to apply to Medicaid and other programs.', icon: 'heart' },
+  { title: 'Utility Assistance', subtitle: 'Help with electric, gas, water, and phone bills', icon: 'bolt' },
+  { title: 'Job Help', subtitle: 'Career programs, resume help, and places hiring.', icon: 'job' },
+  { title: 'Childcare', subtitle: 'Daycare assistance and after-school programs', icon: 'child' },
+];
 
-export function ResourcesStep({
-  selected,
-  onToggle,
-  onNext,
-  onBack,
-  busy,
-  error,
-}: {
-  selected: string[];
-  onToggle: (resource: string) => void;
-  onNext: () => void;
-  onBack: () => void;
-  busy: boolean;
-  error: string;
-}) {
+function ResourcesStep({ initial, onNext, busy }: StepComponentProps) {
+  const [selectedResources, setSelectedResources] = useState<string[]>(initial.resources ?? []);
+  const [errorMessage, setErrorMessage] = useState('');
+
+  function toggle(title: string) {
+    setSelectedResources((current) =>
+      current.includes(title) ? current.filter((item) => item !== title) : [...current, title],
+    );
+  }
+
+  async function next() {
+    setErrorMessage('');
+    try {
+      await onNext({ resources: selectedResources }, 'questionnaire:1');
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : 'Unable to save your choices.');
+    }
+  }
+
   return (
-    <OnboardingStepScreen current={3} total={7} onBack={onBack}>
-      <Text style={styles.stepTitle}>What resources do you need?</Text>
-      <Text style={styles.stepSubtitle}>Select all that apply. We&apos;ll match you with resources near you.</Text>
-      {resourceOptions.map((resource) => (
-        <CheckboxRow
-          key={resource.title}
-          title={resource.title}
-          subtitle={resource.subtitle}
-          icon={resource.icon}
-          selected={selected.includes(resource.title)}
-          onPress={() => onToggle(resource.title)}
-        />
-      ))}
-      <Text style={styles.footnote}>You can always change this later in settings</Text>
-      <StepError message={error} />
-      <AppButton title={busy ? 'Saving…' : 'Next'} onPress={onNext} disabled={busy || selected.length === 0} />
+    <OnboardingStepScreen stepNumber={1}>
+      <StepTitle>What resources do you need?</StepTitle>
+      <StepSubtitle>Select all that apply. We&apos;ll match you with resources near you.</StepSubtitle>
+      <View style={styles.optionsList}>
+        {resourceOptions.map((option) => (
+          <CheckboxRow
+            key={option.title}
+            title={option.title}
+            subtitle={option.subtitle}
+            icon={option.icon}
+            selected={selectedResources.includes(option.title)}
+            onPress={() => toggle(option.title)}
+          />
+        ))}
+      </View>
+      <StepFootnote>You can always change this later in settings</StepFootnote>
+      <StepError message={errorMessage} />
+      <NextButton disabled={selectedResources.length === 0} busy={busy} onPress={() => void next()} />
     </OnboardingStepScreen>
   );
 }
 
-// ---------------------------------------------------------------------------
-// Step 4 — primary goal (single-select)
-// ---------------------------------------------------------------------------
+function HouseholdSizeStep({ initial, onNext, onBack, busy }: StepComponentProps) {
+  const [householdSize, setHouseholdSize] = useState(initial.householdSize ?? '');
+  const [errorMessage, setErrorMessage] = useState('');
 
-export function PrimaryGoalStep({
-  selected,
-  onSelect,
-  onNext,
-  onBack,
-  busy,
-  error,
-}: {
-  selected: string | null;
-  onSelect: (code: string) => void;
-  onNext: () => void;
-  onBack: () => void;
-  busy: boolean;
-  error: string;
-}) {
+  async function next() {
+    if (!householdSize) {
+      return;
+    }
+    setErrorMessage('');
+    try {
+      await onNext({ householdSize }, 'questionnaire:2');
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : 'Unable to save your choice.');
+    }
+  }
+
   return (
-    <OnboardingStepScreen current={4} total={7} onBack={onBack}>
-      <Text style={styles.stepTitle}>What brings you to Help The Hive today?</Text>
-      <Text style={styles.stepSubtitle}>This helps Penny personalize your experience.</Text>
-      {primaryGoals.map((goal) => (
-        <SelectionRow
-          key={goal.code}
-          title={goal.title}
-          selected={selected === goal.code}
-          onPress={() => onSelect(goal.code)}
-        />
-      ))}
-      <Text style={styles.footnote}>You can do both anytime — this just helps us get you started.</Text>
-      <StepError message={error} />
-      <AppButton title={busy ? 'Saving…' : 'Next'} onPress={onNext} disabled={busy || !selected} />
-    </OnboardingStepScreen>
-  );
-}
-
-// ---------------------------------------------------------------------------
-// Step 5 — household size (single-select tiles)
-// ---------------------------------------------------------------------------
-
-export function HouseholdSizeStep({
-  selected,
-  onSelect,
-  onNext,
-  onBack,
-  busy,
-  error,
-}: {
-  selected: string | null;
-  onSelect: (size: string) => void;
-  onNext: () => void;
-  onBack: () => void;
-  busy: boolean;
-  error: string;
-}) {
-  return (
-    <OnboardingStepScreen current={5} total={7} onBack={onBack}>
-      <Text style={styles.stepTitle}>How many people are in your household?</Text>
-      <Text style={styles.stepSubtitle}>Include yourself and everyone who lives and shares meals with you.</Text>
+    <OnboardingStepScreen stepNumber={2} onBack={onBack}>
+      <StepTitle>How many people are in your household?</StepTitle>
+      <StepSubtitle>Include yourself and everyone who lives and shares meals with you.</StepSubtitle>
       <View style={styles.tileGrid}>
         {HOUSEHOLD_SIZE_OPTIONS.map((option) => {
-          const isSelected = selected === option;
+          const selected = householdSize === option;
           return (
             <Pressable
               key={option}
-              onPress={() => onSelect(option)}
-              style={[styles.tile, isSelected && styles.tileSelected]}
-              accessibilityRole="radio"
-              accessibilityState={{ selected: isSelected }}>
-              <Text style={[styles.tileText, isSelected && styles.tileTextSelected]}>{option}</Text>
+              onPress={() => setHouseholdSize(option)}
+              accessibilityRole="button"
+              accessibilityState={{ selected }}
+              style={[styles.tile, selected && styles.tileSelected]}>
+              <Text style={[styles.tileText, selected && styles.tileTextSelected]}>{option}</Text>
             </Pressable>
           );
         })}
       </View>
-      <Text style={styles.footnote}>This helps us match you with benefits and portion meals correctly.</Text>
-      <StepError message={error} />
-      <AppButton title={busy ? 'Saving…' : 'Next'} onPress={onNext} disabled={busy || !selected} />
+      <StepFootnote>This helps us match you with benefits and portion meals correctly.</StepFootnote>
+      <StepError message={errorMessage} />
+      <NextButton disabled={!householdSize} busy={busy} onPress={() => void next()} />
     </OnboardingStepScreen>
   );
 }
 
-// ---------------------------------------------------------------------------
-// Step 6 — household monthly income (single-select radios)
-// ---------------------------------------------------------------------------
+const intentOptions = [
+  { code: PRIMARY_GOAL_APPLY_BENEFITS, title: 'Apply for Benefits' },
+  { code: PRIMARY_GOAL_BUDGET_MEALS, title: 'Plan budget-friendly meals' },
+];
 
-export function IncomeStep({
-  selected,
-  onSelect,
-  onNext,
-  onBack,
-  busy,
-  error,
-}: {
-  selected: string | null;
-  onSelect: (bracket: string) => void;
-  onNext: () => void;
-  onBack: () => void;
-  busy: boolean;
-  error: string;
-}) {
+function IntentStep({ initial, onNext, onBack, busy }: StepComponentProps) {
+  const [primaryGoal, setPrimaryGoal] = useState(initial.primaryGoal ?? '');
+  const [errorMessage, setErrorMessage] = useState('');
+
+  async function next() {
+    if (!primaryGoal) {
+      return;
+    }
+    setErrorMessage('');
+    try {
+      await onNext({ primaryGoal }, 'questionnaire:3');
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : 'Unable to save your choice.');
+    }
+  }
+
   return (
-    <OnboardingStepScreen current={6} total={7} onBack={onBack}>
-      <Text style={styles.stepTitle}>What is your household&apos;s approximate monthly income before taxes?</Text>
-      <Text style={styles.stepSubtitle}>
-        Together with household size, this helps us find benefits you may qualify for.
-      </Text>
-      {INCOME_BRACKET_OPTIONS.map((bracket) => (
-        <SelectionRow
-          key={bracket}
-          title={bracket}
-          selected={selected === bracket}
-          onPress={() => onSelect(bracket)}
-        />
-      ))}
-      <Text style={styles.footnote}>Your answer stays private and is never shared without your review.</Text>
-      <StepError message={error} />
-      <AppButton title={busy ? 'Saving…' : 'Next'} onPress={onNext} disabled={busy || !selected} />
+    <OnboardingStepScreen stepNumber={3} onBack={onBack}>
+      <StepTitle>What brings you to Help The Hive today?</StepTitle>
+      <StepSubtitle>This helps Penny personalize your experience.</StepSubtitle>
+      <View style={styles.optionsList}>
+        {intentOptions.map((option) => (
+          <SelectionRow
+            key={option.code}
+            title={option.title}
+            selected={primaryGoal === option.code}
+            onPress={() => setPrimaryGoal(option.code)}
+          />
+        ))}
+      </View>
+      <StepFootnote>You can do both anytime — this just helps us get you started.</StepFootnote>
+      <StepError message={errorMessage} />
+      <NextButton disabled={!primaryGoal} busy={busy} onPress={() => void next()} />
     </OnboardingStepScreen>
   );
 }
 
-// ---------------------------------------------------------------------------
-// Step 7 — profile photo (optional)
-// ---------------------------------------------------------------------------
+function IncomeStep({ initial, onNext, onBack, busy }: StepComponentProps) {
+  const [incomeBracket, setIncomeBracket] = useState(initial.incomeBracket ?? '');
+  const [errorMessage, setErrorMessage] = useState('');
 
-export function ProfilePhotoStep({
-  imageUri,
-  onPick,
-  onNext,
-  onBack,
-  busy,
-  error,
-}: {
-  imageUri?: string;
-  onPick: () => void;
-  onNext: () => void;
-  onBack: () => void;
-  busy: boolean;
-  error: string;
-}) {
+  async function next() {
+    if (!incomeBracket) {
+      return;
+    }
+    setErrorMessage('');
+    try {
+      await onNext({ incomeBracket }, 'questionnaire:4');
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : 'Unable to save your choice.');
+    }
+  }
+
   return (
-    <OnboardingStepScreen current={7} total={7} onBack={onBack}>
-      <Text style={styles.stepTitle}>Upload a Profile Picture</Text>
-      <Text style={styles.stepSubtitle}>Add a photo so Penny can greet you personally.</Text>
+    <OnboardingStepScreen stepNumber={4} onBack={onBack}>
+      <StepTitle>What is your household&apos;s approximate monthly income before taxes?</StepTitle>
+      <StepSubtitle>Together with household size, this helps us find benefits you may qualify for.</StepSubtitle>
+      <View style={styles.optionsList}>
+        {INCOME_BRACKET_OPTIONS.map((option) => (
+          <SelectionRow
+            key={option}
+            title={option}
+            selected={incomeBracket === option}
+            onPress={() => setIncomeBracket(option)}
+          />
+        ))}
+      </View>
+      <StepFootnote>Your answer stays private and is never shared without your review.</StepFootnote>
+      <StepError message={errorMessage} />
+      <NextButton disabled={!incomeBracket} busy={busy} onPress={() => void next()} />
+    </OnboardingStepScreen>
+  );
+}
+
+function ProfilePhotoStep({ onNext, onBack, busy }: StepComponentProps) {
+  const app = useAppState();
+  const [photoUri, setPhotoUri] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState('');
+
+  async function choosePhoto() {
+    setErrorMessage('');
+    const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!permission.granted) {
+      setErrorMessage('Photo access is needed to choose a picture. You can skip this step.');
+      return;
+    }
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.7,
+    });
+    if (!result.canceled && result.assets[0]?.uri) {
+      setPhotoUri(result.assets[0].uri);
+    }
+  }
+
+  async function next() {
+    setErrorMessage('');
+    try {
+      if (photoUri) {
+        await app.saveProfile({ profileImageUri: photoUri });
+      }
+      await onNext({}, 'questionnaire:6');
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : 'Unable to save your photo.');
+    }
+  }
+
+  async function skip() {
+    setErrorMessage('');
+    try {
+      await onNext({}, 'questionnaire:6');
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : 'Unable to continue.');
+    }
+  }
+
+  return (
+    <OnboardingStepScreen stepNumber={6} onBack={onBack}>
+      <View style={styles.photoHeader}>
+        <PennyImage source={pennyWaveSource} size={96} />
+        <StepTitle>Upload a Profile Picture</StepTitle>
+        <StepSubtitle>Add a photo so Penny can greet you personally.</StepSubtitle>
+      </View>
       <Pressable
-        onPress={onPick}
-        style={styles.photoPicker}
+        onPress={() => void choosePhoto()}
         accessibilityRole="button"
-        accessibilityLabel="Choose profile photo">
-        {imageUri ? (
-          <Image source={{ uri: imageUri }} style={styles.photoImage} />
+        accessibilityLabel={photoUri ? 'Change profile photo' : 'Choose a profile photo'}
+        style={styles.photoCircle}>
+        {photoUri ? (
+          <Image source={{ uri: photoUri }} style={styles.photoImage} />
         ) : (
-          <>
-            <HiveIcon name="camera" size={38} color={HiveColors.green} />
-            <Text style={styles.photoHint}>Tap to choose</Text>
-          </>
+          <View style={styles.photoPlaceholder}>
+            <HiveIcon name="camera" size={28} color={HiveColors.textSecondary} />
+            <Text style={styles.photoPlaceholderText}>Tap to choose</Text>
+          </View>
         )}
       </Pressable>
-      <View style={styles.buttonSpacer} />
-      <StepError message={error} />
-      <AppButton title={busy ? 'Saving…' : 'Continue'} onPress={onNext} disabled={busy} />
-      <AppButton title="Skip for now" variant="plain" onPress={onNext} disabled={busy} />
+      <StepError message={errorMessage} />
+      <NextButton title={photoUri ? 'Save & Continue' : 'Continue'} busy={busy} onPress={() => void next()} />
+      <TextLink label="" linkText="Skip for now" onPress={() => void skip()} />
     </OnboardingStepScreen>
   );
 }
 
-// ---------------------------------------------------------------------------
-// Permission prompts (notifications -> location)
-// ---------------------------------------------------------------------------
+function AllSetStep({ onNext, busy }: { onNext: () => Promise<void> | void; busy: boolean }) {
+  const [errorMessage, setErrorMessage] = useState('');
 
-export function PermissionPrompt({
-  icon,
-  iconCircleColor,
+  async function next() {
+    setErrorMessage('');
+    try {
+      await onNext();
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : 'Unable to continue.');
+    }
+  }
+
+  return (
+    <Screen>
+      <View style={styles.allSetScreen}>
+        <View style={styles.allSetCenter}>
+          <View style={styles.allSetCheckCircle}>
+            <HiveIcon name="check" size={36} color={HiveColors.green} />
+          </View>
+          <PennyImage source={pennyWaveSource} size={120} />
+          <Text style={styles.allSetTitle}>You&apos;re all set!</Text>
+        </View>
+        <View style={styles.allSetFooter}>
+          <StepError message={errorMessage} />
+          <AppButton title={busy ? 'Saving…' : 'Continue'} disabled={busy} onPress={() => void next()} />
+        </View>
+      </View>
+    </Screen>
+  );
+}
+
+function PermissionStep({
+  penny,
   title,
   subtitle,
   primaryLabel,
   secondaryLabel,
   onPrimary,
   onSecondary,
-  busy = false,
+  busy,
 }: {
-  icon: HiveIconName;
-  iconCircleColor: string;
+  penny?: boolean;
   title: string;
   subtitle: string;
   primaryLabel: string;
   secondaryLabel: string;
-  onPrimary: () => void;
-  onSecondary: () => void;
-  busy?: boolean;
+  onPrimary: () => Promise<void> | void;
+  onSecondary: () => Promise<void> | void;
+  busy: boolean;
 }) {
+  const [errorMessage, setErrorMessage] = useState('');
+
+  async function run(fn: () => Promise<void> | void) {
+    setErrorMessage('');
+    try {
+      await fn();
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : 'Something went wrong.');
+    }
+  }
+
   return (
     <Screen>
-      <View style={sharedStyles.permissionScreen}>
-        <View style={[sharedStyles.bigIconCircle, { backgroundColor: iconCircleColor }]}>
-          <HiveIcon name={icon} size={38} color={HiveColors.green} />
+      <View style={styles.permissionScreen}>
+        <View style={styles.permissionCenter}>
+          {penny ? <PennyImage source={pennyWaveSource} size={120} /> : null}
+          <Text style={styles.permissionTitle}>{title}</Text>
+          <Text style={styles.permissionSubtitle}>{subtitle}</Text>
         </View>
-        <Text style={sharedStyles.permissionTitle}>{title}</Text>
-        <Text style={sharedStyles.permissionSubtitle}>{subtitle}</Text>
-        <View style={styles.flexSpacer} />
-        <View style={sharedStyles.fullWidth}>
-          <AppButton title={busy ? 'Saving…' : primaryLabel} onPress={onPrimary} disabled={busy} />
-          <AppButton title={secondaryLabel} variant="plain" onPress={onSecondary} disabled={busy} />
+        <View style={styles.permissionFooter}>
+          <StepError message={errorMessage} />
+          <AppButton
+            title={busy ? 'Please wait…' : primaryLabel}
+            disabled={busy}
+            onPress={() => void run(onPrimary)}
+          />
+          <AppButton title={secondaryLabel} variant="secondary" disabled={busy} onPress={() => void run(onSecondary)} />
         </View>
       </View>
     </Screen>
   );
 }
 
-export function PushPermissionStep({
-  onPrimary,
-  onSecondary,
+function LocationZipStep({
+  onNext,
+  onBack,
   busy,
 }: {
-  onPrimary: () => void;
-  onSecondary: () => void;
+  onNext: () => Promise<void> | void;
+  onBack: () => void;
   busy: boolean;
 }) {
-  return (
-    <PermissionPrompt
-      icon="bell"
-      iconCircleColor={HiveColors.cream}
-      title="Stay in the loop"
-      subtitle="Get reminders for your meal plan and budget — plus new benefits you may qualify for."
-      primaryLabel="Turn on notifications"
-      secondaryLabel="Maybe later"
-      onPrimary={onPrimary}
-      onSecondary={onSecondary}
-      busy={busy}
-    />
-  );
-}
+  const [zip, setZip] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  const valid = /^\d{5}$/.test(zip.trim());
 
-export function LocationExplainerStep({
-  onPrimary,
-  onSecondary,
-  busy,
-  error,
-}: {
-  onPrimary: () => void;
-  onSecondary: () => void;
-  busy: boolean;
-  error: string;
-}) {
-  return (
-    <Screen>
-      <View style={sharedStyles.permissionScreen}>
-        <View style={[sharedStyles.bigIconCircle, { backgroundColor: HiveColors.greenLight }]}>
-          <HiveIcon name="send" size={38} color={HiveColors.green} />
-        </View>
-        <Text style={sharedStyles.permissionTitle}>Find help near you</Text>
-        <Text style={sharedStyles.permissionSubtitle}>
-          Share your location so we can show nearby benefits and resources — food banks, local assistance programs —
-          and nearby store pricing for your grocery list.
-        </Text>
-        {error ? <Text style={sharedStyles.authError}>{error}</Text> : null}
-        <View style={styles.flexSpacer} />
-        <View style={sharedStyles.fullWidth}>
-          <AppButton title={busy ? 'Saving…' : 'Allow location'} onPress={onPrimary} disabled={busy} />
-          <AppButton title="Not now" variant="plain" onPress={onSecondary} disabled={busy} />
-        </View>
-      </View>
-    </Screen>
-  );
-}
+  async function next() {
+    setErrorMessage('');
+    if (!valid) {
+      setErrorMessage('Enter a 5-digit ZIP code.');
+      return;
+    }
+    try {
+      await saveLocationFallback(zip.trim());
+      await onNext();
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : 'Unable to save your ZIP code.');
+    }
+  }
 
-export function LocationZipStep({
-  zip,
-  onChangeZip,
-  onSave,
-  onSkip,
-  busy,
-  error,
-}: {
-  zip: string;
-  onChangeZip: (zip: string) => void;
-  onSave: () => void;
-  onSkip: () => void;
-  busy: boolean;
-  error: string;
-}) {
   return (
     <ScrollScreen keyboard>
-      <View style={sharedStyles.permissionScreen}>
-        <View style={[sharedStyles.bigIconCircle, { backgroundColor: HiveColors.greenLight }]}>
-          <HiveIcon name="send" size={38} color={HiveColors.green} />
-        </View>
-        <Text style={sharedStyles.permissionTitle}>Enter your ZIP code</Text>
-        <Text style={sharedStyles.permissionSubtitle}>
-          No problem — enter your ZIP code instead and we&apos;ll still match you with resources near you.
-        </Text>
-        <View style={sharedStyles.fullWidth}>
-          <AppTextField label="ZIP code" value={zip} onChangeText={onChangeZip} placeholder="90210" keyboardType="number-pad" />
-        </View>
-        {error ? <Text style={sharedStyles.authError}>{error}</Text> : null}
-        <View style={styles.flexSpacer} />
-        <View style={sharedStyles.fullWidth}>
-          <AppButton
-            title={busy ? 'Saving…' : 'Save'}
-            onPress={onSave}
-            disabled={busy || zip.trim().length < 5}
+      <View style={styles.permissionScreen}>
+        <View style={styles.permissionCenter}>
+          <PennyImage source={pennyWaveSource} size={120} />
+          <Text style={styles.permissionTitle}>Find help near you</Text>
+          <Text style={styles.permissionSubtitle}>
+            No problem — enter your ZIP code and we&apos;ll still show resources close to you.
+          </Text>
+          <TextInput
+            value={zip}
+            onChangeText={(value) => setZip(value.replace(/\D/g, '').slice(0, 5))}
+            placeholder="ZIP code"
+            placeholderTextColor={HiveColors.textSecondary}
+            keyboardType="number-pad"
+            maxLength={5}
+            style={styles.zipInput}
+            accessibilityLabel="ZIP code"
           />
-          <AppButton title="Skip" variant="plain" onPress={onSkip} disabled={busy} />
+          <StepError message={errorMessage} />
+        </View>
+        <View style={styles.permissionFooter}>
+          <AppButton title={busy ? 'Saving…' : 'Continue'} disabled={busy || !valid} onPress={() => void next()} />
+          <AppButton title="Back" variant="secondary" disabled={busy} onPress={onBack} />
         </View>
       </View>
     </ScrollScreen>
   );
 }
 
-// ---------------------------------------------------------------------------
-// Communication consents
-// ---------------------------------------------------------------------------
-
-function ConsentScreen({
-  icon,
-  title,
-  body,
-  primaryLabel,
-  onPrimary,
-  onSecondary,
-  busy,
-  error,
-}: {
-  icon: HiveIconName;
-  title: string;
-  body: string;
-  primaryLabel: string;
-  onPrimary: () => void;
-  onSecondary: () => void;
-  busy: boolean;
-  error: string;
-}) {
-  return (
-    <Screen>
-      <View style={sharedStyles.permissionScreen}>
-        <View style={[sharedStyles.bigIconCircle, { backgroundColor: HiveColors.cream }]}>
-          <HiveIcon name={icon} size={38} color={HiveColors.green} />
-        </View>
-        <Text style={sharedStyles.permissionTitle}>{title}</Text>
-        <Text style={sharedStyles.permissionSubtitle}>{body}</Text>
-        {error ? <Text style={sharedStyles.authError}>{error}</Text> : null}
-        <View style={styles.flexSpacer} />
-        <View style={sharedStyles.fullWidth}>
-          <AppButton title={busy ? 'Saving…' : primaryLabel} onPress={onPrimary} disabled={busy} />
-          <AppButton title="No thanks" variant="plain" onPress={onSecondary} disabled={busy} />
-        </View>
-        <Text style={styles.footnote}>You can always change this later in settings</Text>
-      </View>
-    </Screen>
-  );
-}
-
-export function EmailConsentStep({
-  onPrimary,
-  onSecondary,
-  busy,
-  error,
-}: {
-  onPrimary: () => void;
-  onSecondary: () => void;
-  busy: boolean;
-  error: string;
-}) {
-  return (
-    <ConsentScreen
-      icon="send"
-      title="Stay in the loop by email"
-      body="Get app updates, reminders, newsletters, helpful information, and marketing communications from Help The Hive by email. We'll never spam you, and you can unsubscribe anytime."
-      primaryLabel="Yes, email me"
-      onPrimary={onPrimary}
-      onSecondary={onSecondary}
-      busy={busy}
-      error={error}
-    />
-  );
-}
-
-export function PhoneConsentStep({
-  onPrimary,
-  onSecondary,
-  busy,
-  error,
-}: {
-  onPrimary: () => void;
-  onSecondary: () => void;
-  busy: boolean;
-  error: string;
-}) {
-  return (
-    <ConsentScreen
-      icon="chat"
-      title="Can we call you?"
-      body="Sometimes a quick call is the fastest way to help — for example, if your benefits application needs attention. We'll only call when appropriate."
-      primaryLabel="Yes, you can call me"
-      onPrimary={onPrimary}
-      onSecondary={onSecondary}
-      busy={busy}
-      error={error}
-    />
-  );
-}
-
-// ---------------------------------------------------------------------------
-// All-set screen
-// ---------------------------------------------------------------------------
-
-export function AllSetStep({ onNext, busy, error }: { onNext: () => void; busy: boolean; error: string }) {
-  return (
-    <Screen>
-      <View style={sharedStyles.permissionScreen}>
-        <View style={[sharedStyles.bigIconCircle, { backgroundColor: HiveColors.greenLight }]}>
-          <HiveIcon name="check" size={44} color={HiveColors.green} />
-        </View>
-        <Text style={styles.allSetTitle}>You&apos;re all set!</Text>
-        {error ? <Text style={sharedStyles.authError}>{error}</Text> : null}
-        <View style={styles.flexSpacer} />
-        <View style={sharedStyles.fullWidth}>
-          <AppButton title={busy ? 'Saving…' : 'Continue'} onPress={onNext} disabled={busy} />
-        </View>
-      </View>
-    </Screen>
-  );
-}
-
-// ---------------------------------------------------------------------------
-// Consent gate — shown first for new accounts created via social sign-in,
-// which skip the Sign Up screen where email signups accept the legal terms.
-// ---------------------------------------------------------------------------
-
-function ConsentRow({
-  checked,
-  onToggle,
-  children,
-}: {
-  checked: boolean;
-  onToggle: () => void;
-  children: ReactNode;
-}) {
-  return (
-    <Pressable onPress={onToggle} style={styles.consentRow} accessibilityRole="checkbox" accessibilityState={{ checked }}>
-      <View style={[styles.consentBox, checked && styles.consentBoxChecked]}>
-        {checked ? <HiveIcon name="check" size={12} color={HiveColors.white} /> : null}
-      </View>
-      <Text style={styles.consentText}>{children}</Text>
-    </Pressable>
-  );
-}
-
-export function ConsentStep({
-  onComplete,
-  busy,
-  error,
-}: {
-  onComplete: (emailOptIn: boolean) => void;
-  busy: boolean;
-  error?: string;
-}) {
-  const [termsAccepted, setTermsAccepted] = useState(false);
-  const [emailOptIn, setEmailOptIn] = useState(false);
-  return (
-    <Screen>
-      <View style={sharedStyles.permissionScreen}>
-        <Text style={sharedStyles.permissionTitle}>One quick thing</Text>
-        <Text style={sharedStyles.permissionSubtitle}>Please review and accept our legal terms to continue.</Text>
-        <View style={styles.consentBlock}>
-          <ConsentRow checked={termsAccepted} onToggle={() => setTermsAccepted((v) => !v)}>
-            I agree to Help The Hive&apos;s{' '}
-            <Text style={styles.consentLink} onPress={() => void Linking.openURL(TERMS_URL)}>
-              Terms &amp; Conditions
-            </Text>{' '}
-            and{' '}
-            <Text style={styles.consentLink} onPress={() => void Linking.openURL(PRIVACY_URL)}>
-              Privacy Policy
-            </Text>
-            .
-          </ConsentRow>
-          <ConsentRow checked={emailOptIn} onToggle={() => setEmailOptIn((v) => !v)}>
-            I&apos;d like to receive Help The Hive app updates, reminders, newsletters, helpful information, and marketing communications by email.
-          </ConsentRow>
-        </View>
-        <View style={styles.flexSpacer} />
-        {error ? <Text style={sharedStyles.authError}>{error}</Text> : null}
-        <View style={sharedStyles.fullWidth}>
-          <AppButton
-            title={busy ? 'Saving…' : 'Continue'}
-            onPress={() => onComplete(emailOptIn)}
-            disabled={!termsAccepted || busy}
-          />
-        </View>
-      </View>
-    </Screen>
-  );
-}
-
-// ---------------------------------------------------------------------------
-// Standalone OnboardingScreen — the app-root 'onboarding' route.
-//
-// Only accounts that have not completed onboarding reach it (app-root routes
-// by viewer.onboardingState.hasCompletedOnboarding). The draft seeds from the
-// viewer's saved questionnaire answers so an interrupted onboarding resumes
-// with its answers intact; each step saves before advancing.
-// ---------------------------------------------------------------------------
-
-function toggleInList(value: string, list: string[]): string[] {
-  return list.includes(value) ? list.filter((item) => item !== value) : [...list, value];
-}
-
 export function OnboardingScreen({ nav, initialStepKey }: { nav: Navigation; initialStepKey?: string | null }) {
   const app = useAppState();
-  const answers = app.questionnaireAnswers;
-  const [step, setStep] = useState(() => resumeIndexForStepKey(initialStepKey));
-  const [budgetDollars, setBudgetDollars] = useState(() =>
-    parseBudgetDollars(answers?.weeklyBudget ?? app.preferences.weeklyBudget),
-  );
-  const [selectedFinanceTopics, setSelectedFinanceTopics] = useState<string[]>(
-    () => answers?.financeTopics ?? app.preferences.preferredFinanceTopics,
-  );
-  const [selectedResources, setSelectedResources] = useState<string[]>(
-    () => answers?.resources ?? app.preferences.preferredResources,
-  );
-  const [primaryGoal, setPrimaryGoal] = useState<string | null>(() => answers?.primaryGoal ?? null);
-  const [householdSize, setHouseholdSize] = useState<string | null>(() => answers?.householdSize ?? null);
-  const [incomeBracket, setIncomeBracket] = useState<string | null>(() => answers?.incomeBracket ?? null);
-  const [profileImageUri, setProfileImageUri] = useState(app.profile.profileImageUri);
-  const [notificationsEnabled, setNotificationsEnabled] = useState(false);
-  const [locationPermissionStatus, setLocationPermissionStatus] = useState<'unset' | 'granted' | 'denied'>('unset');
-  const [zip, setZip] = useState('');
+  const auth = useAuth();
+  const serverAnswers = app.questionnaireAnswers;
+  const [step, setStep] = useState(() => resumeIndexForStepKey(initialStepKey, serverAnswers));
+  const [busy, setBusy] = useState(false);
+  const [fatalError, setFatalError] = useState('');
   const [showZipFallback, setShowZipFallback] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
-  const [saveError, setSaveError] = useState('');
-  const [isRecordingConsent, setIsRecordingConsent] = useState(false);
+  // Local answers mirror the server saves within this session, so Back
+  // navigation shows what was just chosen without waiting on a re-hydrate.
+  const [localAnswers, setLocalAnswers] = useState<QuestionnaireUpdate>(() => ({
+    financeTopics: serverAnswers?.financeTopics ?? [],
+    resources: serverAnswers?.resources ?? [],
+    primaryGoal: serverAnswers?.primaryGoal ?? undefined,
+    householdSize: serverAnswers?.householdSize ?? undefined,
+    incomeBracket: serverAnswers?.incomeBracket ?? undefined,
+  }));
 
-  // Social signups skip the Sign Up screen, so they accept the terms here
-  // before the questionnaire begins. (Email-signup consent is recorded on the
-  // verify screen and retried by hydrateViewer at the first login.)
-  const needsConsentStep = app.isNewSocialAccount && !app.pendingSignupProfile?.termsVersion;
-  if (needsConsentStep && !app.signupConsentRecorded) {
-    return (
-      <ConsentStep
-        busy={isRecordingConsent}
-        error={saveError}
-        onComplete={(emailOptIn) => {
-          setIsRecordingConsent(true);
-          setSaveError('');
-          void app
-            .recordSignupConsent({ emailMarketingOptIn: emailOptIn })
-            .then(() => app.markSocialSignupComplete())
-            .catch(() => setSaveError('Unable to save your consent. Please try again.'))
-            .finally(() => setIsRecordingConsent(false));
-        }}
-      />
-    );
+  const initial: QuestionnaireUpdate = localAnswers;
+
+  function fail(error: unknown) {
+    const message = error instanceof Error ? error.message : 'Something went wrong. Please try again.';
+    setFatalError(message);
+    setBusy(false);
   }
 
-  /** Saves one step's data plus its step marker, then advances on success. */
-  async function persistStep(stepKey: string, save: () => Promise<unknown>) {
-    if (isSaving) {
-      return;
-    }
-    setIsSaving(true);
-    setSaveError('');
+  async function persistStep(patch: QuestionnaireUpdate, stepKey: string) {
+    setBusy(true);
     try {
-      await save();
+      if (Object.keys(patch).length > 0) {
+        await saveQuestionnaire(patch);
+        setLocalAnswers((current) => ({ ...current, ...patch }));
+      }
       await saveOnboardingStep(stepKey);
+      setBusy(false);
       setStep((current) => current + 1);
     } catch (error) {
-      setSaveError(error instanceof Error ? error.message : 'Unable to save. Please try again.');
-    } finally {
-      setIsSaving(false);
+      fail(error);
+      throw error;
     }
   }
 
-  async function pickImage() {
-    const uri = await pickProfileImage();
-    if (uri) {
-      setProfileImageUri(uri);
-    }
+  function back() {
+    setFatalError('');
+    setStep((current) => Math.max(STEP_RESOURCES, current - 1));
   }
 
-  // --- questionnaire steps -------------------------------------------------
-
-  async function saveBudgetStep() {
-    await persistStep('questionnaire:1', () =>
-      saveQuestionnaire({ weeklyBudget: formatBudgetDollars(budgetDollars) }),
-    );
-  }
-
-  async function saveFinanceStep() {
-    await persistStep('questionnaire:2', () => saveQuestionnaire({ financeTopics: selectedFinanceTopics }));
-  }
-
-  async function saveResourcesStep() {
-    await persistStep('questionnaire:3', () => saveQuestionnaire({ resources: selectedResources }));
-  }
-
-  async function savePrimaryGoalStep() {
-    if (!primaryGoal) {
-      return;
-    }
-    await persistStep('questionnaire:4', () => saveQuestionnaire({ primaryGoal }));
-  }
-
-  async function saveHouseholdSizeStep() {
-    if (!householdSize) {
-      return;
-    }
-    await persistStep('questionnaire:5', () => saveQuestionnaire({ householdSize }));
-  }
-
-  async function saveIncomeStep() {
-    if (!incomeBracket) {
-      return;
-    }
-    await persistStep('questionnaire:6', () => saveQuestionnaire({ incomeBracket }));
-  }
-
-  async function savePhotoStep() {
-    await persistStep('questionnaire:7', async () => {
-      if (profileImageUri && profileImageUri !== app.profile.profileImageUri) {
-        await updateProfileRemote({ profileImageUri });
-      }
-    });
-  }
-
-  // --- push permission (real native OS prompt) ------------------------------
-
-  async function requestPush(grantedFlow: boolean) {
-    if (isSaving) {
-      return;
-    }
-    setIsSaving(true);
-    setSaveError('');
+  async function finish() {
+    // Questionnaire answers already live server-side (saved per step). Fold
+    // the intent + preferences into the profile/preferences rows and mark
+    // onboarding complete — the benefits draft pre-fills from the saved
+    // questionnaire answers.
+    setBusy(true);
     try {
-      if (grantedFlow) {
-        const result = await requestAndRegisterPushToken();
-        setNotificationsEnabled(result.status === 'registered');
-        if (result.status !== 'registered') {
-          setSaveError(result.message);
-        }
+      const householdSize = localAnswers.householdSize;
+      const parsedHouseholdSize = householdSize ? Number.parseInt(householdSize.replace('+', ''), 10) : undefined;
+      if (parsedHouseholdSize && !Number.isNaN(parsedHouseholdSize)) {
+        await app.saveProfile({ householdSize: parsedHouseholdSize });
       }
-      await saveOnboardingStep('permissions:push');
-      setStep((current) => current + 1);
+      await app.savePreferences({
+        preferredFinanceTopics: localAnswers.financeTopics ?? [],
+        preferredResources: localAnswers.resources ?? [],
+        wantsGovAssistance: (localAnswers.primaryGoal ?? '') === PRIMARY_GOAL_APPLY_BENEFITS,
+      });
+      await app.completeOnboarding(
+        {
+          ...app.preferences,
+          preferredFinanceTopics: localAnswers.financeTopics ?? [],
+          preferredResources: localAnswers.resources ?? [],
+          wantsGovAssistance: (localAnswers.primaryGoal ?? '') === PRIMARY_GOAL_APPLY_BENEFITS,
+        },
+        app.profile.profileImageUri ?? undefined,
+      );
+      await saveOnboardingStep('permissions:location');
+      setBusy(false);
+      nav.reset('main');
     } catch (error) {
-      setSaveError(error instanceof Error ? error.message : 'Unable to save. Please try again.');
-    } finally {
-      setIsSaving(false);
+      fail(error);
     }
   }
 
-  // --- location: explainer -> native prompt -> ZIP fallback -----------------
+  async function requestPush() {
+    setBusy(true);
+    try {
+      await requestAndRegisterPushToken();
+      await saveOnboardingStep('permissions:push');
+      setBusy(false);
+      setStep((current) => current + 1);
+    } catch (error) {
+      fail(error);
+    }
+  }
+
+  async function skipPush() {
+    setBusy(true);
+    try {
+      await saveOnboardingStep('permissions:push');
+      setBusy(false);
+      setStep((current) => current + 1);
+    } catch (error) {
+      fail(error);
+    }
+  }
 
   async function requestLocation() {
-    if (isSaving) {
-      return;
-    }
-    setIsSaving(true);
-    setSaveError('');
+    setBusy(true);
     try {
-      const result = await Location.requestForegroundPermissionsAsync();
-      const granted = result.granted;
-      setLocationPermissionStatus(granted ? 'granted' : 'denied');
-      await saveOnboardingStep('permissions:location');
-      if (granted) {
-        setStep((current) => current + 1);
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      await app.savePreferences({
+        locationPermissionStatus: status === Location.PermissionStatus.GRANTED ? 'granted' : 'denied',
+      });
+      if (status === Location.PermissionStatus.GRANTED) {
+        await finish();
       } else {
+        setBusy(false);
         setShowZipFallback(true);
       }
     } catch (error) {
-      setSaveError(error instanceof Error ? error.message : 'Unable to request location. Please try again.');
-    } finally {
-      setIsSaving(false);
+      fail(error);
     }
   }
 
   async function skipLocation() {
-    await persistStep('permissions:location', async () => {
-      setLocationPermissionStatus('unset');
-    });
+    setShowZipFallback(true);
   }
 
-  async function saveZip() {
-    if (zip.trim().length < 5 || isSaving) {
-      return;
-    }
-    setIsSaving(true);
-    setSaveError('');
-    try {
-      await saveLocationFallback(zip.trim());
-      setShowZipFallback(false);
-      setStep((current) => current + 1);
-    } catch (error) {
-      setSaveError(error instanceof Error ? error.message : 'Unable to save your ZIP code. Please try again.');
-    } finally {
-      setIsSaving(false);
-    }
+  if (fatalError) {
+    return (
+      <Screen>
+        <View style={styles.fatalScreen}>
+          <Text style={uiText.title}>Something went wrong</Text>
+          <Text style={uiText.muted}>{fatalError}</Text>
+          <AppButton title="Try again" onPress={() => setFatalError('')} />
+          <AppButton title="Back to login" variant="secondary" onPress={() => void auth.signOut().then(() => nav.reset('login'))} />
+        </View>
+      </Screen>
+    );
   }
 
-  // --- communication consents -----------------------------------------------
-
-  async function saveEmailConsent(consented: boolean) {
-    await persistStep('consent:email', () => updateCommunicationConsents({ emailConsent: consented }));
+  if (showZipFallback) {
+    return <LocationZipStep onNext={() => void finish()} onBack={() => setShowZipFallback(false)} busy={busy} />;
   }
 
-  async function savePhoneConsent(consented: boolean) {
-    await persistStep('consent:phone', () => updateCommunicationConsents({ phoneCallConsent: consented }));
-  }
+  const stepProps = { initial, busy, onBack: back, onNext: persistStep };
 
-  // --- all-set -> complete ---------------------------------------------------
-
-  async function finish() {
-    if (isSaving) {
-      return;
-    }
-    setIsSaving(true);
-    setSaveError('');
-    try {
-      await saveOnboardingStep('all-set');
-      const preferences: AppPreferences = {
-        weeklyBudget: formatBudgetDollars(budgetDollars),
-        preferredFinanceTopics: selectedFinanceTopics,
-        preferredResources: selectedResources,
-        wantsGovAssistance: primaryGoal === PRIMARY_GOAL_APPLY_BENEFITS,
-        selectedBenefitPrograms: [],
-        emailMarketingOptIn: app.preferences.emailMarketingOptIn,
-        locationPermissionStatus,
-        notificationsEnabled,
-        expiringPantryNotificationsEnabled: app.preferences.expiringPantryNotificationsEnabled,
-        weeklyMealPlanNotificationsEnabled: app.preferences.weeklyMealPlanNotificationsEnabled,
-        resourceReminderNotificationsEnabled: app.preferences.resourceReminderNotificationsEnabled,
-      };
-      await app.completeOnboarding(preferences, profileImageUri);
-      nav.reset('main');
-    } catch (error) {
-      setSaveError(error instanceof Error ? error.message : 'Unable to finish onboarding. Please try again.');
-    } finally {
-      setIsSaving(false);
-    }
-  }
-
-  const back = () => {
-    setSaveError('');
-    setStep((current) => Math.max(0, current - 1));
-  };
-
-  if (step === 0) {
-    return (
-      <BudgetStep value={budgetDollars} onChange={setBudgetDollars} onNext={() => void saveBudgetStep()} busy={isSaving} error={saveError} />
-    );
-  }
-  if (step === 1) {
-    return (
-      <FinanceHelpStep
-        selected={selectedFinanceTopics}
-        onToggle={(topic) => setSelectedFinanceTopics((current) => toggleInList(topic, current))}
-        onNext={() => void saveFinanceStep()}
-        onBack={back}
-        busy={isSaving}
-        error={saveError}
-      />
-    );
-  }
-  if (step === 2) {
-    return (
-      <ResourcesStep
-        selected={selectedResources}
-        onToggle={(resource) => setSelectedResources((current) => toggleInList(resource, current))}
-        onNext={() => void saveResourcesStep()}
-        onBack={back}
-        busy={isSaving}
-        error={saveError}
-      />
-    );
-  }
-  if (step === 3) {
-    return (
-      <PrimaryGoalStep
-        selected={primaryGoal}
-        onSelect={setPrimaryGoal}
-        onNext={() => void savePrimaryGoalStep()}
-        onBack={back}
-        busy={isSaving}
-        error={saveError}
-      />
-    );
-  }
-  if (step === 4) {
-    return (
-      <HouseholdSizeStep
-        selected={householdSize}
-        onSelect={setHouseholdSize}
-        onNext={() => void saveHouseholdSizeStep()}
-        onBack={back}
-        busy={isSaving}
-        error={saveError}
-      />
-    );
-  }
-  if (step === 5) {
-    return (
-      <IncomeStep
-        selected={incomeBracket}
-        onSelect={setIncomeBracket}
-        onNext={() => void saveIncomeStep()}
-        onBack={back}
-        busy={isSaving}
-        error={saveError}
-      />
-    );
-  }
-  if (step === 6) {
-    return (
-      <ProfilePhotoStep
-        imageUri={profileImageUri}
-        onPick={() => void pickImage()}
-        onNext={() => void savePhotoStep()}
-        onBack={back}
-        busy={isSaving}
-        error={saveError}
-      />
-    );
-  }
-  if (step === 7) {
-    return (
-      <PushPermissionStep
-        onPrimary={() => void requestPush(true)}
-        onSecondary={() => void requestPush(false)}
-        busy={isSaving}
-      />
-    );
-  }
-  if (step === 8) {
-    if (showZipFallback) {
+  switch (step) {
+    case STEP_RESOURCES:
+      return <ResourcesStep {...stepProps} />;
+    case STEP_HOUSEHOLD_SIZE:
+      return <HouseholdSizeStep {...stepProps} />;
+    case STEP_INTENT:
+      return <IntentStep {...stepProps} />;
+    case STEP_INCOME:
+      return <IncomeStep {...stepProps} />;
+    case STEP_FINANCE_TOPICS:
+      return <FinanceHelpStep {...stepProps} />;
+    case STEP_PROFILE_PHOTO:
+      return <ProfilePhotoStep {...stepProps} />;
+    case STEP_ALL_SET:
       return (
-        <LocationZipStep
-          zip={zip}
-          onChangeZip={setZip}
-          onSave={() => void saveZip()}
-          onSkip={() => {
-            setShowZipFallback(false);
-            setStep((current) => current + 1);
+        <AllSetStep
+          busy={busy}
+          onNext={async () => {
+            setBusy(true);
+            try {
+              await saveOnboardingStep('all-set');
+              setBusy(false);
+              setStep((current) => current + 1);
+            } catch (error) {
+              fail(error);
+            }
           }}
-          busy={isSaving}
-          error={saveError}
         />
       );
-    }
-    return (
-      <LocationExplainerStep
-        onPrimary={() => void requestLocation()}
-        onSecondary={() => void skipLocation()}
-        busy={isSaving}
-        error={saveError}
-      />
-    );
+    case STEP_PUSH_PERMISSION:
+      return (
+        <PermissionStep
+          penny
+          title="Stay in the loop"
+          subtitle="Get reminders for your meal plan and budget — plus new benefits you may qualify for."
+          primaryLabel="Turn on notifications"
+          secondaryLabel="Maybe later"
+          onPrimary={() => void requestPush()}
+          onSecondary={() => void skipPush()}
+          busy={busy}
+        />
+      );
+    case STEP_LOCATION:
+      return (
+        <PermissionStep
+          penny
+          title="Find help near you"
+          subtitle="Allow location access so we can show food banks, SNAP offices, and resources close to you."
+          primaryLabel="Allow location"
+          secondaryLabel="Not now"
+          onPrimary={() => void requestLocation()}
+          onSecondary={() => void skipLocation()}
+          busy={busy}
+        />
+      );
+    default:
+      // STEP_COUNT or beyond: onboarding is done — finish honestly rather
+      // than rendering a blank screen.
+      void finish();
+      return (
+        <Screen>
+          <View style={styles.fatalScreen}>
+            <ActivityIndicator size="large" color={HiveColors.green} />
+          </View>
+        </Screen>
+      );
   }
-  if (step === 9) {
-    return (
-      <EmailConsentStep
-        onPrimary={() => void saveEmailConsent(true)}
-        onSecondary={() => void saveEmailConsent(false)}
-        busy={isSaving}
-        error={saveError}
-      />
-    );
-  }
-  if (step === 10) {
-    return (
-      <PhoneConsentStep
-        onPrimary={() => void savePhoneConsent(true)}
-        onSecondary={() => void savePhoneConsent(false)}
-        busy={isSaving}
-        error={saveError}
-      />
-    );
-  }
-  return <AllSetStep onNext={() => void finish()} busy={isSaving} error={saveError} />;
 }
 
 const styles = StyleSheet.create({
-  allSetTitle: {
-    color: HiveColors.text,
-    fontSize: 28,
-    fontWeight: '800',
-    textAlign: 'center',
-    letterSpacing: -0.3,
+  stepScreenContent: {
+    backgroundColor: HiveColors.card,
   },
-  amountCard: {
-    backgroundColor: HiveColors.greenLight,
-    borderRadius: 24,
-    paddingVertical: 36,
-    alignItems: 'center',
-    gap: 4,
-    marginTop: 8,
-  },
-  amountLabel: {
-    color: HiveColors.textSecondary,
-    fontSize: 16,
-  },
-  amountText: {
-    color: HiveColors.green,
-    fontSize: 56,
-    fontWeight: '800',
-  },
-  backButton: {
-    width: 36,
-    height: 36,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  body: {
-    flexGrow: 1,
+  stepBody: {
     paddingHorizontal: 24,
-    paddingBottom: 24,
-    gap: 14,
+    paddingBottom: 32,
+    gap: 12,
   },
-  buttonSpacer: {
-    height: 8,
-  },
-  comingSoonBadge: {
-    alignSelf: 'flex-start',
-    backgroundColor: HiveColors.cream,
-    borderRadius: 999,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-  },
-  comingSoonText: {
-    color: HiveColors.orange,
-    fontSize: 13,
-    fontWeight: '800',
-  },
-  consentBlock: {
-    gap: 14,
-    marginTop: 8,
-    width: '100%',
-  },
-  consentRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
+  topBar: {
+    paddingHorizontal: 24,
+    paddingTop: 12,
+    paddingBottom: 16,
     gap: 10,
   },
-  consentBox: {
-    width: 22,
-    height: 22,
-    borderRadius: 6,
-    borderWidth: 1.5,
-    borderColor: HiveColors.border,
-    backgroundColor: HiveColors.card,
+  topBarRow: {
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 1,
   },
-  consentBoxChecked: {
-    backgroundColor: HiveColors.green,
-    borderColor: HiveColors.green,
-  },
-  consentText: {
+  topBarLabel: {
     flex: 1,
+    textAlign: 'center',
+    fontSize: 12,
+    fontWeight: '700',
+    letterSpacing: 1,
     color: HiveColors.textSecondary,
-    fontSize: 14,
-    lineHeight: 20,
   },
-  consentLink: {
-    color: HiveColors.greenDark,
-    fontWeight: '600',
-    textDecorationLine: 'underline',
+  topBarSpacer: {
+    width: 20,
   },
-  content: {
-    flexGrow: 1,
-  },
-  flexSpacer: {
-    flex: 1,
-    minHeight: 24,
-  },
-  footnote: {
-    color: HiveColors.textSecondary,
-    fontSize: 14,
-    marginTop: 6,
-  },
-  photoHint: {
-    color: HiveColors.textSecondary,
-    fontSize: 14,
-  },
-  photoImage: {
-    width: 146,
-    height: 146,
-    borderRadius: 73,
-  },
-  photoPicker: {
-    width: 150,
-    height: 150,
-    borderRadius: 75,
-    alignSelf: 'center',
-    backgroundColor: HiveColors.card,
-    borderWidth: 2,
-    borderColor: HiveColors.border,
-    borderStyle: 'dashed',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-    marginVertical: 24,
+  progressTrack: {
+    flexDirection: 'row',
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: HiveColors.border,
     overflow: 'hidden',
   },
-  pill: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: HiveColors.border,
-  },
-  pills: {
-    flexDirection: 'row',
-    gap: 6,
-    justifyContent: 'flex-end',
-  },
-  pillDone: {
+  progressFill: {
     backgroundColor: HiveColors.green,
-  },
-  sliderBlock: {
-    marginTop: 12,
-  },
-  sliderFill: {
-    position: 'absolute',
-    left: 0,
-    top: 0,
-    bottom: 0,
-    backgroundColor: HiveColors.green,
-    borderRadius: 999,
-  },
-  sliderLabel: {
-    color: HiveColors.textSecondary,
-    fontSize: 14,
-  },
-  sliderLabels: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 18,
-  },
-  sliderThumb: {
-    position: 'absolute',
-    top: -11,
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: HiveColors.white,
-    marginLeft: -14,
-    shadowColor: HiveColors.text,
-    shadowOpacity: 0.18,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 3,
-  },
-  sliderTick: {
-    position: 'absolute',
-    top: 13,
-    width: 4,
-    height: 4,
-    borderRadius: 2,
-    backgroundColor: HiveColors.placeholder,
-    marginLeft: -2,
-    opacity: 0.6,
-  },
-  sliderTrack: {
-    height: 6,
-    borderRadius: 999,
-    backgroundColor: HiveColors.border,
-  },
-  stepLabel: {
-    color: HiveColors.green,
-    fontSize: 13,
-    fontWeight: '800',
-    letterSpacing: 0.5,
-  },
-  stepSubtitle: {
-    color: HiveColors.textSecondary,
-    fontSize: 15,
-    lineHeight: 21,
+    borderRadius: 3,
   },
   stepTitle: {
+    fontSize: 26,
+    fontWeight: '700',
     color: HiveColors.text,
-    fontSize: 28,
-    fontWeight: '800',
+    marginBottom: 4,
   },
-  tile: {
-    flexBasis: '22%',
-    flexGrow: 1,
-    minHeight: 64,
-    borderRadius: 16,
-    backgroundColor: HiveColors.card,
-    borderWidth: 1.5,
-    borderColor: HiveColors.border,
-    alignItems: 'center',
-    justifyContent: 'center',
+  stepSubtitle: {
+    fontSize: 15,
+    color: HiveColors.textSecondary,
+    marginBottom: 12,
+    lineHeight: 21,
+  },
+  stepFootnote: {
+    fontSize: 13,
+    color: HiveColors.textSecondary,
+    textAlign: 'center',
+    marginTop: 4,
+  },
+  optionsList: {
+    gap: 12,
+  },
+  nextButton: {
+    marginTop: 12,
+  },
+  comingSoonBadge: {
+    backgroundColor: HiveColors.greenLight,
+    borderRadius: 999,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+  },
+  comingSoonText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: HiveColors.green,
+  },
+  financeRow: {
+    position: 'relative',
+  },
+  financeRowMain: {
+    paddingRight: 96,
+  },
+  financeBadgeSlot: {
+    position: 'absolute',
+    right: 12,
+    top: 12,
   },
   tileGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 12,
-    marginTop: 10,
+  },
+  tile: {
+    width: '22%',
+    aspectRatio: 1,
+    borderRadius: 14,
+    borderWidth: 1.5,
+    borderColor: HiveColors.border,
+    backgroundColor: HiveColors.white,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   tileSelected: {
     borderColor: HiveColors.green,
     backgroundColor: HiveColors.greenLight,
   },
   tileText: {
-    color: HiveColors.text,
-    fontSize: 20,
+    fontSize: 17,
     fontWeight: '700',
+    color: HiveColors.text,
   },
   tileTextSelected: {
-    color: HiveColors.greenDark,
+    color: HiveColors.green,
   },
-  topBar: {
-    gap: 12,
-    paddingHorizontal: 24,
-    paddingTop: 10,
-    paddingBottom: 18,
-  },
-  topRow: {
-    flexDirection: 'row',
+  photoHeader: {
     alignItems: 'center',
-    justifyContent: 'space-between',
+    gap: 4,
+    marginBottom: 8,
+  },
+  photoCircle: {
+    width: 148,
+    height: 148,
+    borderRadius: 74,
+    alignSelf: 'center',
+    marginVertical: 12,
+    overflow: 'hidden',
+  },
+  photoImage: {
+    width: '100%',
+    height: '100%',
+  },
+  photoPlaceholder: {
+    flex: 1,
+    borderRadius: 74,
+    borderWidth: 1.5,
+    borderColor: HiveColors.border,
+    borderStyle: 'dashed',
+    backgroundColor: HiveColors.white,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+  },
+  photoPlaceholderText: {
+    fontSize: 13,
+    color: HiveColors.textSecondary,
+    fontWeight: '600',
+  },
+  allSetScreen: {
+    flex: 1,
+    paddingHorizontal: 24,
+    paddingBottom: 32,
+  },
+  allSetCenter: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 18,
+  },
+  allSetCheckCircle: {
+    width: 90,
+    height: 90,
+    borderRadius: 45,
+    backgroundColor: HiveColors.greenLight,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  allSetTitle: {
+    fontSize: 26,
+    fontWeight: '700',
+    color: HiveColors.text,
+  },
+  allSetFooter: {
+    gap: 12,
+  },
+  permissionScreen: {
+    flex: 1,
+    paddingHorizontal: 24,
+    paddingBottom: 32,
+    paddingTop: 24,
+  },
+  permissionCenter: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 12,
+  },
+  permissionTitle: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: HiveColors.text,
+    textAlign: 'center',
+  },
+  permissionSubtitle: {
+    fontSize: 15,
+    color: HiveColors.textSecondary,
+    textAlign: 'center',
+    lineHeight: 22,
+  },
+  permissionFooter: {
+    gap: 12,
+  },
+  zipInput: {
+    width: '100%',
+    borderWidth: 1.5,
+    borderColor: HiveColors.border,
+    borderRadius: 14,
+    backgroundColor: HiveColors.white,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    fontSize: 17,
+    color: HiveColors.text,
+    textAlign: 'center',
+    marginTop: 8,
+  },
+  fatalScreen: {
+    flex: 1,
+    paddingHorizontal: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 16,
   },
 });

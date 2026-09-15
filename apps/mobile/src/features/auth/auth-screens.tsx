@@ -9,14 +9,15 @@
 // buttons render anywhere in the auth flow. The unused handlers remain on
 // the auth context in case they return later.
 //
-// Verification is email-only (Marcos removed SMS, 2026-09-13): signup sends
-// a 6-digit code to the signup email address. Signup establishes the session
-// first, so the request/verify mutations go out on the authenticated client —
-// the code is the credential for the verifyCode step. On success the screen
-// routes into onboarding.
+// Verification is email-only (Marcos removed SMS, 2026-09-13) and magic-link
+// based (September 2026 redesign): signup sends a verification email with a
+// Verify button. Signup establishes the session first, so requestVerificationLink
+// goes out on the authenticated client; tapping the button in the email hits
+// GET /auth/verify on the API, and "I've verified my email" re-reads the
+// viewer verification status. On success the screen routes into onboarding.
 
 import { useMemo, useEffect, useEffectEvent, useRef, useState } from 'react';
-import { Linking, Pressable, Text, TextInput, View } from 'react-native';
+import { Linking, Platform, Pressable, Text, View } from 'react-native';
 import { PRIVACY_URL, PRIVACY_VERSION, TERMS_URL, TERMS_VERSION } from '@/constants/legal';
 import { GraphQLAuthTokenError } from '@/auth/auth-client';
 import { AuthFlowError, useAuth } from '@/auth/auth-context';
@@ -26,26 +27,29 @@ import {
   AppLogo,
   AppTextField,
   HiveIcon,
+  PennyImage,
   Screen,
   ScrollScreen,
   TextLink,
   uiText,
 } from '@/components/hive-ui';
+import { maskEmailAddress } from './auth-utils';
+export { maskEmailAddress };
 import { useAppState } from '@/state/app-state';
 import { StyleSheet } from 'react-native';
 import { sharedStyles } from '@/features/app/app-shared';
 import { type Navigation } from '@/features/app/navigation-types';
 import { AuthHero, AuthModeToggle } from '@/features/auth/auth-hero';
+import { requestVerificationLink } from '@/features/onboarding/onboarding-repository';
 import {
-  InvalidVerificationCodeError,
-  requestVerificationCode,
-  verifyCode,
-} from '@/features/onboarding/onboarding-repository';
-import { updateProfile as updateProfileRemote } from '@/features/profile/profile-repository';
+  fetchViewer,
+  updateProfile as updateProfileRemote,
+} from '@/features/profile/profile-repository';
 import { HiveColors } from '@/constants/theme';
 import { useResponsive } from '@/constants/responsive';
 
 const logoSource = require('@/assets/images/hive/logo.png');
+const pennyWaveSource = require('@/assets/images/hive/penny-wave.png');
 
 export function WelcomeScreen({ nav }: { nav: Navigation }) {
   const styles = useAuthStyles();
@@ -382,54 +386,40 @@ export function ForgotPasswordScreen({ nav, initialEmail = '' }: { nav: Navigati
 }
 
 // ---------------------------------------------------------------------------
-// Code verification (one-time, after signup).
+// Magic-link verification (one-time, after signup).
 //
-// Verification is email-only (Marcos removed SMS/text verification): signup
-// sends a 6-digit code to the signup email address and this screen collects
-// it. Signup establishes the session first (better-auth no longer gates
-// sign-in on its own email verification — the API codes are the single
-// verification of record), so the request/verify mutations go out on the
-// authenticated client — the code itself is the credential for the verifyCode
-// step. recordConsent and the phone save are best-effort here (hydrateViewer
+// Verification is email-only (Marcos removed SMS/text verification, and the
+// 6-digit OTP boxes are gone as of the September 2026 redesign): signup sends
+// a magic verification link to the signup email address. The user taps the
+// Verify button inside the email, which hits GET /auth/verify on the API
+// (consuming the single-use token and stamping the account verified), then
+// returns here and taps "I've verified my email" — the screen re-reads the
+// viewer verification status and continues to onboarding. Signup establishes
+// the session first, so requestVerificationLink goes out on the authenticated
+// client. recordConsent and the phone save are best-effort here (hydrateViewer
 // repeats both at the first login).
 // ---------------------------------------------------------------------------
 
-const CODE_LENGTH = 6;
+/** 60s matches the backend verification-link resend cooldown. */
+const VERIFY_RESEND_COOLDOWN_SECONDS = 60;
 
-function CodeBoxes({
-  digits,
-  onChange,
-  inputRefs,
-}: {
-  digits: string[];
-  onChange: (index: number, value: string) => void;
-  inputRefs: React.RefObject<Array<TextInput | null>>;
-}) {
+/** Masks an address for display: "j***@gmail.com". */
+
+
+const VERIFY_STEPS = [
+  'Open the email from Help The Hive',
+  'Tap the Verify button inside',
+  'Come back here and continue',
+];
+
+function VerifyStepRow({ number, text }: { number: string; text: string }) {
   const styles = useAuthStyles();
   return (
-    <View style={styles.codeRow}>
-      {digits.map((digit, index) => (
-        <TextInput
-          key={index}
-          ref={(element) => {
-            if (inputRefs.current) {
-              inputRefs.current[index] = element;
-            }
-          }}
-          value={digit}
-          onChangeText={(value) => onChange(index, value)}
-          onKeyPress={({ nativeEvent }) => {
-            if (nativeEvent.key === 'Backspace' && !digits[index] && index > 0) {
-              inputRefs.current?.[index - 1]?.focus();
-            }
-          }}
-          keyboardType="number-pad"
-          maxLength={1}
-          selectTextOnFocus
-          style={[styles.codeBox, digit ? styles.codeBoxFilled : null]}
-          accessibilityLabel={`Digit ${index + 1} of ${CODE_LENGTH}`}
-        />
-      ))}
+    <View style={styles.verifyStepRow}>
+      <View style={styles.verifyStepNumber}>
+        <Text style={styles.verifyStepNumberText}>{number}</Text>
+      </View>
+      <Text style={styles.verifyStepText}>{text}</Text>
     </View>
   );
 }
@@ -446,30 +436,26 @@ export function VerifyScreen({
   const styles = useAuthStyles();
   const app = useAppState();
   const auth = useAuth();
-  const [digits, setDigits] = useState<string[]>(Array(CODE_LENGTH).fill(''));
   const [isRequesting, setIsRequesting] = useState(false);
-  const [isVerifying, setIsVerifying] = useState(false);
-  const [canResend, setCanResend] = useState(false);
-  const [codeSent, setCodeSent] = useState(false);
+  const [isChecking, setIsChecking] = useState(false);
+  const [secondsLeft, setSecondsLeft] = useState(VERIFY_RESEND_COOLDOWN_SECONDS);
+  const [resent, setResent] = useState(false);
   const [notice, setNotice] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-  const inputRefs = useRef<Array<TextInput | null>>([]);
   const didInit = useRef(false);
 
-  async function sendCode(isResend = false) {
+  async function sendLink(isResend = false) {
     setIsRequesting(true);
     setErrorMessage('');
     try {
-      await requestVerificationCode('SIGNUP');
-      setDigits(Array(CODE_LENGTH).fill(''));
-      setCanResend(false);
-      setCodeSent(true);
+      await requestVerificationLink('SIGNUP');
+      setSecondsLeft(VERIFY_RESEND_COOLDOWN_SECONDS);
+      setResent(isResend);
       if (isResend) {
-        setNotice('A new code is on its way.');
+        setNotice('');
       }
-      inputRefs.current?.[0]?.focus();
     } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : 'Unable to send a verification code.');
+      setErrorMessage(error instanceof Error ? error.message : 'Unable to send the verification email.');
     } finally {
       setIsRequesting(false);
     }
@@ -477,8 +463,8 @@ export function VerifyScreen({
 
   // Best-effort post-signup writes: consent + phone land on the API user row
   // now that the session exists (signup signs in immediately). Auth failures
-  // here are unexpected and ignored; anything else surfaces. The email code
-  // is requested once the session is up.
+  // here are unexpected and ignored; anything else surfaces. The verification
+  // link is requested once the session is up.
   const initVerification = useEffectEvent(() => {
     if (didInit.current) {
       return;
@@ -503,11 +489,11 @@ export function VerifyScreen({
         }
       }
     })();
-    void sendCode();
+    void sendLink();
   });
 
   /* eslint-disable react-hooks/set-state-in-effect -- one-shot post-signup init:
-     consent + phone + verification code are requested once the session exists.
+     consent + phone + verification link are requested once the session exists.
      The setState calls below run a single time, not on every render. */
   useEffect(() => {
     initVerification();
@@ -515,94 +501,96 @@ export function VerifyScreen({
   /* eslint-enable react-hooks/set-state-in-effect */
 
   useEffect(() => {
-    if (!codeSent || canResend) {
+    if (secondsLeft <= 0) {
       return;
     }
-    const timer = setTimeout(() => setCanResend(true), 60_000);
+    const timer = setTimeout(() => setSecondsLeft((left) => left - 1), 1000);
     return () => clearTimeout(timer);
-  }, [codeSent, canResend]);
+  }, [secondsLeft]);
 
-  function handleDigitChange(index: number, value: string) {
-    const clean = value.replace(/\D/g, '');
-    // Pasting a full code fills every box.
-    if (clean.length > 1) {
-      const next = Array(CODE_LENGTH).fill('');
-      for (let i = 0; i < Math.min(clean.length, CODE_LENGTH); i += 1) {
-        next[i] = clean[i];
-      }
-      setDigits(next);
-      if (next.every((digit) => digit)) {
-        void submitCode(next.join(''));
-      } else {
-        inputRefs.current?.[Math.min(clean.length, CODE_LENGTH - 1)]?.focus();
-      }
+  // The user tapped Verify in the email (which the API consumed) and came
+  // back: re-read the viewer verification status. Until the link is tapped
+  // this reports not-verified rather than failing.
+  async function checkVerified() {
+    if (isChecking) {
       return;
     }
-    const next = [...digits];
-    next[index] = clean.slice(-1);
-    setDigits(next);
-    if (clean && index < CODE_LENGTH - 1) {
-      inputRefs.current?.[index + 1]?.focus();
-    }
-    if (next.every((digit) => digit)) {
-      void submitCode(next.join(''));
-    }
-  }
-
-  async function submitCode(code: string) {
-    if (isVerifying || code.length !== CODE_LENGTH) {
-      return;
-    }
-    setIsVerifying(true);
+    setIsChecking(true);
     setErrorMessage('');
+    setNotice('');
     try {
-      await verifyCode(code);
-      // The session was established at signup, so verification just flips
-      // the verified flag — refresh the viewer and continue to onboarding.
-      // (The transient password is cleared; it is never persisted.)
-      app.consumeTransientSignupPassword();
-      await auth.refreshSession().catch(() => undefined);
-      nav.reset('onboarding');
-    } catch (error) {
-      if (error instanceof InvalidVerificationCodeError) {
-        setErrorMessage(error.message);
-        setDigits(Array(CODE_LENGTH).fill(''));
-        inputRefs.current?.[0]?.focus();
+      const viewer = await fetchViewer();
+      if (viewer.verification?.verified) {
+        // The session was established at signup, so verification just flips
+        // the verified flag — continue to onboarding. (The transient password
+        // is cleared; it is never persisted.)
+        app.consumeTransientSignupPassword();
+        await auth.refreshSession().catch(() => undefined);
+        nav.reset('onboarding');
       } else {
-        setErrorMessage(error instanceof Error ? error.message : 'Unable to verify the code.');
+        setNotice("We haven't seen the verification yet — tap the Verify button in the email, then try again.");
       }
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : 'Unable to check verification.');
     } finally {
-      setIsVerifying(false);
+      setIsChecking(false);
     }
   }
+
+  const resendLabel =
+    secondsLeft > 0 ? `Resend in 0:${String(secondsLeft).padStart(2, '0')}` : 'Resend email';
 
   return (
-    <ScrollScreen keyboard>
-      <AppHeader title="Verify your account" onBack={nav.back} />
+    <ScrollScreen>
+      <AppHeader title="Verify your email" onBack={nav.back} />
       <View style={sharedStyles.formScreen}>
-        <Text style={uiText.subtitle}>Enter your code</Text>
-        <Text style={uiText.muted}>
-          {codeSent ? `We sent a 6-digit code to ${email}. Enter it below.` : 'Sending your code…'}
-        </Text>
+        <PennyImage source={pennyWaveSource} size={110} />
+        <Text style={uiText.title}>Verify your email</Text>
+        <Text style={uiText.muted}>We sent a verification email to {maskEmailAddress(email)}.</Text>
+        <View style={styles.verifyStepsCard}>
+          {VERIFY_STEPS.map((text, index) => (
+            <VerifyStepRow key={text} number={String(index + 1)} text={text} />
+          ))}
+        </View>
+        {Platform.OS === 'ios' ? (
+          <AppButton
+            title="Open Mail App"
+            variant="secondary"
+            onPress={() => {
+              Linking.openURL('message://').catch(() => undefined);
+            }}
+          />
+        ) : null}
+        <View style={styles.verifyResendRow}>
+          <Text style={uiText.muted}>Didn&apos;t get the email?</Text>
+          {secondsLeft > 0 || isRequesting ? (
+            <Text style={styles.verifyResendWaiting}>{isRequesting ? 'Sending…' : resendLabel}</Text>
+          ) : (
+            <Pressable onPress={() => void sendLink(true)} accessibilityRole="button">
+              <Text style={styles.verifyResendLink}>Resend email</Text>
+            </Pressable>
+          )}
+        </View>
+        {resent ? (
+          <View style={styles.verifyResentRow}>
+            <HiveIcon name="check" size={14} color={HiveColors.green} />
+            <Text style={styles.verifyResentText}>
+              Verification email sent again — check your inbox and spam folder.
+            </Text>
+          </View>
+        ) : null}
         {notice ? <Text style={styles.notice}>{notice}</Text> : null}
-        <CodeBoxes digits={digits} onChange={handleDigitChange} inputRefs={inputRefs} />
         {errorMessage ? <Text style={sharedStyles.authError}>{errorMessage}</Text> : null}
         <AppButton
-          title={isVerifying ? 'Verifying…' : 'Verify'}
-          disabled={isVerifying || digits.some((digit) => !digit)}
-          onPress={() => void submitCode(digits.join(''))}
+          title={isChecking ? 'Checking…' : "I've verified my email"}
+          disabled={isChecking}
+          onPress={() => void checkVerified()}
         />
-        <AppButton
-          title={isRequesting ? 'Sending…' : canResend ? 'Resend code' : 'Resend available in one minute'}
-          variant="plain"
-          disabled={isRequesting || !canResend}
-          onPress={() => void sendCode(true)}
-        />
-        <TextLink label="Changed your mind?" linkText="Back to Login" onPress={() => nav.reset('login')} />
       </View>
     </ScrollScreen>
   );
 }
+
 
 function useAuthStyles() {
   const { s, vs, ms } = useResponsive();
@@ -625,26 +613,6 @@ function useAuthStyles() {
       flex: 1,
       paddingHorizontal: s(24),
       paddingBottom: vs(52),
-      },
-      codeBox: {
-      width: s(48),
-      height: vs(56),
-      borderRadius: s(14),
-      borderWidth: s(1.5),
-      borderColor: HiveColors.border,
-      backgroundColor: HiveColors.white,
-      textAlign: 'center',
-      fontSize: ms(24),
-      fontWeight: '800',
-      color: HiveColors.text,
-      },
-      codeBoxFilled: {
-      borderColor: HiveColors.green,
-      },
-      codeRow: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      marginVertical: vs(8),
       },
       consentBlock: {
       gap: s(12),
@@ -736,6 +704,62 @@ function useAuthStyles() {
       borderRadius: s(44),
       overflow: 'hidden',
       },
+      verifyStepsCard: {
+      backgroundColor: HiveColors.greenLight,
+      borderRadius: s(14),
+      padding: s(16),
+      gap: s(14),
+      },
+      verifyStepRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: s(10),
+      },
+      verifyStepNumber: {
+      width: s(22),
+      height: s(22),
+      borderRadius: s(11),
+      backgroundColor: HiveColors.green,
+      alignItems: 'center',
+      justifyContent: 'center',
+      },
+      verifyStepNumberText: {
+      color: HiveColors.white,
+      fontSize: ms(12),
+      fontWeight: '700',
+      },
+      verifyStepText: {
+      flex: 1,
+      fontSize: ms(14),
+      color: HiveColors.text,
+      fontWeight: '500',
+      },
+      verifyResendRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: s(4),
+      },
+      verifyResendWaiting: {
+      fontSize: ms(14),
+      fontWeight: '600',
+      color: HiveColors.green,
+      },
+      verifyResendLink: {
+      fontSize: ms(14),
+      fontWeight: '600',
+      color: HiveColors.green,
+      },
+      verifyResentRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: s(6),
+      },
+      verifyResentText: {
+      flex: 1,
+      fontSize: ms(13),
+      color: HiveColors.textSecondary,
+      },
+
       }),
     [s, vs, ms],
   );

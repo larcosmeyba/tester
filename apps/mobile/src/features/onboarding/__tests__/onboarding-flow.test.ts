@@ -1,59 +1,37 @@
+import type { QuestionnaireAnswers } from '@helpthehive/api-contract';
+
 import {
-  BUDGET_MAX,
-  BUDGET_MIN,
-  BUDGET_STEP,
-  DEFAULT_BUDGET_DOLLARS,
   HOUSEHOLD_SIZE_OPTIONS,
   INCOME_BRACKET_OPTIONS,
   ONBOARDING_STEP_KEYS,
   PRIMARY_GOAL_APPLY_BENEFITS,
   PRIMARY_GOAL_BUDGET_MEALS,
-  formatBudgetDollars,
-  parseBudgetDollars,
+  QUESTIONNAIRE_STEP_COUNT,
+  STEP_ALL_SET,
+  STEP_COUNT,
+  STEP_FINANCE_TOPICS,
+  STEP_HOUSEHOLD_SIZE,
+  STEP_INCOME,
+  STEP_INTENT,
+  STEP_LOCATION,
+  STEP_PROFILE_PHOTO,
+  STEP_PUSH_PERMISSION,
+  STEP_RESOURCES,
   resumeIndexForStepKey,
 } from '../onboarding-model';
 
-describe('onboarding budget model', () => {
-  it('formats the default $100 budget', () => {
-    expect(formatBudgetDollars(DEFAULT_BUDGET_DOLLARS)).toBe('$100');
-  });
-
-  it('formats the slider minimum', () => {
-    expect(formatBudgetDollars(BUDGET_MIN)).toBe('$25');
-  });
-
-  it('formats the slider maximum as "$300+"', () => {
-    expect(formatBudgetDollars(BUDGET_MAX)).toBe('$300+');
-  });
-
-  it('clamps anything at/above the max to "$300+"', () => {
-    expect(formatBudgetDollars(500)).toBe('$300+');
-  });
-
-  it('uses $5 steps from $25 to $300', () => {
-    expect(BUDGET_MIN).toBe(25);
-    expect(BUDGET_MAX).toBe(300);
-    expect(BUDGET_STEP).toBe(5);
-    expect((BUDGET_MAX - BUDGET_MIN) % BUDGET_STEP).toBe(0);
-  });
-
-  it('parses stored budget strings back into slider dollars', () => {
-    expect(parseBudgetDollars('$100')).toBe(100);
-    expect(parseBudgetDollars('$300+')).toBe(300);
-    expect(parseBudgetDollars('$25')).toBe(25);
-    expect(parseBudgetDollars(null)).toBe(DEFAULT_BUDGET_DOLLARS);
-    expect(parseBudgetDollars('garbage')).toBe(DEFAULT_BUDGET_DOLLARS);
-  });
-
-  it('round-trips through format and parse', () => {
-    for (let dollars = BUDGET_MIN; dollars <= BUDGET_MAX; dollars += BUDGET_STEP) {
-      expect(parseBudgetDollars(formatBudgetDollars(dollars))).toBe(dollars);
-    }
-  });
-});
+function answersWith(partial: Partial<QuestionnaireAnswers>): QuestionnaireAnswers {
+  return {
+    __typename: 'QuestionnaireAnswers',
+    financeTopics: [],
+    resources: [],
+    updatedAt: '2026-09-15T00:00:00Z',
+    ...partial,
+  } as QuestionnaireAnswers;
+}
 
 describe('onboarding step order', () => {
-  it('runs 7 questionnaire steps, then push, location, the two consents, then all-set', () => {
+  it('runs 6 questionnaire steps, then all-set, push, and location', () => {
     expect([...ONBOARDING_STEP_KEYS]).toEqual([
       'questionnaire:1',
       'questionnaire:2',
@@ -61,13 +39,24 @@ describe('onboarding step order', () => {
       'questionnaire:4',
       'questionnaire:5',
       'questionnaire:6',
-      'questionnaire:7',
+      'all-set',
       'permissions:push',
       'permissions:location',
-      'consent:email',
-      'consent:phone',
-      'all-set',
     ]);
+  });
+
+  it('has 6 questionnaire steps and 9 screens total', () => {
+    expect(QUESTIONNAIRE_STEP_COUNT).toBe(6);
+    expect(STEP_COUNT).toBe(9);
+    expect(STEP_RESOURCES).toBe(0);
+    expect(STEP_HOUSEHOLD_SIZE).toBe(1);
+    expect(STEP_INTENT).toBe(2);
+    expect(STEP_INCOME).toBe(3);
+    expect(STEP_FINANCE_TOPICS).toBe(4);
+    expect(STEP_PROFILE_PHOTO).toBe(5);
+    expect(STEP_ALL_SET).toBe(6);
+    expect(STEP_PUSH_PERMISSION).toBe(7);
+    expect(STEP_LOCATION).toBe(8);
   });
 
   it('has exactly two primary-goal codes', () => {
@@ -93,28 +82,66 @@ describe('onboarding step order', () => {
 });
 
 describe('resume step mapping', () => {
-  it('resumes each questionnaire step at its screen index', () => {
-    expect(resumeIndexForStepKey('questionnaire:1')).toBe(0);
-    expect(resumeIndexForStepKey('questionnaire:2')).toBe(1);
-    expect(resumeIndexForStepKey('questionnaire:3')).toBe(2);
-    expect(resumeIndexForStepKey('questionnaire:4')).toBe(3);
-    expect(resumeIndexForStepKey('questionnaire:5')).toBe(4);
-    expect(resumeIndexForStepKey('questionnaire:6')).toBe(5);
-    expect(resumeIndexForStepKey('questionnaire:7')).toBe(6);
+  it('resumes post-questionnaire markers at the next screen', () => {
+    expect(resumeIndexForStepKey('all-set')).toBe(STEP_PUSH_PERMISSION);
+    expect(resumeIndexForStepKey('permissions:push')).toBe(STEP_LOCATION);
+    expect(resumeIndexForStepKey('permissions:location')).toBe(STEP_COUNT);
   });
 
-  it('resumes push, location, and consent steps at their screen indexes', () => {
-    expect(resumeIndexForStepKey('permissions:push')).toBe(7);
-    expect(resumeIndexForStepKey('permissions:location')).toBe(8);
-    expect(resumeIndexForStepKey('consent:email')).toBe(9);
-    expect(resumeIndexForStepKey('consent:phone')).toBe(10);
-    expect(resumeIndexForStepKey('all-set')).toBe(11);
+  it('infers the questionnaire position from saved answers', () => {
+    expect(resumeIndexForStepKey('questionnaire:1', null)).toBe(STEP_RESOURCES);
+    expect(resumeIndexForStepKey('questionnaire:3', answersWith({ resources: ['Food Assistance'] }))).toBe(
+      STEP_HOUSEHOLD_SIZE,
+    );
+    expect(
+      resumeIndexForStepKey('questionnaire:2', answersWith({ resources: ['Food Assistance'], householdSize: '3' })),
+    ).toBe(STEP_INTENT);
+    expect(
+      resumeIndexForStepKey(
+        'questionnaire:4',
+        answersWith({ resources: ['Food Assistance'], householdSize: '3', primaryGoal: 'APPLY_BENEFITS' }),
+      ),
+    ).toBe(STEP_INCOME);
+    expect(
+      resumeIndexForStepKey(
+        'questionnaire:5',
+        answersWith({
+          resources: ['Food Assistance'],
+          householdSize: '3',
+          primaryGoal: 'APPLY_BENEFITS',
+          incomeBracket: '$1,500–$2,499',
+        }),
+      ),
+    ).toBe(STEP_FINANCE_TOPICS);
+    expect(
+      resumeIndexForStepKey(
+        'questionnaire:6',
+        answersWith({
+          resources: ['Food Assistance'],
+          householdSize: '3',
+          primaryGoal: 'APPLY_BENEFITS',
+          incomeBracket: '$1,500–$2,499',
+          financeTopics: ['Budgeting Basics'],
+        }),
+      ),
+    ).toBe(STEP_PROFILE_PHOTO);
+  });
+
+  it('remaps legacy step keys from the old 12-step flow via answers', () => {
+    // Old flow order differs; the answers are the source of truth.
+    expect(resumeIndexForStepKey('questionnaire:7', answersWith({ resources: ['Food Assistance'] }))).toBe(
+      STEP_HOUSEHOLD_SIZE,
+    );
+    expect(resumeIndexForStepKey('consent:email', answersWith({ resources: ['Food Assistance'] }))).toBe(
+      STEP_HOUSEHOLD_SIZE,
+    );
+    expect(resumeIndexForStepKey('push', null)).toBe(STEP_RESOURCES);
   });
 
   it('restarts at the first questionnaire step for unknown or missing keys', () => {
-    expect(resumeIndexForStepKey(null)).toBe(0);
-    expect(resumeIndexForStepKey(undefined)).toBe(0);
-    expect(resumeIndexForStepKey('')).toBe(0);
-    expect(resumeIndexForStepKey('not-a-step')).toBe(0);
+    expect(resumeIndexForStepKey(null)).toBe(STEP_RESOURCES);
+    expect(resumeIndexForStepKey(undefined)).toBe(STEP_RESOURCES);
+    expect(resumeIndexForStepKey('')).toBe(STEP_RESOURCES);
+    expect(resumeIndexForStepKey('not-a-step')).toBe(STEP_RESOURCES);
   });
 });

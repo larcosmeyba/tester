@@ -39,6 +39,8 @@ type User {
   email: String
   createdAt: String!
   updatedAt: String!
+  accountVerifiedAt: String
+  verificationMethod: String
 }
 
 type Profile {
@@ -269,6 +271,11 @@ input UpdateCommunicationConsentsInput {
 extend type Mutation {
   requestVerificationCode(input: RequestVerificationCodeInput!): Boolean!
   verifyCode(code: String!): Boolean!
+  # Magic-link verification for signup (September 2026): emails a Verify
+  # button that opens GET /auth/verify?token=... on the API, which consumes
+  # the link and marks the account verified. One-time codes stay for account
+  # recovery and email/phone changes.
+  requestVerificationLink(purpose: VerificationPurpose!): Boolean!
   saveQuestionnaire(input: SaveQuestionnaireInput!): QuestionnaireAnswers!
   saveOnboardingStep(step: String!): Boolean!
   updateCommunicationConsents(input: UpdateCommunicationConsentsInput!): Boolean!

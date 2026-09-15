@@ -1,38 +1,21 @@
-// Pure, UI-free model for the signup onboarding flow (Sign Up / Login /
-// Onboarding v2).
+// Pure, UI-free model for the signup onboarding flow (September 2026
+// redesign, from Marcos's Xcode flow).
 //
-// The flow is: 7 questionnaire steps (budget -> finance help -> resources ->
-// primary goal -> household size -> household income -> profile photo), then
-// the native push permission prompt, the location explainer + native prompt
-// (ZIP fallback when denied), the email consent, the phone-call consent, and
-// the all-set screen.
+// The flow is: 6 questionnaire steps (resources -> household size -> intent
+// -> household income -> finance topics -> profile photo), then the all-set
+// screen, then the native push permission prompt, then the location
+// explainer + native prompt (ZIP fallback when denied).
 //
 // Each step is saved server-side as it completes (saveQuestionnaire for the
 // answers, saveOnboardingStep for the step marker), so an interrupted
 // onboarding resumes at `onboardingState.currentStep`. The keys below are the
 // exact step keys sent to the backend.
+//
+// Resume is answer-driven for the questionnaire: the saved answers say which
+// steps are done, so a redesign of the step order never strands a user. Only
+// the post-questionnaire markers (all-set / permissions) are key-driven.
 
-export const BUDGET_MIN = 25;
-export const BUDGET_MAX = 300;
-export const BUDGET_STEP = 5;
-export const DEFAULT_BUDGET_DOLLARS = 100;
-
-/** Display/storage form of the budget slider value, e.g. "$100" or "$300+". */
-export function formatBudgetDollars(dollars: number): string {
-  return dollars >= BUDGET_MAX ? '$300+' : `\$${dollars}`;
-}
-
-/** Parses a stored "$100" / "$300+" budget back into slider dollars. */
-export function parseBudgetDollars(value: string | null | undefined): number {
-  if (!value) {
-    return DEFAULT_BUDGET_DOLLARS;
-  }
-  const parsed = Number.parseInt(value.replace(/[^0-9]/g, ''), 10);
-  if (Number.isNaN(parsed)) {
-    return DEFAULT_BUDGET_DOLLARS;
-  }
-  return Math.min(BUDGET_MAX, Math.max(BUDGET_MIN, parsed));
-}
+import type { QuestionnaireAnswers } from '@helpthehive/api-contract';
 
 /** Backend step keys in flow order. */
 export const ONBOARDING_STEP_KEYS = [
@@ -42,55 +25,77 @@ export const ONBOARDING_STEP_KEYS = [
   'questionnaire:4',
   'questionnaire:5',
   'questionnaire:6',
-  'questionnaire:7',
+  'all-set',
   'permissions:push',
   'permissions:location',
-  'consent:email',
-  'consent:phone',
-  'all-set',
 ] as const;
 
 export type OnboardingStepKey = (typeof ONBOARDING_STEP_KEYS)[number];
 
-/** Screen index inside the onboarding step machine for a saved step key. */
-const STEP_KEY_TO_INDEX: Record<string, number> = {
-  'questionnaire:1': 0,
-  'questionnaire:2': 1,
-  'questionnaire:3': 2,
-  'questionnaire:4': 3,
-  'questionnaire:5': 4,
-  'questionnaire:6': 5,
-  'questionnaire:7': 6,
-  push: 7,
-  'permissions:push': 7,
-  location: 8,
-  'permissions:location': 8,
-  email: 9,
-  'consent:email': 9,
-  phone: 10,
-  'consent:phone': 10,
-  'all-set': 11,
-};
+/** Screen indices in the onboarding step machine. */
+export const STEP_RESOURCES = 0;
+export const STEP_HOUSEHOLD_SIZE = 1;
+export const STEP_INTENT = 2;
+export const STEP_INCOME = 3;
+export const STEP_FINANCE_TOPICS = 4;
+export const STEP_PROFILE_PHOTO = 5;
+export const STEP_ALL_SET = 6;
+export const STEP_PUSH_PERMISSION = 7;
+export const STEP_LOCATION = 8;
+export const STEP_COUNT = 9;
+
+/** Questionnaire progress steps shown in the top bar (1 of 6, ...). */
+export const QUESTIONNAIRE_STEP_COUNT = 6;
 
 /**
  * Maps a saved `onboardingState.currentStep` to the screen index to resume
- * at. Unknown or missing keys restart at the first questionnaire step.
+ * at. Questionnaire markers are answer-driven (the saved answers say which
+ * steps are done); post-questionnaire markers map by key. Unknown or missing
+ * keys restart at the first questionnaire step.
  */
-export function resumeIndexForStepKey(stepKey: string | null | undefined): number {
-  if (!stepKey) {
-    return 0;
+export function resumeIndexForStepKey(
+  stepKey: string | null | undefined,
+  answers?: QuestionnaireAnswers | null,
+): number {
+  const key = stepKey?.trim() ?? '';
+  switch (key) {
+    case 'all-set':
+      return STEP_ALL_SET + 1;
+    case 'permissions:push':
+      return STEP_PUSH_PERMISSION + 1;
+    case 'permissions:location':
+      return STEP_COUNT;
+    default:
+      break;
   }
-  return STEP_KEY_TO_INDEX[stepKey.trim()] ?? 0;
+  // Questionnaire (or a legacy/unknown key): infer from saved answers. The
+  // backend fields are stable across redesigns, so this remaps cleanly.
+  if (!answers?.resources?.length) {
+    return STEP_RESOURCES;
+  }
+  if (!answers?.householdSize) {
+    return STEP_HOUSEHOLD_SIZE;
+  }
+  if (!answers?.primaryGoal) {
+    return STEP_INTENT;
+  }
+  if (!answers?.incomeBracket) {
+    return STEP_INCOME;
+  }
+  if (!answers?.financeTopics?.length) {
+    return STEP_FINANCE_TOPICS;
+  }
+  return STEP_PROFILE_PHOTO;
 }
 
 /** primaryGoal values stored by the questionnaire. */
 export const PRIMARY_GOAL_APPLY_BENEFITS = 'APPLY_BENEFITS';
 export const PRIMARY_GOAL_BUDGET_MEALS = 'BUDGET_MEALS';
 
-/** Household-size tile options (step 5), stored verbatim as the answer. */
+/** Household-size tile options (step 2), stored verbatim as the answer. */
 export const HOUSEHOLD_SIZE_OPTIONS = ['1', '2', '3', '4', '5', '6', '7', '8+'] as const;
 
-/** Monthly-income bracket options (step 6), stored verbatim as the answer. */
+/** Monthly-income bracket options (step 4), stored verbatim as the answer. */
 export const INCOME_BRACKET_OPTIONS = [
   'Less than $1,500',
   '$1,500–$2,499',
