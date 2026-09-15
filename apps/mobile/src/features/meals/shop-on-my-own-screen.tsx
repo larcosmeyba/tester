@@ -10,13 +10,17 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { AppButton, AppHeader, EmptyState, HiveIcon, ScrollScreen, uiText } from '@/components/hive-ui';
 import { HiveColors, Radii, Spacing } from '@/constants/theme';
+import { printAndShareGroceryList } from '@/features/meals/grocery-list-print';
 import { PRICING_NOTICE } from '@/features/meals/pricing-notice';
 import { useMealPlan } from '@/features/meals/meal-plan-context';
+import { describeError } from '@/services/api-error';
 
 export function ShopOnMyOwnScreen() {
   const router = useRouter();
   const { plan } = useMealPlan();
   const [checked, setChecked] = useState<string[]>([]);
+  const [isPrinting, setIsPrinting] = useState(false);
+  const [printError, setPrintError] = useState('');
 
   const items = useMemo(
     () => (plan?.groceryList ?? []).flatMap((section) => section.items).filter((item) => !item.inPantry),
@@ -26,6 +30,19 @@ export function ShopOnMyOwnScreen() {
   const toggle = useCallback((id: string) => {
     setChecked((current) => (current.includes(id) ? current.filter((item) => item !== id) : [...current, id]));
   }, []);
+
+  const printList = useCallback(async () => {
+    if (!plan || isPrinting) return;
+    setPrintError('');
+    setIsPrinting(true);
+    try {
+      await printAndShareGroceryList('Help The Hive — grocery list', plan.groceryList, checked);
+    } catch (caught) {
+      setPrintError(describeError(caught).message);
+    } finally {
+      setIsPrinting(false);
+    }
+  }, [plan, checked, isPrinting]);
 
   const remaining = items.length - checked.length;
 
@@ -72,7 +89,15 @@ export function ShopOnMyOwnScreen() {
 
         <Text style={uiText.small}>{PRICING_NOTICE}</Text>
 
+        {printError ? <Text style={styles.printError}>{printError}</Text> : null}
+
         <View style={styles.actions}>
+          <AppButton
+            title={isPrinting ? 'Preparing...' : 'Print or share list'}
+            variant="secondary"
+            disabled={isPrinting}
+            onPress={() => void printList()}
+          />
           <AppButton
             title="Done shopping"
             disabled={remaining > 0}
@@ -112,4 +137,5 @@ const styles = StyleSheet.create({
   checkedText: { textDecorationLine: 'line-through', color: HiveColors.textSecondary },
   pressed: { opacity: 0.7 },
   actions: { gap: Spacing.two, marginTop: Spacing.four },
+  printError: { color: HiveColors.warningText, fontSize: 13 },
 });

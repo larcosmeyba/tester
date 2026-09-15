@@ -35,11 +35,13 @@ import { describeError } from '@/services/api-error';
 export function MealPlanScreen() {
   const router = useRouter();
   const app = useAppState();
-  const { plan, planStartDate, error, isLoadingPlan, loadCurrent, moveMeal, clearError } = useMealPlan();
+  const { plan, planStartDate, error, isLoadingPlan, loadCurrent, moveMeal, swapMeal, clearError } = useMealPlan();
 
   const [selectedDate, setSelectedDate] = useState(() => new Date());
   /** The meal the user picked up, waiting for a destination slot. */
   const [movingSlot, setMovingSlot] = useState<MealSlot | null>(null);
+  /** "day:mealType" of the slot currently being swapped for a cheaper meal. */
+  const [swappingKey, setSwappingKey] = useState<string | null>(null);
   const barSpace = useFloatingTabBarSpace();
 
   useEffect(() => {
@@ -48,6 +50,10 @@ export function MealPlanScreen() {
 
   const dayCount = plan ? planDayCount(plan.meals) : 0;
   const mealTypes = useMemo(() => (plan ? mealTypesInPlan(plan.meals) : []), [plan]);
+  /** The audit's budget rule: when the week can't fit the budget, the plan is the
+   * closest fit and the screen says so honestly, with cheaper swaps and food
+   * resources — never a silently over-budget plan. */
+  const overBudget = plan != null && plan.summary.budget != null && !isWithinBudget(plan);
 
   /** Which plan day the selected calendar date maps to, or null if outside it. */
   const selectedDay = useMemo(() => {
@@ -83,6 +89,21 @@ export function MealPlanScreen() {
       setMovingSlot(null);
     },
     [movingSlot, moveMeal]
+  );
+
+  /** Swap one slot's meal for a cheaper option. The basket and cost figures are
+   * recomputed by the backend; the rest of the week is untouched. */
+  const handleCheaper = useCallback(
+    async (slot: MealSlot) => {
+      const key = `${slot.day}:${slot.mealType}`;
+      setSwappingKey(key);
+      try {
+        await swapMeal(slot, 'cheaper');
+      } finally {
+        setSwappingKey((current) => (current === key ? null : current));
+      }
+    },
+    [swapMeal]
   );
 
   return (
@@ -132,6 +153,7 @@ export function MealPlanScreen() {
                   const slot: MealSlot = { day: selectedDay, mealType };
                   const meal = mealsForDay.find((candidate) => candidate.slot.mealType === mealType);
                   const isMoving = movingSlot?.day === slot.day && movingSlot?.mealType === slot.mealType;
+                  const slotKey = `${slot.day}:${slot.mealType}`;
                   return (
                     <MealRow
                       key={mealType}
@@ -140,6 +162,9 @@ export function MealPlanScreen() {
                       isMoving={isMoving}
                       isTarget={Boolean(movingSlot) && !isMoving}
                       onPress={() => handleSlotPress(slot, meal)}
+                      showCheaper={overBudget && meal != null}
+                      cheaperBusy={swappingKey === slotKey}
+                      onCheaper={() => void handleCheaper(slot)}
                     />
                   );
                 })}
@@ -189,12 +214,18 @@ function MealRow({
   isMoving,
   isTarget,
   onPress,
+  showCheaper,
+  cheaperBusy,
+  onCheaper,
 }: {
   mealType: string;
   meal: PlannedMeal | undefined;
   isMoving: boolean;
   isTarget: boolean;
   onPress: () => void;
+  showCheaper?: boolean;
+  cheaperBusy?: boolean;
+  onCheaper?: () => void;
 }) {
   const accent = MealAccents[mealType] ?? HiveColors.green;
 
@@ -240,6 +271,19 @@ function MealRow({
                   </Text>
                 </View>
               ) : null}
+              {showCheaper && onCheaper ? (
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel={`Swap ${meal.title} for a cheaper meal`}
+                  onPress={onCheaper}
+                  disabled={cheaperBusy}
+                  style={({ pressed }) => [styles.cheaperButton, pressed && styles.pressed]}>
+                  <HiveIcon name="bolt" size={12} color={HiveColors.green} />
+                  <Text style={styles.cheaperText}>
+                    {cheaperBusy ? 'Finding cheaper...' : 'Swap for cheaper'}
+                  </Text>
+                </Pressable>
+              ) : null}
             </>
           ) : (
             <Text style={styles.mealEmpty}>Nothing planned</Text>
@@ -252,8 +296,10 @@ function MealRow({
 
 /** Cost range, budget standing and Penny's summary — kept from the newer app. */
 function PlanSummary({ plan }: { plan: NonNullable<ReturnType<typeof useMealPlan>['plan']> }) {
+  const app = useAppState();
   const withinBudget = isWithinBudget(plan);
   const { estimatedCost, budget } = plan.summary;
+  const over = budget !== null && withinBudget === false;
 
   return (
     <View style={styles.summary}>
@@ -267,6 +313,22 @@ function PlanSummary({ plan }: { plan: NonNullable<ReturnType<typeof useMealPlan
             ? `Fits your $${Math.round(budget)} budget`
             : `About $${Math.round(estimatedCost.high - budget)} over your $${Math.round(budget)} budget`}
         </Text>
+      ) : null}
+      {over ? (
+        <>
+          <Text style={uiText.small}>
+            This is the closest fit for your answers — try the cheaper swaps on each meal,
+            or find food resources near you to stretch the week.
+          </Text>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Find food resources near you"
+            onPress={() => app.setSelectedTab(0)}
+            style={({ pressed }) => [styles.resourcesLink, pressed && styles.pressed]}>
+            <HiveIcon name="map" size={14} color={HiveColors.green} />
+            <Text style={styles.resourcesLinkText}>Find food resources near you</Text>
+          </Pressable>
+        </>
       ) : null}
       {plan.pennyMessage ? <Text style={uiText.muted}>{plan.pennyMessage}</Text> : null}
       <Text style={uiText.small}>{PRICING_NOTICE}</Text>
@@ -359,6 +421,20 @@ const styles = StyleSheet.create({
   summaryRange: { color: HiveColors.text, fontSize: 26, fontWeight: '700' },
   withinBudget: { color: HiveColors.green },
   overBudget: { color: HiveColors.warningText },
+  resourcesLink: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingVertical: 4 },
+  resourcesLinkText: { color: HiveColors.green, fontSize: 14, fontWeight: '700' },
+  cheaperButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    alignSelf: 'flex-start',
+    marginTop: 4,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: Radii.md,
+    backgroundColor: HiveColors.greenLight,
+  },
+  cheaperText: { color: HiveColors.green, fontSize: 12, fontWeight: '700' },
 
   shopBar: {
     position: 'absolute',

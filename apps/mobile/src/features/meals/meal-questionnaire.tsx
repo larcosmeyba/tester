@@ -9,11 +9,13 @@ import { useCallback, useMemo, useState } from 'react';
 import { useRouter } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { AppButton, AppHeader, ProgressBar, ScrollScreen, uiText } from '@/components/hive-ui';
+import { AppButton, AppHeader, ModalSheet, ProgressBar, ScrollScreen, uiText } from '@/components/hive-ui';
 import { Spacing } from '@/constants/theme';
 import { useAuth } from '@/auth/auth-context';
 import { MealPlanGenerating } from '@/features/meals/meal-plan-generating';
 import { useMealPlan } from '@/features/meals/meal-plan-context';
+import { AiLimitGate } from '@/features/meals/ai-limit-gate';
+import { getAiUsage, hasAiUsageRemaining, recordAiUsage, type AiUsage } from '@/features/meals/ai-usage-limits';
 import {
   AllergiesSection,
   BudgetSection,
@@ -56,6 +58,7 @@ export function MealQuestionnaire() {
   const auth = useAuth();
   const { request, updateRequest, generate, isGenerating, error, clearError } = useMealPlan();
   const [stepIndex, setStepIndex] = useState(0);
+  const [limitGate, setLimitGate] = useState<AiUsage | null>(null);
 
   const step = QUESTIONNAIRE_STEPS[stepIndex]!;
   const isReview = step.id === 'review';
@@ -78,8 +81,15 @@ export function MealQuestionnaire() {
 
   async function submit() {
     clearError();
+    // The gate fires AT the limit — checked before any AI work is requested.
+    if (!(await hasAiUsageRemaining('ai_plan'))) {
+      setLimitGate(await getAiUsage('ai_plan'));
+      return;
+    }
     try {
       await generate(auth.user?.id ?? 'anonymous');
+      // The AI work succeeded — this is what consumes the allowance.
+      await recordAiUsage('ai_plan');
       // Straight to the plan — never leave the user inside the generator.
       // `/meals/plan` is the real route; the meal tab renders the same screen.
       router.replace('/meals/plan');
@@ -141,6 +151,10 @@ export function MealQuestionnaire() {
           )}
         </View>
       </View>
+
+      <ModalSheet visible={limitGate !== null} onClose={() => setLimitGate(null)}>
+        {limitGate ? <AiLimitGate usage={limitGate} onClose={() => setLimitGate(null)} /> : null}
+      </ModalSheet>
     </ScrollScreen>
   );
 }

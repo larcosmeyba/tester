@@ -121,6 +121,19 @@ export function RecipeBrowser() {
     <ScrollScreen>
       <AppHeader title="Choose recipes" onBack={router.back} />
       <View style={styles.body}>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Import a recipe from a video link"
+          onPress={() => router.push('/meals/video-import')}
+          style={({ pressed }) => [styles.videoCta, pressed && styles.pressed]}>
+          <HiveIcon name="play" size={20} color={HiveColors.green} />
+          <View style={styles.flexOne}>
+            <Text style={styles.videoCtaTitle}>Import from video</Text>
+            <Text style={uiText.small}>Paste a TikTok, Reel, or YouTube link</Text>
+          </View>
+          <HiveIcon name="next" size={16} color={HiveColors.textSecondary} />
+        </Pressable>
+
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.filterRow}>
           {FILTERS.map((filter) => (
             <Chip
@@ -230,4 +243,13 @@ const styles = StyleSheet.create({
   addButtonSelected: { backgroundColor: HiveColors.green },
   pressed: { opacity: 0.7 },
   actions: { gap: Spacing.two, marginTop: Spacing.three },
+  videoCta: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.three,
+    padding: Spacing.three,
+    borderRadius: Radii.lg,
+    backgroundColor: HiveColors.greenLight,
+  },
+  videoCtaTitle: { color: HiveColors.text, fontSize: 15, fontWeight: '700' },
 });

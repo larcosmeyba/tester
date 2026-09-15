@@ -11,9 +11,13 @@
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Animated, StyleSheet, Text, View } from 'react-native';
 
-import { AppButton, uiText } from '@/components/hive-ui';
+import { AppButton, PennyImage, uiText } from '@/components/hive-ui';
 import { HiveColors, Spacing } from '@/constants/theme';
 import { describeError } from '@/services/api-error';
+
+// TODO(Marcos): replace with the Penny-cooking asset from the design ZIP --
+// penny-money.png is a stand-in so the layout matches the approved flow.
+const pennyCookingSource = require('@/assets/images/hive/penny-money.png');
 
 const PROGRESS_MESSAGES = [
   'Building your meal plan…',
@@ -68,6 +72,8 @@ export function MealPlanGenerating({
 
   return (
     <View style={styles.container} accessibilityLiveRegion="polite">
+      <PennyImage source={pennyCookingSource} size={110} />
+      <Text style={[uiText.subtitle, styles.centered]}>Let Penny cook for a minute!</Text>
       <ActivityIndicator size="large" color={HiveColors.green} />
       <Animated.Text style={[uiText.subtitle, styles.centered, { opacity }]}>
         {PROGRESS_MESSAGES[index]}
