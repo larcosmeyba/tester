@@ -78,7 +78,7 @@ const pennySource = require('@/assets/images/hive/penny.png');
 
 /** Three-dot typing indicator, rendered on the left while Penny responds. */
 function TypingIndicator() {
-  const progress = useRef(new Animated.Value(0)).current;
+  const [progress] = useState(() => new Animated.Value(0));
 
   useEffect(() => {
     const loop = Animated.loop(
@@ -121,6 +121,14 @@ export function PennyScreen({ nav, context: propContext }: { nav: Navigation; co
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [showPaywall, setShowPaywall] = useState(false);
   const scrollRef = useRef<ScrollView>(null);
+  // Monotonic local id suffix for optimistic messages (no Date.now: the
+  // React Compiler's purity rule forbids impure calls in the render scope,
+  // and a counter is collision-free within a session).
+  const messageSeq = useRef(0);
+  const nextMessageStamp = () => {
+    messageSeq.current += 1;
+    return messageSeq.current;
+  };
 
   // Warm arrivals: another screen set context while Penny was already open.
   useEffect(() => {
@@ -151,7 +159,7 @@ export function PennyScreen({ nav, context: propContext }: { nav: Navigation; co
 
     // Scope: graceful local redirect — no backend call, no usage consumed.
     if (classifyPennyScope(trimmed) === 'out-of-scope') {
-      const stamp = Date.now();
+      const stamp = nextMessageStamp();
       setMessages((current) => [
         ...current,
         { id: `u-${stamp}`, text: trimmed, isUser: true },
@@ -168,7 +176,7 @@ export function PennyScreen({ nav, context: propContext }: { nav: Navigation; co
       return;
     }
 
-    setMessages((current) => [...current, { id: `u-${Date.now()}`, text: trimmed, isUser: true }]);
+    setMessages((current) => [...current, { id: `u-${nextMessageStamp()}`, text: trimmed, isUser: true }]);
     setMessageText('');
     setIsTyping(true);
 

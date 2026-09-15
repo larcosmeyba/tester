@@ -63,14 +63,12 @@ export function PantryScreen({ nav }: { nav: Navigation }) {
   const pantry = usePantry();
   const [filter, setFilter] = useState<PantryFilter>('active');
   const [locationFilter, setLocationFilter] = useState<LocationFilter>('ALL');
-  const [pendingBuys, setPendingBuys] = useState<PurchasedItem[] | null>(null);
+  const [pendingBuys, setPendingBuys] = useState<PurchasedItem[] | null>(() => peekPendingPurchases());
   const [addingBuys, setAddingBuys] = useState(false);
 
   // The shop screen stashes a finished grocery run here; offer it once.
-  useEffect(() => {
-    setPendingBuys(peekPendingPurchases());
-    return subscribePendingPurchases(setPendingBuys);
-  }, []);
+  // The initial value is read lazily above, so the effect only subscribes.
+  useEffect(() => subscribePendingPurchases(setPendingBuys), []);
 
   async function addPurchasesToPantry() {
     const buys = consumePendingPurchases();

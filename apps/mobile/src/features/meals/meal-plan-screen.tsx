@@ -14,7 +14,7 @@
  *  - Moving a meal modifies the existing plan. It never regenerates the week, so
  *    the grocery list and the cost range stay exactly as they were.
  */
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useEffectEvent, useMemo, useState } from 'react';
 import { useRouter } from 'expo-router';
 import { ActivityIndicator, Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
@@ -73,13 +73,15 @@ export function MealPlanScreen() {
     void loadCurrent();
   }, [loadCurrent]);
 
-  const reloadOverlays = useCallback(async (planId: string) => {
+  const reloadOverlays = useEffectEvent(async (planId: string) => {
     const [completed, removed] = await Promise.all([getCompletedSlots(planId), getRemovedSlots(planId)]);
     setCompletedSlots(completed);
     setRemovedSlots(removed);
-  }, []);
+  });
 
   const planId = plan?.planId;
+  /* eslint-disable react-hooks/set-state-in-effect -- one-shot overlay sync when
+     the active plan changes: completed/removed slot state must reset for the new plan. */
   useEffect(() => {
     if (planId) {
       void reloadOverlays(planId);
@@ -87,7 +89,8 @@ export function MealPlanScreen() {
       setCompletedSlots(new Set());
       setRemovedSlots(new Set());
     }
-  }, [planId, reloadOverlays]);
+  }, [planId]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   // Weekly reset prompt (Audit Section 6): once the plan's week ends, offer a
   // fresh week or the same plan re-anchored to today. Fires once per plan-week.

@@ -104,7 +104,9 @@ export function CookWhatIHaveScreen({
 
   const hasPantry = prioritized.detail.length > 0;
 
-  const generate = useCallback(async () => {
+  // Plain function, no manual useCallback: the React Compiler memoizes it
+  // automatically, and a manual memoization here blocks compilation.
+  async function generate() {
     setError('');
     // The gate fires AT the limit — checked before any AI work is requested.
     if (!(await hasAiUsageRemaining('single_meal'))) {
@@ -159,7 +161,7 @@ export function CookWhatIHaveScreen({
       setError(describeError(caught).message);
       setPhase('choose');
     }
-  }, [auth.user?.id, mealPlan.request, prioritized.ingredientIds, slot]);
+  }
 
   const openHistoryRecipe = useCallback(async (record: CookedMealRecord) => {
     setError('');
