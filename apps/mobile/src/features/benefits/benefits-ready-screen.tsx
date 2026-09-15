@@ -32,6 +32,7 @@ import {
 import { HiveColors, Spacing } from '@/constants/theme';
 import type { Navigation } from '@/features/app/navigation-types';
 import { useAppState } from '@/state/app-state';
+import { setPennyContext } from '@/features/penny/penny-context';
 
 import { requiredQuestionsToAsk } from './benefits-answers';
 import { downloadAndSharePdf, printPdf } from './benefits-document-actions';
@@ -76,13 +77,8 @@ export function BenefitsReadyView({
 
   const missingTotal = useMemo(() => countRequiredMissing(applications), [applications]);
 
-  /**
-   * TODO (Section 3b): Penny has no context handoff — there is no parameter,
-   * persistence, or API that tells Penny which applications the user was
-   * looking at. Until one exists, this just opens the Penny tab; do not
-   * invent a context-passing mechanism.
-   */
   function askPenny() {
+    setPennyContext({ source: 'benefits-ready', applicationIds, state });
     app.setSelectedTab(2);
     nav.reset('main');
   }

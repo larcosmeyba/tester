@@ -22,6 +22,7 @@ import { AvatarButton, HiveIcon } from '@/components/hive-ui';
 import { FloatingPill, useFloatingTabBarSpace, FLOATING_TAB_BAR_HEIGHT } from '@/components/hive-navigation';
 import { useAppState } from '@/state/app-state';
 import { usePantry } from '@/features/pantry/pantry-context';
+import { setPennyContext } from '@/features/penny/penny-context';
 import { StyleSheet } from 'react-native';
 import { sharedStyles } from '@/features/app/app-shared';
 import { type Navigation } from '@/features/app/navigation-types';
@@ -195,10 +196,12 @@ export function HomeScreen({ nav }: { nav: Navigation }) {
         </View>
       ) : null}
 
-      {/* TODO (Section 7 audit): Penny AI does not accept screen context yet.
-          Pass e.g. { source: 'home' } here once the Penny service supports it,
-          so Penny knows the user is asking from the Home screen. */}
-      <AskPennyFab onPress={() => app.setSelectedTab(2)} />
+      <AskPennyFab
+        onPress={() => {
+          setPennyContext({ source: 'home' });
+          app.setSelectedTab(2);
+        }}
+      />
     </View>
   );
 }
