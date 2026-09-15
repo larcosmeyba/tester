@@ -347,6 +347,9 @@ export const nearbyResources: ResourceItem[] = [
     distance: '1.0 mi',
     hours: 'Mon–Fri · 8:00 AM–5:00 PM',
     description: 'Apply for CalFresh (SNAP), Medi-Cal, and CalWORKs.',
+    address: '2500 W. Burbank Blvd, Burbank, CA 91505',
+    phone: '(818) 238-5800',
+    website: 'dpss.lacounty.gov',
   },
   {
     id: 'rental-help',
@@ -368,6 +371,7 @@ export const nearbyResources: ResourceItem[] = [
     distance: '1.4 mi',
     hours: 'Mon–Fri · 8:00 AM–5:00 PM',
     description: 'Nutrition support for pregnant people and new moms.',
+    website: 'www.myfamily.wic.ca.gov',
   },
 ];
 

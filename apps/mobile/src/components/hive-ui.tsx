@@ -61,6 +61,8 @@ const iconMap = {
   mic: { ios: 'mic.fill', fallback: 'Mic' },
   send: { ios: 'arrow.up.circle.fill', fallback: 'Up' },
   bank: { ios: 'building.columns.fill', fallback: 'Bk' },
+warning: { ios: 'exclamationmark.circle.fill', fallback: '!' },
+carrot: { ios: 'carrot.fill', fallback: '🥕' },
 } as const;
 
 export type HiveIconName = keyof typeof iconMap;
