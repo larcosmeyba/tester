@@ -13,6 +13,7 @@ import { AppButton, AppHeader, Card, ScrollScreen, uiText } from '@/components/h
 import { HiveColors, Spacing } from '@/constants/theme';
 import { useMealPlan } from '@/features/meals/meal-plan-context';
 import { recipeService } from '@/features/meals/recipe-service';
+import { printAndShareRecipe } from '@/features/meals/recipe-print';
 import { isIncomplete, type Recipe } from '@/features/meals/recipe-model';
 import { describeError } from '@/services/api-error';
 
@@ -26,6 +27,8 @@ export function RecipeDetailScreen() {
   // time fact, not something to discover in an effect.
   const [isLoading, setIsLoading] = useState(Boolean(recipeId));
   const [error, setError] = useState<unknown>(null);
+  const [printing, setPrinting] = useState(false);
+  const [printError, setPrintError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!recipeId) return;
@@ -143,6 +146,23 @@ export function RecipeDetailScreen() {
             variant={selected ? 'secondary' : 'primary'}
             onPress={() => toggleRecipe(recipe.recipeId)}
           />
+          <AppButton
+            title={printing ? 'Preparing…' : 'Print or share recipe'}
+            variant="secondary"
+            disabled={printing}
+            onPress={() => {
+              setPrinting(true);
+              setPrintError(null);
+              void printAndShareRecipe(recipe)
+                .catch((caught: unknown) => {
+                  setPrintError(
+                    caught instanceof Error ? caught.message : 'Could not print this recipe right now.'
+                  );
+                })
+                .finally(() => setPrinting(false));
+            }}
+          />
+          {printError ? <Text style={styles.missingNote}>{printError}</Text> : null}
         </View>
       </View>
     </ScrollScreen>
