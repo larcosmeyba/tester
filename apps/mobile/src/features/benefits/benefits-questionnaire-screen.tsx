@@ -15,6 +15,12 @@
  * Some outstanding values cannot be asked for. A household's total monthly
  * income is computed from its income sources, so it is filtered out of the
  * questions and filled by answering the ones it is derived from.
+ *
+ * Repeating groups (household members, jobs, income sources, and the rest)
+ * are asked with the shared group editor and saved through
+ * `saveBenefitsGroup`: the server rejects group paths sent through the scalar
+ * mutation, so a plain text field could never collect them. Social Security
+ * numbers are never rendered anywhere here.
  */
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -33,15 +39,23 @@ import {
 import { HiveColors, Spacing } from '@/constants/theme';
 import {
   type BenefitsApplication,
+  type BenefitsFieldSpec,
   type BenefitsMissingField,
+  type BenefitsProfileData,
   answerFrom,
   fetchBenefitsApplication,
+  fetchBenefitsProfile,
+  fetchBenefitsVocabulary,
   groupQuestions,
   noneAnswer,
   questionsToAsk,
   refillBenefitsApplication,
   saveBenefitsAnswers,
+  saveBenefitsGroup,
 } from '@/features/benefits/benefits-repository';
+import type { BenefitsGroupRowInput } from '@helpthehive/api-contract';
+import { GroupQuestionEditor } from './benefits-group-editor';
+import { partitionGroupQuestions, type GroupBucket } from './benefits-groups';
 
 const groupTitles: Record<string, string> = {
   applicant: 'About you',
@@ -63,10 +77,14 @@ export default function BenefitsQuestionnaireScreen() {
   const { applicationId } = useLocalSearchParams<{ applicationId?: string }>();
 
   const [application, setApplication] = useState<BenefitsApplication | null>(null);
+  const [profile, setProfile] = useState<BenefitsProfileData | null>(null);
+  const [vocabulary, setVocabulary] = useState<BenefitsFieldSpec[] | null>(null);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [declaredNone, setDeclaredNone] = useState<Record<string, boolean>>({});
   const [sectionIndex, setSectionIndex] = useState(0);
   const [saving, setSaving] = useState(false);
+  const [groupSaving, setGroupSaving] = useState<Record<string, boolean>>({});
+  const [groupSaveErrors, setGroupSaveErrors] = useState<Record<string, string>>({});
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -76,14 +94,20 @@ export default function BenefitsQuestionnaireScreen() {
       return;
     }
     let cancelled = false;
-    fetchBenefitsApplication(applicationId)
-      .then((result) => {
+    Promise.all([
+      fetchBenefitsApplication(applicationId),
+      fetchBenefitsProfile(),
+      fetchBenefitsVocabulary(),
+    ])
+      .then(([result, loadedProfile, loadedVocabulary]) => {
         if (cancelled) return;
         if (!result) {
           setError('That application could not be found.');
           return;
         }
         setApplication(result);
+        setProfile(loadedProfile);
+        setVocabulary(loadedVocabulary);
       })
       .catch((cause: unknown) => {
         if (!cancelled) setError(cause instanceof Error ? cause.message : 'Could not load the application.');
@@ -93,11 +117,52 @@ export default function BenefitsQuestionnaireScreen() {
     };
   }, [applicationId]);
 
-  const sections = useMemo(
-    () => (application ? groupQuestions(questionsToAsk(application)) : []),
-    [application],
+  const { scalars, groups: groupBuckets } = useMemo(
+    () =>
+      application === null || vocabulary === null
+        ? { scalars: [], groups: [] as GroupBucket[] }
+        : partitionGroupQuestions(questionsToAsk(application), vocabulary),
+    [application, vocabulary],
   );
+  const sections = useMemo(() => {
+    const built = groupQuestions(scalars).map((section) => ({
+      ...section,
+      buckets: [] as GroupBucket[],
+    }));
+    for (const bucket of groupBuckets) {
+      const host = built.find((section) => section.group === bucket.sectionGroup);
+      if (host) {
+        host.buckets.push(bucket);
+      } else {
+        built.push({ group: bucket.sectionGroup || 'household', questions: [], buckets: [bucket] });
+      }
+    }
+    return built;
+  }, [scalars, groupBuckets]);
   const section = sections[sectionIndex];
+
+  /** Saves one group's rows, then refills so the draft picks the rows up. */
+  async function saveGroupBucket(bucket: GroupBucket, rows: BenefitsGroupRowInput[]): Promise<boolean> {
+    if (!application) return false;
+    setGroupSaving((current) => ({ ...current, [bucket.groupPath]: true }));
+    setGroupSaveErrors((current) => ({ ...current, [bucket.groupPath]: '' }));
+    try {
+      const updatedProfile = await saveBenefitsGroup({ groupPath: bucket.groupPath, rows });
+      setProfile(updatedProfile);
+      const refilled = await refillBenefitsApplication(application.id);
+      setApplication(refilled);
+      return true;
+    } catch (cause) {
+      setGroupSaveErrors((current) => ({
+        ...current,
+        [bucket.groupPath]:
+          cause instanceof Error ? cause.message : 'Those answers could not be saved.',
+      }));
+      return false;
+    } finally {
+      setGroupSaving((current) => ({ ...current, [bucket.groupPath]: false }));
+    }
+  }
 
   const save = useCallback(async () => {
     if (!application || !section) return;
@@ -162,7 +227,7 @@ export default function BenefitsQuestionnaireScreen() {
     );
   }
 
-  if (application === null) {
+  if (application === null || vocabulary === null) {
     return (
       <ScrollScreen>
         <AppHeader title="Benefits questionnaire" onBack={router.back} />
@@ -222,6 +287,19 @@ export default function BenefitsQuestionnaireScreen() {
                 return { ...current, [question.fieldPath]: next };
               })
             }
+          />
+        ))}
+
+        {section.buckets.map((bucket) => (
+          <GroupQuestionEditor
+            key={bucket.groupPath}
+            bucket={bucket}
+            profile={profile}
+            vocabulary={vocabulary ?? []}
+            saving={groupSaving[bucket.groupPath] === true}
+            saveError={groupSaveErrors[bucket.groupPath] ?? ''}
+            onSave={(rows) => saveGroupBucket(bucket, rows)}
+            onDeclareNone={() => saveGroupBucket(bucket, [])}
           />
         ))}
 

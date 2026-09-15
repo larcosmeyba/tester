@@ -20,14 +20,17 @@ import { AppButton, AppHeader, AppTextField, Card, Chip, ScrollScreen, uiText } 
 import { HiveColors, Spacing } from '@/constants/theme';
 
 import { centsToMoney, moneyToCents } from './benefits-answers';
-import type { BenefitsAnswer } from '@helpthehive/api-contract';
+import type { BenefitsAnswer, BenefitsGroupRowInput } from '@helpthehive/api-contract';
 import {
   fetchBenefitsProfile,
   fetchBenefitsVocabulary,
   refillBenefitsApplication,
   saveBenefitsAnswers,
+  saveBenefitsGroup,
 } from './benefits-repository';
-import type { BenefitsFieldSpec } from './benefits-types';
+import type { BenefitsFieldSpec, BenefitsProfileData } from './benefits-types';
+import { GroupQuestionEditor } from './benefits-group-editor';
+import { rowSpecsFor, type GroupBucket } from './benefits-groups';
 
 type EditableKind = 'TEXT' | 'NUMBER' | 'MONEY' | 'DATE' | 'BOOLEAN';
 
@@ -74,16 +77,20 @@ export function BenefitsEditAnswers({
   onSaved: () => void;
 }) {
   const [answers, setAnswers] = useState<BenefitsAnswer[] | null>(null);
+  const [profile, setProfile] = useState<BenefitsProfileData | null>(null);
   const [specs, setSpecs] = useState<BenefitsFieldSpec[] | null>(null);
   const [drafts, setDrafts] = useState<Record<string, string>>({});
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
+  const [groupSaving, setGroupSaving] = useState<Record<string, boolean>>({});
+  const [groupSaveErrors, setGroupSaveErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     let cancelled = false;
     Promise.all([fetchBenefitsProfile(), fetchBenefitsVocabulary()])
       .then(([profile, vocabulary]) => {
         if (cancelled) return;
+        setProfile(profile);
         setAnswers(profile.answers);
         setSpecs(vocabulary);
         const initial: Record<string, string> = {};
@@ -118,6 +125,51 @@ export function BenefitsEditAnswers({
       ),
     [answers],
   );
+
+  // Collected repeating groups (household members, jobs, …) get the same row
+  // editor the questionnaire uses, so corrections there flow into every form.
+  const groupBuckets = useMemo<GroupBucket[]>(() => {
+    if (!profile || !specs) return [];
+    const buckets: GroupBucket[] = [];
+    for (const group of profile.groups) {
+      if (!group.collected) continue;
+      if (rowSpecsFor(group.groupPath, specs).length === 0) continue;
+      const spec = specs.find((candidate) => candidate.fieldPath === group.groupPath);
+      buckets.push({
+        groupPath: group.groupPath,
+        sectionGroup: spec?.group ?? '',
+        groupQuestion: null,
+        missingRowPaths: new Set<string>(),
+        required: false,
+        sensitive: spec?.isSensitive ?? false,
+      });
+    }
+    return buckets;
+  }, [profile, specs]);
+
+  async function saveGroup(bucket: GroupBucket, rows: BenefitsGroupRowInput[]): Promise<boolean> {
+    setGroupSaving((current) => ({ ...current, [bucket.groupPath]: true }));
+    setGroupSaveErrors((current) => ({ ...current, [bucket.groupPath]: '' }));
+    try {
+      const updated = await saveBenefitsGroup({ groupPath: bucket.groupPath, rows });
+      setProfile(updated);
+      setAnswers(updated.answers);
+      for (const applicationId of applicationIds) {
+        await refillBenefitsApplication(applicationId);
+      }
+      onSaved();
+      return true;
+    } catch (cause) {
+      setGroupSaveErrors((current) => ({
+        ...current,
+        [bucket.groupPath]:
+          cause instanceof Error ? cause.message : 'Could not save these answers.',
+      }));
+      return false;
+    } finally {
+      setGroupSaving((current) => ({ ...current, [bucket.groupPath]: false }));
+    }
+  }
 
   if (answers === null) {
     return (
@@ -223,6 +275,19 @@ export function BenefitsEditAnswers({
             );
           })
         )}
+
+        {groupBuckets.map((bucket) => (
+          <GroupQuestionEditor
+            key={bucket.groupPath}
+            bucket={bucket}
+            profile={profile}
+            vocabulary={specs ?? []}
+            saving={groupSaving[bucket.groupPath] === true}
+            saveError={groupSaveErrors[bucket.groupPath] ?? ''}
+            onSave={(rows) => saveGroup(bucket, rows)}
+            onDeclareNone={() => saveGroup(bucket, [])}
+          />
+        ))}
 
         {error !== '' ? <Text style={styles.error}>{error}</Text> : null}
 

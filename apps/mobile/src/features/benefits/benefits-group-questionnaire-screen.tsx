@@ -7,12 +7,24 @@
  * once fills every form that needs it, because answers are stored once on the
  * benefits profile and shared across applications.
  *
+ * Two kinds of questions, two editors:
+ * - Scalar questions (name, date of birth, rent) render as QuestionField and
+ *   save through `saveBenefitsAnswers`.
+ * - Repeating-group questions (household members, jobs, income sources,
+ *   childcare/medical costs, accounts, vehicles) render as
+ *   BenefitsGroupEditor: one card per row, rows can be added and removed,
+ *   "none of these" declares an empty group, and rows save through
+ *   `saveBenefitsGroup`. The server rejects group paths sent through the
+ *   scalar mutation, so without this editor those forms could never be
+ *   completed.
+ *
  * Audit rules honoured here:
  * - Only questions required by the selected PDFs are asked (the union of each
  *   application's server-computed missing fields, minus derived fields).
  * - No question is asked twice.
  * - SSN is never asked: the server's NeverAsk policy is authoritative, and a
- *   client-side belt-and-braces filter below drops anything SSN-shaped too.
+ *   client-side belt-and-braces filter drops anything SSN-shaped too — from
+ *   the question list and from group row fields alike.
  * - Every answer is saved to the server before moving on (autosave); answers
  *   live server-side, never in local storage.
  * - Leaving returns the user to the exact point via the drop-off reminder,
@@ -38,16 +50,24 @@ import {
 } from '@/components/hive-ui';
 import { HiveColors, Spacing } from '@/constants/theme';
 import { type Navigation } from '@/features/app/navigation-types';
+import type { BenefitsGroupRowInput } from '@helpthehive/api-contract';
 import {
   type BenefitsApplication,
+  type BenefitsFieldSpec,
   type BenefitsMissingField,
+  type BenefitsProfileData,
   answerFrom,
   fetchBenefitsApplication,
+  fetchBenefitsProfile,
+  fetchBenefitsVocabulary,
   groupQuestions,
   noneAnswer,
   refillBenefitsApplication,
   saveBenefitsAnswers,
+  saveBenefitsGroup,
 } from '@/features/benefits/benefits-repository';
+import { GroupQuestionEditor } from './benefits-group-editor';
+import { partitionGroupQuestions, profileGroup, type GroupBucket } from './benefits-groups';
 import { excludeNeverAskQuestions, unionMissingFields } from './benefits-flow-state';
 import {
   cancelQuestionnaireDropOffReminders,
@@ -69,12 +89,27 @@ const groupTitles: Record<string, string> = {
   program: 'About this application',
 };
 
+type QuestionnaireSection = {
+  group: string;
+  questions: BenefitsMissingField[];
+  buckets: GroupBucket[];
+};
+
 function isAnswered(
   question: BenefitsMissingField,
   answers: Record<string, string>,
   declaredNone: Record<string, boolean>,
 ): boolean {
   return declaredNone[question.fieldPath] === true || (answers[question.fieldPath] ?? '').trim() !== '';
+}
+
+function isGroupCollected(profile: BenefitsProfileData | null, groupPath: string): boolean {
+  return profileGroup(profile, groupPath)?.collected === true;
+}
+
+/** A group still needs attention while uncollected or while row gaps remain. */
+function isBucketOpen(bucket: GroupBucket, profile: BenefitsProfileData | null): boolean {
+  return !isGroupCollected(profile, bucket.groupPath) || bucket.missingRowPaths.size > 0;
 }
 
 export function BenefitsGroupQuestionnaireScreen({
@@ -89,12 +124,16 @@ export function BenefitsGroupQuestionnaireScreen({
   resumeSection?: number;
 }) {
   const [applications, setApplications] = useState<BenefitsApplication[] | null>(null);
+  const [profile, setProfile] = useState<BenefitsProfileData | null>(null);
+  const [vocabulary, setVocabulary] = useState<BenefitsFieldSpec[] | null>(null);
   const [loadError, setLoadError] = useState('');
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [declaredNone, setDeclaredNone] = useState<Record<string, boolean>>({});
   const [sectionIndex, setSectionIndex] = useState(resumeSection);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState('');
+  const [groupSaving, setGroupSaving] = useState<Record<string, boolean>>({});
+  const [groupSaveErrors, setGroupSaveErrors] = useState<Record<string, string>>({});
   const [jumpNotice, setJumpNotice] = useState('');
 
   // Marks the run finished so the unmount drop-off check stays silent.
@@ -104,7 +143,11 @@ export function BenefitsGroupQuestionnaireScreen({
     let cancelled = false;
     (async () => {
       try {
-        const loaded = await Promise.all(applicationIds.map((id) => fetchBenefitsApplication(id)));
+        const [loaded, loadedProfile, loadedVocabulary] = await Promise.all([
+          Promise.all(applicationIds.map((id) => fetchBenefitsApplication(id))),
+          fetchBenefitsProfile(),
+          fetchBenefitsVocabulary(),
+        ]);
         if (cancelled) return;
         const missing = loaded.findIndex((application) => application == null);
         if (missing !== -1) {
@@ -113,6 +156,8 @@ export function BenefitsGroupQuestionnaireScreen({
         setApplications(
           loaded.filter((application): application is BenefitsApplication => application != null),
         );
+        setProfile(loadedProfile);
+        setVocabulary(loadedVocabulary);
       } catch (cause) {
         if (!cancelled) {
           setLoadError(cause instanceof Error ? cause.message : 'Could not load your applications.');
@@ -126,15 +171,34 @@ export function BenefitsGroupQuestionnaireScreen({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const questions = useMemo(
+  const { scalars, groups: groupBuckets } = useMemo(
     () =>
-      applications === null
-        ? []
-        : excludeNeverAskQuestions(unionMissingFields(applications)),
-    [applications],
+      applications === null || vocabulary === null
+        ? { scalars: [], groups: [] as GroupBucket[] }
+        : partitionGroupQuestions(
+            excludeNeverAskQuestions(unionMissingFields(applications)),
+            vocabulary,
+          ),
+    [applications, vocabulary],
   );
 
-  const sections = useMemo(() => groupQuestions(questions), [questions]);
+  const sections = useMemo<QuestionnaireSection[]>(() => {
+    const built: QuestionnaireSection[] = groupQuestions(scalars).map((section) => ({
+      ...section,
+      buckets: [] as GroupBucket[],
+    }));
+    for (const bucket of groupBuckets) {
+      const host = built.find((section) => section.group === bucket.sectionGroup);
+      if (host) {
+        host.buckets.push(bucket);
+      } else {
+        // The group is the only open question in its section: it still gets
+        // a section so progress, gating, and the drop-off reminder see it.
+        built.push({ group: bucket.sectionGroup || 'household', questions: [], buckets: [bucket] });
+      }
+    }
+    return built;
+  }, [scalars, groupBuckets]);
 
   // Clamp the resume section: if the reminder payload is stale, start at the
   // first section instead of crashing.
@@ -148,7 +212,7 @@ export function BenefitsGroupQuestionnaireScreen({
   // cleanup below needs no ref syncing.
   const maybeScheduleDropOff = useEffectEvent(() => {
     if (finishedRef.current) return;
-    const incomplete = firstSectionWithUnansweredRequired(sections, answers, declaredNone);
+    const incomplete = firstSectionWithUnansweredRequired(sections, answers, declaredNone, profile);
     if (incomplete === null) return;
     void scheduleQuestionnaireDropOffReminder({
       applicationIds,
@@ -165,8 +229,16 @@ export function BenefitsGroupQuestionnaireScreen({
 
   // If every application is already fully answered, skip straight ahead —
   // there is nothing to ask and nothing to remind about.
+  const openCount =
+    scalars.length +
+    groupBuckets.filter((bucket) => isBucketOpen(bucket, profile)).length;
   useEffect(() => {
-    if (applications !== null && questions.length === 0 && !finishedRef.current) {
+    if (
+      applications !== null &&
+      vocabulary !== null &&
+      openCount === 0 &&
+      !finishedRef.current
+    ) {
       finishedRef.current = true;
       (async () => {
         for (const id of applicationIds) {
@@ -176,10 +248,10 @@ export function BenefitsGroupQuestionnaireScreen({
       })();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [applications, questions.length]);
+  }, [applications, vocabulary, openCount]);
 
   function firstIncompleteSectionIndex(): number | null {
-    return firstSectionWithUnansweredRequired(sections, answers, declaredNone);
+    return firstSectionWithUnansweredRequired(sections, answers, declaredNone, profile);
   }
 
   async function saveCurrentSection(): Promise<boolean> {
@@ -201,6 +273,32 @@ export function BenefitsGroupQuestionnaireScreen({
       return false;
     } finally {
       setSaving(false);
+    }
+  }
+
+  /** Saves one group's rows, then refills so the PDFs pick the rows up. */
+  async function saveGroupBucket(bucket: GroupBucket, rows: BenefitsGroupRowInput[]): Promise<boolean> {
+    setGroupSaving((current) => ({ ...current, [bucket.groupPath]: true }));
+    setGroupSaveErrors((current) => ({ ...current, [bucket.groupPath]: '' }));
+    try {
+      const updatedProfile = await saveBenefitsGroup({ groupPath: bucket.groupPath, rows });
+      setProfile(updatedProfile);
+      const fresh = await Promise.all(applicationIds.map((id) => refillBenefitsApplication(id)));
+      setApplications(
+        fresh.filter(
+          (application): application is BenefitsApplication => application != null,
+        ),
+      );
+      return true;
+    } catch (cause) {
+      setGroupSaveErrors((current) => ({
+        ...current,
+        [bucket.groupPath]:
+          cause instanceof Error ? cause.message : 'Could not save this section.',
+      }));
+      return false;
+    } finally {
+      setGroupSaving((current) => ({ ...current, [bucket.groupPath]: false }));
     }
   }
 
@@ -255,16 +353,22 @@ export function BenefitsGroupQuestionnaireScreen({
     );
   }
 
-  const totalQuestions = questions.length;
+  const totalQuestions = scalars.length + groupBuckets.length;
   const percent = Math.round((safeSectionIndex / sections.length) * 100);
   const isLast = safeSectionIndex >= sections.length - 1;
   // Missing-information checklist: required questions with no answer yet,
   // outside the section the user is answering now.
-  const missingElsewhere = questions.filter(
+  const missingScalarElsewhere = scalars.filter(
     (question) =>
       question.strength === 'REQUIRED' &&
       !section.questions.includes(question) &&
       !isAnswered(question, answers, declaredNone),
+  );
+  const missingGroupsElsewhere = groupBuckets.filter(
+    (bucket) =>
+      bucket.required &&
+      !section.buckets.includes(bucket) &&
+      isBucketOpen(bucket, profile),
   );
 
   return (
@@ -297,16 +401,33 @@ export function BenefitsGroupQuestionnaireScreen({
             }
           />
         ))}
+        {section.buckets.map((bucket) => (
+          <GroupQuestionEditor
+            key={bucket.groupPath}
+            bucket={bucket}
+            profile={profile}
+            vocabulary={vocabulary ?? []}
+            saving={groupSaving[bucket.groupPath] === true}
+            saveError={groupSaveErrors[bucket.groupPath] ?? ''}
+            onSave={(rows) => saveGroupBucket(bucket, rows)}
+            onDeclareNone={() => saveGroupBucket(bucket, [])}
+          />
+        ))}
 
-        {isLast && missingElsewhere.length > 0 ? (
+        {isLast && (missingScalarElsewhere.length > 0 || missingGroupsElsewhere.length > 0) ? (
           <Card>
             <Text style={uiText.subtitle}>Still to answer</Text>
             <Text style={styles.checklistHint}>
               These required questions need answers before we can prepare your applications:
             </Text>
-            {missingElsewhere.map((question) => (
+            {missingScalarElsewhere.map((question) => (
               <Text key={question.fieldPath} style={styles.checklistItem}>
                 • {question.question}
+              </Text>
+            ))}
+            {missingGroupsElsewhere.map((bucket) => (
+              <Text key={bucket.groupPath} style={styles.checklistItem}>
+                • {bucket.groupQuestion?.question ?? bucket.groupPath}
               </Text>
             ))}
           </Card>
@@ -329,16 +450,20 @@ export function BenefitsGroupQuestionnaireScreen({
 
 /** Index of the first section with an unanswered required question, or null. */
 function firstSectionWithUnansweredRequired(
-  sections: { group: string; questions: BenefitsMissingField[] }[],
+  sections: QuestionnaireSection[],
   answers: Record<string, string>,
   declaredNone: Record<string, boolean>,
+  profile: BenefitsProfileData | null,
 ): number | null {
   for (let index = 0; index < sections.length; index += 1) {
-    const open = sections[index].questions.some(
+    const openScalar = sections[index].questions.some(
       (question) =>
         question.strength === 'REQUIRED' && !isAnswered(question, answers, declaredNone),
     );
-    if (open) return index;
+    const openGroup = sections[index].buckets.some(
+      (bucket) => bucket.required && isBucketOpen(bucket, profile),
+    );
+    if (openScalar || openGroup) return index;
   }
   return null;
 }
