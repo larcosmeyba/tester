@@ -6,7 +6,6 @@ import {
   Alert,
   Animated,
   Image,
-  Linking,
   PanResponder,
   Pressable,
   ScrollView,
@@ -47,7 +46,12 @@ const BADGE_TONES = {
 
 export function HomeScreen({ nav }: { nav: Navigation }) {
   const app = useAppState();
-  const firstName = app.profile.firstName || 'there';
+  const firstName = app.profile.firstName.trim() || 'there';
+  // "Resources Near You" is only honest with a user-derived location
+  // (granted permission or a ZIP); otherwise this is community data.
+  const hasUserLocation =
+    app.preferences.locationPermissionStatus === 'granted' || app.profile.zip.trim().length > 0;
+  const resourcesTitle = hasUserLocation ? 'Resources Near You' : 'Community Resources';
 
   async function pickAndSavePhoto() {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -96,7 +100,7 @@ export function HomeScreen({ nav }: { nav: Navigation }) {
 
         <ExpiringSoonBanner onPress={() => nav.push('pantry')} />
 
-        <Text style={styles.homeQuestion}>What would you like to do first?</Text>
+        <Text style={styles.homeQuestion}>What would you like to do today?</Text>
 
         <View style={styles.actionStack}>
           <Pressable
@@ -158,7 +162,10 @@ export function HomeScreen({ nav }: { nav: Navigation }) {
         </View>
 
         <View style={styles.resourcesHeaderRow}>
-          <Text style={styles.resourcesTitle}>Resources Near You</Text>
+          <View>
+            <Text style={styles.resourcesTitle}>{resourcesTitle}</Text>
+            <Text style={styles.resourcesSubtitle}>Demo resource data</Text>
+          </View>
           <Pressable
             accessibilityRole="button"
             accessibilityLabel="See all resources"
@@ -190,8 +197,8 @@ export function HomeScreen({ nav }: { nav: Navigation }) {
             icon="cart"
             tone="light"
             align="left"
-            label={`${app.cart.length} item cart · Clear`}
-            onPress={app.clearCart}
+            label={`${app.cart.length} item${app.cart.length === 1 ? '' : 's'} · Send to Instacart`}
+            onPress={() => router.push('/meals/instacart')}
           />
         </View>
       ) : null}
@@ -261,26 +268,14 @@ function HomeResourceCard({ resource, onPress }: { resource: ResourceItem; onPre
       </View>
       <Text style={styles.resDescription} numberOfLines={3}>{resource.description}</Text>
       <Pressable
-        accessibilityRole="link"
+        accessibilityRole="button"
         accessibilityLabel={`Learn more about ${resource.name}`}
-        onPress={(event) => {
-          event.stopPropagation();
-          openResourceWebsite(resource.website);
-        }}
+        onPress={onPress}
         style={({ pressed }) => [styles.learnMoreButton, pressed && sharedStyles.pressed]}>
         <Text style={styles.learnMoreText}>Learn More</Text>
       </Pressable>
     </Pressable>
   );
-}
-
-/** Marcos: Learn More goes straight to the resource's website. */
-function openResourceWebsite(website?: string) {
-  if (!website) {
-    return;
-  }
-  const url = website.startsWith('http') ? website : `https://${website}`;
-  void Linking.openURL(url);
 }
 
 /**
@@ -460,6 +455,11 @@ const styles = StyleSheet.create({
     fontSize: 19,
     fontWeight: '800',
   },
+  resourcesSubtitle: {
+    color: HiveColors.textSecondary,
+    fontSize: 12,
+    marginTop: 2,
+  },
   seeAllPill: {
     backgroundColor: '#EDF7EC',
     borderRadius: 14,
@@ -478,12 +478,11 @@ const styles = StyleSheet.create({
   },
   resCard: {
     width: 252,
-    backgroundColor: HiveColors.white,
+    backgroundColor: HiveColors.card,
     borderRadius: 16,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: HiveColors.border,
     padding: 14,
     gap: 8,
+    ...Shadows.soft,
   },
   resBadge: {
     alignSelf: 'flex-start',
@@ -564,7 +563,8 @@ const styles = StyleSheet.create({
   cartPillRow: {
     position: 'absolute',
     left: 16,
-    right: 16,
+    // Keep clear of the Ask Penny FAB (right edge, ~196pt wide).
+    right: 220,
     bottom: 170,
     flexDirection: 'row',
     alignItems: 'flex-end',

@@ -248,6 +248,18 @@ func (r *mutationResolver) VerifyCode(ctx context.Context, code string) (bool, e
 	return true, nil
 }
 
+// RequestVerificationLink is the resolver for the requestVerificationLink field.
+func (r *mutationResolver) RequestVerificationLink(ctx context.Context, purpose model.VerificationPurpose) (bool, error) {
+	identity, err := auth.RequireIdentity(ctx)
+	if err != nil {
+		return false, err
+	}
+	if err := r.Users.RequestVerificationLink(ctx, identity, string(purpose)); err != nil {
+		return false, err
+	}
+	return true, nil
+}
+
 // SaveQuestionnaire is the resolver for the saveQuestionnaire field.
 func (r *mutationResolver) SaveQuestionnaire(ctx context.Context, input model.SaveQuestionnaireInput) (*model.QuestionnaireAnswers, error) {
 	identity, err := auth.RequireIdentity(ctx)
@@ -476,13 +488,19 @@ func viewerModel(viewer db.Viewer) *model.Viewer {
 	}
 }
 func userModel(user db.User) *model.User {
-	return &model.User{
+	out := &model.User{
 		ID:          user.ID,
 		AuthSubject: user.AuthSubject,
 		Email:       user.Email,
 		CreatedAt:   db.FormatTime(user.CreatedAt),
 		UpdatedAt:   db.FormatTime(user.UpdatedAt),
 	}
+	if user.AccountVerifiedAt != nil {
+		formatted := db.FormatTime(*user.AccountVerifiedAt)
+		out.AccountVerifiedAt = &formatted
+	}
+	out.VerificationMethod = user.VerificationMethod
+	return out
 }
 func profileModel(profile db.Profile) *model.Profile {
 	return &model.Profile{

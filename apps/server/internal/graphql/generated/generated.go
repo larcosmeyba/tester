@@ -419,6 +419,7 @@ type ComplexityRoot struct {
 		RegisterPushToken                func(childComplexity int, input model.RegisterPushTokenInput) int
 		ReplaceMeal                      func(childComplexity int, planID string, input model.ReplaceMealInput) int
 		RequestVerificationCode          func(childComplexity int, input model.RequestVerificationCodeInput) int
+		RequestVerificationLink          func(childComplexity int, purpose model.VerificationPurpose) int
 		SaveBenefitsAnswers              func(childComplexity int, input []*model.BenefitsAnswerInput) int
 		SaveBenefitsGroup                func(childComplexity int, input model.SaveBenefitsGroupInput) int
 		SaveLocationFallback             func(childComplexity int, zip string) int
@@ -630,11 +631,13 @@ type ComplexityRoot struct {
 	}
 
 	User struct {
-		AuthSubject func(childComplexity int) int
-		CreatedAt   func(childComplexity int) int
-		Email       func(childComplexity int) int
-		ID          func(childComplexity int) int
-		UpdatedAt   func(childComplexity int) int
+		AccountVerifiedAt  func(childComplexity int) int
+		AuthSubject        func(childComplexity int) int
+		CreatedAt          func(childComplexity int) int
+		Email              func(childComplexity int) int
+		ID                 func(childComplexity int) int
+		UpdatedAt          func(childComplexity int) int
+		VerificationMethod func(childComplexity int) int
 	}
 
 	VerificationStatus struct {
@@ -677,6 +680,7 @@ type MutationResolver interface {
 	DeletePushToken(ctx context.Context, token string) (bool, error)
 	RequestVerificationCode(ctx context.Context, input model.RequestVerificationCodeInput) (bool, error)
 	VerifyCode(ctx context.Context, code string) (bool, error)
+	RequestVerificationLink(ctx context.Context, purpose model.VerificationPurpose) (bool, error)
 	SaveQuestionnaire(ctx context.Context, input model.SaveQuestionnaireInput) (*model.QuestionnaireAnswers, error)
 	SaveOnboardingStep(ctx context.Context, step string) (bool, error)
 	UpdateCommunicationConsents(ctx context.Context, input model.UpdateCommunicationConsentsInput) (bool, error)
@@ -2718,6 +2722,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.RequestVerificationCode(childComplexity, args["input"].(model.RequestVerificationCodeInput)), true
 
+	case "Mutation.requestVerificationLink":
+		if e.complexity.Mutation.RequestVerificationLink == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_requestVerificationLink_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.RequestVerificationLink(childComplexity, args["purpose"].(model.VerificationPurpose)), true
+
 	case "Mutation.saveBenefitsAnswers":
 		if e.complexity.Mutation.SaveBenefitsAnswers == nil {
 			break
@@ -4081,6 +4097,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.RecipeImport.Status(childComplexity), true
 
+	case "User.accountVerifiedAt":
+		if e.complexity.User.AccountVerifiedAt == nil {
+			break
+		}
+
+		return e.complexity.User.AccountVerifiedAt(childComplexity), true
+
 	case "User.authSubject":
 		if e.complexity.User.AuthSubject == nil {
 			break
@@ -4115,6 +4138,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.User.UpdatedAt(childComplexity), true
+
+	case "User.verificationMethod":
+		if e.complexity.User.VerificationMethod == nil {
+			break
+		}
+
+		return e.complexity.User.VerificationMethod(childComplexity), true
 
 	case "VerificationStatus.method":
 		if e.complexity.VerificationStatus.Method == nil {
@@ -4401,6 +4431,8 @@ type User {
   email: String
   createdAt: String!
   updatedAt: String!
+  accountVerifiedAt: String
+  verificationMethod: String
 }
 
 type Profile {
@@ -4631,6 +4663,11 @@ input UpdateCommunicationConsentsInput {
 extend type Mutation {
   requestVerificationCode(input: RequestVerificationCodeInput!): Boolean!
   verifyCode(code: String!): Boolean!
+  # Magic-link verification for signup (September 2026): emails a Verify
+  # button that opens GET /auth/verify?token=... on the API, which consumes
+  # the link and marks the account verified. One-time codes stay for account
+  # recovery and email/phone changes.
+  requestVerificationLink(purpose: VerificationPurpose!): Boolean!
   saveQuestionnaire(input: SaveQuestionnaireInput!): QuestionnaireAnswers!
   saveOnboardingStep(step: String!): Boolean!
   updateCommunicationConsents(input: UpdateCommunicationConsentsInput!): Boolean!
@@ -6302,6 +6339,21 @@ func (ec *executionContext) field_Mutation_requestVerificationCode_args(ctx cont
 		}
 	}
 	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_requestVerificationLink_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.VerificationPurpose
+	if tmp, ok := rawArgs["purpose"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("purpose"))
+		arg0, err = ec.unmarshalNVerificationPurpose2githubᚗcomᚋhelpthehiveᚋserverᚋinternalᚋgraphqlᚋmodelᚐVerificationPurpose(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["purpose"] = arg0
 	return args, nil
 }
 
@@ -18629,6 +18681,61 @@ func (ec *executionContext) fieldContext_Mutation_verifyCode(ctx context.Context
 	return fc, nil
 }
 
+func (ec *executionContext) _Mutation_requestVerificationLink(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_requestVerificationLink(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().RequestVerificationLink(rctx, fc.Args["purpose"].(model.VerificationPurpose))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_requestVerificationLink(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_requestVerificationLink_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Mutation_saveQuestionnaire(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Mutation_saveQuestionnaire(ctx, field)
 	if err != nil {
@@ -28445,6 +28552,88 @@ func (ec *executionContext) fieldContext_User_updatedAt(_ context.Context, field
 	return fc, nil
 }
 
+func (ec *executionContext) _User_accountVerifiedAt(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_User_accountVerifiedAt(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.AccountVerifiedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_User_accountVerifiedAt(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "User",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _User_verificationMethod(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_User_verificationMethod(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.VerificationMethod, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_User_verificationMethod(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "User",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _VerificationStatus_verified(ctx context.Context, field graphql.CollectedField, obj *model.VerificationStatus) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_VerificationStatus_verified(ctx, field)
 	if err != nil {
@@ -28620,6 +28809,10 @@ func (ec *executionContext) fieldContext_Viewer_user(_ context.Context, field gr
 				return ec.fieldContext_User_createdAt(ctx, field)
 			case "updatedAt":
 				return ec.fieldContext_User_updatedAt(ctx, field)
+			case "accountVerifiedAt":
+				return ec.fieldContext_User_accountVerifiedAt(ctx, field)
+			case "verificationMethod":
+				return ec.fieldContext_User_verificationMethod(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
 		},
@@ -35131,6 +35324,13 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		case "requestVerificationLink":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_requestVerificationLink(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		case "saveQuestionnaire":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_saveQuestionnaire(ctx, field)
@@ -36830,6 +37030,10 @@ func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		case "accountVerifiedAt":
+			out.Values[i] = ec._User_accountVerifiedAt(ctx, field, obj)
+		case "verificationMethod":
+			out.Values[i] = ec._User_verificationMethod(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -39923,6 +40127,16 @@ func (ec *executionContext) unmarshalNVerificationMethod2githubᚗcomᚋhelptheh
 }
 
 func (ec *executionContext) marshalNVerificationMethod2githubᚗcomᚋhelpthehiveᚋserverᚋinternalᚋgraphqlᚋmodelᚐVerificationMethod(ctx context.Context, sel ast.SelectionSet, v model.VerificationMethod) graphql.Marshaler {
+	return v
+}
+
+func (ec *executionContext) unmarshalNVerificationPurpose2githubᚗcomᚋhelpthehiveᚋserverᚋinternalᚋgraphqlᚋmodelᚐVerificationPurpose(ctx context.Context, v interface{}) (model.VerificationPurpose, error) {
+	var res model.VerificationPurpose
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNVerificationPurpose2githubᚗcomᚋhelpthehiveᚋserverᚋinternalᚋgraphqlᚋmodelᚐVerificationPurpose(ctx context.Context, sel ast.SelectionSet, v model.VerificationPurpose) graphql.Marshaler {
 	return v
 }
 

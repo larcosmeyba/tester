@@ -913,11 +913,13 @@ type UpdateServingsInput struct {
 }
 
 type User struct {
-	ID          string  `json:"id"`
-	AuthSubject string  `json:"authSubject"`
-	Email       *string `json:"email,omitempty"`
-	CreatedAt   string  `json:"createdAt"`
-	UpdatedAt   string  `json:"updatedAt"`
+	ID                 string  `json:"id"`
+	AuthSubject        string  `json:"authSubject"`
+	Email              *string `json:"email,omitempty"`
+	CreatedAt          string  `json:"createdAt"`
+	UpdatedAt          string  `json:"updatedAt"`
+	AccountVerifiedAt  *string `json:"accountVerifiedAt,omitempty"`
+	VerificationMethod *string `json:"verificationMethod,omitempty"`
 }
 
 type VerificationStatus struct {

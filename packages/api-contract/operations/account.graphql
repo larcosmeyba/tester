@@ -10,6 +10,10 @@ mutation RequestVerificationCode($input: RequestVerificationCodeInput!) {
   requestVerificationCode(input: $input)
 }
 
+mutation RequestVerificationLink($purpose: VerificationPurpose!) {
+  requestVerificationLink(purpose: $purpose)
+}
+
 mutation VerifyCode($code: String!) {
   verifyCode(code: $code)
 }

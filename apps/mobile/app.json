@@ -10,7 +10,9 @@
     "ios": {
       "icon": "./assets/expo.icon",
       "bundleIdentifier": "com.helpthehive",
-      "usesAppleSignIn": true,
+      "associatedDomains": [
+        "applinks:helpthehive-dev-api-bybr7qopwa-uc.a.run.app"
+      ],
       "infoPlist": {
         "LSMinimumSystemVersion": "16.4"
       },
@@ -59,6 +61,20 @@
       "predictiveBackGestureEnabled": false,
       "package": "com.helpthehive",
       "allowBackup": false,
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "https",
+              "host": "helpthehive-dev-api-bybr7qopwa-uc.a.run.app",
+              "pathPrefix": "/auth/verified"
+            }
+          ],
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
+      ],
       "permissions": [
         "android.permission.POST_NOTIFICATIONS"
       ]
