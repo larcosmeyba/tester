@@ -11,12 +11,17 @@
  * are shown instead of a failure after the fact.
  */
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Linking, StyleSheet, Text, View } from 'react-native';
+import { Linking, Modal, StyleSheet, Text, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 
-import { AppButton, AppHeader, Card, ScrollScreen, uiText } from '@/components/hive-ui';
+import { AppButton, AppHeader, Card, Chip, ScrollScreen, uiText } from '@/components/hive-ui';
 import { HiveColors, Spacing } from '@/constants/theme';
 import { BenefitsDatePicker } from '@/features/benefits/benefits-date-picker';
+import { downloadAndSharePdf, printPdf } from '@/features/benefits/benefits-document-actions';
+import { programCatalog } from '@/features/benefits/benefits-program-catalog';
+import { BenefitsSubmissionGuide } from '@/features/benefits/benefits-submission-guide';
+import { productStatusFor, statusToneFor } from '@/features/benefits/benefits-status';
+import { BenefitsSubmissionControl } from '@/features/benefits/benefits-submission-control';
 import {
   type BenefitsApplication,
   approveBenefitsApplication,
@@ -51,6 +56,10 @@ export default function BenefitsReviewScreen() {
     picked: Date;
   } | null>(null);
   const [confirmingDeadline, setConfirmingDeadline] = useState(false);
+  const [guideOpen, setGuideOpen] = useState(false);
+  const [sharing, setSharing] = useState(false);
+  const [printing, setPrinting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
 
   useEffect(() => {
     // Nothing to fetch without an id; the screen renders its own message for
@@ -162,6 +171,44 @@ export default function BenefitsReviewScreen() {
     }
   }, [confirmingDeadline, deadlinePrompt]);
 
+  const catalogEntry = useMemo(() => {
+    if (!application) return undefined;
+    const normalise = (value: string) => value.trim().toLowerCase().replace(/[\s-]+/g, '_');
+    return programCatalog.find(
+      (entry) => normalise(entry.id) === normalise(application.form.program),
+    );
+  }, [application]);
+
+  const shareDocument = useCallback(async () => {
+    if (!application) return;
+    const documentPath = application.finalDocumentPath ?? application.draftDocumentPath;
+    if (!documentPath) return;
+    setSharing(true);
+    setError('');
+    try {
+      await downloadAndSharePdf(documentPath, `${application.form.program}-application.pdf`);
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : 'Could not share the PDF.');
+    } finally {
+      setSharing(false);
+    }
+  }, [application]);
+
+  const printDocument = useCallback(async () => {
+    if (!application) return;
+    const documentPath = application.finalDocumentPath ?? application.draftDocumentPath;
+    if (!documentPath) return;
+    setPrinting(true);
+    setError('');
+    try {
+      await printPdf(documentPath);
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : 'Could not print the PDF.');
+    } finally {
+      setPrinting(false);
+    }
+  }, [application]);
+
   if (application === null) {
     const message = !applicationId
       ? 'No application was selected.'
@@ -186,6 +233,14 @@ export default function BenefitsReviewScreen() {
       <AppHeader title={application.form.formTitle} onBack={router.back} />
 
       <View style={styles.body}>
+        <View style={styles.pills}>
+          <Chip
+            label={`${catalogEntry?.name ?? application.form.program}${application.form.state ? ` · ${application.form.state}` : ''}`}
+            tone={statusToneFor(productStatusFor(application, submitted))}
+          />
+          <Chip label={productStatusFor(application, submitted)} tone={statusToneFor(productStatusFor(application, submitted))} />
+        </View>
+
         <Text style={styles.meta}>
           {application.form.program}
           {application.form.state ? ` · ${application.form.state}` : ''} ·{' '}
@@ -228,9 +283,10 @@ export default function BenefitsReviewScreen() {
               These boxes stay blank until you answer them. Nothing is filled in on your behalf.
             </Text>
             {outstanding.slice(0, 6).map((field) => (
-              <Text key={field.fieldPath} style={styles.outstanding}>
-                · {field.label}
-              </Text>
+              <View key={field.fieldPath} style={styles.missingRow}>
+                <Text style={styles.outstanding}>· {field.label}</Text>
+                <Text style={styles.missingBadge}>Missing</Text>
+              </View>
             ))}
             <AppButton
               title="Answer these"
@@ -263,6 +319,22 @@ export default function BenefitsReviewScreen() {
           </Card>
         ) : null}
 
+        <Card>
+          <Text style={uiText.subtitle}>Supporting Documents Needed</Text>
+          {(catalogEntry?.requirements ?? []).length > 0 ? (
+            (catalogEntry?.requirements ?? []).map((document) => (
+              <Text key={document} style={styles.outstanding}>
+                · {document}
+              </Text>
+            ))
+          ) : (
+            <Text style={uiText.muted}>
+              This program did not list required documents in the app catalog. Check the
+              agency&apos;s website for what to bring.
+            </Text>
+          )}
+        </Card>
+
         {pages.map(([page, fields]) => (
           <Card key={page}>
             <Text style={uiText.subtitle}>Page {page}</Text>
@@ -294,11 +366,73 @@ export default function BenefitsReviewScreen() {
         {error !== '' ? <Text style={styles.error}>{error}</Text> : null}
 
         {documentPath ? (
-          <AppButton
-            title={approved ? 'Open the completed PDF' : 'Open the draft PDF'}
-            onPress={() => Linking.openURL(benefitsDocumentUrl(documentPath))}
-          />
+          <>
+            <AppButton
+              title={approved ? 'Open the completed PDF' : 'Open the draft PDF'}
+              onPress={() => Linking.openURL(benefitsDocumentUrl(documentPath))}
+            />
+            <View style={styles.docActions}>
+              <AppButton
+                title={sharing ? 'Preparing…' : 'Download PDF'}
+                variant="secondary"
+                disabled={sharing || printing}
+                onPress={() => void shareDocument()}
+              />
+              <AppButton
+                title={printing ? 'Printing…' : 'Print'}
+                variant="secondary"
+                disabled={sharing || printing}
+                onPress={() => void printDocument()}
+              />
+            </View>
+          </>
         ) : null}
+
+        <Card>
+          <Text style={uiText.subtitle}>How to Submit</Text>
+          {application.form.agencyUrl ? (
+            <>
+              <Text style={uiText.muted}>
+                Submit through the {catalogEntry?.agency ?? 'program agency'}:
+              </Text>
+              <AppButton
+                title="Open the agency application site"
+                variant="plain"
+                onPress={() => {
+                  const url = application.form.agencyUrl;
+                  if (url) void Linking.openURL(url);
+                }}
+              />
+            </>
+          ) : (
+            <Text style={uiText.muted}>
+              {/* TODO (Section 3b): no agencyUrl on this form yet — do not
+                  invent a submission link. Wire it through
+                  BenefitsForm.agencyUrl instead. */}
+              The agency&apos;s online application link is not available for this form yet. The
+              full Submission Guide has what to do instead.
+            </Text>
+          )}
+          <AppButton
+            title="Open Submission Guide"
+            variant="plain"
+            onPress={() => setGuideOpen(true)}
+          />
+        </Card>
+
+        <Card>
+          {submitted ? (
+            <Text style={styles.approved}>
+              Marked as submitted for this session. Submission reminders stay on until the app
+              can save this properly.
+            </Text>
+          ) : (
+            <BenefitsSubmissionControl
+              onSubmitted={() => setSubmitted(true)}
+              onDismiss={() => undefined}
+            />
+          )}
+        </Card>
 
         {approved ? (
           <Text style={styles.approved}>
@@ -312,15 +446,32 @@ export default function BenefitsReviewScreen() {
           />
         )}
       </View>
+
+      <Modal visible={guideOpen} animationType="slide" onRequestClose={() => setGuideOpen(false)}>
+        <BenefitsSubmissionGuide application={application} onClose={() => setGuideOpen(false)} />
+      </Modal>
     </ScrollScreen>
   );
 }
 
 const styles = StyleSheet.create({
   body: { paddingHorizontal: Spacing.three, gap: Spacing.two, paddingBottom: Spacing.five },
+  pills: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.one },
   meta: { color: HiveColors.textSecondary, fontSize: 12 },
   warning: { backgroundColor: HiveColors.warningBg },
   outstanding: { color: HiveColors.text, fontSize: 13, marginTop: 2 },
+  missingRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: Spacing.two, marginTop: 2 },
+  missingBadge: {
+    color: HiveColors.warningText,
+    backgroundColor: HiveColors.warningBg,
+    fontSize: 11,
+    fontWeight: '700',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 10,
+    overflow: 'hidden',
+  },
+  docActions: { flexDirection: 'row', gap: Spacing.two },
   row: { marginTop: Spacing.one },
   rowLabel: { color: HiveColors.textSecondary, fontSize: 12 },
   rowValue: { color: HiveColors.text, fontSize: 15 },
