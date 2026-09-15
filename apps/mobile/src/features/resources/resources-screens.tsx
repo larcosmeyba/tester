@@ -16,6 +16,9 @@ import { AppButton, AppHeader, AppTextField, AvatarButton, Card, Chip, EmptyStat
 import { HiveColors } from '@/constants/theme';
 import { ComingSoonRow, GradientActionRow } from '@/components/hive-cards';
 import { allVideos, benefitPrograms, type BenefitProgram, nearbyResources, type ResourceItem, type VideoItem } from '@/data/mock-data';
+import { getHomeResources } from '@/features/home/home-resources';
+import { BenefitsRenewalBanner } from '@/features/benefits/benefits-renewal-banner';
+import { ResourcesApplicationsSection } from '@/features/resources/resources-applications';
 import { useAppState } from '@/state/app-state';
 import { StyleSheet } from 'react-native';
 import { Bullet, HorizontalScroller, sharedStyles } from '@/features/app/app-shared';
@@ -26,12 +29,14 @@ export function ResourcesScreen({ nav }: { nav: Navigation }) {
   const app = useAppState();
   const [selectedCategory, setSelectedCategory] = useState('All');
   const categories = ['All', 'Food', 'Housing', 'Healthcare', 'Utility', 'Job'];
-  const filteredResources =
-    selectedCategory === 'All'
-      ? nearbyResources
-      : nearbyResources.filter((resource) =>
-          resource.tag.toLowerCase().includes(selectedCategory.toLowerCase())
-        );
+  // Audit Section 8: allow-listed resources only (usable contact info,
+  // practical support categories), closest first — then the category chips
+  // filter within that set.
+  const nearYouResources = getHomeResources().filter(
+    (resource) =>
+      selectedCategory === 'All' ||
+      resource.tag.toLowerCase().includes(selectedCategory.toLowerCase()),
+  );
 
   return (
     <View style={sharedStyles.tabScreen}>
@@ -49,7 +54,7 @@ export function ResourcesScreen({ nav }: { nav: Navigation }) {
             gradient="benefits"
             title="Start Your Benefits Application"
             subtitle="Penny pre-fills SNAP, Medicaid, WIC & more — you review before submitting"
-            onPress={() => nav.push('government')}
+            onPress={() => nav.push('benefitsState')}
           />
         </View>
 
@@ -63,6 +68,14 @@ export function ResourcesScreen({ nav }: { nav: Navigation }) {
         </View>
 
         {/* Category filtering is newer than the reference build; kept, restyled. */}
+        <View style={styles.sectionInset}>
+          <ResourcesApplicationsSection nav={nav} />
+        </View>
+
+        <View style={styles.sectionInset}>
+          <BenefitsRenewalBanner />
+        </View>
+
         <HorizontalScroller>
           {categories.map((category) => (
             <Chip
@@ -75,14 +88,16 @@ export function ResourcesScreen({ nav }: { nav: Navigation }) {
         </HorizontalScroller>
 
         <SectionHeader title="Resources Near You" onPress={() => nav.push('resourceSearch')} />
-        {filteredResources.length > 0 ? (
-          filteredResources.map((resource) => (
-            <ResourceRow
-              key={resource.id}
-              resource={resource}
-              onPress={() => nav.push('resourceDetails', { resource })}
-            />
-          ))
+        {nearYouResources.length > 0 ? (
+          <HorizontalScroller>
+            {nearYouResources.map((resource) => (
+              <ResourceCard
+                key={resource.id}
+                resource={resource}
+                onPress={() => nav.push('resourceDetails', { resource })}
+              />
+            ))}
+          </HorizontalScroller>
         ) : (
           <EmptyState title="No resources match this filter." icon="map" />
         )}
@@ -331,6 +346,28 @@ export function ResourceRow({ resource, onPress }: { resource: ResourceItem; onP
   );
 }
 
+/**
+ * Compact card for the horizontally-scrolling "Resources Near You" rail
+ * (Audit Section 8). Tapping opens the full resource details.
+ */
+export function ResourceCard({ resource, onPress }: { resource: ResourceItem; onPress: () => void }) {
+  return (
+    <Card style={styles.resourceCardHorizontal} onPress={onPress}>
+      <Chip label={resource.tag} tone="green" />
+      <Text style={styles.resourceCardName} numberOfLines={2}>
+        {resource.name}
+      </Text>
+      <Text style={sharedStyles.miniMuted} numberOfLines={2}>
+        {resource.description}
+      </Text>
+      <View style={styles.resourceMetaRow}>
+        <HiveIcon name="map" size={12} color={HiveColors.textSecondary} />
+        <Text style={sharedStyles.miniMuted}>{resource.distance}</Text>
+      </View>
+    </Card>
+  );
+}
+
 const styles = StyleSheet.create({
   applyButton: {
     marginTop: 4,
@@ -383,6 +420,22 @@ const styles = StyleSheet.create({
     backgroundColor: HiveColors.white,
     gap: 8,
     alignItems: 'flex-start',
+  },
+  resourceCardHorizontal: {
+    width: 250,
+    marginRight: 12,
+    padding: 16,
+    borderRadius: Radii.lg,
+    borderWidth: 1,
+    borderColor: HiveColors.border,
+    backgroundColor: HiveColors.white,
+    gap: 8,
+    alignItems: 'flex-start',
+  },
+  resourceCardName: {
+    color: HiveColors.text,
+    fontSize: 15,
+    fontWeight: '700',
   },
   resourceContent: {
     paddingTop: 16,
