@@ -24,6 +24,7 @@ import { HomeScreen } from '@/features/home/home-screen';
 import { PennyScreen } from '@/features/penny/penny-screen';
 import { BenefitsQuestionnaireScreen, GovernmentScreen, ProgramApplicationScreen, ResourceDetailsScreen, ResourceSearchScreen, ResourcesScreen, VideoDetailScreen, VideoHubScreen } from '@/features/resources/resources-screens';
 import { BenefitsGroupQuestionnaireScreen } from '@/features/benefits/benefits-group-questionnaire-screen';
+import { CookWhatIHaveScreen } from '@/features/meals/cook-what-i-have-screen';
 import { BenefitsPreparingScreen } from '@/features/benefits/benefits-preparing-screen';
 import { BenefitsProgramPickerScreen } from '@/features/benefits/benefits-program-picker-screen';
 import { BenefitsStateScreen } from '@/features/benefits/benefits-state-screen';
@@ -153,7 +154,14 @@ export default function AppRoot({ initialPublicScreen }: { initialPublicScreen?:
     case 'pantry':
       return <PantryScreen nav={nav} />;
     case 'addPantry':
-      return <AddPantryScreen nav={nav} />;
+      return <AddPantryScreen nav={nav} itemId={route.params?.itemId as string | undefined} />;
+    case 'cookWhatIHave':
+      return (
+        <CookWhatIHaveScreen
+          nav={nav}
+          focusIngredient={route.params?.focusIngredient as string | undefined}
+        />
+      );
     case 'account':
       return <AccountScreen nav={nav} />;
     case 'editProfile':
