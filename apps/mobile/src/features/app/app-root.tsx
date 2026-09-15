@@ -9,7 +9,7 @@
 // this shell, so the ScreenName union in navigation-types.ts is what actually
 // decides what a user sees.
 
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Text, View } from 'react-native';
 import { useAuth } from '@/auth/auth-context';
 import { AppButton, ModalSheet, PennyImage, Screen, uiText } from '@/components/hive-ui';
@@ -24,7 +24,6 @@ import { HomeScreen } from '@/features/home/home-screen';
 import { PennyScreen } from '@/features/penny/penny-screen';
 import { BenefitsQuestionnaireScreen, GovernmentScreen, ProgramApplicationScreen, ResourceDetailsScreen, ResourceSearchScreen, ResourcesScreen, VideoDetailScreen, VideoHubScreen } from '@/features/resources/resources-screens';
 import { BenefitsGroupQuestionnaireScreen } from '@/features/benefits/benefits-group-questionnaire-screen';
-import { CookWhatIHaveScreen } from '@/features/meals/cook-what-i-have-screen';
 import { BenefitsPreparingScreen } from '@/features/benefits/benefits-preparing-screen';
 import { BenefitsProgramPickerScreen } from '@/features/benefits/benefits-program-picker-screen';
 import { BenefitsStateScreen } from '@/features/benefits/benefits-state-screen';
@@ -33,11 +32,6 @@ import { AddPantryScreen, PantryScreen } from '@/features/pantry/pantry-screens'
 import { AccountScreen, ChangeEmailScreen, DeleteAccountScreen, EditHandleScreen, EditProfileScreen, FeedbackScreen, NotificationsScreen, SettingsScreen } from '@/features/profile/profile-screens';
 import { DealsScreen, RecipeScreen } from '@/features/meals/recipe-deals-screens';
 import { type Navigation, type Route, type ScreenName } from '@/features/app/navigation-types';
-import {
-  consumePendingQuestionnaireDeepLink,
-  subscribeQuestionnaireDeepLink,
-} from '@/features/notifications/pending-deep-link';
-import type { QuestionnaireReminderPushData } from '@/features/notifications/notification-service';
 import { sharedStyles } from '@/features/app/app-shared';
 import { StyleSheet } from 'react-native';
 import { HiveColors } from '@/constants/theme';
@@ -89,27 +83,6 @@ export default function AppRoot({ initialPublicScreen }: { initialPublicScreen?:
     [initialRouteName]
   );
 
-  // Questionnaire drop-off reminder deep link (Audit Section 3): a tap on the
-  // "You're almost done" notification lands back on the exact questionnaire
-  // section. The notification handler stashes the payload (expo-router can't
-  // reach this custom stack); we consume it on cold start and subscribe for
-  // warm taps. Pushing only updates the stack — the splash gate below still
-  // renders first, so the questionnaire appears once the video finishes.
-  useEffect(() => {
-    const openQuestionnaire = (data: QuestionnaireReminderPushData) => {
-      if (!auth.isAuthenticated || !app.hasCompletedOnboarding) return;
-      nav.push('benefitsGroupQuestionnaire', {
-        applicationIds: data.applicationIds,
-        state: data.state,
-        resumeSection: data.resumeSection,
-      });
-    };
-    const unsubscribe = subscribeQuestionnaireDeepLink(openQuestionnaire);
-    const pending = consumePendingQuestionnaireDeepLink();
-    if (pending) openQuestionnaire(pending);
-    return unsubscribe;
-  }, [auth.isAuthenticated, app.hasCompletedOnboarding, nav]);
-
   if (!splashFinished) {
     return <SplashVideoScreen onDone={() => setSplashFinished(true)} />;
   }
@@ -154,14 +127,7 @@ export default function AppRoot({ initialPublicScreen }: { initialPublicScreen?:
     case 'pantry':
       return <PantryScreen nav={nav} />;
     case 'addPantry':
-      return <AddPantryScreen nav={nav} itemId={route.params?.itemId as string | undefined} />;
-    case 'cookWhatIHave':
-      return (
-        <CookWhatIHaveScreen
-          nav={nav}
-          focusIngredient={route.params?.focusIngredient as string | undefined}
-        />
-      );
+      return <AddPantryScreen nav={nav} />;
     case 'account':
       return <AccountScreen nav={nav} />;
     case 'editProfile':
@@ -221,13 +187,7 @@ export default function AppRoot({ initialPublicScreen }: { initialPublicScreen?:
         />
       );
     case 'benefitsPreparing':
-      return (
-        <BenefitsPreparingScreen
-          nav={nav}
-          applicationIds={route.params?.applicationIds as string[] | undefined}
-          state={route.params?.state as string | undefined}
-        />
-      );
+      return <BenefitsPreparingScreen nav={nav} />;
     case 'financeHub':
       return <VideoHubScreen nav={nav} title="Finance Learning Hub" videos={allVideos.filter((video) => video.category === 'finance')} />;
     case 'spendingReport':
