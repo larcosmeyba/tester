@@ -1,8 +1,16 @@
-// The Home tab — Marcos's approved Section 2 home screen
-// ("Home Screen Update .png"). Source of truth for layout/copy.
+// The Home tab — rebuilt from Marcos's SwiftUI HomeView
+// (6_-_HomeView__home_page-2.swift). Design truth is the Swift file plus the
+// approved Home screenshot; every data surface below is real backend state.
+//
+// Layout: greeting header → "Use It Soon" pantry banner (when items expire)
+// → three quick-action cards → "Resources Near You" fed by the real
+// GET /resources/nearby endpoint (coordinates when location is granted,
+// profile ZIP fallback, honest loading/unavailable/empty states — never
+// demo listings, never invented distances).
 
 import { useMemo, useState } from 'react';
 import {
+  ActivityIndicator,
   Alert,
   Animated,
   Image,
@@ -10,11 +18,13 @@ import {
   Pressable,
   ScrollView,
   Text,
+  StyleSheet,
   View,
   useWindowDimensions,
 } from 'react-native';
 import { router } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AvatarButton, HiveIcon } from '@/components/hive-ui';
@@ -22,18 +32,18 @@ import { FloatingPill, useFloatingTabBarSpace, FLOATING_TAB_BAR_HEIGHT } from '@
 import { useAppState } from '@/state/app-state';
 import { usePantry } from '@/features/pantry/pantry-context';
 import { setPennyContext } from '@/features/penny/penny-context';
-import { StyleSheet } from 'react-native';
 import { sharedStyles } from '@/features/app/app-shared';
 import { type Navigation } from '@/features/app/navigation-types';
 import { HiveColors, Shadows } from '@/constants/theme';
 import { useResponsive } from '@/constants/responsive';
-import { type ResourceItem } from '@/data/mock-data';
-import { getHomeResources, getResourceDataSource } from './home-resources';
+import {
+  formatResourceDistance,
+  useHomeResources,
+  type HomeResourceLookupState,
+} from './use-home-resources';
+import type { NearbyResource } from '@/features/resources/resource-service';
 
 const pennyWaveHomeSource = require('@/assets/images/hive/penny-wave-home.png');
-// TODO (Section 2 audit): replace the placeholder above with the exact Home
-// greeting Penny image from Marcos's ZIP — follow the approved screenshot for
-// spacing, size, and overall design.
 const askPennySource = require('@/assets/images/hive/ask-penny.png');
 
 const BENEFIT_PILLS = ['SNAP', 'WIC', 'Medicaid', 'LIHEAP', 'And more'];
@@ -45,11 +55,20 @@ const BADGE_TONES = {
   blue: { bg: '#E3F2FD', fg: '#1565C0' },
 } as const;
 
+function badgeToneFor(tag: string): keyof typeof BADGE_TONES {
+  const lowered = tag.toLowerCase();
+  if (lowered.includes('wic')) return 'pink';
+  if (lowered.includes('snap') || lowered.includes('calfresh')) return 'orange';
+  if (lowered.includes('health') || lowered.includes('clinic') || lowered.includes('medicaid')) return 'blue';
+  return 'green';
+}
+
 export function HomeScreen({ nav }: { nav: Navigation }) {
   const app = useAppState();
   const styles = useHomeStyles();
-  const firstName = app.profile.firstName.trim() || 'there';
-  const resourceSource = getResourceDataSource(app.preferences.locationPermissionStatus, app.profile.zip);
+  const firstName = app.profile.firstName.trim();
+  // Never a dangling comma: fall back to a neutral greeting, not "Hi ,".
+  const greeting = firstName ? `Hi ${firstName},` : 'Hi there,';
 
   async function pickAndSavePhoto() {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -87,7 +106,7 @@ export function HomeScreen({ nav }: { nav: Navigation }) {
       <ScrollView contentContainerStyle={styles.homeContent} showsVerticalScrollIndicator={false}>
         <View style={styles.homeHeader}>
           <View style={styles.greetingRow}>
-            <Text style={styles.homeGreeting}>Hi {firstName},</Text>
+            <Text style={styles.homeGreeting}>{greeting}</Text>
             <Image source={pennyWaveHomeSource} style={styles.pennyWave} resizeMode="contain" />
           </View>
           <Text style={styles.homeSubGreeting}>Let&apos;s get you the help you need.</Text>
@@ -98,95 +117,86 @@ export function HomeScreen({ nav }: { nav: Navigation }) {
 
         <ExpiringSoonBanner onPress={() => nav.push('pantry')} />
 
-        <Text style={styles.homeQuestion}>What would you like to do today?</Text>
+        <Text style={styles.homeQuestion}>What would you like to do first?</Text>
 
         <View style={styles.actionStack}>
           <Pressable
             accessibilityRole="button"
             accessibilityLabel="Apply for Benefits"
             onPress={() => nav.push('benefitsState')}
-            style={({ pressed }) => [styles.card, styles.greenCard, pressed && sharedStyles.pressed]}>
-            <View style={styles.cardTopRow}>
-              <View style={[styles.cardIconCircle, styles.greenCircle]}>
-                <HiveIcon name="doc" size={24} color={HiveColors.white} />
-              </View>
-              <Text style={styles.cardTitle}>Apply for Benefits</Text>
-              <HiveIcon name="bank" size={40} color="rgba(0,0,0,0.22)" />
-              <HiveIcon name="next" size={18} color="rgba(255,255,255,0.9)" />
-            </View>
-            <View style={styles.pillRow}>
-              {BENEFIT_PILLS.map((pill) => (
-                <View key={pill} style={styles.benefitPill}>
-                  <Text style={styles.benefitPillText}>{pill}</Text>
+            style={({ pressed }) => [styles.card, pressed && sharedStyles.pressed]}>
+            <LinearGradient
+              colors={['#216B38', '#0F441F']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.cardGradient}>
+              <View style={styles.cardTopRow}>
+                <View style={styles.cardIconCircle}>
+                  <HiveIcon name="doc" size={24} color={HiveColors.white} />
                 </View>
-              ))}
-            </View>
+                <Text style={styles.cardTitle}>Apply for Benefits</Text>
+                <HiveIcon name="bank" size={34} color="rgba(255,255,255,0.30)" />
+                <HiveIcon name="next" size={14} color="rgba(255,255,255,0.65)" />
+              </View>
+              <View style={styles.pillRow}>
+                {BENEFIT_PILLS.map((pill) => (
+                  <View key={pill} style={styles.benefitPill}>
+                    <Text style={styles.benefitPillText}>{pill}</Text>
+                  </View>
+                ))}
+              </View>
+            </LinearGradient>
           </Pressable>
 
           <Pressable
             accessibilityRole="button"
             accessibilityLabel="Budget your meal plan for the week"
-            onPress={() => router.push('/meals/questionnaire')}
-            style={({ pressed }) => [styles.card, styles.blueCard, pressed && sharedStyles.pressed]}>
-            <View style={styles.cardTopRow}>
-              <View style={[styles.cardIconCircle, styles.blueCircle]}>
-                <HiveIcon name="fork" size={24} color={HiveColors.white} />
+            onPress={() => router.push('/meals/source')}
+            style={({ pressed }) => [styles.card, pressed && sharedStyles.pressed]}>
+            <LinearGradient
+              colors={['#3887FF', '#0061EB']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={styles.cardGradient}>
+              <View style={styles.cardTopRow}>
+                <View style={styles.cardIconCircle}>
+                  <HiveIcon name="fork" size={24} color={HiveColors.white} />
+                </View>
+                <Text style={styles.cardTitle}>Budget your meal plan for{'\n'}the week</Text>
+                <View style={sharedStyles.flexOne} />
+                <HiveIcon name="next" size={14} color="rgba(255,255,255,0.65)" />
               </View>
-              <Text style={styles.cardTitle}>Budget your meal plan for{'\n'}the week</Text>
-              <View style={sharedStyles.flexOne} />
-              <HiveIcon name="next" size={18} color="rgba(255,255,255,0.9)" />
-            </View>
+            </LinearGradient>
           </Pressable>
 
           <Pressable
             accessibilityRole="button"
             accessibilityLabel="Cook what I have"
-            onPress={() => nav.push('pantry')}
-            style={({ pressed }) => [styles.card, styles.orangeCard, pressed && sharedStyles.pressed]}>
-            <View style={styles.cardTopRow}>
-              <View style={[styles.cardIconCircle, styles.orangeCircle]}>
-                <HiveIcon name="fridge" size={24} color={HiveColors.white} />
+            onPress={() => nav.push('cookWhatIHave')}
+            style={({ pressed }) => [styles.card, pressed && sharedStyles.pressed]}>
+            <LinearGradient
+              colors={['#D9772A', '#B85F1D']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.cardGradient}>
+              <View style={styles.cardTopRow}>
+                <View style={styles.cardIconCircle}>
+                  <HiveIcon name="fridge" size={24} color={HiveColors.white} />
+                </View>
+                <View style={sharedStyles.flexOne}>
+                  <Text style={styles.cardTitle}>Cook what I have</Text>
+                  <Text style={styles.cardSubtitle}>
+                    See recipes based on what you already have at home
+                  </Text>
+                </View>
+                <HiveIcon name="carrot" size={30} color="rgba(255,255,255,0.30)" />
+                <HiveIcon name="next" size={14} color="rgba(255,255,255,0.65)" />
               </View>
-              <View style={sharedStyles.flexOne}>
-                <Text style={styles.cardTitle}>Cook what I have</Text>
-                <Text style={styles.cardSubtitle}>
-                  See recipes based on what{'\n'}you already have at home
-                </Text>
-              </View>
-              <HiveIcon name="carrot" size={34} color="rgba(255,255,255,0.30)" />
-              <HiveIcon name="next" size={18} color="rgba(255,255,255,0.9)" />
-            </View>
+            </LinearGradient>
           </Pressable>
         </View>
 
-        <View style={styles.resourcesHeaderRow}>
-          <View style={styles.resourcesTitleWrap}>
-            <Text style={styles.resourcesTitle}>{resourceSource.title}</Text>
-            <Text style={styles.resourcesSubtitle}>{resourceSource.subtitle}</Text>
-          </View>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="See all resources"
-            onPress={() => nav.push('resources')}
-            style={({ pressed }) => [styles.seeAllPill, pressed && sharedStyles.pressed]}>
-            <Text style={styles.seeAllText}>See all</Text>
-          </Pressable>
-        </View>
-
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.resourceCarousel}
-          snapToInterval={264}
-          decelerationRate="fast">
-          {getHomeResources().map((resource) => (
-            <HomeResourceCard
-              key={resource.id}
-              resource={resource}
-              onPress={() => nav.push('resourceDetails', { resource })}
-            />
-          ))}
-        </ScrollView>
+        <HomeResourcesSection nav={nav} />
       </ScrollView>
 
       {app.cart.length > 0 ? (
@@ -242,10 +252,82 @@ function ExpiringSoonBanner({ onPress }: { onPress: () => void }) {
   );
 }
 
-function HomeResourceCard({ resource, onPress }: { resource: ResourceItem; onPress: () => void }) {
+function HomeResourcesSection({ nav }: { nav: Navigation }) {
   const styles = useHomeStyles();
-  const badge = BADGE_TONES[resource.badgeTone ?? 'green'];
-  const [days, time] = resource.hours.split('·').map((part) => part.trim());
+  const lookup = useHomeResources();
+
+  const header = (title: string, caption: string | null) => (
+    <>
+      <View style={styles.resourcesHeaderRow}>
+        <View style={styles.resourcesTitleWrap}>
+          <Text style={styles.resourcesTitle}>{title}</Text>
+          {caption ? <Text style={styles.resourcesSubtitle}>{caption}</Text> : null}
+        </View>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="See all resources"
+          onPress={() => nav.push('resources')}
+          style={({ pressed }) => [styles.seeAllPill, pressed && sharedStyles.pressed]}>
+          <Text style={styles.seeAllText}>See all</Text>
+        </Pressable>
+      </View>
+    </>
+  );
+
+  const body = (state: HomeResourceLookupState) => {
+    switch (state.status) {
+      case 'loading':
+        return (
+          <View style={styles.lookupCentered}>
+            <ActivityIndicator size="large" color={HiveColors.green} />
+          </View>
+        );
+      case 'unavailable':
+        return (
+          <View style={styles.lookupCentered}>
+            <HiveIcon name="map" size={36} color={HiveColors.border} />
+            <Text style={styles.lookupUnavailable}>{state.message}</Text>
+          </View>
+        );
+      case 'empty':
+        return (
+          <View style={styles.lookupCentered}>
+            <Text style={styles.lookupUnavailable}>No resources found nearby right now.</Text>
+          </View>
+        );
+      case 'ready':
+        return (
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.resourceCarousel}>
+            {state.resources.map((resource) => (
+              <HomeResourceCard
+                key={resource.id}
+                resource={resource}
+                onPress={() => nav.push('resourceDetails', { resource })}
+              />
+            ))}
+          </ScrollView>
+        );
+    }
+  };
+
+  const title = lookup.status === 'ready' || lookup.status === 'empty' ? lookup.title : 'Resources Near You';
+  const caption = lookup.status === 'ready' || lookup.status === 'empty' ? lookup.caption : null;
+
+  return (
+    <View>
+      {header(title, caption)}
+      {body(lookup)}
+    </View>
+  );
+}
+
+function HomeResourceCard({ resource, onPress }: { resource: NearbyResource; onPress: () => void }) {
+  const styles = useHomeStyles();
+  const badge = BADGE_TONES[badgeToneFor(resource.tag)];
+  const distance = formatResourceDistance(resource.distanceMi);
   return (
     <Pressable
       accessibilityRole="button"
@@ -256,17 +338,21 @@ function HomeResourceCard({ resource, onPress }: { resource: ResourceItem; onPre
         <Text style={[styles.resBadgeText, { color: badge.fg }]}>{resource.tag}</Text>
       </View>
       <Text style={styles.resName} numberOfLines={2}>{resource.name}</Text>
-      <View style={styles.resMetaRow}>
-        <HiveIcon name="map" size={13} color={HiveColors.green} />
-        <Text style={styles.resMetaText}>
-          {resource.distance} · {days}
-        </Text>
-      </View>
-      <View style={styles.resMetaRow}>
-        <HiveIcon name="bell" size={13} color={HiveColors.green} />
-        <Text style={styles.resMetaText}>{time}</Text>
-      </View>
-      <Text style={styles.resDescription} numberOfLines={3}>{resource.description}</Text>
+      {distance ? (
+        <View style={styles.resMetaRow}>
+          <HiveIcon name="map" size={13} color={HiveColors.green} />
+          <Text style={styles.resMetaText}>{distance}</Text>
+        </View>
+      ) : null}
+      {resource.hours?.trim() ? (
+        <View style={styles.resMetaRow}>
+          <HiveIcon name="clock" size={13} color={HiveColors.green} />
+          <Text style={styles.resMetaText}>{resource.hours.trim()}</Text>
+        </View>
+      ) : null}
+      {resource.description?.trim() ? (
+        <Text style={styles.resDescription} numberOfLines={3}>{resource.description.trim()}</Text>
+      ) : null}
       <Pressable
         accessibilityRole="button"
         accessibilityLabel={`Learn more about ${resource.name}`}
@@ -342,10 +428,6 @@ function AskPennyFab({ onPress }: { onPress: () => void }) {
   );
 }
 
-const CARD_GREEN = '#2C5731';
-const CARD_BLUE = '#3B73ED';
-const CARD_ORANGE = '#BD7136';
-
 function useHomeStyles() {
   const { s, vs, ms } = useResponsive();
   const tabBarSpace = useFloatingTabBarSpace();
@@ -397,12 +479,12 @@ function useHomeStyles() {
       },
       card: {
       borderRadius: s(20),
+      overflow: 'hidden',
+      },
+      cardGradient: {
       padding: 16,
       gap: s(14),
       },
-      greenCard: { backgroundColor: CARD_GREEN },
-      blueCard: { backgroundColor: CARD_BLUE },
-      orangeCard: { backgroundColor: CARD_ORANGE },
       cardTopRow: {
       flexDirection: 'row',
       alignItems: 'center',
@@ -416,9 +498,6 @@ function useHomeStyles() {
       justifyContent: 'center',
       backgroundColor: 'rgba(255,255,255,0.22)',
       },
-      greenCircle: {},
-      blueCircle: {},
-      orangeCircle: {},
       cardTitle: {
       color: HiveColors.white,
       fontSize: ms(19),
@@ -485,6 +564,18 @@ function useHomeStyles() {
       gap: s(12),
       paddingBottom: vs(8),
       },
+      lookupCentered: {
+      alignItems: 'center',
+      gap: s(10),
+      paddingHorizontal: s(40),
+      paddingVertical: vs(24),
+      },
+      lookupUnavailable: {
+      color: HiveColors.textSecondary,
+      fontSize: ms(14),
+      lineHeight: ms(20),
+      textAlign: 'center',
+      },
       resCard: {
       width: s(252),
       backgroundColor: HiveColors.card,
@@ -524,7 +615,7 @@ function useHomeStyles() {
       lineHeight: ms(19),
       },
       learnMoreButton: {
-      backgroundColor: CARD_GREEN,
+      backgroundColor: HiveColors.green,
       borderRadius: s(12),
       paddingVertical: vs(12),
       alignItems: 'center',
