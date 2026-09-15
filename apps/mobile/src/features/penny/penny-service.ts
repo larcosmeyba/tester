@@ -22,6 +22,7 @@
  */
 import { getGraphQLAuthToken } from '@/auth/auth-client';
 import { apiBaseUrl } from '@/constants/env';
+import type { PennyScreenContext } from '@/features/penny/penny-context';
 import { ApiError } from '@/services/api-error';
 
 export type PennyRole = 'user' | 'penny';
@@ -72,6 +73,12 @@ export type SendMessageInput = {
   conversationId: string | null;
   text: string;
   signal?: AbortSignal;
+  /**
+   * Where the user is asking from (Audit Section 7). Sent with the message so
+   * Penny can tailor guidance; the backend may ignore it until it ships
+   * context support. Never includes message content beyond the context fields.
+   */
+  context?: PennyScreenContext;
 };
 
 export type SendMessageResult = {
@@ -180,22 +187,22 @@ export const pennyService: PennyService = {
     return (body ?? []).map(toMessage);
   },
 
-  async send({ conversationId, text, signal }) {
+  async send({ conversationId, text, signal, context }) {
     const body = await request<{ conversationId: string; message: MessageBody }>('/messages', {
       method: 'POST',
-      body: JSON.stringify({ conversationId, text }),
+      body: JSON.stringify({ conversationId, text, ...(context ? { context } : {}) }),
       signal,
     });
     return { conversationId: body.conversationId, message: toMessage(body.message) };
   },
 
-  async stream({ conversationId, text, signal }, onChunk) {
+  async stream({ conversationId, text, signal, context }, onChunk) {
     let response: Response;
     try {
       response = await fetch(pennyUrl('/messages/stream'), {
         method: 'POST',
         headers: { ...(await authHeaders()), Accept: 'text/event-stream' },
-        body: JSON.stringify({ conversationId, text }),
+        body: JSON.stringify({ conversationId, text, ...(context ? { context } : {}) }),
         signal,
       });
     } catch (cause) {
