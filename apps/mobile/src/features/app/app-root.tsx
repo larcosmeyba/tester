@@ -28,7 +28,7 @@ import { CookWhatIHaveScreen } from '@/features/meals/cook-what-i-have-screen';
 import { BenefitsPreparingScreen } from '@/features/benefits/benefits-preparing-screen';
 import { BenefitsProgramPickerScreen } from '@/features/benefits/benefits-program-picker-screen';
 import { BenefitsStateScreen } from '@/features/benefits/benefits-state-screen';
-import { BudgetSettingsScreen, ConnectAccountScreen, FinanceScreen, SpendingReportScreen, TransactionsScreen } from '@/features/budget/budget-screens';
+import { BudgetSettingsScreen, ConnectAccountScreen, SpendingReportScreen, TransactionsScreen } from '@/features/budget/budget-screens';
 import { AddPantryScreen, PantryScreen } from '@/features/pantry/pantry-screens';
 import { AccountScreen, ChangeEmailScreen, DeleteAccountScreen, EditHandleScreen, EditProfileScreen, FeedbackScreen, NotificationsScreen, SettingsScreen } from '@/features/profile/profile-screens';
 import { DealsScreen, RecipeScreen } from '@/features/meals/recipe-deals-screens';
@@ -256,9 +256,9 @@ function MainTabs({ nav }: { nav: Navigation }) {
       <View style={styles.tabShell}>
         <View style={styles.tabContent}>
           {app.selectedTab === 0 ? <HomeScreen nav={nav} /> : null}
-          {app.selectedTab === 1 ? <WeeklyMealPlanScreen /> : null}
+          {app.selectedTab === 1 ? <ResourcesScreen nav={nav} /> : null}
           {app.selectedTab === 2 ? <PennyScreen nav={nav} /> : null}
-          {app.selectedTab === 3 ? <FinanceScreen nav={nav} /> : null}
+          {app.selectedTab === 3 ? <WeeklyMealPlanScreen /> : null}
           {app.selectedTab === 4 ? <AccountScreen nav={nav} /> : null}
         </View>
         <FloatingTabBar tabs={tabs} selectedIndex={app.selectedTab} onSelect={app.setSelectedTab} />
