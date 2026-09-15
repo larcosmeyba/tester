@@ -26,9 +26,13 @@ import { StyleSheet } from 'react-native';
 import { sharedStyles } from '@/features/app/app-shared';
 import { type Navigation } from '@/features/app/navigation-types';
 import { HiveColors, Shadows } from '@/constants/theme';
-import { nearbyResources, type ResourceItem } from '@/data/mock-data';
+import { type ResourceItem } from '@/data/mock-data';
+import { getHomeResources } from './home-resources';
 
 const pennyWaveHomeSource = require('@/assets/images/hive/penny-wave-home.png');
+// TODO (Section 2 audit): replace the placeholder above with the exact Home
+// greeting Penny image from Marcos's ZIP — follow the approved screenshot for
+// spacing, size, and overall design.
 const askPennySource = require('@/assets/images/hive/ask-penny.png');
 
 const BENEFIT_PILLS = ['SNAP', 'WIC', 'Medicaid', 'LIHEAP', 'And more'];
@@ -169,7 +173,7 @@ export function HomeScreen({ nav }: { nav: Navigation }) {
           contentContainerStyle={styles.resourceCarousel}
           snapToInterval={264}
           decelerationRate="fast">
-          {nearbyResources.map((resource) => (
+          {getHomeResources().map((resource) => (
             <HomeResourceCard
               key={resource.id}
               resource={resource}
@@ -191,6 +195,9 @@ export function HomeScreen({ nav }: { nav: Navigation }) {
         </View>
       ) : null}
 
+      {/* TODO (Section 7 audit): Penny AI does not accept screen context yet.
+          Pass e.g. { source: 'home' } here once the Penny service supports it,
+          so Penny knows the user is asking from the Home screen. */}
       <AskPennyFab onPress={() => app.setSelectedTab(2)} />
     </View>
   );
