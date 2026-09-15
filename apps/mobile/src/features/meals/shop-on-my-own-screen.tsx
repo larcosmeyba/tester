@@ -13,7 +13,6 @@ import { HiveColors, Radii, Spacing } from '@/constants/theme';
 import { printAndShareGroceryList } from '@/features/meals/grocery-list-print';
 import { PRICING_NOTICE } from '@/features/meals/pricing-notice';
 import { useMealPlan } from '@/features/meals/meal-plan-context';
-import { setPendingPurchases } from '@/features/pantry/pending-purchases';
 import { describeError } from '@/services/api-error';
 
 export function ShopOnMyOwnScreen() {
@@ -102,19 +101,7 @@ export function ShopOnMyOwnScreen() {
           <AppButton
             title="Done shopping"
             disabled={remaining > 0}
-            onPress={() => {
-              // Audit Section 5: a finished grocery run becomes the pantry
-              // screen's "Add the groceries you just purchased?" prompt.
-              setPendingPurchases(
-                items.map((item) => ({
-                  displayName: item.displayName,
-                  neededQty: item.neededQty,
-                  unit: item.unit,
-                  packageLabel: item.packageLabel,
-                })),
-              );
-              router.replace('/meals/plan');
-            }}
+            onPress={() => router.replace('/meals/plan')}
           />
         </View>
       </View>

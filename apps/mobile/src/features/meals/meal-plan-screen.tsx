@@ -16,9 +16,9 @@
  */
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'expo-router';
-import { ActivityIndicator, Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import { AppButton, AppHeader, EmptyState, HiveIcon, ModalSheet, uiText } from '@/components/hive-ui';
+import { AppButton, AppHeader, EmptyState, HiveIcon, uiText } from '@/components/hive-ui';
 import { AlertBanner, ComingSoonCard } from '@/components/hive-cards';
 import { WeekCalendarStrip, addDays, isSameDay, startOfWeek } from '@/components/hive-calendar';
 import { InstacartButton } from '@/components/hive-instacart';
@@ -30,79 +30,23 @@ import { useMealPlan } from '@/features/meals/meal-plan-context';
 import { mealTypeLabel } from '@/features/meals/meal-enums';
 import { isWithinBudget, type MealSlot, type PlannedMeal } from '@/features/meals/meal-plan-model';
 import { mealTypesInPlan, planDayCount } from '@/features/meals/move-meal';
-import {
-  addRemovedSlot,
-  getCompletedSlots,
-  getRemovedSlots,
-  setSlotCompleted,
-  slotKey,
-} from '@/features/meals/meal-slot-state';
-import { dismissResetPrompt, wasResetPromptDismissed, weekStatus } from '@/features/meals/week-reset';
 import { describeError } from '@/services/api-error';
 
 export function MealPlanScreen() {
   const router = useRouter();
   const app = useAppState();
-  const {
-    plan,
-    planStartDate,
-    error,
-    isLoadingPlan,
-    loadCurrent,
-    moveMeal,
-    swapMeal,
-    startNewWeekWithSamePlan,
-    clearError,
-  } = useMealPlan();
+  const { plan, planStartDate, error, isLoadingPlan, loadCurrent, moveMeal, swapMeal, clearError } = useMealPlan();
 
   const [selectedDate, setSelectedDate] = useState(() => new Date());
   /** The meal the user picked up, waiting for a destination slot. */
   const [movingSlot, setMovingSlot] = useState<MealSlot | null>(null);
   /** "day:mealType" of the slot currently being swapped for a cheaper meal. */
   const [swappingKey, setSwappingKey] = useState<string | null>(null);
-  /** Slot keys the user has checked off as cooked this week. */
-  const [completedSlots, setCompletedSlots] = useState<Set<string>>(new Set());
-  /** Slot keys the user has removed from this week (client overlay — see meal-slot-state). */
-  const [removedSlots, setRemovedSlots] = useState<Set<string>>(new Set());
-  /** Weekly reset prompt: null = hidden, 'choice' = new/reuse, 'pantry' = pantry nudge. */
-  const [resetStep, setResetStep] = useState<'choice' | 'pantry' | null>(null);
-  const [pendingResetChoice, setPendingResetChoice] = useState<'new' | 'reuse' | null>(null);
   const barSpace = useFloatingTabBarSpace();
 
   useEffect(() => {
     void loadCurrent();
   }, [loadCurrent]);
-
-  const reloadOverlays = useCallback(async (planId: string) => {
-    const [completed, removed] = await Promise.all([getCompletedSlots(planId), getRemovedSlots(planId)]);
-    setCompletedSlots(completed);
-    setRemovedSlots(removed);
-  }, []);
-
-  const planId = plan?.planId;
-  useEffect(() => {
-    if (planId) {
-      void reloadOverlays(planId);
-    } else {
-      setCompletedSlots(new Set());
-      setRemovedSlots(new Set());
-    }
-  }, [planId, reloadOverlays]);
-
-  // Weekly reset prompt (Audit Section 6): once the plan's week ends, offer a
-  // fresh week or the same plan re-anchored to today. Fires once per plan-week.
-  useEffect(() => {
-    if (!plan || isLoadingPlan) return;
-    const days = planDayCount(plan.meals);
-    if (weekStatus(planStartDate, days) !== 'ended') return;
-    let cancelled = false;
-    void wasResetPromptDismissed(plan.planId, planStartDate).then((dismissed) => {
-      if (!cancelled && !dismissed) setResetStep('choice');
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [plan, planStartDate, isLoadingPlan]);
 
   const dayCount = plan ? planDayCount(plan.meals) : 0;
   const mealTypes = useMemo(() => (plan ? mealTypesInPlan(plan.meals) : []), [plan]);
@@ -124,11 +68,6 @@ export function MealPlanScreen() {
     () => (plan && selectedDay ? plan.meals.filter((meal) => meal.slot.day === selectedDay) : []),
     [plan, selectedDay]
   );
-  /** Removed meals stay hidden without mutating the server plan (see meal-slot-state). */
-  const visibleMealsForDay = useMemo(
-    () => mealsForDay.filter((meal) => !removedSlots.has(slotKey(meal.slot))),
-    [mealsForDay, removedSlots]
-  );
 
   const dayLabel = selectedDate.toLocaleDateString(undefined, {
     weekday: 'long',
@@ -136,98 +75,20 @@ export function MealPlanScreen() {
     day: 'numeric',
   });
 
-  /**
-   * Card tap: while a move is in progress the card is a drop target;
-   * otherwise it opens the full recipe (Audit Section 6).
-   */
-  const handleCardPress = useCallback(
+  const handleSlotPress = useCallback(
     (slot: MealSlot, meal: PlannedMeal | undefined) => {
-      if (movingSlot) {
-        if (movingSlot.day === slot.day && movingSlot.mealType === slot.mealType) {
-          setMovingSlot(null);
-          return;
-        }
-        void moveMeal(movingSlot, slot);
+      if (!movingSlot) {
+        if (meal) setMovingSlot(slot);
+        return;
+      }
+      if (movingSlot.day === slot.day && movingSlot.mealType === slot.mealType) {
         setMovingSlot(null);
         return;
       }
-      if (meal) {
-        router.push(`/meals/recipe/${meal.recipeId}`);
-      }
+      void moveMeal(movingSlot, slot);
+      setMovingSlot(null);
     },
-    [movingSlot, moveMeal, router]
-  );
-
-  /** Picks a meal up for moving (tap the card to drop it on a new slot). */
-  const handleMovePress = useCallback(
-    (slot: MealSlot, meal: PlannedMeal | undefined) => {
-      if (!meal) return;
-      setMovingSlot((current) =>
-        current && current.day === slot.day && current.mealType === slot.mealType ? null : slot
-      );
-    },
-    []
-  );
-
-  /** Removes a meal from the week (client overlay until the backend supports it). */
-  const handleRemovePress = useCallback(
-    (slot: MealSlot, meal: PlannedMeal) => {
-      if (!plan) return;
-      Alert.alert('Remove meal', `Remove "${meal.title}" from this week? You can add it back by moving another meal here.`, [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Remove',
-          style: 'destructive',
-          onPress: () => {
-            void addRemovedSlot(plan.planId, slot).then(setRemovedSlots);
-            setMovingSlot((current) =>
-              current && current.day === slot.day && current.mealType === slot.mealType ? null : current
-            );
-          },
-        },
-      ]);
-    },
-    [plan]
-  );
-
-  /** Checks a meal off as cooked. */
-  const handleToggleDone = useCallback(
-    (slot: MealSlot, done: boolean) => {
-      if (!plan) return;
-      void setSlotCompleted(plan.planId, slot, done).then(setCompletedSlots);
-    },
-    [plan]
-  );
-
-  /** Weekly reset: record the choice, then nudge the pantry update. */
-  const handleResetChoice = useCallback(
-    (choice: 'new' | 'reuse') => {
-      if (!plan) return;
-      void dismissResetPrompt(plan.planId, planStartDate);
-      if (choice === 'reuse') {
-        startNewWeekWithSamePlan();
-        // Fresh week, fresh overlays.
-        setCompletedSlots(new Set());
-        setRemovedSlots(new Set());
-      }
-      setPendingResetChoice(choice);
-      setResetStep('pantry');
-    },
-    [plan, planStartDate, startNewWeekWithSamePlan]
-  );
-
-  const handlePantryNudge = useCallback(
-    (go: boolean) => {
-      const choice = pendingResetChoice;
-      setPendingResetChoice(null);
-      setResetStep(null);
-      if (go) {
-        router.push('/pantry');
-      } else if (choice === 'new') {
-        router.push('/meals/questionnaire');
-      }
-    },
-    [pendingResetChoice, router]
+    [movingSlot, moveMeal]
   );
 
   /** Swap one slot's meal for a cheaper option. The basket and cost figures are
@@ -290,24 +151,19 @@ export function MealPlanScreen() {
 
                 {mealTypes.map((mealType) => {
                   const slot: MealSlot = { day: selectedDay, mealType };
-                  const meal = visibleMealsForDay.find((candidate) => candidate.slot.mealType === mealType);
+                  const meal = mealsForDay.find((candidate) => candidate.slot.mealType === mealType);
                   const isMoving = movingSlot?.day === slot.day && movingSlot?.mealType === slot.mealType;
-                  const swapKey = `${slot.day}:${slot.mealType}`;
-                  const done = completedSlots.has(swapKey);
+                  const slotKey = `${slot.day}:${slot.mealType}`;
                   return (
                     <MealRow
                       key={mealType}
                       mealType={mealType}
                       meal={meal}
-                      done={done}
                       isMoving={isMoving}
                       isTarget={Boolean(movingSlot) && !isMoving}
-                      onCardPress={() => handleCardPress(slot, meal)}
-                      onMovePress={() => handleMovePress(slot, meal)}
-                      onRemovePress={meal ? () => handleRemovePress(slot, meal) : undefined}
-                      onToggleDone={() => handleToggleDone(slot, !done)}
+                      onPress={() => handleSlotPress(slot, meal)}
                       showCheaper={overBudget && meal != null}
-                      cheaperBusy={swappingKey === swapKey}
+                      cheaperBusy={swappingKey === slotKey}
                       onCheaper={() => void handleCheaper(slot)}
                     />
                   );
@@ -348,37 +204,6 @@ export function MealPlanScreen() {
           style={styles.instacartButton}
         />
       </View>
-
-      <ModalSheet visible={resetStep !== null} onClose={() => handlePantryNudge(false)}>
-        {resetStep === 'choice' ? (
-          <View style={styles.resetBody}>
-            <Text style={uiText.subtitle}>This week is done! 🎉</Text>
-            <Text style={uiText.body}>
-              Nice cooking. Start a fresh week with Penny, or keep going with last week&apos;s plan.
-            </Text>
-            <AppButton title="Start a new week" onPress={() => handleResetChoice('new')} />
-            <AppButton
-              title="Reuse last week's plan"
-              variant="secondary"
-              onPress={() => handleResetChoice('reuse')}
-            />
-          </View>
-        ) : (
-          <View style={styles.resetBody}>
-            <Text style={uiText.subtitle}>Update your pantry?</Text>
-            <Text style={uiText.body}>
-              A week of cooking changes what&apos;s on hand. Take a minute to update your pantry
-              inventory so next week&apos;s plan uses what you have.
-            </Text>
-            <AppButton title="Update my pantry" onPress={() => handlePantryNudge(true)} />
-            <AppButton
-              title="Skip for now"
-              variant="secondary"
-              onPress={() => handlePantryNudge(false)}
-            />
-          </View>
-        )}
-      </ModalSheet>
     </View>
   );
 }
@@ -386,61 +211,39 @@ export function MealPlanScreen() {
 function MealRow({
   mealType,
   meal,
-  done,
   isMoving,
   isTarget,
-  onCardPress,
-  onMovePress,
-  onRemovePress,
-  onToggleDone,
+  onPress,
   showCheaper,
   cheaperBusy,
   onCheaper,
 }: {
   mealType: string;
   meal: PlannedMeal | undefined;
-  done: boolean;
   isMoving: boolean;
   isTarget: boolean;
-  onCardPress: () => void;
-  onMovePress: () => void;
-  onRemovePress?: () => void;
-  onToggleDone: () => void;
+  onPress: () => void;
   showCheaper?: boolean;
   cheaperBusy?: boolean;
   onCheaper?: () => void;
 }) {
   const accent = MealAccents[mealType] ?? HiveColors.green;
-  const typeLabel = mealTypeLabel(mealType as never);
 
   return (
     <View style={styles.mealBlock}>
       <View style={styles.mealHeader}>
         <HiveIcon name="fork" size={16} color={accent} />
-        <Text style={styles.mealType}>{typeLabel}</Text>
-        {meal ? (
-          <Pressable
-            accessibilityRole="checkbox"
-            accessibilityState={{ checked: done }}
-            accessibilityLabel={done ? `Mark ${meal.title} as not done` : `Mark ${meal.title} as done`}
-            onPress={onToggleDone}
-            style={({ pressed }) => [styles.doneToggle, pressed && styles.pressed]}>
-            <View style={[styles.checkbox, done && styles.checkboxDone]}>
-              {done ? <HiveIcon name="check" size={12} color={HiveColors.white} /> : null}
-            </View>
-            <Text style={[styles.doneText, done && styles.doneTextDone]}>{done ? 'Done' : 'Mark done'}</Text>
-          </Pressable>
-        ) : null}
+        <Text style={styles.mealType}>{mealTypeLabel(mealType as never)}</Text>
       </View>
 
       <Pressable
         accessibilityRole="button"
         accessibilityLabel={
           meal
-            ? `${typeLabel}: ${meal.title}. Tap to see the recipe.`
-            : `${typeLabel}: nothing planned.`
+            ? `${mealTypeLabel(mealType as never)}: ${meal.title}. Tap to move this meal.`
+            : `${mealTypeLabel(mealType as never)}: nothing planned.`
         }
-        onPress={onCardPress}
+        onPress={onPress}
         style={({ pressed }) => [
           styles.mealRow,
           isMoving && styles.mealRowMoving,
@@ -453,7 +256,7 @@ function MealRow({
         <View style={styles.mealText}>
           {meal ? (
             <>
-              <Text style={[styles.mealName, done && styles.mealNameDone]}>{meal.title}</Text>
+              <Text style={styles.mealName}>{meal.title}</Text>
               <View style={styles.metaRow}>
                 {meal.totalTimeMinutes ? (
                   <Text style={styles.meta}>{meal.totalTimeMinutes} min</Text>
@@ -468,24 +271,6 @@ function MealRow({
                   </Text>
                 </View>
               ) : null}
-              <View style={styles.actionRow}>
-                <Pressable
-                  accessibilityRole="button"
-                  accessibilityLabel={isMoving ? `Cancel moving ${meal.title}` : `Move ${meal.title} to another slot`}
-                  onPress={onMovePress}
-                  style={({ pressed }) => [styles.slotAction, pressed && styles.pressed]}>
-                  <Text style={styles.slotActionText}>{isMoving ? 'Cancel move' : 'Move'}</Text>
-                </Pressable>
-                {onRemovePress ? (
-                  <Pressable
-                    accessibilityRole="button"
-                    accessibilityLabel={`Remove ${meal.title} from this week`}
-                    onPress={onRemovePress}
-                    style={({ pressed }) => [styles.slotAction, pressed && styles.pressed]}>
-                    <Text style={styles.slotActionText}>Remove</Text>
-                  </Pressable>
-                ) : null}
-              </View>
               {showCheaper && onCheaper ? (
                 <Pressable
                   accessibilityRole="button"
@@ -603,31 +388,6 @@ const styles = StyleSheet.create({
   mealBlock: { paddingBottom: 14 },
   mealHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 20, paddingBottom: 10 },
   mealType: { color: HiveColors.text, fontSize: 16, fontWeight: '600' },
-  doneToggle: { flexDirection: 'row', alignItems: 'center', gap: 6, marginLeft: 'auto', paddingVertical: 4 },
-  checkbox: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    borderWidth: 1.5,
-    borderColor: HiveColors.border,
-    backgroundColor: HiveColors.white,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  checkboxDone: { borderColor: HiveColors.green, backgroundColor: HiveColors.green },
-  doneText: { color: HiveColors.textSecondary, fontSize: 12, fontWeight: '600' },
-  doneTextDone: { color: HiveColors.green },
-  mealNameDone: { textDecorationLine: 'line-through', color: HiveColors.textSecondary },
-  actionRow: { flexDirection: 'row', gap: 8, marginTop: 6 },
-  slotAction: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: Radii.md,
-    borderWidth: 1,
-    borderColor: HiveColors.border,
-  },
-  slotActionText: { color: HiveColors.text, fontSize: 12, fontWeight: '600' },
-  resetBody: { gap: 12, paddingHorizontal: 4, paddingBottom: 8 },
   mealRow: {
     flexDirection: 'row',
     gap: 14,
