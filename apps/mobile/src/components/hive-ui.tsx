@@ -63,6 +63,14 @@ const iconMap = {
   bank: { ios: 'building.columns.fill', fallback: 'Bk' },
 warning: { ios: 'exclamationmark.circle.fill', fallback: '!' },
 carrot: { ios: 'carrot.fill', fallback: '🥕' },
+  sparkles: { ios: 'sparkles', fallback: '✦' },
+  leaf: { ios: 'leaf.fill', fallback: '🍃' },
+  clock: { ios: 'clock', fallback: '◷' },
+  ellipsis: { ios: 'ellipsis', fallback: '•••' },
+  checkCircle: { ios: 'checkmark.circle.fill', fallback: 'OK' },
+  xCircle: { ios: 'xmark.circle.fill', fallback: '✕' },
+  grid: { ios: 'square.grid.2x2', fallback: '▦' },
+  dollar: { ios: 'dollarsign.circle.fill', fallback: '$' },
 } as const;
 
 export type HiveIconName = keyof typeof iconMap;

@@ -52,6 +52,13 @@ export const HiveColors = {
   blue: BrandColors.infoBlue,
   /** Pale blue-grey tint — auth result icon circle. */
   blueSoft: '#F1F7FB',
+  /** Warm orange banner tint — from Marcos's SwiftUI pantry design. */
+  orangeBanner: '#FFF5E0',
+  /** Warm orange card tint — from Marcos's SwiftUI generate-a-meal design. */
+  orangeSoft: '#FFF8EB',
+  /** Dark-green gradient pair — the Generate a Meal card in the SwiftUI design. */
+  greenGradientStart: '#216B38',
+  greenGradientEnd: '#0F4521',
   text: BrandColors.darkText,
   textSecondary: BrandColors.secondaryText,
   white: BrandColors.white,

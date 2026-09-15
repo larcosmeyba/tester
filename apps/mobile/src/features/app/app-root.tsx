@@ -30,6 +30,7 @@ import { BenefitsProgramPickerScreen } from '@/features/benefits/benefits-progra
 import { BenefitsStateScreen } from '@/features/benefits/benefits-state-screen';
 import { BudgetSettingsScreen, ConnectAccountScreen, SpendingReportScreen, TransactionsScreen } from '@/features/budget/budget-screens';
 import { AddPantryScreen, PantryScreen } from '@/features/pantry/pantry-screens';
+import { ScanPantryScreen } from '@/features/pantry/scan-pantry-screen';
 import { AccountScreen, ChangeEmailScreen, DeleteAccountScreen, EditHandleScreen, EditProfileScreen, FeedbackScreen, NotificationsScreen, SettingsScreen } from '@/features/profile/profile-screens';
 import { DealsScreen, RecipeScreen } from '@/features/meals/recipe-deals-screens';
 import { type Navigation, type Route, type ScreenName } from '@/features/app/navigation-types';
@@ -155,6 +156,8 @@ export default function AppRoot({ initialPublicScreen }: { initialPublicScreen?:
       return <PantryScreen nav={nav} />;
     case 'addPantry':
       return <AddPantryScreen nav={nav} itemId={route.params?.itemId as string | undefined} />;
+    case 'scanPantry':
+      return <ScanPantryScreen nav={nav} />;
     case 'cookWhatIHave':
       return (
         <CookWhatIHaveScreen
