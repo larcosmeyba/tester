@@ -16,7 +16,6 @@ import (
 	"time"
 
 	domain "github.com/helpthehive/server/internal/domain/benefits"
-	"github.com/helpthehive/server/internal/modules/benefits"
 	"github.com/helpthehive/server/internal/modules/benefits/filingkit"
 )
 
