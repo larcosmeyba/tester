@@ -22,6 +22,7 @@ import {
   type ViewerData,
 } from '@/features/profile/profile-repository';
 import { PRIVACY_VERSION, TERMS_VERSION } from '@/constants/legal';
+import { formatMemberSince } from '@/features/profile/account-helpers';
 import { refreshPushTokenIfPermitted } from '@/features/notifications/notification-service';
 import { clearPendingSignupProfile, loadPendingSignupProfile, savePendingSignupProfile } from './pending-signup-storage';
 import { loadSensitiveProfile, saveSensitiveProfile } from './sensitive-profile-storage';
@@ -90,6 +91,12 @@ type AppStateContextValue = PersistedState & {
   displayName: string;
   formName: { firstName: string; lastName: string };
   shouldPromptNewMealPlan: boolean;
+  /**
+   * The real account creation date from the viewer, formatted for the
+   * Account screen's MEMBER SINCE stat ("SEP 2026"). Null until the viewer
+   * hydrates — the stat card hides entirely rather than showing a placeholder.
+   */
+  memberSinceLabel: string | null;
   /** Saved questionnaire answers from the viewer (seeds onboarding resume). */
   questionnaireAnswers: QuestionnaireAnswers | null;
   /** Email-verification status from the viewer. */
@@ -245,6 +252,10 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   const [questionnaireAnswers, setQuestionnaireAnswers] = useState<QuestionnaireAnswers | null>(null);
   const [verificationStatus, setVerificationStatus] = useState<VerificationStatus | null>(null);
   const [onboardingCurrentStep, setOnboardingCurrentStep] = useState<string | null>(null);
+  // The viewer's real account creation date (viewer.user.createdAt). Kept out
+  // of PersistedState: it is re-hydrated from the server on every login, so
+  // there is nothing to migrate and nothing stale to display.
+  const [memberSince, setMemberSince] = useState<string | undefined>(undefined);
   // The signup password handed to the verify screen so a successful code
   // check can sign the user in. In-memory only — never persisted, cleared
   // the moment it is consumed (or on sign-out).
@@ -344,6 +355,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     if (!subject) return;
     if (state.profileOwnerSubject && state.profileOwnerSubject !== subject) {
       void clearPendingSignupProfile().catch(() => undefined);
+      setMemberSince(undefined);
       setState((current) => ({
         ...current,
         profileOwnerSubject: undefined,
@@ -415,6 +427,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       setQuestionnaireAnswers(viewer.questionnaireAnswers ?? null);
       setVerificationStatus(viewer.verification ?? null);
       setOnboardingCurrentStep(viewer.onboardingState.currentStep ?? null);
+      setMemberSince(viewer.user.createdAt ?? undefined);
       if (viewer.preferences.notificationsEnabled) {
         void refreshPushTokenIfPermitted();
       }
@@ -439,6 +452,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
         setQuestionnaireAnswers(null);
         setVerificationStatus(null);
         setOnboardingCurrentStep(null);
+        setMemberSince(undefined);
         transientSignupPassword.current = undefined;
         setState((current) => ({
           ...current,
@@ -587,6 +601,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
 
   const isReady = isLocalReady && auth.isReady && (!auth.isAuthenticated || profileSyncState === 'ready' || profileSyncState === 'error');
   const displayName = `${state.profile.firstName} ${state.profile.lastName}`.trim();
+  const memberSinceLabel = formatMemberSince(memberSince);
   const formName = useMemo(() => ({
     firstName: state.governmentProfile.firstName.trim() || state.profile.firstName,
     lastName: state.governmentProfile.lastName.trim() || state.profile.lastName,
@@ -601,6 +616,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       displayName,
       formName,
       shouldPromptNewMealPlan,
+      memberSinceLabel,
       questionnaireAnswers,
       verificationStatus,
       onboardingCurrentStep,
@@ -656,6 +672,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       savePreferences,
       saveProfile,
       shouldPromptNewMealPlan,
+      memberSinceLabel,
       state,
       questionnaireAnswers,
       verificationStatus,
