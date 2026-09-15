@@ -16,7 +16,7 @@ import { useEffect, useState } from 'react';
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 
-import { AppButton, Card, Chip, EmptyState, uiText } from '@/components/hive-ui';
+import { AppButton, Card, EmptyState, HiveIcon, uiText, type HiveIconName } from '@/components/hive-ui';
 import { HiveColors, Spacing } from '@/constants/theme';
 import { type Navigation } from '@/features/app/navigation-types';
 import { programDisplayName, submittedDateLabel } from '@/features/resources/resources-application-names';
@@ -25,8 +25,54 @@ import {
   fetchBenefitsApplications,
 } from '@/features/benefits/benefits-repository';
 import { downloadAndSharePdf, printPdf } from '@/features/benefits/benefits-document-actions';
-import { productStatusFor, statusToneFor } from '@/features/benefits/benefits-status';
+import { productStatusFor, type BenefitsProductStatus } from '@/features/benefits/benefits-status';
 import { BenefitsSubmissionGuide } from '@/features/benefits/benefits-submission-guide';
+
+/**
+ * Per-program accent for the application card, matching the Resources tab
+ * design reference: a tinted icon tile plus a tinted "View Application"
+ * button with accent-colored text. Unknown programs fall back to hive green.
+ */
+const PROGRAM_ACCENT: Record<string, { tile: string; accent: string; icon: HiveIconName }> = {
+  snap: { tile: '#E4F2E4', accent: '#1F7A2E', icon: 'cart' },
+  wic: { tile: '#FBEEDF', accent: '#A05A1A', icon: 'child' },
+  medicaid: { tile: '#E3ECFB', accent: '#2B5CB8', icon: 'heart' },
+  liheap: { tile: '#FBF3DF', accent: '#8A5A00', icon: 'bolt' },
+  tanf: { tile: '#EFE7FA', accent: '#5B3E9E', icon: 'dollar' },
+  va_disability: { tile: '#E7EAFB', accent: '#3B4E9E', icon: 'shield' },
+  va_pension: { tile: '#E7EAFB', accent: '#3B4E9E', icon: 'bank' },
+  va_healthcare: { tile: '#E7EAFB', accent: '#3B4E9E', icon: 'heart' },
+};
+
+const DEFAULT_ACCENT: { tile: string; accent: string; icon: HiveIconName } = {
+  tile: HiveColors.greenLight,
+  accent: HiveColors.green,
+  icon: 'doc',
+};
+
+function accentFor(programId: string) {
+  return PROGRAM_ACCENT[programId.toLowerCase()] ?? DEFAULT_ACCENT;
+}
+
+function StatusPill({ status }: { status: BenefitsProductStatus }) {
+  const pillStyle =
+    status === 'Submitted'
+      ? styles.statusPillSubmitted
+      : status === 'Ready to Submit'
+        ? styles.statusPillReady
+        : styles.statusPillNeutral;
+  const textStyle =
+    status === 'Submitted'
+      ? styles.statusPillTextSubmitted
+      : status === 'Ready to Submit'
+        ? styles.statusPillTextReady
+        : styles.statusPillTextNeutral;
+  return (
+    <View style={[styles.statusPill, pillStyle]}>
+      <Text style={[styles.statusPillText, textStyle]}>{status}</Text>
+    </View>
+  );
+}
 
 function ApplicationCard({ application }: { application: BenefitsApplication }) {
   const router = useRouter();
@@ -38,6 +84,7 @@ function ApplicationCard({ application }: { application: BenefitsApplication }) 
 
   const status = productStatusFor(application, submittedOn != null);
   const documentPath = application.finalDocumentPath ?? application.draftDocumentPath ?? null;
+  const accent = accentFor(application.form.program);
 
   const runDocumentAction = async (action: 'download' | 'print') => {
     if (!documentPath) return;
@@ -61,20 +108,29 @@ function ApplicationCard({ application }: { application: BenefitsApplication }) 
   return (
     <Card style={styles.card}>
       <View style={styles.cardHeader}>
+        <View style={[styles.programTile, { backgroundColor: accent.tile }]}>
+          <HiveIcon name={accent.icon} size={22} color={accent.accent} />
+        </View>
         <View style={styles.cardTitleWrap}>
           <Text style={styles.cardTitle}>{programDisplayName(application.form.program)} Application</Text>
           <Text style={uiText.muted}>{application.form.state}</Text>
         </View>
-        <Chip label={status} tone={statusToneFor(status)} />
+        <StatusPill status={status} />
       </View>
 
       <View style={styles.buttonRow}>
-        <AppButton
-          title="View Application"
-          variant="secondary"
+        <Pressable
+          accessibilityRole="button"
           onPress={() => router.push(`/resources/applications/${application.id}`)}
-        />
-        <AppButton title="Submission Guide" variant="secondary" onPress={() => setGuideOpen(true)} />
+          style={[styles.actionButton, { backgroundColor: accent.tile }]}>
+          <Text style={[styles.actionButtonText, { color: accent.accent }]}>View Application</Text>
+        </Pressable>
+        <Pressable
+          accessibilityRole="button"
+          onPress={() => setGuideOpen(true)}
+          style={[styles.actionButton, styles.guideButton]}>
+          <Text style={[styles.actionButtonText, styles.guideButtonText]}>Submission Guide</Text>
+        </Pressable>
       </View>
 
       {documentPath ? (
@@ -96,12 +152,22 @@ function ApplicationCard({ application }: { application: BenefitsApplication }) 
       {actionError ? <Text style={styles.error}>{actionError}</Text> : null}
 
       {submittedOn ? (
-        <Text style={styles.submittedLabel}>Submitted — {submittedDateLabel(submittedOn)}</Text>
+        <View style={styles.submittedRow}>
+          <HiveIcon name="checkCircle" size={18} color={HiveColors.green} />
+          <Text style={styles.submittedLabel}>Submitted — {submittedDateLabel(submittedOn)}</Text>
+        </View>
       ) : (
-        <View style={styles.submitRow}>
+        <View style={styles.submitBlock}>
           <Text style={uiText.muted}>Have you submitted this application?</Text>
-          <Pressable onPress={() => setSubmittedOn(new Date())} accessibilityRole="button">
-            <Text style={styles.markSubmitted}>Mark as Submitted</Text>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Mark as Submitted"
+            onPress={() => setSubmittedOn(new Date())}
+            style={styles.markSubmittedButton}>
+            <View style={styles.markSubmittedCheckbox}>
+              <HiveIcon name="check" size={12} color={HiveColors.white} />
+            </View>
+            <Text style={styles.markSubmittedButtonText}>Mark as Submitted</Text>
           </Pressable>
         </View>
       )}

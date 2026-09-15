@@ -70,6 +70,10 @@ elif [[ "$SERVICE_KIND" == "api" ]]; then
   SUBSTITUTIONS="$SUBSTITUTIONS,_PENNY_SERVICE_TOKEN_SECRET=$PREFIX-penny-service-token"
   SUBSTITUTIONS="$SUBSTITUTIONS,_PENNY_TOOL_TOKEN_SECRET=$PREFIX-penny-tool-token-secret"
   SUBSTITUTIONS="$SUBSTITUTIONS,_IMPORT_SHARED_SECRET=$PREFIX-import-shared-secret"
+  # Community resource lookup: the Google Places API key. The secret name is
+  # always wired; when it holds a value the deploy attaches it, otherwise the
+  # endpoint returns 503 and the app renders the lookup as unavailable.
+  SUBSTITUTIONS="$SUBSTITUTIONS,_RESOURCES_PLACES_API_KEY_SECRET=$PREFIX-resources-places-api-key"
 elif [[ "$SERVICE_KIND" == "penny" ]]; then
   CONFIG=cloudbuild.penny.yaml
   BACKEND_URL="$(

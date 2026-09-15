@@ -68,6 +68,12 @@ func NewRouter(cfg config.Config, verifier *auth.Verifier, readiness readinessCh
 	router.With(auth.Middleware(verifier)).
 		Get("/benefits/applications/{applicationID}/pdf", BenefitsDocuments(resolver.Benefits, nil))
 
+	// Community resource lookup. Behind the same auth middleware as /graphql;
+	// the handler proxies Google Places Text Search, and returns 503 when the
+	// lookup is not configured rather than failing with a key-shaped error.
+	router.With(auth.Middleware(verifier)).
+		Get("/resources/nearby", ResourcesNearby(ResourcesDeps{APIKey: cfg.ResourcesPlacesAPIKey, Logger: logger}))
+
 	// Magic verification links (signup). Unauthenticated by design: the
 	// single-use token in the URL is the credential. No rate limiting beyond
 	// the token's own single-use + 24h expiry — a forged token just renders
