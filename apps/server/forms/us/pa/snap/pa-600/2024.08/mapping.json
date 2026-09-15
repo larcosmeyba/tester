@@ -109,8 +109,8 @@
         "fieldPath": "applicant.is_us_citizen"
       },
       "valueMap": {
-        "true": "0",
-        "false": "1"
+        "true": "Yes",
+        "false": "No"
       }
     },
     {
@@ -123,8 +123,8 @@
         "fieldPath": "applicant.is_pregnant"
       },
       "valueMap": {
-        "true": "0",
-        "false": "1"
+        "true": "Yes",
+        "false": "No"
       }
     },
     {
@@ -137,8 +137,8 @@
         "fieldPath": "applicant.is_student"
       },
       "valueMap": {
-        "true": "0",
-        "false": "1"
+        "true": "Yes",
+        "false": "No"
       }
     },
     {
@@ -222,8 +222,8 @@
         "fieldPath": "household.members[].is_us_citizen"
       },
       "valueMap": {
-        "true": "0",
-        "false": "1"
+        "true": "Yes",
+        "false": "No"
       },
       "repeat": {
         "over": "household.members",
@@ -240,8 +240,8 @@
         "fieldPath": "household.members[].is_pregnant"
       },
       "valueMap": {
-        "true": "0",
-        "false": "1"
+        "true": "Yes",
+        "false": "No"
       },
       "repeat": {
         "over": "household.members",
@@ -258,8 +258,8 @@
         "fieldPath": "household.members[].is_applying"
       },
       "valueMap": {
-        "true": "0",
-        "false": "1"
+        "true": "Yes",
+        "false": "No"
       },
       "repeat": {
         "over": "household.members",
@@ -347,8 +347,8 @@
         "fieldPath": "household.members[].is_us_citizen"
       },
       "valueMap": {
-        "true": "0",
-        "false": "1"
+        "true": "Yes",
+        "false": "No"
       },
       "repeat": {
         "over": "household.members",
@@ -365,8 +365,8 @@
         "fieldPath": "household.members[].is_pregnant"
       },
       "valueMap": {
-        "true": "0",
-        "false": "1"
+        "true": "Yes",
+        "false": "No"
       },
       "repeat": {
         "over": "household.members",
@@ -383,8 +383,8 @@
         "fieldPath": "household.members[].is_applying"
       },
       "valueMap": {
-        "true": "0",
-        "false": "1"
+        "true": "Yes",
+        "false": "No"
       },
       "repeat": {
         "over": "household.members",
@@ -472,8 +472,8 @@
         "fieldPath": "household.members[].is_us_citizen"
       },
       "valueMap": {
-        "true": "0",
-        "false": "1"
+        "true": "Yes",
+        "false": "No"
       },
       "repeat": {
         "over": "household.members",
@@ -490,8 +490,8 @@
         "fieldPath": "household.members[].is_pregnant"
       },
       "valueMap": {
-        "true": "0",
-        "false": "1"
+        "true": "Yes",
+        "false": "No"
       },
       "repeat": {
         "over": "household.members",
@@ -508,8 +508,8 @@
         "fieldPath": "household.members[].is_applying"
       },
       "valueMap": {
-        "true": "0",
-        "false": "1"
+        "true": "Yes",
+        "false": "No"
       },
       "repeat": {
         "over": "household.members",
@@ -597,8 +597,8 @@
         "fieldPath": "household.members[].is_us_citizen"
       },
       "valueMap": {
-        "true": "0",
-        "false": "1"
+        "true": "Yes",
+        "false": "No"
       },
       "repeat": {
         "over": "household.members",
@@ -615,8 +615,8 @@
         "fieldPath": "household.members[].is_pregnant"
       },
       "valueMap": {
-        "true": "0",
-        "false": "1"
+        "true": "Yes",
+        "false": "No"
       },
       "repeat": {
         "over": "household.members",
@@ -633,8 +633,8 @@
         "fieldPath": "household.members[].is_applying"
       },
       "valueMap": {
-        "true": "0",
-        "false": "1"
+        "true": "Yes",
+        "false": "No"
       },
       "repeat": {
         "over": "household.members",
@@ -722,8 +722,8 @@
         "fieldPath": "household.members[].is_us_citizen"
       },
       "valueMap": {
-        "true": "0",
-        "false": "1"
+        "true": "Yes",
+        "false": "No"
       },
       "repeat": {
         "over": "household.members",
@@ -740,8 +740,8 @@
         "fieldPath": "household.members[].is_pregnant"
       },
       "valueMap": {
-        "true": "0",
-        "false": "1"
+        "true": "Yes",
+        "false": "No"
       },
       "repeat": {
         "over": "household.members",
@@ -758,8 +758,8 @@
         "fieldPath": "household.members[].is_applying"
       },
       "valueMap": {
-        "true": "0",
-        "false": "1"
+        "true": "Yes",
+        "false": "No"
       },
       "repeat": {
         "over": "household.members",
@@ -847,8 +847,8 @@
         "fieldPath": "household.members[].is_us_citizen"
       },
       "valueMap": {
-        "true": "0",
-        "false": "1"
+        "true": "Yes",
+        "false": "No"
       },
       "repeat": {
         "over": "household.members",
@@ -865,8 +865,8 @@
         "fieldPath": "household.members[].is_pregnant"
       },
       "valueMap": {
-        "true": "0",
-        "false": "1"
+        "true": "Yes",
+        "false": "No"
       },
       "repeat": {
         "over": "household.members",
@@ -883,8 +883,8 @@
         "fieldPath": "household.members[].is_applying"
       },
       "valueMap": {
-        "true": "0",
-        "false": "1"
+        "true": "Yes",
+        "false": "No"
       },
       "repeat": {
         "over": "household.members",
@@ -984,8 +984,8 @@
         "fieldPath": "contact.needs_interpreter"
       },
       "valueMap": {
-        "true": "0",
-        "false": "1"
+        "true": "Yes/Sí",
+        "false": "No"
       }
     },
     {
@@ -1225,8 +1225,8 @@
         "fieldPath": "utilities.pays_heating_cooling"
       },
       "valueMap": {
-        "true": "0",
-        "false": "1"
+        "true": "Yes",
+        "false": "No"
       }
     },
     {
@@ -1239,8 +1239,8 @@
         "fieldPath": "utilities.pays_phone"
       },
       "valueMap": {
-        "true": "0",
-        "false": "1"
+        "true": "Yes",
+        "false": "No"
       }
     },
     {

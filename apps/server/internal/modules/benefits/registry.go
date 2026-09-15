@@ -252,8 +252,17 @@ func LoadForm(mappingPath string) (*Form, error) {
 		return nil, err
 	}
 
+	// Template verification is the production guard: a form that will fill a
+	// real application must have its fields checked against the template.
+	// Drafts are works in progress — their templates may be XFA forms the
+	// engine cannot read yet, or simply not final — so when inspection fails
+	// they load with their mapping validated but no field inventory. The
+	// registry never serves a draft for a real application.
 	inventory, err := pdf.Inspect(template)
 	if err != nil {
+		if mapping.Status != "active" {
+			return &Form{Mapping: mapping, TemplatePath: templatePath}, nil
+		}
 		return nil, fmt.Errorf("%s: read template: %w", mappingPath, err)
 	}
 
