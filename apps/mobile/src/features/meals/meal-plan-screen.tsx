@@ -556,6 +556,10 @@ export function MealPlanScreen() {
             </Pressable>
           ) : null}
           <View style={styles.shopButtons}>
+            {/* Swift 20-2 routing: the Meal Plan tab's Shop-on-Your-Own
+                destination is now PlanShoppingChecklistView — the rebuilt
+                checklist screen at /meals/shop-own (checkable rows,
+                "Left to buy" banner, "N of M items checked off"). */}
             <AppButton
               title="Shop on Your Own List"
               variant="secondary"
