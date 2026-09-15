@@ -30,9 +30,7 @@ import {
   AvatarButton,
   Card,
   Chip,
-  EmptyState,
   HiveIcon,
-  InfoRow,
   ScrollScreen,
   uiText,
   rowStyles,
@@ -424,12 +422,12 @@ function isNearbyResource(resource: DetailsResource): resource is NearbyResource
 }
 
 function directionsUrl(resource: DetailsResource): string {
-  if (isNearbyResource(resource)) {
+  if (isNearbyResource(resource) && resource.latitude != null && resource.longitude != null) {
     return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
       `${resource.latitude},${resource.longitude}`,
     )}`;
   }
-  const address = resource.address ?? resource.name;
+  const address = isNearbyResource(resource) ? resource.address : (resource.address ?? resource.name);
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
 }
 

@@ -244,36 +244,111 @@ const styles = StyleSheet.create({
   },
   cardHeader: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: Spacing.one,
+    gap: Spacing.two,
+    marginBottom: Spacing.two,
+  },
+  programTile: {
+    width: 56,
+    height: 56,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   cardTitleWrap: {
     flex: 1,
-    marginRight: Spacing.one,
   },
   cardTitle: {
     ...uiText.subtitle,
+  },
+  statusPill: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 8,
+  },
+  statusPillSubmitted: {
+    backgroundColor: '#DDEEDF',
+  },
+  statusPillReady: {
+    backgroundColor: '#E3ECFB',
+  },
+  statusPillNeutral: {
+    backgroundColor: HiveColors.card,
+  },
+  statusPillText: {
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  statusPillTextSubmitted: {
+    color: HiveColors.green,
+  },
+  statusPillTextReady: {
+    color: '#2B5CB8',
+  },
+  statusPillTextNeutral: {
+    color: HiveColors.textSecondary,
   },
   buttonRow: {
     flexDirection: 'row',
     gap: Spacing.one,
     marginTop: Spacing.one,
   },
-  submitRow: {
+  actionButton: {
+    flex: 1,
+    height: 48,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  actionButtonText: {
+    fontSize: 15,
+    fontWeight: '600',
+  },
+  guideButton: {
+    backgroundColor: '#F2F2F5',
+  },
+  guideButtonText: {
+    color: HiveColors.text,
+  },
+  submitBlock: {
+    marginTop: Spacing.two,
+    gap: Spacing.one,
+  },
+  markSubmittedButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    height: 48,
+    borderRadius: 10,
+    backgroundColor: HiveColors.green,
+    alignSelf: 'flex-start',
+    paddingHorizontal: 20,
+  },
+  markSubmittedCheckbox: {
+    width: 18,
+    height: 18,
+    borderRadius: 4,
+    borderWidth: 1.5,
+    borderColor: HiveColors.white,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  markSubmittedButtonText: {
+    color: HiveColors.white,
+    fontSize: 15,
+    fontWeight: '600',
+  },
+  submittedRow: {
     marginTop: Spacing.two,
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-  },
-  markSubmitted: {
-    color: HiveColors.green,
-    fontWeight: '600',
+    gap: 6,
   },
   submittedLabel: {
-    marginTop: Spacing.two,
     color: HiveColors.green,
     fontWeight: '600',
+    fontSize: 14,
   },
   error: {
     color: HiveColors.danger,

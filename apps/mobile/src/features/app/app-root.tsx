@@ -17,6 +17,7 @@ import { SplashVideoScreen } from '@/features/app/splash-video-screen';
 import { FloatingTabBar, FOOTER_TABS } from '@/components/hive-navigation';
 import { MealPlanScreen as WeeklyMealPlanScreen } from '@/features/meals/meal-plan-screen';
 import { allVideos, type BenefitProgram, type MealRecipe, type ResourceItem, transactions, type VideoItem } from '@/data/mock-data';
+import { type NearbyResource } from '@/features/resources/resource-service';
 import { useAppState } from '@/state/app-state';
 import { ForgotPasswordScreen, LoginScreen, SignUpScreen, VerifyScreen, WelcomeScreen } from '@/features/auth/auth-screens';
 import { OnboardingScreen } from '@/features/onboarding/onboarding-screens';
@@ -192,13 +193,15 @@ export default function AppRoot({ initialPublicScreen }: { initialPublicScreen?:
     case 'video':
       return <VideoDetailScreen nav={nav} video={route.params?.video as VideoItem | undefined} />;
     case 'resourcesHub':
-      return <VideoHubScreen nav={nav} title="Resource How-To Videos" videos={allVideos.filter((video) => video.category === 'resources')} />;
+      // No real resource videos exist yet — VideoHubScreen renders its honest
+      // "coming soon" state for an empty list instead of fake playable videos.
+      return <VideoHubScreen nav={nav} title="Resource How-To Videos" videos={[]} />;
     case 'resources':
       return <ResourcesScreen nav={nav} />;
     case 'resourceSearch':
       return <ResourceSearchScreen nav={nav} />;
     case 'resourceDetails':
-      return <ResourceDetailsScreen nav={nav} resource={route.params?.resource as ResourceItem | undefined} />;
+      return <ResourceDetailsScreen nav={nav} resource={route.params?.resource as (ResourceItem | NearbyResource) | undefined} />;
     case 'government':
       return <GovernmentScreen nav={nav} />;
     case 'benefitsQuestionnaire':
