@@ -9,7 +9,7 @@
 // this shell, so the ScreenName union in navigation-types.ts is what actually
 // decides what a user sees.
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Text, View } from 'react-native';
 import { useAuth } from '@/auth/auth-context';
 import { AppButton, ModalSheet, PennyImage, Screen, uiText } from '@/components/hive-ui';
@@ -32,6 +32,11 @@ import { AddPantryScreen, PantryScreen } from '@/features/pantry/pantry-screens'
 import { AccountScreen, ChangeEmailScreen, DeleteAccountScreen, EditHandleScreen, EditProfileScreen, FeedbackScreen, NotificationsScreen, SettingsScreen } from '@/features/profile/profile-screens';
 import { DealsScreen, RecipeScreen } from '@/features/meals/recipe-deals-screens';
 import { type Navigation, type Route, type ScreenName } from '@/features/app/navigation-types';
+import {
+  consumePendingQuestionnaireDeepLink,
+  subscribeQuestionnaireDeepLink,
+} from '@/features/notifications/pending-deep-link';
+import type { QuestionnaireReminderPushData } from '@/features/notifications/notification-service';
 import { sharedStyles } from '@/features/app/app-shared';
 import { StyleSheet } from 'react-native';
 import { HiveColors } from '@/constants/theme';
@@ -82,6 +87,27 @@ export default function AppRoot({ initialPublicScreen }: { initialPublicScreen?:
     }),
     [initialRouteName]
   );
+
+  // Questionnaire drop-off reminder deep link (Audit Section 3): a tap on the
+  // "You're almost done" notification lands back on the exact questionnaire
+  // section. The notification handler stashes the payload (expo-router can't
+  // reach this custom stack); we consume it on cold start and subscribe for
+  // warm taps. Pushing only updates the stack — the splash gate below still
+  // renders first, so the questionnaire appears once the video finishes.
+  useEffect(() => {
+    const openQuestionnaire = (data: QuestionnaireReminderPushData) => {
+      if (!auth.isAuthenticated || !app.hasCompletedOnboarding) return;
+      nav.push('benefitsGroupQuestionnaire', {
+        applicationIds: data.applicationIds,
+        state: data.state,
+        resumeSection: data.resumeSection,
+      });
+    };
+    const unsubscribe = subscribeQuestionnaireDeepLink(openQuestionnaire);
+    const pending = consumePendingQuestionnaireDeepLink();
+    if (pending) openQuestionnaire(pending);
+    return unsubscribe;
+  }, [auth.isAuthenticated, app.hasCompletedOnboarding, nav]);
 
   if (!splashFinished) {
     return <SplashVideoScreen onDone={() => setSplashFinished(true)} />;
