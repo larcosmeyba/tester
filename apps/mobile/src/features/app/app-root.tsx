@@ -23,6 +23,10 @@ import { OnboardingScreen } from '@/features/onboarding/onboarding-screens';
 import { HomeScreen } from '@/features/home/home-screen';
 import { PennyScreen } from '@/features/penny/penny-screen';
 import { BenefitsQuestionnaireScreen, GovernmentScreen, ProgramApplicationScreen, ResourceDetailsScreen, ResourceSearchScreen, ResourcesScreen, VideoDetailScreen, VideoHubScreen } from '@/features/resources/resources-screens';
+import { BenefitsGroupQuestionnaireScreen } from '@/features/benefits/benefits-group-questionnaire-screen';
+import { BenefitsPreparingScreen } from '@/features/benefits/benefits-preparing-screen';
+import { BenefitsProgramPickerScreen } from '@/features/benefits/benefits-program-picker-screen';
+import { BenefitsStateScreen } from '@/features/benefits/benefits-state-screen';
 import { BudgetSettingsScreen, ConnectAccountScreen, FinanceScreen, SpendingReportScreen, TransactionsScreen } from '@/features/budget/budget-screens';
 import { AddPantryScreen, PantryScreen } from '@/features/pantry/pantry-screens';
 import { AccountScreen, ChangeEmailScreen, DeleteAccountScreen, EditHandleScreen, EditProfileScreen, FeedbackScreen, NotificationsScreen, SettingsScreen } from '@/features/profile/profile-screens';
@@ -164,6 +168,26 @@ export default function AppRoot({ initialPublicScreen }: { initialPublicScreen?:
       return <BenefitsQuestionnaireScreen nav={nav} />;
     case 'programApplication':
       return <ProgramApplicationScreen nav={nav} program={route.params?.program as BenefitProgram | undefined} />;
+    case 'benefitsState':
+      return <BenefitsStateScreen nav={nav} />;
+    case 'benefitsProgramPicker':
+      return (
+        <BenefitsProgramPickerScreen
+          nav={nav}
+          state={(route.params?.state as string | undefined) ?? ''}
+        />
+      );
+    case 'benefitsGroupQuestionnaire':
+      return (
+        <BenefitsGroupQuestionnaireScreen
+          nav={nav}
+          applicationIds={(route.params?.applicationIds as string[] | undefined) ?? []}
+          state={(route.params?.state as string | undefined) ?? ''}
+          resumeSection={route.params?.resumeSection as number | undefined}
+        />
+      );
+    case 'benefitsPreparing':
+      return <BenefitsPreparingScreen nav={nav} />;
     case 'financeHub':
       return <VideoHubScreen nav={nav} title="Finance Learning Hub" videos={allVideos.filter((video) => video.category === 'finance')} />;
     case 'spendingReport':
