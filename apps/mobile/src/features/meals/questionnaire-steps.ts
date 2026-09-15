@@ -1,238 +1,201 @@
 /**
- * The meal-planning questionnaire (product Doc 04).
+ * The AI meal-plan questionnaire — the 7-step design from Marcos's SwiftUI
+ * sandbox (`22_-_MealPlanQuestionnaireView`), rebuilt in React Native.
  *
- * Thirteen sections, defined as data rather than thirteen hand-written screens,
- * so the order and copy can change without touching the renderer. Every answer
- * maps to one field of `PlanRequest`, which is serialised verbatim into the
- * `POST /plans` body.
+ * Step order and copy follow the Swift file exactly, including its question
+ * numbering — except the grocery-shopping question, which the Swift file
+ * labels "15." a second time and is renumbered here to "16.".
  *
- * Only Household and Meals are required; everything else is skippable, exactly
- * as the spec states.
+ * Product rules this flow must never break:
+ * - Breakfast / lunch / dinner only. There is no snack slot anywhere in this
+ *   flow, even though the shared `PlanRequest` model has a snack count.
+ * - Kids count as full servings when the request is built.
+ * - Allergies are always hard restrictions (`required` strength).
  */
-import {
-  COOKING_STYLE_OPTIONS,
-  DIET_OPTIONS,
-  type Allergen,
-  type CookingStyle,
-  type Diet,
-  type Equipment,
-  type NutritionGoal,
-} from '@/features/meals/meal-enums';
-import { totalMeals, type PlanRequest } from '@/features/meals/meal-plan-model';
+import type { HiveIconName } from '@/components/hive-ui';
 
 export type QuestionnaireStepId =
   | 'household'
-  | 'meals'
-  | 'budget'
-  | 'pantry'
-  | 'diet'
-  | 'allergies'
-  | 'nutrition'
-  | 'preferences'
-  | 'time'
-  | 'equipment'
-  | 'style'
-  | 'leftovers'
-  | 'review';
+  | 'diets'
+  | 'health'
+  | 'taste'
+  | 'kitchen'
+  | 'planning'
+  | 'pantry';
 
 export type QuestionnaireStep = {
   id: QuestionnaireStepId;
+  /** Decorative header icon (HiveIcon name), tinted per step like the Swift design. */
+  icon: HiveIconName;
+  iconTint: string;
   title: string;
-  subtitle?: string;
-  /** Required steps cannot be skipped and gate the Next button. */
-  required: boolean;
+  subtitle: string;
 };
 
 export const QUESTIONNAIRE_STEPS: QuestionnaireStep[] = [
   {
     id: 'household',
-    title: 'How many people are you planning meals for?',
-    subtitle: 'We use this to size the recipes, nothing else.',
-    required: true,
+    icon: 'users',
+    iconTint: '#3887FF',
+    title: 'Your Household',
+    subtitle: "Tell us who we're planning meals for.",
   },
   {
-    id: 'meals',
-    title: 'What do you want help planning?',
-    subtitle: "Pick any combination — you don't have to plan every meal.",
-    required: true,
+    id: 'diets',
+    icon: 'leaf',
+    iconTint: '#38A64D',
+    title: 'Diets & Restrictions',
+    subtitle: "We'll make sure the plan works for everyone at the table.",
   },
   {
-    id: 'budget',
-    title: "What's your grocery budget for this plan?",
-    subtitle: "We'll show an estimated range and leave some headroom, because prices vary by store.",
-    required: false,
+    id: 'health',
+    icon: 'heart',
+    iconTint: '#D9404D',
+    title: 'Health & Goals',
+    subtitle: "We'll personalize your meals. This is never medical advice.",
+  },
+  {
+    id: 'taste',
+    icon: 'fork',
+    iconTint: '#F28C1A',
+    title: 'Taste & Cooking',
+    subtitle: "Help us match meals to your family's taste and schedule.",
+  },
+  {
+    id: 'kitchen',
+    icon: 'box',
+    iconTint: '#D9772A',
+    title: 'Your Kitchen',
+    subtitle: 'Penny only plans meals you can actually make with what you have.',
+  },
+  {
+    id: 'planning',
+    icon: 'dollar',
+    iconTint: '#1F8C33',
+    title: 'Meal Planning & Budget',
+    subtitle: "Almost there! Let's set up your weekly plan.",
   },
   {
     id: 'pantry',
-    title: 'What do you already have?',
-    subtitle: "We'll plan around it so you don't buy it twice.",
-    required: false,
-  },
-  {
-    id: 'diet',
-    title: 'Do you follow any of these?',
-    required: false,
-  },
-  {
-    id: 'allergies',
-    title: 'Are there ingredients that must be avoided because of an allergy?',
-    subtitle: 'We remove every recipe containing them. This is checked in code, not guessed.',
-    required: false,
-  },
-  {
-    id: 'nutrition',
-    title: "Is there anything you'd like Penny to prioritise?",
-    required: false,
-  },
-  {
-    id: 'preferences',
-    title: 'What foods do you like — and what would you rather skip?',
-    required: false,
-  },
-  {
-    id: 'time',
-    title: 'How much time do you usually want to spend cooking?',
-    required: false,
-  },
-  {
-    id: 'equipment',
-    title: 'What can you cook with?',
-    subtitle: "Penny won't suggest a recipe that needs something you don't have.",
-    required: false,
-  },
-  {
-    id: 'style',
-    title: 'What sounds most useful?',
-    subtitle: 'Pick up to three.',
-    required: false,
-  },
-  {
-    id: 'leftovers',
-    title: 'Are you okay with leftovers?',
-    required: false,
-  },
-  {
-    id: 'review',
-    title: 'Does this look right?',
-    subtitle: 'Tap any row to change it.',
-    required: false,
+    icon: 'fridge',
+    iconTint: '#1F8C33',
+    title: 'Confirm your Pantry + Fridge',
+    subtitle:
+      "Penny will try to use what you already have. Remove anything you no longer have, or add items we're missing.",
   },
 ];
 
-export const MAX_COOKING_STYLES = 3;
+/** Swift steppers: household 1...10 with a "10+" label at the top end. */
+export const MIN_HOUSEHOLD_SIZE = 1;
+export const MAX_HOUSEHOLD_SIZE = 10;
+export const HOUSEHOLD_SIZE_PLUS_LABEL = '10+';
+export const MAX_CHILDREN_COUNT = 10;
 
-/** Doc 04 §3 — the three budget modes. */
-export const BUDGET_MODE_OPTIONS = [
-  { value: 'lowest', label: 'Spend as little as possible' },
-  { value: 'balanced', label: 'Balance savings and variety' },
-  { value: 'variety', label: 'Use my budget for maximum variety' },
-] as const;
+/** Swift: dinners-per-week stepper, 1...7. */
+export const MIN_PLAN_DAYS = 1;
+export const MAX_PLAN_DAYS = 7;
 
-/** Doc 04 §9 — cooking-time bands. `null` means no preference. */
-export const COOKING_TIME_OPTIONS = [
-  { value: 15, label: '15 minutes or less' },
-  { value: 30, label: '30 minutes or less' },
-  { value: 45, label: '45 minutes or less' },
-  { value: 60, label: '60 minutes or less' },
-  { value: null, label: 'No preference' },
-] as const;
+/** Question 2 follow-up, shown only when at least one child is counted. */
+export const CHILD_AGE_RANGES = ['0–3', '4–8', '9–12', '13–17'];
 
-export const LEFTOVERS_OPTIONS = [
-  { value: 'yes', label: 'Yes — use leftovers to save money' },
-  { value: 'sometimes', label: 'Sometimes' },
-  { value: 'no', label: 'No — I prefer different meals' },
-] as const;
-
-export const EQUIPMENT_OPTIONS: Equipment[] = [
-  'stovetop',
-  'oven',
-  'microwave',
-  'air_fryer',
-  'slow_cooker',
-  'instant_pot',
-  'grill',
-  'blender',
+/** Q3. "None" is exclusive: picking it clears every other diet. */
+export const DIET_OPTIONS = [
+  'None',
+  'Vegetarian',
+  'Vegan',
+  'Pescatarian',
+  'Halal',
+  'Kosher',
+  'Keto / Low-Carb',
+  'Other',
 ];
+export const DIET_EXCLUSIVE_OPTION = 'None';
 
-export const DIET_CHOICES: Diet[] = [...DIET_OPTIONS];
-
-export const ALLERGEN_CHOICES: Allergen[] = [
-  'milk',
-  'egg',
-  'fish',
-  'shellfish',
-  'tree_nut',
-  'peanut',
-  'wheat',
-  'soy',
-  'sesame',
+/** Q4. "None" is exclusive. */
+export const ALLERGY_OPTIONS = [
+  'None',
+  'Peanuts',
+  'Tree Nuts',
+  'Dairy / Lactose',
+  'Eggs',
+  'Gluten / Wheat',
+  'Shellfish',
+  'Fish',
+  'Soy',
+  'Sesame',
+  'Other',
 ];
+export const ALLERGY_EXCLUSIVE_OPTION = 'None';
 
-export const NUTRITION_GOAL_CHOICES: NutritionGoal[] = [
-  'high_protein',
-  'high_fiber',
-  'more_produce',
-  'lower_sodium',
-  'lower_calorie',
-  'balanced',
+/** Q6. Both exclusives clear every other health consideration. */
+export const HEALTH_OPTIONS = [
+  'High Blood Pressure',
+  'Diabetes / High Blood Sugar',
+  'Pre-Diabetes',
+  'High Cholesterol',
+  'Kidney Health',
+  'Pregnant or Breastfeeding',
+  'None of These',
+  'Prefer Not to Say',
 ];
+export const HEALTH_EXCLUSIVE_OPTIONS = ['None of These', 'Prefer Not to Say'];
 
-export const COOKING_STYLE_CHOICES: CookingStyle[] = [...COOKING_STYLE_OPTIONS];
-
-/**
- * Common pantry staples (Doc 04 §4). Each maps to a canonical ingredient id.
- * Nothing is pre-checked — the spec is explicit that we must not assume a
- * household has olive oil or any other expensive staple.
- */
-export const PANTRY_STAPLES: { ingredientId: string; label: string }[] = [
-  { ingredientId: 'rice_white', label: 'Rice' },
-  { ingredientId: 'pasta', label: 'Pasta' },
-  { ingredientId: 'black_beans_canned', label: 'Beans' },
-  { ingredientId: 'flour_all_purpose', label: 'Flour' },
-  { ingredientId: 'oats', label: 'Oats' },
-  { ingredientId: 'eggs', label: 'Eggs' },
-  { ingredientId: 'milk', label: 'Milk' },
-  { ingredientId: 'butter', label: 'Butter' },
-  { ingredientId: 'oil_neutral', label: 'Cooking oil' },
-  { ingredientId: 'garlic', label: 'Garlic' },
-  { ingredientId: 'onion', label: 'Onion' },
-  { ingredientId: 'bread', label: 'Bread' },
-  { ingredientId: 'tomatoes_canned', label: 'Canned tomatoes' },
+/** Q7. "No Specific Goal" is exclusive. */
+export const GOAL_OPTIONS = [
+  'Eat Healthier Overall',
+  'Manage Weight',
+  'More Energy',
+  'Build Muscle',
+  'Doctor-Recommended Diet',
+  'No Specific Goal',
 ];
+export const GOAL_EXCLUSIVE_OPTION = 'No Specific Goal';
 
-/** Cuisine chips (Doc 04 §8). */
-export const CUISINE_CHOICES = [
-  { value: 'mexican_inspired', label: 'Mexican' },
-  { value: 'italian_inspired', label: 'Italian' },
-  { value: 'asian_inspired', label: 'Asian-inspired' },
-  { value: 'mediterranean_inspired', label: 'Mediterranean' },
-  { value: 'american', label: 'American' },
-] as const;
+/** Q8. "Surprise Me" is exclusive. */
+export const CUISINE_OPTIONS = [
+  'American',
+  'Mexican',
+  'Italian',
+  'Caribbean',
+  'Soul Food',
+  'Mediterranean',
+  'Asian',
+  'Indian',
+  'African',
+  'Middle Eastern',
+  'Surprise Me',
+];
+export const CUISINE_EXCLUSIVE_OPTION = 'Surprise Me';
 
-/**
- * Whether a step's answers are complete enough to move on. Only the two
- * required steps can block; the rest always pass.
- */
-export function canAdvance(step: QuestionnaireStepId, request: PlanRequest): boolean {
-  switch (step) {
-    case 'household':
-      return request.household.size >= 1;
-    case 'meals':
-      // Doc 04 validation: at least one meal count must be greater than zero.
-      return totalMeals(request.meals) > 0 && request.days >= 1;
-    default:
-      return true;
-  }
-}
+/** Q9–Q11 single-selects. */
+export const SPICE_OPTIONS = ['Mild', 'Medium', 'Hot'];
+export const COOK_TIME_OPTIONS = [
+  'Under 20 Minutes',
+  '20–40 Minutes',
+  '40+ Minutes',
+  'Depends on the Day',
+];
+export const SKILL_OPTIONS = ['Beginner', 'Comfortable', 'Confident Cook'];
 
-/**
- * Adults + children must sum to the household size when both are given
- * (Doc 04 §1). Returns null when the split is fine or was left blank.
- */
-export function householdSplitError(request: PlanRequest): string | null {
-  const { size, adults, children } = request.household;
-  if (adults === null && children === null) return null;
-  const total = (adults ?? 0) + (children ?? 0);
-  if (total === size) return null;
-  return `Adults and children should add up to ${size}.`;
-}
+/** Q12. "Microwave Only" is exclusive — it replaces every other equipment pick. */
+export const EQUIPMENT_OPTIONS = [
+  'Stove / Cooktop',
+  'Oven / Baking',
+  'Microwave',
+  'Slow Cooker',
+  'Air Fryer',
+  'Instant Pot',
+  'Grill',
+  'Blender',
+  'Microwave Only',
+];
+export const EQUIPMENT_EXCLUSIVE_OPTION = 'Microwave Only';
+
+/** Q14. Breakfast / lunch / dinner only — no snack slot, per the product rules. */
+export const MEAL_TYPE_OPTIONS = ['Breakfast', 'Lunch', 'Dinner'];
+
+/** Q15. "$250+" has no top bound, so it maps to no budget cap (see answers). */
+export const BUDGET_OPTIONS = ['Under $75', '$75–$150', '$150–$250', '$250+', 'No Preference'];
+
+/** Q16 (renumbered — the Swift file labels this "15." a second time). */
+export const SHOPPING_OPTIONS = ['Give Me a Grocery List', 'Shop with Instacart', "I'm Not Sure Yet"];
