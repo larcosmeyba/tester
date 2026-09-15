@@ -1,7 +1,7 @@
 // The Home tab — Marcos's approved Section 2 home screen
 // ("Home Screen Update .png"). Source of truth for layout/copy.
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   Alert,
   Animated,
@@ -27,8 +27,9 @@ import { StyleSheet } from 'react-native';
 import { sharedStyles } from '@/features/app/app-shared';
 import { type Navigation } from '@/features/app/navigation-types';
 import { HiveColors, Shadows } from '@/constants/theme';
+import { useResponsive } from '@/constants/responsive';
 import { type ResourceItem } from '@/data/mock-data';
-import { getHomeResources } from './home-resources';
+import { getHomeResources, getResourceDataSource } from './home-resources';
 
 const pennyWaveHomeSource = require('@/assets/images/hive/penny-wave-home.png');
 // TODO (Section 2 audit): replace the placeholder above with the exact Home
@@ -47,6 +48,8 @@ const BADGE_TONES = {
 
 export function HomeScreen({ nav }: { nav: Navigation }) {
   const app = useAppState();
+  const styles = useHomeStyles();
+  const resourceSource = getResourceDataSource(app.preferences.locationPermissionStatus, app.profile.zip);
   const firstName = app.profile.firstName || 'there';
 
   async function pickAndSavePhoto() {
@@ -158,7 +161,10 @@ export function HomeScreen({ nav }: { nav: Navigation }) {
         </View>
 
         <View style={styles.resourcesHeaderRow}>
-          <Text style={styles.resourcesTitle}>Resources Near You</Text>
+          <View style={styles.resourcesTitleWrap}>
+            <Text style={styles.resourcesTitle}>{resourceSource.title}</Text>
+            <Text style={styles.resourcesSubtitle}>{resourceSource.subtitle}</Text>
+          </View>
           <Pressable
             accessibilityRole="button"
             accessibilityLabel="See all resources"
@@ -211,6 +217,7 @@ export function HomeScreen({ nav }: { nav: Navigation }) {
  * Marcos's HomeView design; taps through to the pantry.
  */
 function ExpiringSoonBanner({ onPress }: { onPress: () => void }) {
+  const styles = useHomeStyles();
   const { expiringItems } = usePantry();
   const expiringCount = expiringItems.length;
   if (expiringCount === 0) {
@@ -237,6 +244,7 @@ function ExpiringSoonBanner({ onPress }: { onPress: () => void }) {
 }
 
 function HomeResourceCard({ resource, onPress }: { resource: ResourceItem; onPress: () => void }) {
+  const styles = useHomeStyles();
   const badge = BADGE_TONES[resource.badgeTone ?? 'green'];
   const [days, time] = resource.hours.split('·').map((part) => part.trim());
   return (
@@ -288,6 +296,7 @@ function openResourceWebsite(website?: string) {
  * Drag anywhere; a tap (no drag) opens Penny AI directly.
  */
 function AskPennyFab({ onPress }: { onPress: () => void }) {
+  const styles = useHomeStyles();
   const barSpace = useFloatingTabBarSpace();
   const { width: screenWidth, height: screenHeight } = useWindowDimensions();
   const insets = useSafeAreaInsets();
@@ -350,251 +359,267 @@ const CARD_GREEN = '#2C5731';
 const CARD_BLUE = '#3B73ED';
 const CARD_ORANGE = '#BD7136';
 
-const styles = StyleSheet.create({
-  homeContent: {
-    paddingBottom: FLOATING_TAB_BAR_HEIGHT + 120,
-  },
-  homeHeader: {
-    paddingHorizontal: 20,
-    paddingTop: 16,
-  },
-  greetingRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-  },
-  homeGreeting: {
-    color: HiveColors.text,
-    fontSize: 28,
-    fontWeight: '800',
-  },
-  pennyWave: {
-    width: 46,
-    height: 46,
-  },
-  avatarWrap: {
-    position: 'absolute',
-    top: 16,
-    right: 20,
-  },
-  homeSubGreeting: {
-    color: HiveColors.textSecondary,
-    fontSize: 15,
-    marginTop: 6,
-  },
-  homeQuestion: {
-    color: HiveColors.text,
-    fontSize: 19,
-    fontWeight: '800',
-    paddingHorizontal: 20,
-    marginTop: 18,
-    marginBottom: 14,
-  },
-  actionStack: {
-    gap: 12,
-    paddingHorizontal: 20,
-  },
-  card: {
-    borderRadius: 20,
-    padding: 16,
-    gap: 14,
-  },
-  greenCard: { backgroundColor: CARD_GREEN },
-  blueCard: { backgroundColor: CARD_BLUE },
-  orangeCard: { backgroundColor: CARD_ORANGE },
-  cardTopRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  cardIconCircle: {
-    width: 52,
-    height: 52,
-    borderRadius: 26,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(255,255,255,0.22)',
-  },
-  greenCircle: {},
-  blueCircle: {},
-  orangeCircle: {},
-  cardTitle: {
-    color: HiveColors.white,
-    fontSize: 19,
-    fontWeight: '800',
-    flex: 1,
-    lineHeight: 24,
-  },
-  cardSubtitle: {
-    color: 'rgba(255,255,255,0.85)',
-    fontSize: 14,
-    lineHeight: 19,
-    marginTop: 4,
-  },
-  pillRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-  },
-  benefitPill: {
-    backgroundColor: 'rgba(255,255,255,0.20)',
-    borderRadius: 14,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-  },
-  benefitPillText: {
-    color: HiveColors.white,
-    fontSize: 13,
-    fontWeight: '700',
-  },
-  resourcesHeaderRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    marginTop: 24,
-    marginBottom: 12,
-  },
-  resourcesTitle: {
-    color: HiveColors.text,
-    fontSize: 19,
-    fontWeight: '800',
-  },
-  seeAllPill: {
-    backgroundColor: '#EDF7EC',
-    borderRadius: 14,
-    paddingHorizontal: 14,
-    paddingVertical: 7,
-  },
-  seeAllText: {
-    color: HiveColors.green,
-    fontSize: 14,
-    fontWeight: '700',
-  },
-  resourceCarousel: {
-    paddingHorizontal: 20,
-    gap: 12,
-    paddingBottom: 8,
-  },
-  resCard: {
-    width: 252,
-    backgroundColor: HiveColors.white,
-    borderRadius: 16,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: HiveColors.border,
-    padding: 14,
-    gap: 8,
-  },
-  resBadge: {
-    alignSelf: 'flex-start',
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-  },
-  resBadgeText: {
-    fontSize: 13,
-    fontWeight: '700',
-  },
-  resName: {
-    color: HiveColors.text,
-    fontSize: 17,
-    fontWeight: '800',
-    lineHeight: 22,
-  },
-  resMetaRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-  },
-  resMetaText: {
-    color: HiveColors.textSecondary,
-    fontSize: 13,
-  },
-  resDescription: {
-    color: HiveColors.textSecondary,
-    fontSize: 14,
-    lineHeight: 19,
-  },
-  learnMoreButton: {
-    backgroundColor: CARD_GREEN,
-    borderRadius: 12,
-    paddingVertical: 12,
-    alignItems: 'center',
-    marginTop: 4,
-  },
-  learnMoreText: {
-    color: HiveColors.white,
-    fontSize: 15,
-    fontWeight: '700',
-  },
-  expiringBanner: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 14,
-    marginHorizontal: 20,
-    marginTop: 16,
-    marginBottom: 4,
-    padding: 14,
-    backgroundColor: '#FFF0CC',
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: 'rgba(255,149,0,0.4)',
-  },
-  expiringIconCircle: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: 'rgba(255,149,0,0.15)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  expiringIcon: {
-    fontSize: 22,
-  },
-  expiringTitle: {
-    color: '#8C4700',
-    fontSize: 15,
-    fontWeight: '800',
-  },
-  expiringSubtitle: {
-    color: '#8C5900',
-    fontSize: 13,
-    marginTop: 3,
-  },
-  cartPillRow: {
-    position: 'absolute',
-    left: 16,
-    right: 16,
-    bottom: 170,
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-  },
-  askPenny: {
-    position: 'absolute',
-    flexDirection: 'row',
-    alignItems: 'center',
-    width: 196,
-    height: 64,
-  },
-  askPennyPill: {
-    backgroundColor: '#FBF0C9',
-    borderRadius: 20,
-    paddingLeft: 18,
-    paddingRight: 44,
-    paddingVertical: 12,
-    ...Shadows.soft,
-  },
-  askPennyText: {
-    color: HiveColors.text,
-    fontSize: 15,
-    fontWeight: '700',
-  },
-  askPennyCircle: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    marginLeft: -36,
-    borderWidth: 2,
-    borderColor: HiveColors.green,
-  },
-});
+function useHomeStyles() {
+  const { s, vs, ms } = useResponsive();
+  const tabBarSpace = useFloatingTabBarSpace();
+  return useMemo(
+    () =>
+      StyleSheet.create({
+      homeContent: {
+      paddingBottom: s(FLOATING_TAB_BAR_HEIGHT) + vs(120),
+      },
+      homeHeader: {
+      paddingHorizontal: s(20),
+      paddingTop: vs(16),
+      },
+      greetingRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: s(10),
+      },
+      homeGreeting: {
+      color: HiveColors.text,
+      fontSize: ms(28),
+      fontWeight: '800',
+      },
+      pennyWave: {
+      width: s(46),
+      height: vs(46),
+      },
+      avatarWrap: {
+      position: 'absolute',
+      top: vs(16),
+      right: s(20),
+      },
+      homeSubGreeting: {
+      color: HiveColors.textSecondary,
+      fontSize: ms(15),
+      marginTop: vs(6),
+      },
+      homeQuestion: {
+      color: HiveColors.text,
+      fontSize: ms(19),
+      fontWeight: '800',
+      paddingHorizontal: s(20),
+      marginTop: vs(18),
+      marginBottom: vs(14),
+      },
+      actionStack: {
+      gap: s(12),
+      paddingHorizontal: s(20),
+      },
+      card: {
+      borderRadius: s(20),
+      padding: 16,
+      gap: s(14),
+      },
+      greenCard: { backgroundColor: CARD_GREEN },
+      blueCard: { backgroundColor: CARD_BLUE },
+      orangeCard: { backgroundColor: CARD_ORANGE },
+      cardTopRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: s(12),
+      },
+      cardIconCircle: {
+      width: s(52),
+      height: vs(52),
+      borderRadius: s(26),
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: 'rgba(255,255,255,0.22)',
+      },
+      greenCircle: {},
+      blueCircle: {},
+      orangeCircle: {},
+      cardTitle: {
+      color: HiveColors.white,
+      fontSize: ms(19),
+      fontWeight: '800',
+      flex: 1,
+      lineHeight: ms(24),
+      },
+      cardSubtitle: {
+      color: 'rgba(255,255,255,0.85)',
+      fontSize: ms(14),
+      lineHeight: ms(19),
+      marginTop: vs(4),
+      },
+      pillRow: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: s(8),
+      },
+      benefitPill: {
+      backgroundColor: 'rgba(255,255,255,0.20)',
+      borderRadius: s(14),
+      paddingHorizontal: s(12),
+      paddingVertical: vs(6),
+      },
+      benefitPillText: {
+      color: HiveColors.white,
+      fontSize: ms(13),
+      fontWeight: '700',
+      },
+      resourcesHeaderRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingHorizontal: s(20),
+      marginTop: vs(24),
+      marginBottom: vs(12),
+      },
+      resourcesTitleWrap: {
+      flex: 1,
+      },
+      resourcesTitle: {
+      color: HiveColors.text,
+      fontSize: ms(19),
+      fontWeight: '800',
+      },
+      resourcesSubtitle: {
+      color: HiveColors.textSecondary,
+      fontSize: ms(12),
+      marginTop: vs(2),
+      },
+      seeAllPill: {
+      backgroundColor: '#EDF7EC',
+      borderRadius: s(14),
+      paddingHorizontal: s(14),
+      paddingVertical: vs(7),
+      },
+      seeAllText: {
+      color: HiveColors.green,
+      fontSize: ms(14),
+      fontWeight: '700',
+      },
+      resourceCarousel: {
+      paddingHorizontal: s(20),
+      gap: s(12),
+      paddingBottom: vs(8),
+      },
+      resCard: {
+      width: s(252),
+      backgroundColor: HiveColors.white,
+      borderRadius: s(16),
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor: HiveColors.border,
+      padding: 14,
+      gap: s(8),
+      },
+      resBadge: {
+      alignSelf: 'flex-start',
+      borderRadius: s(8),
+      paddingHorizontal: s(10),
+      paddingVertical: vs(5),
+      },
+      resBadgeText: {
+      fontSize: ms(13),
+      fontWeight: '700',
+      },
+      resName: {
+      color: HiveColors.text,
+      fontSize: ms(17),
+      fontWeight: '800',
+      lineHeight: ms(22),
+      },
+      resMetaRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: s(6),
+      },
+      resMetaText: {
+      color: HiveColors.textSecondary,
+      fontSize: ms(13),
+      },
+      resDescription: {
+      color: HiveColors.textSecondary,
+      fontSize: ms(14),
+      lineHeight: ms(19),
+      },
+      learnMoreButton: {
+      backgroundColor: CARD_GREEN,
+      borderRadius: s(12),
+      paddingVertical: vs(12),
+      alignItems: 'center',
+      marginTop: vs(4),
+      },
+      learnMoreText: {
+      color: HiveColors.white,
+      fontSize: ms(15),
+      fontWeight: '700',
+      },
+      expiringBanner: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: s(14),
+      marginHorizontal: s(20),
+      marginTop: vs(16),
+      marginBottom: vs(4),
+      padding: 14,
+      backgroundColor: '#FFF0CC',
+      borderRadius: s(16),
+      borderWidth: s(1),
+      borderColor: 'rgba(255,149,0,0.4)',
+      },
+      expiringIconCircle: {
+      width: s(44),
+      height: vs(44),
+      borderRadius: s(22),
+      backgroundColor: 'rgba(255,149,0,0.15)',
+      alignItems: 'center',
+      justifyContent: 'center',
+      },
+      expiringIcon: {
+      fontSize: ms(22),
+      },
+      expiringTitle: {
+      color: '#8C4700',
+      fontSize: ms(15),
+      fontWeight: '800',
+      },
+      expiringSubtitle: {
+      color: '#8C5900',
+      fontSize: ms(13),
+      marginTop: vs(3),
+      },
+      cartPillRow: {
+      position: 'absolute',
+      left: s(16),
+      right: s(16),
+      bottom: tabBarSpace + vs(68),
+      flexDirection: 'row',
+      alignItems: 'flex-end',
+      },
+      askPenny: {
+      position: 'absolute',
+      flexDirection: 'row',
+      alignItems: 'center',
+      width: s(196),
+      height: vs(64),
+      },
+      askPennyPill: {
+      backgroundColor: '#FBF0C9',
+      borderRadius: s(20),
+      paddingLeft: s(18),
+      paddingRight: s(44),
+      paddingVertical: vs(12),
+      ...Shadows.soft,
+      },
+      askPennyText: {
+      color: HiveColors.text,
+      fontSize: ms(15),
+      fontWeight: '700',
+      },
+      askPennyCircle: {
+      width: s(64),
+      height: vs(64),
+      borderRadius: s(32),
+      marginLeft: s(-36),
+      borderWidth: s(2),
+      borderColor: HiveColors.green,
+      },
+      }),
+    [s, vs, ms, tabBarSpace],
+  );
+}

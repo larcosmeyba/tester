@@ -472,10 +472,13 @@ export function Chip({
   );
 }
 
-export function SectionHeader({ title, actionLabel = 'See all', onPress }: { title: string; actionLabel?: string; onPress?: PressHandler }) {
+export function SectionHeader({ title, subtitle, actionLabel = 'See all', onPress }: { title: string; subtitle?: string; actionLabel?: string; onPress?: PressHandler }) {
   return (
     <View style={styles.sectionHeader}>
-      <Text style={styles.sectionTitle}>{title}</Text>
+      <View style={styles.sectionHeaderText}>
+        <Text style={styles.sectionTitle}>{title}</Text>
+        {subtitle ? <Text style={styles.sectionSubtitle}>{subtitle}</Text> : null}
+      </View>
       {onPress ? (
         <Pressable onPress={onPress}>
           <Text style={styles.sectionAction}>{actionLabel}</Text>
@@ -1007,6 +1010,14 @@ const styles = StyleSheet.create({
     fontSize: 17,
     fontWeight: '800',
     letterSpacing: 0,
+  },
+  sectionHeaderText: {
+    flex: 1,
+  },
+  sectionSubtitle: {
+    color: HiveColors.textSecondary,
+    fontSize: 12,
+    marginTop: 2,
   },
   sectionAction: {
     color: HiveColors.green,

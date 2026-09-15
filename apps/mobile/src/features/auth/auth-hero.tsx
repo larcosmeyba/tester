@@ -5,9 +5,11 @@
 // Headlines are the screenshot designs ("Welcome Back" / "Welcome to Help The
 // Hive") — they intentionally replace the earlier emoji versions.
 
+import { useMemo } from 'react';
 import { Image, Pressable, Text, View } from 'react-native';
 import { StyleSheet } from 'react-native';
 import { HiveColors } from '@/constants/theme';
+import { useResponsive } from '@/constants/responsive';
 
 export type AuthMode = 'login' | 'signup';
 
@@ -29,6 +31,7 @@ export function AuthModeToggle({
   mode: AuthMode;
   onSelect: (mode: AuthMode) => void;
 }) {
+  const styles = useAuthHeroStyles();
   // Screenshot order: Sign Up on the left, Log In on the right.
   return (
     <View style={styles.toggleTrack} accessibilityRole="tablist">
@@ -54,6 +57,7 @@ export function AuthModeToggle({
 }
 
 export function AuthHero({ mode }: { mode: AuthMode }) {
+  const styles = useAuthHeroStyles();
   const copy = COPY[mode];
   return (
     <View style={styles.hero}>
@@ -68,44 +72,51 @@ export function AuthHero({ mode }: { mode: AuthMode }) {
   );
 }
 
-const styles = StyleSheet.create({
-  toggleTrack: {
-    flexDirection: 'row',
-    backgroundColor: HiveColors.border,
-    borderRadius: 999,
-    padding: 4,
-  },
-  toggleOption: {
-    flex: 1,
-    paddingVertical: 10,
-    borderRadius: 999,
-    alignItems: 'center',
-  },
-  toggleOptionActive: {
-    backgroundColor: HiveColors.greenDark,
-  },
-  toggleLabel: {
-    color: HiveColors.textSecondary,
-    fontSize: 15,
-    fontWeight: '600',
-  },
-  toggleLabelActive: {
-    color: HiveColors.white,
-  },
-  hero: {
-    alignItems: 'center',
-    gap: 12,
-    marginVertical: 8,
-  },
-  penny: {
-    width: 132,
-    height: 132,
-  },
-  headline: {
-    color: HiveColors.greenDark,
-    fontSize: 28,
-    fontWeight: '800',
-    textAlign: 'center',
-    letterSpacing: -0.5,
-  },
-});
+function useAuthHeroStyles() {
+  const { s, vs, ms } = useResponsive();
+  return useMemo(
+    () =>
+      StyleSheet.create({
+      toggleTrack: {
+      flexDirection: 'row',
+      backgroundColor: HiveColors.border,
+      borderRadius: s(999),
+      padding: 4,
+      },
+      toggleOption: {
+      flex: 1,
+      paddingVertical: vs(10),
+      borderRadius: s(999),
+      alignItems: 'center',
+      },
+      toggleOptionActive: {
+      backgroundColor: HiveColors.greenDark,
+      },
+      toggleLabel: {
+      color: HiveColors.textSecondary,
+      fontSize: ms(15),
+      fontWeight: '600',
+      },
+      toggleLabelActive: {
+      color: HiveColors.white,
+      },
+      hero: {
+      alignItems: 'center',
+      gap: s(12),
+      marginVertical: vs(8),
+      },
+      penny: {
+      width: s(132),
+      height: vs(132),
+      },
+      headline: {
+      color: HiveColors.greenDark,
+      fontSize: ms(28),
+      fontWeight: '800',
+      textAlign: 'center',
+      letterSpacing: -0.5,
+      },
+      }),
+    [s, vs, ms],
+  );
+}

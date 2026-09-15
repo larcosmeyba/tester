@@ -46,3 +46,46 @@ export function getHomeResources(): ResourceItem[] {
     .filter(isAllowListedResource)
     .sort((a, b) => distanceInMiles(a) - distanceInMiles(b));
 }
+
+export type LocationPermissionStatus = 'unset' | 'granted' | 'denied';
+
+export type ResourceDataSource =
+  | { kind: 'current-location'; title: string; subtitle: string }
+  | { kind: 'manual-area'; zip: string; title: string; subtitle: string }
+  | { kind: 'demo'; title: string; subtitle: string };
+
+/**
+ * Honest source labeling for the resource lists (Marcos, 2026-09-15).
+ *
+ * The feed is still demo data until the verified backend resource feed
+ * exists — so the subtitle always says so. The title only claims "Near You"
+ * when there is a genuine user-derived location (granted foreground
+ * permission or a manually entered ZIP); otherwise it falls back to the
+ * neutral "Community Resources".
+ */
+export function getResourceDataSource(
+  locationPermissionStatus: LocationPermissionStatus,
+  zip: string,
+): ResourceDataSource {
+  const trimmedZip = zip.trim();
+  if (locationPermissionStatus === 'granted') {
+    return {
+      kind: 'current-location',
+      title: 'Resources Near You',
+      subtitle: 'Location enabled · Showing demo resource data',
+    };
+  }
+  if (trimmedZip.length > 0) {
+    return {
+      kind: 'manual-area',
+      zip: trimmedZip,
+      title: 'Resources Near You',
+      subtitle: `Area ${trimmedZip} · Showing demo resource data`,
+    };
+  }
+  return {
+    kind: 'demo',
+    title: 'Community Resources',
+    subtitle: 'Demo resource data · Enable location or add a ZIP to personalize',
+  };
+}
