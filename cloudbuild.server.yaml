@@ -97,6 +97,20 @@ steps:
         if [[ -n "${_RESOURCES_PLACES_API_KEY_SECRET}" ]]; then
           PHASE2_SECRETS+=(--set-secrets="RESOURCES_PLACES_API_KEY=${_RESOURCES_PLACES_API_KEY_SECRET}:latest")
         fi
+        # Signup/verification email (Resend). Without it the users module
+        # refuses to send and signup verification silently never arrives.
+        if [[ -n "${_RESEND_API_KEY_SECRET}" ]]; then
+          PHASE2_SECRETS+=(--set-secrets="RESEND_API_KEY=${_RESEND_API_KEY_SECRET}:latest")
+        fi
+        # AI provider keys. Wired here (not via post-deploy --update-secrets)
+        # so a redeploy never wipes them the way --set-secrets/--set-env-vars
+        # replace the full config.
+        if [[ -n "${_MEAL_AI_API_KEY_SECRET}" ]]; then
+          PHASE2_SECRETS+=(--set-secrets="MEAL_AI_API_KEY=${_MEAL_AI_API_KEY_SECRET}:latest")
+        fi
+        if [[ -n "${_BENEFITS_AI_API_KEY_SECRET}" ]]; then
+          PHASE2_SECRETS+=(--set-secrets="BENEFITS_AI_API_KEY=${_BENEFITS_AI_API_KEY_SECRET}:latest")
+        fi
         gcloud run deploy '${_SERVICE}' \
           --project='$PROJECT_ID' \
           --region='${_REGION}' \
@@ -105,7 +119,7 @@ steps:
           --set-cloudsql-instances='${_INSTANCE_CONNECTION_NAME}' \
           --set-secrets='DATABASE_URL=${_DATABASE_SECRET}:latest' \
           "$${PHASE2_SECRETS[@]}" \
-          --set-env-vars="APP_ENV=production,HTTP_ADDR=:8080,CORS_ALLOWED_ORIGINS=${_CORS_ALLOWED_ORIGINS},BETTER_AUTH_ISSUER=$${AUTH_URL},BETTER_AUTH_AUDIENCE=${_BETTER_AUTH_AUDIENCE},BETTER_AUTH_JWKS_URL=$${AUTH_URL}/api/auth/jwks,PENNY_AGENT_URL=${_PENNY_AGENT_URL},RECIPE_IMPORT_URL=${_RECIPE_IMPORT_URL}" \
+          --set-env-vars="APP_ENV=production,HTTP_ADDR=:8080,CORS_ALLOWED_ORIGINS=${_CORS_ALLOWED_ORIGINS},BETTER_AUTH_ISSUER=$${AUTH_URL},BETTER_AUTH_AUDIENCE=${_BETTER_AUTH_AUDIENCE},BETTER_AUTH_JWKS_URL=$${AUTH_URL}/api/auth/jwks,PENNY_AGENT_URL=${_PENNY_AGENT_URL},RECIPE_IMPORT_URL=${_RECIPE_IMPORT_URL},EMAIL_FROM=${_EMAIL_FROM},MEAL_AI_PROVIDER=${_MEAL_AI_PROVIDER},MEAL_AI_BASE_URL=${_MEAL_AI_BASE_URL},MEAL_AI_MODEL=${_MEAL_AI_MODEL},BENEFITS_AI_PROVIDER=${_BENEFITS_AI_PROVIDER},BENEFITS_AI_BASE_URL=${_BENEFITS_AI_BASE_URL},BENEFITS_AI_MODEL=${_BENEFITS_AI_MODEL}" \
           --port=8080 \
           --startup-probe='initialDelaySeconds=0,timeoutSeconds=3,periodSeconds=3,failureThreshold=10,httpGet.port=8080,httpGet.path=/healthz' \
           --liveness-probe='initialDelaySeconds=10,timeoutSeconds=3,periodSeconds=10,failureThreshold=3,httpGet.port=8080,httpGet.path=/healthz' \
@@ -142,6 +156,19 @@ substitutions:
   # Community resource lookup (Google Places API key secret name). Empty
   # leaves /resources/nearby returning 503 (honestly unavailable).
   _RESOURCES_PLACES_API_KEY_SECRET: ''
+  # Signup/verification email (Resend API key secret name) and AI provider
+  # wiring. scripts/deploy-gcp.sh fills these in; empty leaves the
+  # integration unconfigured and the server falls back gracefully.
+  _RESEND_API_KEY_SECRET: ''
+  _MEAL_AI_API_KEY_SECRET: ''
+  _BENEFITS_AI_API_KEY_SECRET: ''
+  _EMAIL_FROM: ''
+  _MEAL_AI_PROVIDER: ''
+  _MEAL_AI_BASE_URL: ''
+  _MEAL_AI_MODEL: ''
+  _BENEFITS_AI_PROVIDER: ''
+  _BENEFITS_AI_BASE_URL: ''
+  _BENEFITS_AI_MODEL: ''
 
 options:
   logging: CLOUD_LOGGING_ONLY
