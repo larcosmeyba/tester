@@ -189,10 +189,9 @@ export function SignUpScreen({ nav }: { nav: Navigation }) {
 
   return (
     <ScrollScreen keyboard>
-      <AppHeader onBack={nav.back} hiddenTitle />
       <View style={sharedStyles.formScreen}>
-        <AuthModeToggle mode="signup" onSelect={(next) => nav.replace(next)} />
         <AuthHero mode="signup" />
+        <AuthModeToggle mode="signup" onSelect={(next) => nav.replace(next)} />
         <Text style={styles.formHeading}>Sign up</Text>
         <View style={styles.formStack}>
           <ValidatedField
@@ -281,10 +280,9 @@ export function LoginScreen({ nav }: { nav: Navigation }) {
 
   return (
     <ScrollScreen keyboard>
-      <AppHeader onBack={nav.back} hiddenTitle />
       <View style={sharedStyles.formScreen}>
-        <AuthModeToggle mode="login" onSelect={(next) => nav.replace(next)} />
         <AuthHero mode="login" />
+        <AuthModeToggle mode="login" onSelect={(next) => nav.replace(next)} />
         <Text style={styles.formHeading}>Login</Text>
         <View style={styles.formStack}>
           <AppTextField

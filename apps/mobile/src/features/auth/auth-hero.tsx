@@ -106,8 +106,8 @@ function useAuthHeroStyles() {
       marginVertical: vs(8),
       },
       penny: {
-      width: s(132),
-      height: vs(132),
+      width: s(112),
+      height: vs(112),
       },
       headline: {
       color: HiveColors.greenDark,
