@@ -5,6 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   AI_PLANS_PER_MONTH,
   SINGLE_MEALS_PER_MONTH,
+  URL_IMPORTS_PER_MONTH,
   VIDEO_IMPORTS_PER_MONTH,
   getAiUsage,
   hasAiUsageRemaining,
@@ -26,10 +27,11 @@ beforeEach(() => {
   jest.clearAllMocks();
 });
 
-const kinds: AiUsageKind[] = ['ai_plan', 'video_import', 'single_meal'];
+const kinds: AiUsageKind[] = ['ai_plan', 'video_import', 'url_import', 'single_meal'];
 const limits: Record<AiUsageKind, number> = {
   ai_plan: AI_PLANS_PER_MONTH,
   video_import: VIDEO_IMPORTS_PER_MONTH,
+  url_import: URL_IMPORTS_PER_MONTH,
   single_meal: SINGLE_MEALS_PER_MONTH,
 };
 

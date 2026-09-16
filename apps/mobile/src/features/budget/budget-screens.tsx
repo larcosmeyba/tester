@@ -5,7 +5,7 @@
 
 import { useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
-import { AppButton, AppHeader, AvatarButton, Card, Chip, HiveIcon, Screen, ScrollScreen, SelectionRow, rowStyles, uiText } from '@/components/hive-ui';
+import { AppButton, AppHeader, AvatarButton, Card, Chip, HiveIcon, Screen, ScrollScreen, SelectionRow, rowStyles } from '@/components/hive-ui';
 import { HiveColors } from '@/constants/theme';
 import { ComingSoonHub } from '@/components/hive-cards';
 import { spendingCategories, transactions } from '@/data/mock-data';
@@ -131,6 +131,8 @@ export function ConnectAccountScreen({ nav }: { nav: Navigation }) {
   );
 }
 
+const BUDGET_OPTIONS = ['Below $50', '$75-100', '$100-$150', '$150-$200'];
+
 export function BudgetSettingsScreen({ nav }: { nav: Navigation }) {
   const app = useAppState();
   const [budget, setBudget] = useState(app.preferences.weeklyBudget || '$75-100');
@@ -153,13 +155,27 @@ export function BudgetSettingsScreen({ nav }: { nav: Navigation }) {
   return (
     <ScrollScreen>
       <AppHeader title="Budget Settings" onBack={nav.back} />
-      <View style={sharedStyles.formScreen}>
-        <Text style={uiText.subtitle}>Weekly grocery budget</Text>
-        {['Below $50', '$75-100', '$100-$150', '$150-$200'].map((option) => (
-          <SelectionRow key={option} title={option} selected={budget === option} onPress={() => setBudget(option)} />
+      <View style={styles.budgetBody}>
+        {/*
+          Swift-style budget card: the current selection displayed large, with
+          the real range options below. The Swift sandbox's alert/roll-over/
+          round-up toggles are intentionally absent — no backend fields back
+          them, so they would write nowhere.
+        */}
+        <View style={styles.budgetCard}>
+          <Text style={styles.budgetCardLabel}>Weekly grocery budget</Text>
+          <Text style={styles.budgetCardValue}>{budget}</Text>
+        </View>
+        {BUDGET_OPTIONS.map((option) => (
+          <SelectionRow
+            key={option}
+            title={option}
+            selected={budget === option}
+            onPress={() => setBudget(option)}
+          />
         ))}
         {saveError ? <Text style={sharedStyles.authError}>{saveError}</Text> : null}
-        <AppButton title={isSaving ? 'Saving…' : 'Save Budget'} disabled={isSaving} onPress={() => void save()} />
+        <AppButton title={isSaving ? 'Saving…' : 'Save Changes'} disabled={isSaving} onPress={() => void save()} />
       </View>
     </ScrollScreen>
   );
@@ -182,6 +198,30 @@ export function DonutPlaceholder({ large = false }: { large?: boolean }) {
  */
 
 const styles = StyleSheet.create({
+  budgetBody: {
+    gap: 12,
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    paddingBottom: 40,
+  },
+  budgetCard: {
+    alignItems: 'center',
+    gap: 8,
+    backgroundColor: HiveColors.card,
+    borderRadius: 16,
+    paddingVertical: 24,
+    paddingHorizontal: 20,
+    marginBottom: 12,
+  },
+  budgetCardLabel: {
+    color: HiveColors.textSecondary,
+    fontSize: 14,
+  },
+  budgetCardValue: {
+    color: HiveColors.text,
+    fontSize: 38,
+    fontWeight: '800',
+  },
   donut: {
     width: 112,
     height: 112,

@@ -1,10 +1,10 @@
 /**
- * Penny daily limits: day-keyed counting, success-only recording, fail-open.
+ * Penny monthly limits: month-keyed counting, success-only recording, fail-open.
  */
 import {
   getPennyUsage,
   hasPennyMessagesRemaining,
-  PENNY_QUESTIONS_PER_DAY,
+  PENNY_TURNS_PER_MONTH,
   recordPennyMessage,
 } from '@/features/penny/penny-limits';
 
@@ -17,7 +17,7 @@ jest.mock('@react-native-async-storage/async-storage', () => ({
   }),
 }));
 
-describe('penny daily limits', () => {
+describe('penny monthly limits', () => {
   beforeEach(() => {
     mockStore.clear();
     jest.clearAllMocks();
@@ -25,9 +25,9 @@ describe('penny daily limits', () => {
 
   it('starts at the full allowance', async () => {
     const usage = await getPennyUsage();
-    expect(usage.limit).toBe(PENNY_QUESTIONS_PER_DAY);
+    expect(usage.limit).toBe(PENNY_TURNS_PER_MONTH);
     expect(usage.used).toBe(0);
-    expect(usage.remaining).toBe(PENNY_QUESTIONS_PER_DAY);
+    expect(usage.remaining).toBe(PENNY_TURNS_PER_MONTH);
     expect(await hasPennyMessagesRemaining()).toBe(true);
   });
 
@@ -36,11 +36,11 @@ describe('penny daily limits', () => {
     await recordPennyMessage();
     const usage = await getPennyUsage();
     expect(usage.used).toBe(2);
-    expect(usage.remaining).toBe(PENNY_QUESTIONS_PER_DAY - 2);
+    expect(usage.remaining).toBe(PENNY_TURNS_PER_MONTH - 2);
   });
 
   it('reports empty at the limit', async () => {
-    for (let i = 0; i < PENNY_QUESTIONS_PER_DAY; i++) {
+    for (let i = 0; i < PENNY_TURNS_PER_MONTH; i++) {
       await recordPennyMessage();
     }
     const usage = await getPennyUsage();

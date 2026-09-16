@@ -1,39 +1,42 @@
 /**
- * The grocery list.
+ * Grocery choice — Swift `GroceryChoiceView`.
  *
- * One list, whatever the recipes came from — Penny's plan, hand-picked recipes,
- * or an imported one. Items are grouped by store aisle, quantities are already
- * consolidated and rounded to whole packages by the engine, and anything the
- * user already has is shown at $0 rather than hidden.
+ * Shown after the plan review ("This Plan Looks Good"): the consolidated list
+ * for the whole week ("Everything for the week, combined — no duplicates."),
+ * an estimated-total banner, then the two shopping paths — Send to Instacart
+ * or Shop on My Own.
  *
- * Two ways to shop, per the product spec:
- *  - Shop on my own — the list is kept inside Help The Hive, checkable and
- *    printable.
- *  - Shop with Instacart — the list is handed to the backend's Instacart
- *    integration. No Instacart credentials exist in this app.
+ * Prices come from the backend's grocery list (`plan.groceryList`), always
+ * labeled Estimated. The Instacart handoff itself lives on the dedicated
+ * Instacart screen — this button routes there rather than duplicating it.
  */
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'expo-router';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { AppButton, AppHeader, Card, EmptyState, HiveIcon, ScrollScreen, uiText } from '@/components/hive-ui';
+import { AppButton, EmptyState, HiveIcon } from '@/components/hive-ui';
+import { InstacartButton } from '@/components/hive-instacart';
 import { HiveColors, Radii, Spacing } from '@/constants/theme';
-import { PRICING_NOTICE } from '@/features/meals/pricing-notice';
+import { PRICING_NOTICE_SHORT } from '@/features/meals/pricing-notice';
 import { useMealPlan } from '@/features/meals/meal-plan-context';
+import {
+  checklistSections,
+  estimatedTotal,
+} from '@/features/meals/grocery-checklist';
+import { GroceryCategorySection } from '@/features/meals/grocery-category-section';
 import {
   loadCookGroceryAdditions,
   removeCookGroceryAddition,
   subscribeCookGroceryAdditions,
   type CookGroceryAddition,
 } from '@/features/meals/cook-grocery-additions';
-import type { GroceryItem } from '@/features/meals/meal-plan-model';
 
 export function GroceryListScreen() {
   const router = useRouter();
   const { plan } = useMealPlan();
-  const [checked, setChecked] = useState<string[]>([]);
-  // Missing ingredients one-tap-added from Cook What I Have (Audit Section 5).
-  // Client-side only — the plan's server-derived list is untouched.
+  // Missing ingredients one-tap-added from Cook What I Have — client-side only,
+  // the plan's server-derived list is untouched.
   const [cookAdditions, setCookAdditions] = useState<CookGroceryAddition[]>([]);
 
   useEffect(() => {
@@ -41,114 +44,87 @@ export function GroceryListScreen() {
     return subscribeCookGroceryAdditions(setCookAdditions);
   }, []);
 
-  const sections = useMemo(() => plan?.groceryList ?? [], [plan]);
-  const toBuy = useMemo(
-    () => sections.flatMap((section) => section.items).filter((item) => !item.inPantry),
-    [sections]
-  );
-  const alreadyHave = useMemo(
-    () => sections.flatMap((section) => section.items).filter((item) => item.inPantry),
-    [sections]
-  );
-
-  const toggle = useCallback((ingredientId: string) => {
-    setChecked((current) =>
-      current.includes(ingredientId)
-        ? current.filter((id) => id !== ingredientId)
-        : [...current, ingredientId]
-    );
-  }, []);
+  const sections = useMemo(() => checklistSections(plan?.groceryList ?? []), [plan]);
+  const total = useMemo(() => estimatedTotal(plan?.groceryList ?? []), [plan]);
 
   if (!plan || sections.length === 0) {
     return (
-      <ScrollScreen>
-        <AppHeader title="Grocery List" onBack={router.back} />
-        <View style={styles.body}>
+      <SafeAreaView style={styles.safe} edges={['top', 'bottom']}>
+        <View style={styles.emptyBody}>
           <EmptyState
             icon="cart"
             title="No grocery list yet"
-            subtitle="Build a meal plan or pick some recipes and we'll put the list together."
+            subtitle="Generate a meal plan and Penny will build your list."
           />
-          <AppButton title="Build my meal plan" onPress={() => router.push('/meals/questionnaire')} />
+          <AppButton
+            title="Build my meal plan"
+            onPress={() => router.push('/meals/questionnaire')}
+          />
           <CookAdditionsSection additions={cookAdditions} />
         </View>
-      </ScrollScreen>
+      </SafeAreaView>
     );
   }
 
-  const { estimatedCost, budget } = plan.summary;
-
   return (
-    <ScrollScreen>
-      <AppHeader title="Grocery List" onBack={router.back} />
-      <View style={styles.body}>
-        <Card style={styles.costCard}>
-          <Text style={uiText.small}>Estimated total</Text>
-          <Text style={styles.costRange}>
-            ${estimatedCost.low}–${estimatedCost.high}
-          </Text>
-          {budget !== null ? (
-            <Text style={uiText.small}>
-              {estimatedCost.high <= budget
-                ? `Fits your $${Math.round(budget)} budget`
-                : `About $${Math.round(estimatedCost.high - budget)} over your $${Math.round(budget)} budget`}
-            </Text>
-          ) : null}
-          <Text style={uiText.small}>{PRICING_NOTICE}</Text>
-        </Card>
-
-        <Text style={uiText.subtitle}>
-          {toBuy.length} {toBuy.length === 1 ? 'item' : 'items'} to buy
-        </Text>
-
-        {sections.map((section) => {
-          const buyable = section.items.filter((item) => !item.inPantry);
-          if (buyable.length === 0) return null;
-          return (
-            <View key={section.aisleLabel} style={styles.section}>
-              <Text style={styles.aisleTitle}>{section.aisleLabel}</Text>
-              {buyable.map((item) => (
-                <GroceryRow
-                  key={item.ingredientId}
-                  item={item}
-                  checked={checked.includes(item.ingredientId)}
-                  onToggle={() => toggle(item.ingredientId)}
-                />
-              ))}
-            </View>
-          );
-        })}
-
-        {alreadyHave.length > 0 ? (
-          <View style={styles.section}>
-            <Text style={styles.aisleTitle}>Already in your pantry</Text>
-            {alreadyHave.map((item) => (
-              <View key={item.ingredientId} style={[styles.row, styles.pantryRow]}>
-                <HiveIcon name="check" size={16} color={HiveColors.green} />
-                <View style={styles.flexOne}>
-                  <Text style={uiText.body}>{item.displayName}</Text>
-                  <Text style={uiText.small}>
-                    {formatQuantity(item)} · no need to buy
-                  </Text>
-                </View>
-              </View>
-            ))}
-          </View>
-        ) : null}
-
-        <View style={styles.actions}>
-          <Text style={uiText.subtitle}>How do you want to shop?</Text>
-          <AppButton title="Shop with Instacart" onPress={() => router.push('/meals/instacart')} />
-          <AppButton
-            title="Shop on my own"
-            variant="secondary"
-            onPress={() => router.push('/meals/shop-own')}
-          />
+    <SafeAreaView style={styles.safe} edges={['top', 'bottom']}>
+      <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>
+        <View style={styles.header}>
+          <Text style={styles.title}>Your grocery list</Text>
+          <Text style={styles.subtitle}>Everything for the week, combined — no duplicates.</Text>
         </View>
 
-        {cookAdditions.length > 0 ? <CookAdditionsSection additions={cookAdditions} /> : null}
+        <View style={styles.banner}>
+          <HiveIcon name="dollar" size={15} color={HiveColors.green} />
+          <View style={styles.bannerText}>
+            <Text style={styles.bannerTotal}>
+              Estimated total: ${total.amount.toFixed(2)}
+            </Text>
+            <Text style={styles.bannerNote}>
+              Estimated pricing from your local Kroger — prices and availability can change.
+            </Text>
+            <Text style={styles.bannerNote}>{PRICING_NOTICE_SHORT}</Text>
+          </View>
+        </View>
+
+        {sections.map((section) => (
+          <GroceryCategorySection
+            key={section.aisleLabel}
+            section={section}
+            checkable={false}
+          />
+        ))}
+
+        {total.usedFallback ? (
+          <Text style={styles.fallbackNote}>
+            * Some items show a category estimate while live Kroger pricing loads.
+          </Text>
+        ) : null}
+
+        <CookAdditionsSection additions={cookAdditions} />
+
+        <View style={styles.scrollSpacer} />
+      </ScrollView>
+
+      <View style={styles.choice}>
+        <View style={styles.divider} />
+        <Text style={styles.choiceTitle}>How would you like to shop?</Text>
+        <InstacartButton
+          title="Send to Instacart"
+          onPress={() => router.push('/meals/instacart')}
+          style={styles.instacartButton}
+        />
+        <AppButton
+          title="Shop on My Own"
+          variant="secondary"
+          onPress={() => router.push('/meals/shop-own')}
+          style={styles.shopOwnButton}
+        />
+        <Text style={styles.footnote}>
+          Shop on My Own shows this list with prices on your Meal Plan tab.
+        </Text>
       </View>
-    </ScrollScreen>
+    </SafeAreaView>
   );
 }
 
@@ -156,13 +132,13 @@ export function GroceryListScreen() {
 function CookAdditionsSection({ additions }: { additions: CookGroceryAddition[] }) {
   if (additions.length === 0) return null;
   return (
-    <View style={styles.section}>
-      <Text style={styles.aisleTitle}>From Cook What I Have</Text>
+    <View style={styles.additions}>
+      <Text style={styles.additionsTitle}>From Cook What I Have</Text>
       {additions.map((item) => (
-        <View key={item.ingredientId} style={styles.row}>
+        <View key={item.ingredientId} style={styles.additionRow}>
           <View style={styles.flexOne}>
-            <Text style={uiText.body}>{item.displayName}</Text>
-            <Text style={uiText.small}>
+            <Text style={styles.additionName}>{item.displayName}</Text>
+            <Text style={styles.additionQty}>
               {item.neededQty} {item.unit}
             </Text>
           </View>
@@ -177,70 +153,57 @@ function CookAdditionsSection({ additions }: { additions: CookGroceryAddition[] 
   );
 }
 
-function GroceryRow({
-  item,
-  checked,
-  onToggle,
-}: {
-  item: GroceryItem;
-  checked: boolean;
-  onToggle: () => void;
-}) {
-  return (
-    <Pressable
-      accessibilityRole="checkbox"
-      accessibilityState={{ checked }}
-      accessibilityLabel={`${item.displayName}, ${formatQuantity(item)}`}
-      onPress={onToggle}
-      style={({ pressed }) => [styles.row, pressed && styles.pressed]}>
-      <View style={[styles.checkbox, checked && styles.checkboxChecked]}>
-        {checked ? <HiveIcon name="check" size={12} color={HiveColors.white} /> : null}
-      </View>
-      <View style={styles.flexOne}>
-        <Text style={[uiText.body, checked && styles.checkedText]}>{item.displayName}</Text>
-        <Text style={uiText.small}>{formatQuantity(item)}</Text>
-      </View>
-      <Text style={uiText.body}>${item.estimatedPrice.toFixed(2)}</Text>
-    </Pressable>
-  );
-}
-
-/** Prefers the package label ("2 × 15 oz can") over a bare number when we have one. */
-function formatQuantity(item: GroceryItem): string {
-  if (item.packageLabel) return item.packageLabel;
-  return `${item.neededQty} ${item.unit}`;
-}
-
 const styles = StyleSheet.create({
-  body: { paddingHorizontal: Spacing.three, paddingTop: Spacing.three, gap: Spacing.three },
-  flexOne: { flex: 1 },
-  costCard: { gap: Spacing.one },
-  costRange: { color: HiveColors.text, fontSize: 26, fontWeight: '800' },
-  section: { gap: Spacing.one },
-  aisleTitle: { color: HiveColors.textSecondary, fontSize: 12, fontWeight: '700', letterSpacing: 0.6, textTransform: 'uppercase' },
-  row: {
+  safe: { flex: 1, backgroundColor: HiveColors.white },
+  scroll: { flex: 1 },
+  scrollContent: { paddingHorizontal: 20, paddingTop: 16, gap: 16 },
+  scrollSpacer: { height: 10 },
+  emptyBody: { flex: 1, paddingHorizontal: 20, paddingTop: 40, gap: Spacing.three },
+  header: { gap: 4 },
+  title: { color: HiveColors.text, fontSize: 24, fontWeight: '700' },
+  subtitle: { color: HiveColors.textSecondary, fontSize: 14 },
+  banner: {
+    flexDirection: 'row',
+    gap: 8,
+    padding: 12,
+    backgroundColor: HiveColors.greenLight,
+    borderRadius: 12,
+  },
+  bannerText: { flex: 1, gap: 1 },
+  bannerTotal: { color: HiveColors.green, fontSize: 14, fontWeight: '700' },
+  bannerNote: { color: HiveColors.textSecondary, fontSize: 11 },
+  fallbackNote: { color: HiveColors.textSecondary, fontSize: 11, fontStyle: 'italic' },
+  additions: { gap: Spacing.two },
+  additionsTitle: {
+    color: HiveColors.textSecondary,
+    fontSize: 13,
+    fontWeight: '700',
+    letterSpacing: 0.6,
+    textTransform: 'uppercase',
+  },
+  additionRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.three,
     padding: Spacing.three,
-    minHeight: 56,
     borderRadius: Radii.lg,
-    borderWidth: 1.5,
+    borderWidth: 1,
     borderColor: HiveColors.border,
     backgroundColor: HiveColors.white,
   },
-  pantryRow: { backgroundColor: HiveColors.greenLight, borderColor: HiveColors.greenLight },
-  checkbox: {
-    width: 22,
-    height: 22,
-    borderRadius: Radii.sm,
-    borderWidth: 2,
-    borderColor: HiveColors.border,
-    alignItems: 'center',
-    justifyContent: 'center',
+  flexOne: { flex: 1 },
+  additionName: { color: HiveColors.text, fontSize: 15 },
+  additionQty: { color: HiveColors.textSecondary, fontSize: 12 },
+  choice: {
+    gap: 10,
+    paddingHorizontal: 20,
+    paddingBottom: 12,
+    paddingTop: 2,
+    backgroundColor: HiveColors.white,
   },
-  checkboxChecked: { backgroundColor: HiveColors.green, borderColor: HiveColors.green },
-  checkedText: { textDecorationLine: 'line-through', color: HiveColors.textSecondary },
-  pressed: { opacity: 0.7 },
-  actions: { gap: Spacing.two, marginTop: Spacing.four },
+  divider: { height: 1, backgroundColor: HiveColors.border, marginBottom: 2 },
+  choiceTitle: { color: HiveColors.text, fontSize: 15, fontWeight: '700', textAlign: 'center' },
+  instacartButton: { minHeight: 52, borderRadius: 14 },
+  shopOwnButton: { minHeight: 52, borderRadius: 14 },
+  footnote: { color: HiveColors.textSecondary, fontSize: 11, textAlign: 'center' },
 });

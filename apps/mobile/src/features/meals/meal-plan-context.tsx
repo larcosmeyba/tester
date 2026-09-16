@@ -43,7 +43,7 @@ type MealPlanContextValue = {
   toggleRecipe: (recipeId: string) => void;
   clearSelectedRecipes: () => void;
 
-  generate: (userId: string, signal?: AbortSignal) => Promise<MealPlan>;
+  generate: (userId: string, request: PlanRequest, signal?: AbortSignal) => Promise<MealPlan>;
   loadCurrent: () => Promise<void>;
   /** Moves a meal between slots without regenerating the week. */
   moveMeal: (from: MealSlot, to: MealSlot) => Promise<void>;
@@ -89,28 +89,28 @@ export function MealPlanProvider({ children }: { children: ReactNode }) {
 
   const clearSelectedRecipes = useCallback(() => setSelectedRecipeIds([]), []);
 
-  const generate = useCallback(
-    async (userId: string, signal?: AbortSignal) => {
-      setIsGenerating(true);
-      setError(null);
-      try {
-        const generated = await mealPlanService.generate(request, { userId, signal });
-        setPlan(generated);
-        const weekStart = startOfToday();
-        setPlanStartDate(weekStart);
-        // Persist the week anchor so a restart doesn't silently move the
-        // week boundary the Section 6 reset prompt is based on.
-        void savePlanWeekStart(generated.planId, weekStart);
-        return generated;
-      } catch (caught) {
-        setError(caught);
-        throw caught;
-      } finally {
-        setIsGenerating(false);
-      }
-    },
-    [request]
-  );
+  const generate = useCallback(async (userId: string, nextRequest: PlanRequest, signal?: AbortSignal) => {
+    setIsGenerating(true);
+    setError(null);
+    try {
+      const generated = await mealPlanService.generate(nextRequest, { userId, signal });
+      // Keep the request that produced this plan, so the plan, grocery list
+      // and recipe screens all read the same answers.
+      setRequest(nextRequest);
+      setPlan(generated);
+      const weekStart = startOfToday();
+      setPlanStartDate(weekStart);
+      // Persist the week anchor so a restart doesn't silently move the
+      // week boundary the Section 6 reset prompt is based on.
+      void savePlanWeekStart(generated.planId, weekStart);
+      return generated;
+    } catch (caught) {
+      setError(caught);
+      throw caught;
+    } finally {
+      setIsGenerating(false);
+    }
+  }, []);
 
   const loadCurrent = useCallback(async () => {
     setIsLoadingPlan(true);

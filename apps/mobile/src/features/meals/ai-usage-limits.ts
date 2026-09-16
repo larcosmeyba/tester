@@ -12,26 +12,30 @@
  * TODO(backend): replace with server-side usage when the API exposes it, so
  * limits survive reinstalls and apply across devices.
  *
- * Limit values are the audit's working numbers (~4–5 AI plans/month free).
- * TODO(Marcos): lock the final free-tier numbers before launch.
+ * Hive Free monthly allowances (Marcos-approved 2026-09-15): 4 AI meal plans,
+ * 4 video imports, 5 URL imports, 10 single-meal generations. Hive Plus is
+ * unlimited AI.
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export const AI_PLANS_PER_MONTH = 5;
-export const VIDEO_IMPORTS_PER_MONTH = 5;
+export const AI_PLANS_PER_MONTH = 4;
+export const VIDEO_IMPORTS_PER_MONTH = 4;
+export const URL_IMPORTS_PER_MONTH = 5;
 export const SINGLE_MEALS_PER_MONTH = 10;
 
-export type AiUsageKind = 'ai_plan' | 'video_import' | 'single_meal';
+export type AiUsageKind = 'ai_plan' | 'video_import' | 'url_import' | 'single_meal';
 
 const LIMITS: Record<AiUsageKind, number> = {
   ai_plan: AI_PLANS_PER_MONTH,
   video_import: VIDEO_IMPORTS_PER_MONTH,
+  url_import: URL_IMPORTS_PER_MONTH,
   single_meal: SINGLE_MEALS_PER_MONTH,
 };
 
 const KIND_LABELS: Record<AiUsageKind, string> = {
   ai_plan: 'AI meal plans',
   video_import: 'video imports',
+  url_import: 'URL imports',
   single_meal: 'single-meal generations',
 };
 

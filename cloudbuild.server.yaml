@@ -89,6 +89,12 @@ steps:
         if [[ -n "${_IMPORT_SHARED_SECRET}" ]]; then
           PHASE2_SECRETS+=(--set-secrets="IMPORT_SHARED_SECRET=${_IMPORT_SHARED_SECRET}:latest")
         fi
+        # Community resource lookup (Google Places API key). Only attached
+        # when the secret name is provided; without it the endpoint returns
+        # 503 and the app renders the lookup as unavailable.
+        if [[ -n "${_RESOURCES_PLACES_API_KEY_SECRET}" ]]; then
+          PHASE2_SECRETS+=(--set-secrets="RESOURCES_PLACES_API_KEY=${_RESOURCES_PLACES_API_KEY_SECRET}:latest")
+        fi
         gcloud run deploy '${_SERVICE}' \
           --project='$PROJECT_ID' \
           --region='${_REGION}' \
@@ -131,6 +137,9 @@ substitutions:
   _PENNY_SERVICE_TOKEN_SECRET: ''
   _PENNY_TOOL_TOKEN_SECRET: ''
   _IMPORT_SHARED_SECRET: ''
+  # Community resource lookup (Google Places API key secret name). Empty
+  # leaves /resources/nearby returning 503 (honestly unavailable).
+  _RESOURCES_PLACES_API_KEY_SECRET: ''
 
 options:
   logging: CLOUD_LOGGING_ONLY

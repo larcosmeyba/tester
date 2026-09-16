@@ -78,14 +78,15 @@ export const HiveColors = {
 } as const;
 
 /**
- * Accent per meal category, echoing the reference app's colour-coded cards.
- * Kept here (exact Xcode values) so screens never hardcode hex.
+ * Accent per meal category — the exact `MealSlotType.accentColor` values from
+ * the Swift design reference (`21_-_MealPlanModels`), so the plan screen
+ * matches Marcos's design. Kept here (never hardcoded in screens).
  */
 export const MealAccents: Record<string, string> = {
-  breakfast: '#F0A81E',
-  lunch: '#3887FF',
-  dinner: '#1F8C38',
-  snack: '#8E5BD8',
+  breakfast: '#FFA600',
+  lunch: '#339933',
+  dinner: '#3359CC',
+  snack: '#9933B3',
 };
 
 const brandTheme = {

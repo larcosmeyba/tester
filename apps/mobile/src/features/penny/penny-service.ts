@@ -269,18 +269,8 @@ export const pennyService: PennyService = {
   },
 };
 
-/** Suggested openers, matching the reference app's four prompts. */
-export const PENNY_SUGGESTIONS = [
-  'I need to find the closest resources to me.',
-  'Create me meals from what I have in my fridge and pantry.',
-  'I need to add items to my fridge and pantry.',
-  'How can I lower my gas bill?',
-] as const;
-
 /**
- * Required disclaimer. Shown before the user's first message and kept reachable
- * in the conversation afterwards.
+ * Required disclaimer — Marcos's exact copy, shown under the Penny composer.
  */
 export const PENNY_DISCLAIMER =
-  'Penny AI provides general information only. It is not medical, financial, or ' +
-  "professional advice, and may not reflect Help The Hive's views or always be accurate.";
+  'Penny provides general guidance and does not determine eligibility or provide legal, financial, or medical advice.';

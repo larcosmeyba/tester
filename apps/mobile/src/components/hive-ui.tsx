@@ -36,6 +36,8 @@ const iconMap = {
   next: { ios: 'chevron.right', fallback: '>' },
   plus: { ios: 'plus', fallback: '+' },
   check: { ios: 'checkmark', fallback: 'OK' },
+  link: { ios: 'link.circle.fill', fallback: '🔗' },
+  clipboard: { ios: 'doc.on.clipboard', fallback: '📋' },
   close: { ios: 'xmark', fallback: 'x' },
   card: { ios: 'creditcard.fill', fallback: '$' },
   doc: { ios: 'doc.text.fill', fallback: 'D' },
@@ -67,10 +69,16 @@ carrot: { ios: 'carrot.fill', fallback: '🥕' },
   leaf: { ios: 'leaf.fill', fallback: '🍃' },
   clock: { ios: 'clock', fallback: '◷' },
   ellipsis: { ios: 'ellipsis', fallback: '•••' },
+  share: { ios: 'square.and.arrow.up', fallback: '↗' },
+  handTap: { ios: 'hand.tap', fallback: '☝' },
+  users: { ios: 'person.2', fallback: '👥' },
+  moonStars: { ios: 'moon.stars.fill', fallback: 'PM' },
   checkCircle: { ios: 'checkmark.circle.fill', fallback: 'OK' },
   xCircle: { ios: 'xmark.circle.fill', fallback: '✕' },
   grid: { ios: 'square.grid.2x2', fallback: '▦' },
   dollar: { ios: 'dollarsign.circle.fill', fallback: '$' },
+  crown: { ios: 'crown.fill', fallback: '♛' },
+  info: { ios: 'info.circle', fallback: 'i' },
 } as const;
 
 export type HiveIconName = keyof typeof iconMap;
@@ -521,6 +529,7 @@ export function InfoRow({
   title,
   subtitle,
   badge,
+  value,
   onPress,
   color = HiveColors.green,
 }: {
@@ -528,6 +537,8 @@ export function InfoRow({
   title: string;
   subtitle?: string;
   badge?: string;
+  /** Right-aligned secondary text before the chevron (e.g. a saved ZIP). */
+  value?: string;
   onPress?: PressHandler;
   color?: string;
 }) {
@@ -542,6 +553,7 @@ export function InfoRow({
         <Text style={styles.infoTitle}>{title}</Text>
         {subtitle ? <Text style={styles.infoSubtitle}>{subtitle}</Text> : null}
       </View>
+      {value ? <Text style={styles.infoValue}>{value}</Text> : null}
       {badge ? <Text style={styles.badge}>{badge}</Text> : <HiveIcon name="next" size={13} color={HiveColors.textSecondary} />}
     </Pressable>
   );
@@ -1061,6 +1073,11 @@ const styles = StyleSheet.create({
     color: HiveColors.textSecondary,
     fontSize: 12,
     marginTop: 2,
+  },
+  infoValue: {
+    color: HiveColors.textSecondary,
+    fontSize: 15,
+    marginRight: 6,
   },
   statBadge: {
     flex: 1,

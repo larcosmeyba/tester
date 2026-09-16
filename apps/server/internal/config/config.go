@@ -38,6 +38,11 @@ type Config struct {
 	// X-Job-Secret header. Empty disables those endpoints; the server runs
 	// fine without it.
 	InternalJobSecret string
+	// ResourcesPlacesAPIKey is the Google Places API key behind
+	// GET /resources/nearby. Empty disables community resource lookup: the
+	// endpoint returns 503 and the app renders the lookup as honestly
+	// unavailable, exactly like the other optional integrations.
+	ResourcesPlacesAPIKey string
 }
 
 type AuthConfig struct {
@@ -84,6 +89,7 @@ func Load() (Config, error) {
 			ToolTokenSecret: strings.TrimSpace(os.Getenv("PENNY_TOOL_TOKEN_SECRET")),
 		},
 		InternalJobSecret:         strings.TrimSpace(os.Getenv("INTERNAL_JOB_SECRET")),
+		ResourcesPlacesAPIKey:     strings.TrimSpace(os.Getenv("RESOURCES_PLACES_API_KEY")),
 		PublicBaseURL:             strings.TrimSuffix(strings.TrimSpace(os.Getenv("APP_PUBLIC_URL")), "/"),
 		AppleTeamID:               strings.TrimSpace(os.Getenv("APPLE_TEAM_ID")),
 		AndroidSHA256Fingerprints: strings.TrimSpace(os.Getenv("ANDROID_SHA256_FINGERPRINTS")),
