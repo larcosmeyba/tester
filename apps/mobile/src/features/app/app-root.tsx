@@ -19,7 +19,7 @@ import { MealPlanScreen as WeeklyMealPlanScreen } from '@/features/meals/meal-pl
 import { allVideos, type BenefitProgram, type MealRecipe, type ResourceItem, transactions, type VideoItem } from '@/data/mock-data';
 import { type NearbyResource } from '@/features/resources/resource-service';
 import { useAppState } from '@/state/app-state';
-import { ForgotPasswordScreen, LoginScreen, SignUpScreen, VerifyScreen, WelcomeScreen } from '@/features/auth/auth-screens';
+import { ForgotPasswordScreen, LoginScreen, SignUpScreen, VerifyScreen } from '@/features/auth/auth-screens';
 import { OnboardingScreen } from '@/features/onboarding/onboarding-screens';
 import { HomeScreen } from '@/features/home/home-screen';
 import { PennyScreen } from '@/features/penny/penny-screen';
@@ -52,7 +52,7 @@ const pennySource = require('@/assets/images/hive/penny.png');
  * Icons are the exact ZIP assets (see components/footer-tabs.ts).
  */
 const tabs = FOOTER_TABS;
-const publicScreens = new Set<ScreenName>(['welcome', 'signup', 'login', 'forgot', 'verify']);
+const publicScreens = new Set<ScreenName>(['signup', 'login', 'forgot', 'verify']);
 
 export default function AppRoot({ initialPublicScreen }: { initialPublicScreen?: 'login' | 'forgot' }) {
   const app = useAppState();
@@ -72,7 +72,7 @@ export default function AppRoot({ initialPublicScreen }: { initialPublicScreen?:
   const needsVerification =
     auth.isAuthenticated && app.verificationStatus != null && !app.verificationStatus.verified;
   const initialRouteName: ScreenName = !auth.isAuthenticated
-    ? (initialPublicScreen ?? 'welcome')
+    ? (initialPublicScreen ?? 'login')
     : needsVerification
       ? 'verify'
       : app.hasCompletedOnboarding
@@ -127,7 +127,7 @@ export default function AppRoot({ initialPublicScreen }: { initialPublicScreen?:
   // Unverified users are fenced into the verify screen (params may be absent
   // on a cold start — the screen falls back to the viewer/auth email+phone).
   const route = !auth.isAuthenticated && !publicScreens.has(requestedRoute.name)
-    ? { name: 'welcome' as const }
+    ? { name: 'login' as const }
     : auth.isAuthenticated && needsVerification && requestedRoute.name !== 'verify'
       ? { name: 'verify' as const }
       : auth.isAuthenticated && publicScreens.has(requestedRoute.name) && requestedRoute.name !== 'verify'
@@ -242,9 +242,8 @@ export default function AppRoot({ initialPublicScreen }: { initialPublicScreen?:
       return <TransactionsScreen nav={nav} />;
     case 'connectAccount':
       return <ConnectAccountScreen nav={nav} />;
-    case 'welcome':
     default:
-      return <WelcomeScreen nav={nav} />;
+      return <LoginScreen nav={nav} />;
   }
 }
 

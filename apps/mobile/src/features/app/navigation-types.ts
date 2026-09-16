@@ -9,7 +9,6 @@
 // decides which screen a user sees. Un-shimming those routes is the next step.
 
 export type ScreenName =
-  | 'welcome'
   | 'signup'
   | 'login'
   | 'forgot'

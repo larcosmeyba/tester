@@ -65,7 +65,7 @@ export type AppPreferences = {
   resourceReminderNotificationsEnabled: boolean;
 };
 
-export type AppRoute = 'welcome' | 'onboarding' | 'main';
+export type AppRoute = 'login' | 'onboarding' | 'main';
 
 type PersistedState = {
   profileOwnerSubject?: string;
