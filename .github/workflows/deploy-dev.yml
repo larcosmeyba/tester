@@ -44,6 +44,10 @@ permissions:
 env:
   GCP_PROJECT_ID: project-b610ee4c-584c-4fc7-853
   GCP_REGION: us-central1
+  # Community resource lookup (Google Places): uncomment once the Places API
+  # key is provisioned in Secret Manager. Until then /resources/nearby
+  # returns an honest 503 and the deploy stays green.
+  # RESOURCES_PLACES_API_KEY_SECRET_NAME: helpthehive-dev-resources-places-api-key
 
 jobs:
   deploy:

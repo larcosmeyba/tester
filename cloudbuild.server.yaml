@@ -91,7 +91,9 @@ steps:
         fi
         # Community resource lookup (Google Places API key). Only attached
         # when the secret name is provided; without it the endpoint returns
-        # 503 and the app renders the lookup as unavailable.
+        # 503 and the app renders the lookup as unavailable. The secret must
+        # already exist in Secret Manager — gcloud run deploy fails on a
+        # nonexistent secret, so the name is only wired when explicitly set.
         if [[ -n "${_RESOURCES_PLACES_API_KEY_SECRET}" ]]; then
           PHASE2_SECRETS+=(--set-secrets="RESOURCES_PLACES_API_KEY=${_RESOURCES_PLACES_API_KEY_SECRET}:latest")
         fi

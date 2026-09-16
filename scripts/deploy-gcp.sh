@@ -70,10 +70,14 @@ elif [[ "$SERVICE_KIND" == "api" ]]; then
   SUBSTITUTIONS="$SUBSTITUTIONS,_PENNY_SERVICE_TOKEN_SECRET=$PREFIX-penny-service-token"
   SUBSTITUTIONS="$SUBSTITUTIONS,_PENNY_TOOL_TOKEN_SECRET=$PREFIX-penny-tool-token-secret"
   SUBSTITUTIONS="$SUBSTITUTIONS,_IMPORT_SHARED_SECRET=$PREFIX-import-shared-secret"
-  # Community resource lookup: the Google Places API key. The secret name is
-  # always wired; when it holds a value the deploy attaches it, otherwise the
-  # endpoint returns 503 and the app renders the lookup as unavailable.
-  SUBSTITUTIONS="$SUBSTITUTIONS,_RESOURCES_PLACES_API_KEY_SECRET=$PREFIX-resources-places-api-key"
+  # Community resource lookup: the Google Places API key. Only wired when
+  # RESOURCES_PLACES_API_KEY_SECRET_NAME names an existing Secret Manager
+  # secret. Until the key is provisioned the deploy leaves it unset and
+  # /resources/nearby returns an honest 503 — gcloud run deploy hard-fails
+  # on a nonexistent secret, so this must stay opt-in.
+  if [[ -n "${RESOURCES_PLACES_API_KEY_SECRET_NAME:-}" ]]; then
+    SUBSTITUTIONS="$SUBSTITUTIONS,_RESOURCES_PLACES_API_KEY_SECRET=$RESOURCES_PLACES_API_KEY_SECRET_NAME"
+  fi
 elif [[ "$SERVICE_KIND" == "penny" ]]; then
   CONFIG=cloudbuild.penny.yaml
   BACKEND_URL="$(
