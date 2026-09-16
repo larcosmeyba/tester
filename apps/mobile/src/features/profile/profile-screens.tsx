@@ -51,7 +51,7 @@ export function AccountScreen({ nav }: { nav: Navigation }) {
         // Signing out must not be blocked by best-effort push-token cleanup.
       }
       await auth.signOut();
-      nav.reset('welcome');
+      nav.reset('login');
     } catch (error) {
       setSignOutError(error instanceof Error ? error.message : 'Unable to sign out.');
     }
@@ -167,7 +167,7 @@ export function DeleteAccountScreen({ nav }: { nav: Navigation }) {
       }
       await deleteViewerData();
       await auth.deleteAccount(password);
-      nav.reset('welcome');
+      nav.reset('login');
     } catch (error) {
       setErrorMessage(error instanceof Error ? error.message : 'Unable to delete your account.');
     } finally {

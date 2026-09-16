@@ -51,26 +51,6 @@ import { useResponsive } from '@/constants/responsive';
 const logoSource = require('@/assets/images/hive/logo.png');
 const pennyWaveSource = require('@/assets/images/hive/penny-wave.png');
 
-export function WelcomeScreen({ nav }: { nav: Navigation }) {
-  const styles = useAuthStyles();
-  return (
-    <Screen>
-      <View style={styles.authShell}>
-        <View style={styles.authCenter}>
-          <View style={styles.welcomeLogoWrap}>
-            <AppLogo source={logoSource} size={120} />
-          </View>
-          <Text style={styles.welcomeTitle}>Penny does the paperwork.{'\n'}You just sign.</Text>
-        </View>
-        <View style={styles.authActions}>
-          <AppButton title="Get Started" onPress={() => nav.push('signup')} />
-          <TextLink label="Already a member?" linkText="Login" onPress={() => nav.push('login')} />
-        </View>
-      </View>
-    </Screen>
-  );
-}
-
 function TermsCheckbox({ accepted, onToggle }: { accepted: boolean; onToggle: () => void }) {
   const styles = useAuthStyles();
   return (
@@ -284,7 +264,7 @@ export function LoginScreen({ nav }: { nav: Navigation }) {
     setErrorMessage('');
     try {
       await auth.signIn({ email: email.trim(), password });
-      nav.reset('welcome');
+      nav.reset('login');
     } catch (error) {
       if (error instanceof AuthFlowError && error.code === 'verification_required') {
         // Unverified account: send them through the code flow, carrying the
@@ -692,17 +672,6 @@ function useAuthStyles() {
       backgroundColor: HiveColors.greenLight,
       borderRadius: s(12),
       padding: 12,
-      },
-      welcomeTitle: {
-      color: HiveColors.greenDark,
-      fontSize: ms(28),
-      fontWeight: '800',
-      textAlign: 'center',
-      letterSpacing: -0.5,
-      },
-      welcomeLogoWrap: {
-      borderRadius: s(44),
-      overflow: 'hidden',
       },
       verifyStepsCard: {
       backgroundColor: HiveColors.greenLight,
