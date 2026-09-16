@@ -78,6 +78,13 @@ type FieldSpec struct {
 	Sensitive bool
 	// Derived values are computed from other answers and cannot be set directly.
 	Derived bool
+	// NeverAsk marks a path the app must never prompt for, no matter what a
+	// form mapping demands. Collection policy, not form policy: the official
+	// form still needs the value (Social Security numbers), so autofill
+	// leaves the box blank and the filing kit prints a hand-write line
+	// instead. Nothing about the path is removed — mappings, transforms,
+	// and the masked-value machinery keep working for any legacy data.
+	NeverAsk bool
 }
 
 // Group names, used by the app to batch questions into screens.
@@ -184,6 +191,10 @@ func derived() func(*FieldSpec) {
 	return func(s *FieldSpec) { s.Derived = true }
 }
 
+func neverAsk() func(*FieldSpec) {
+	return func(s *FieldSpec) { s.NeverAsk = true }
+}
+
 func buildVocabulary() map[FieldPath]FieldSpec {
 	specs := []FieldSpec{
 		// --- Applicant -----------------------------------------------------
@@ -192,7 +203,7 @@ func buildVocabulary() map[FieldPath]FieldSpec {
 		spec("applicant.last_name", KindText, GroupApplicant, "Last name", "What is your last name?"),
 		spec("applicant.suffix", KindText, GroupApplicant, "Suffix", "Do you use a suffix such as Jr. or III?"),
 		spec("applicant.date_of_birth", KindDate, GroupApplicant, "Date of birth", "What is your date of birth?"),
-		spec("applicant.ssn", KindText, GroupApplicant, "Social Security number", "What is your Social Security number?", sensitive()),
+		spec("applicant.ssn", KindText, GroupApplicant, "Social Security number", "What is your Social Security number?", sensitive(), neverAsk()),
 		spec("applicant.sex", KindChoice, GroupApplicant, "Sex", "What sex is recorded on your official documents?", choices(sexChoices)),
 		spec("applicant.marital_status", KindChoice, GroupApplicant, "Marital status", "What is your marital status?", choices(maritalChoices)),
 		spec("applicant.is_us_citizen", KindBoolean, GroupApplicant, "US citizen", "Are you a United States citizen?"),
@@ -240,7 +251,7 @@ func buildVocabulary() map[FieldPath]FieldSpec {
 		spec("household.members[].last_name", KindText, GroupHousehold, "Last name", "What is this household member's last name?"),
 		spec("household.members[].date_of_birth", KindDate, GroupHousehold, "Date of birth", "What is this household member's date of birth?"),
 		spec("household.members[].relationship", KindChoice, GroupHousehold, "Relationship", "How is this person related to you?", choices(relationshipChoices)),
-		spec("household.members[].ssn", KindText, GroupHousehold, "Social Security number", "What is this household member's Social Security number?", sensitive()),
+		spec("household.members[].ssn", KindText, GroupHousehold, "Social Security number", "What is this household member's Social Security number?", sensitive(), neverAsk()),
 		spec("household.members[].sex", KindChoice, GroupHousehold, "Sex", "What sex is recorded for this household member?", choices(sexChoices)),
 		spec("household.members[].is_us_citizen", KindBoolean, GroupHousehold, "US citizen", "Is this household member a United States citizen?"),
 		spec("household.members[].immigration_status", KindText, GroupHousehold, "Immigration status", "What is this household member's immigration status?", sensitive()),

@@ -1,3 +1,43 @@
 mutation DeleteViewerData {
   deleteViewerData
 }
+
+mutation RecordConsent($input: RecordConsentInput!) {
+  recordConsent(input: $input)
+}
+
+mutation RequestVerificationCode($input: RequestVerificationCodeInput!) {
+  requestVerificationCode(input: $input)
+}
+
+mutation RequestVerificationLink($purpose: VerificationPurpose!) {
+  requestVerificationLink(purpose: $purpose)
+}
+
+mutation VerifyCode($code: String!) {
+  verifyCode(code: $code)
+}
+
+mutation SaveQuestionnaire($input: SaveQuestionnaireInput!) {
+  saveQuestionnaire(input: $input) {
+    weeklyBudget
+    financeTopics
+    resources
+    primaryGoal
+    householdSize
+    incomeBracket
+    updatedAt
+  }
+}
+
+mutation SaveOnboardingStep($step: String!) {
+  saveOnboardingStep(step: $step)
+}
+
+mutation UpdateCommunicationConsents($input: UpdateCommunicationConsentsInput!) {
+  updateCommunicationConsents(input: $input)
+}
+
+mutation SaveLocationFallback($zip: String!) {
+  saveLocationFallback(zip: $zip)
+}

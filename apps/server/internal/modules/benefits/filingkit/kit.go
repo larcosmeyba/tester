@@ -206,8 +206,21 @@ func (g *generator) scalarRow(path domain.FieldPath, v domain.Value) (Row, bool)
 		}
 		row.State = RowBlank
 		row.Note = "fill in by hand"
+		if isNeverAskPath(path) {
+			// Social Security numbers are never collected: say so plainly
+			// so nobody waits for the app to fill this in.
+			row.Note = "fill in by hand — Help The Hive never asks for or stores this number"
+		}
 		return row, true
 	}
+}
+
+// isNeverAskPath reports whether a vocabulary path is under the never-collect
+// policy (Social Security numbers). The filing kit calls this out explicitly
+// on the hand-write line.
+func isNeverAskPath(p domain.FieldPath) bool {
+	spec, ok := domain.Lookup(p)
+	return ok && spec.NeverAsk
 }
 
 // groupBlock renders one repeating group: a summary row, then one subheaded

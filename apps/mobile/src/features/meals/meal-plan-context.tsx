@@ -11,6 +11,8 @@ import { createContext, useCallback, useContext, useMemo, useState, type ReactNo
 
 import { mealPlanService } from '@/features/meals/meal-plan-service';
 import { moveMealInPlan } from '@/features/meals/move-meal';
+import { clearSlotOverlays } from '@/features/meals/meal-slot-state';
+import { readPlanWeekStart, savePlanWeekStart } from '@/features/meals/week-reset';
 import {
   createEmptyPlanRequest,
   type MealPlan,
@@ -41,11 +43,16 @@ type MealPlanContextValue = {
   toggleRecipe: (recipeId: string) => void;
   clearSelectedRecipes: () => void;
 
-  generate: (userId: string, signal?: AbortSignal) => Promise<MealPlan>;
+  generate: (userId: string, request: PlanRequest, signal?: AbortSignal) => Promise<MealPlan>;
   loadCurrent: () => Promise<void>;
   /** Moves a meal between slots without regenerating the week. */
   moveMeal: (from: MealSlot, to: MealSlot) => Promise<void>;
   swapMeal: (slot: MealSlot, action: SwapAction) => Promise<void>;
+  /**
+   * Reuses the current plan for a fresh week (Audit Section 6 reset prompt):
+   * the same meals anchored to today, with checkoffs/removals cleared.
+   */
+  startNewWeekWithSamePlan: () => void;
   clearError: () => void;
 };
 
@@ -82,30 +89,41 @@ export function MealPlanProvider({ children }: { children: ReactNode }) {
 
   const clearSelectedRecipes = useCallback(() => setSelectedRecipeIds([]), []);
 
-  const generate = useCallback(
-    async (userId: string, signal?: AbortSignal) => {
-      setIsGenerating(true);
-      setError(null);
-      try {
-        const generated = await mealPlanService.generate(request, { userId, signal });
-        setPlan(generated);
-        setPlanStartDate(startOfToday());
-        return generated;
-      } catch (caught) {
-        setError(caught);
-        throw caught;
-      } finally {
-        setIsGenerating(false);
-      }
-    },
-    [request]
-  );
+  const generate = useCallback(async (userId: string, nextRequest: PlanRequest, signal?: AbortSignal) => {
+    setIsGenerating(true);
+    setError(null);
+    try {
+      const generated = await mealPlanService.generate(nextRequest, { userId, signal });
+      // Keep the request that produced this plan, so the plan, grocery list
+      // and recipe screens all read the same answers.
+      setRequest(nextRequest);
+      setPlan(generated);
+      const weekStart = startOfToday();
+      setPlanStartDate(weekStart);
+      // Persist the week anchor so a restart doesn't silently move the
+      // week boundary the Section 6 reset prompt is based on.
+      void savePlanWeekStart(generated.planId, weekStart);
+      return generated;
+    } catch (caught) {
+      setError(caught);
+      throw caught;
+    } finally {
+      setIsGenerating(false);
+    }
+  }, []);
 
   const loadCurrent = useCallback(async () => {
     setIsLoadingPlan(true);
     setError(null);
     try {
-      setPlan(await mealPlanService.getCurrent());
+      const current = await mealPlanService.getCurrent();
+      setPlan(current);
+      if (current) {
+        // Restore the persisted week anchor when there is one; otherwise the
+        // session default (today) stands.
+        const savedStart = await readPlanWeekStart(current.planId);
+        if (savedStart) setPlanStartDate(savedStart);
+      }
     } catch (caught) {
       setError(caught);
     } finally {
@@ -152,6 +170,16 @@ export function MealPlanProvider({ children }: { children: ReactNode }) {
     [plan]
   );
 
+  const startNewWeekWithSamePlan = useCallback(() => {
+    if (!plan) return;
+    const weekStart = startOfToday();
+    setPlanStartDate(weekStart);
+    void savePlanWeekStart(plan.planId, weekStart);
+    // Fresh week, fresh state: checkoffs, removals and the old reset
+    // dismissal all belong to the week that just ended.
+    void clearSlotOverlays(plan.planId);
+  }, [plan]);
+
   const value = useMemo<MealPlanContextValue>(
     () => ({
       request,
@@ -169,6 +197,7 @@ export function MealPlanProvider({ children }: { children: ReactNode }) {
       loadCurrent,
       moveMeal,
       swapMeal,
+      startNewWeekWithSamePlan,
       clearError: () => setError(null),
     }),
     [
@@ -187,6 +216,7 @@ export function MealPlanProvider({ children }: { children: ReactNode }) {
       loadCurrent,
       moveMeal,
       swapMeal,
+      startNewWeekWithSamePlan,
     ]
   );
 

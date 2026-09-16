@@ -11,7 +11,7 @@
  * "here", and collapsing them into an empty array shows a person "no items"
  * when the truth is "we could not reach the server".
  */
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useEffectEvent, useMemo, useState, type ReactNode } from 'react';
 
 import { useAuth } from '@/auth/auth-context';
 import { ApiError } from '@/services/api-error';
@@ -93,17 +93,25 @@ export function PantryProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  const resetPantry = useEffectEvent(() => {
+    // Signing out must not leave one person's pantry on screen for the next.
+    setItems([]);
+    setWasteStats(EMPTY_STATS);
+    setStatus('idle');
+    setError('');
+  });
+
+  /* eslint-disable react-hooks/set-state-in-effect -- signing out must synchronously
+     clear one person's pantry before the next person's data can render. This
+     runs once per auth change, not on every render. */
   useEffect(() => {
     if (!isSignedIn) {
-      // Signing out must not leave one person's pantry on screen for the next.
-      setItems([]);
-      setWasteStats(EMPTY_STATS);
-      setStatus('idle');
-      setError('');
+      resetPantry();
       return;
     }
     void load();
   }, [isSignedIn, load]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   /**
    * Runs a mutation and applies the server's answer.

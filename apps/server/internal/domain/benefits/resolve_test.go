@@ -290,11 +290,11 @@ func TestCheckboxReadsBooleanAndDeclaredNone(t *testing.T) {
 
 func TestRefusedAnswerIsNeverWritten(t *testing.T) {
 	profile := NewProfile("u1")
-	mustSet(t, profile, "applicant.ssn", Refused(KindText))
+	mustSet(t, profile, "applicant.immigration_status", Refused(KindText))
 
 	mapping := textMapping(FieldMapping{
-		ID: "ssn", Target: Target{Type: TargetText, Name: "SSN"},
-		Source: SourceRef{FieldPath: "applicant.ssn"}, Strength: Required,
+		ID: "imm", Target: Target{Type: TargetText, Name: "ImmStatus"},
+		Source: SourceRef{FieldPath: "applicant.immigration_status"}, Strength: Required,
 	})
 
 	got := Resolve(profile, mapping)
@@ -303,6 +303,41 @@ func TestRefusedAnswerIsNeverWritten(t *testing.T) {
 	}
 	if len(got.Missing) != 1 {
 		t.Fatalf("a refused answer still leaves the box outstanding, got %+v", got.Missing)
+	}
+}
+
+func TestNeverAskPathsAreNeverMissing(t *testing.T) {
+	// Collection policy: Social Security numbers are never asked for, even
+	// when a form mapping marks the box required. The box stays blank on the
+	// form and the filing kit prints a hand-write line instead.
+	profile := NewProfile("u1")
+
+	mapping := textMapping(FieldMapping{
+		ID: "ssn", Target: Target{Type: TargetText, Name: "SSN"},
+		Source: SourceRef{FieldPath: "applicant.ssn"}, Strength: Required,
+	})
+	mapping.Requirements = []Requirement{
+		{FieldPath: "applicant.ssn", Strength: Required},
+	}
+
+	got := Resolve(profile, mapping)
+	if len(got.Filled) != 0 {
+		t.Fatalf("nothing to fill without an answer, got %+v", got.Filled)
+	}
+	if len(got.Missing) != 0 {
+		t.Fatalf("a never-collected path must never be asked for, got %+v", got.Missing)
+	}
+	if got.NeedsInput() {
+		t.Fatal("a never-collected path must never block the application")
+	}
+	found := false
+	for _, s := range got.Skipped {
+		if s.Reason == SkipPolicy && s.FieldID == "ssn" {
+			found = true
+		}
+	}
+	if !found {
+		t.Fatalf("expected a policy skip for the SSN box, got %+v", got.Skipped)
 	}
 }
 

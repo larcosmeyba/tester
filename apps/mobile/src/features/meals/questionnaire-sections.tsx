@@ -1,431 +1,756 @@
 /**
- * One component per questionnaire section (product Doc 04 §1–§12).
+ * The questionnaire's seven steps, matching Marcos's SwiftUI sandbox
+ * (`22_-_MealPlanQuestionnaireView`) screen for screen.
  *
- * Each section reads and writes `PlanRequest` directly, so what the user sees
- * and what gets posted to `POST /plans` can never drift apart.
+ * The Swift view's building blocks are rebuilt here as `MQStepper`,
+ * `MQChipGrid`, `MQSingleSelect` and `MQTextField`. Each step section reads
+ * and writes the shared `MealQuestionnaireAnswers`; the mapping to the real
+ * `PlanRequest` lives in `questionnaire-answers.ts`.
  */
-import { Text, View } from 'react-native';
+import { useState } from 'react';
+import {
+  ActivityIndicator,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 
-import { AppTextField, CheckboxRow, Chip, SelectionRow, uiText } from '@/components/hive-ui';
-import { Spacing } from '@/constants/theme';
+import { AppButton, HiveIcon, uiText, type HiveIconName } from '@/components/hive-ui';
+import { HiveColors, Radii, Spacing } from '@/constants/theme';
+import { usePantry } from '@/features/pantry/pantry-context';
+import { expirationDateInDays, locationLabel } from '@/features/pantry/pantry-model';
 import {
-  allergenLabel,
-  cookingStyleLabel,
-  dietLabel,
-  equipmentLabel,
-  mealTypeLabel,
-  nutritionGoalLabel,
-  PLANNABLE_MEAL_TYPES,
-  type Allergen,
-  type CookingStyle,
-  type Diet,
-  type Equipment,
-  type NutritionGoal,
-  type PlannableMealType,
-} from '@/features/meals/meal-enums';
-import {
+  ALLERGY_EXCLUSIVE_OPTION,
+  ALLERGY_OPTIONS,
+  BUDGET_OPTIONS,
+  CHILD_AGE_RANGES,
+  COOK_TIME_OPTIONS,
+  CUISINE_EXCLUSIVE_OPTION,
+  CUISINE_OPTIONS,
+  DIET_EXCLUSIVE_OPTION,
+  DIET_OPTIONS,
+  EQUIPMENT_EXCLUSIVE_OPTION,
+  EQUIPMENT_OPTIONS,
+  GOAL_EXCLUSIVE_OPTION,
+  GOAL_OPTIONS,
+  HEALTH_EXCLUSIVE_OPTIONS,
+  HEALTH_OPTIONS,
+  HOUSEHOLD_SIZE_PLUS_LABEL,
+  MAX_CHILDREN_COUNT,
   MAX_HOUSEHOLD_SIZE,
   MAX_PLAN_DAYS,
+  MEAL_TYPE_OPTIONS,
+  MIN_HOUSEHOLD_SIZE,
   MIN_PLAN_DAYS,
-  type PlanRequest,
-} from '@/features/meals/meal-plan-model';
-import {
-  ALLERGEN_CHOICES,
-  BUDGET_MODE_OPTIONS,
-  COOKING_STYLE_CHOICES,
-  COOKING_TIME_OPTIONS,
-  CUISINE_CHOICES,
-  DIET_CHOICES,
-  EQUIPMENT_OPTIONS,
-  LEFTOVERS_OPTIONS,
-  MAX_COOKING_STYLES,
-  NUTRITION_GOAL_CHOICES,
-  PANTRY_STAPLES,
-  householdSplitError,
+  SHOPPING_OPTIONS,
+  SKILL_OPTIONS,
+  SPICE_OPTIONS,
+  type QuestionnaireStep,
 } from '@/features/meals/questionnaire-steps';
+import {
+  toggleChip,
+  type MealQuestionnaireAnswers,
+} from '@/features/meals/questionnaire-answers';
 
-export type SectionProps = {
-  request: PlanRequest;
-  update: (patch: Partial<PlanRequest>) => void;
+export type QuestionnaireSectionProps = {
+  answers: MealQuestionnaireAnswers;
+  update: (patch: Partial<MealQuestionnaireAnswers>) => void;
 };
 
-const gap = { gap: Spacing.two } as const;
-const chipRow = { flexDirection: 'row' as const, flexWrap: 'wrap' as const, gap: Spacing.two };
+// ---------------------------------------------------------------------------
+// Building blocks (MQStepper / MQChipGrid / MQSingleSelect / MQTextField)
+// ---------------------------------------------------------------------------
 
-function toggle<T>(list: T[], value: T): T[] {
-  return list.includes(value) ? list.filter((item) => item !== value) : [...list, value];
+export function QuestionLabel({ children }: { children: React.ReactNode }) {
+  return <Text style={styles.questionLabel}>{children}</Text>;
 }
 
-/** §1 Household — the only other required section besides Meals. */
-export function HouseholdSection({ request, update }: SectionProps) {
-  const splitError = householdSplitError(request);
-
+export function StepHeader({ step }: { step: QuestionnaireStep }) {
   return (
-    <View style={gap}>
-      <View style={chipRow}>
-        {Array.from({ length: MAX_HOUSEHOLD_SIZE }, (_, index) => index + 1).map((size) => (
-          <Chip
-            key={size}
-            label={size === MAX_HOUSEHOLD_SIZE ? '8+' : String(size)}
-            selected={request.household.size === size}
-            onPress={() =>
-              update({
-                household: {
-                  ...request.household,
-                  size,
-                  sizeIsPlus: size === MAX_HOUSEHOLD_SIZE,
-                },
-              })
-            }
-          />
-        ))}
+    <View style={styles.stepHeader}>
+      <View style={[styles.stepIconCircle, { backgroundColor: `${step.iconTint}1F` }]}>
+        <HiveIcon name={step.icon} size={26} color={step.iconTint} />
       </View>
-
-      <Text style={uiText.muted}>Optional — how the household splits.</Text>
-      <AppTextField
-        label="Adults"
-        value={request.household.adults === null ? '' : String(request.household.adults)}
-        keyboardType="number-pad"
-        onChangeText={(value) =>
-          update({
-            household: { ...request.household, adults: parseCount(value) },
-          })
-        }
-      />
-      <AppTextField
-        label="Children"
-        value={request.household.children === null ? '' : String(request.household.children)}
-        keyboardType="number-pad"
-        onChangeText={(value) =>
-          update({
-            household: { ...request.household, children: parseCount(value) },
-          })
-        }
-      />
-      {splitError ? <Text style={uiText.small}>{splitError}</Text> : null}
+      <Text style={uiText.subtitle}>{step.title}</Text>
+      <Text style={uiText.muted}>{step.subtitle}</Text>
     </View>
   );
 }
 
-function parseCount(value: string): number | null {
-  const digits = value.replace(/\D/g, '');
-  if (digits.length === 0) return null;
-  return Math.min(MAX_HOUSEHOLD_SIZE, Number.parseInt(digits, 10));
-}
-
-/**
- * §2 Meals — which categories, and how many days.
- *
- * A user need not plan every category: breakfast + dinner, or lunch + dinner +
- * snacks, are both valid. Selecting a category sets its count to the number of
- * days; deselecting sets it back to zero.
- */
-export function MealsSection({ request, update }: SectionProps) {
-  const setDays = (days: number) => {
-    const meals = { ...request.meals };
-    for (const type of PLANNABLE_MEAL_TYPES) {
-      if (meals[type] > 0) meals[type] = days;
-    }
-    update({ days, meals });
-  };
-
-  const toggleCategory = (type: PlannableMealType) => {
-    const selected = request.meals[type] > 0;
-    update({ meals: { ...request.meals, [type]: selected ? 0 : request.days } });
-  };
-
+export function MQStepper({
+  value,
+  min,
+  max,
+  maxLabel,
+  onChange,
+  accessibilityLabel,
+}: {
+  value: number;
+  min: number;
+  max: number;
+  maxLabel?: string;
+  onChange: (value: number) => void;
+  accessibilityLabel: string;
+}) {
+  const canDecrease = value > min;
+  const canIncrease = value < max;
   return (
-    <View style={gap}>
-      {PLANNABLE_MEAL_TYPES.map((type) => (
-        <CheckboxRow
-          key={type}
-          title={mealTypeLabel(type)}
-          subtitle={request.meals[type] > 0 ? `${request.meals[type]} planned` : undefined}
-          selected={request.meals[type] > 0}
-          onPress={() => toggleCategory(type)}
-        />
-      ))}
-
-      <Text style={[uiText.body, { marginTop: Spacing.three }]}>How many days?</Text>
-      <View style={chipRow}>
-        {Array.from({ length: MAX_PLAN_DAYS - MIN_PLAN_DAYS + 1 }, (_, i) => MIN_PLAN_DAYS + i).map((days) => (
-          <Chip key={days} label={String(days)} selected={request.days === days} onPress={() => setDays(days)} />
-        ))}
-      </View>
-    </View>
-  );
-}
-
-/** §3 Budget — optional. A blank amount turns budget planning off entirely. */
-export function BudgetSection({ request, update }: SectionProps) {
-  return (
-    <View style={gap}>
-      <AppTextField
-        label="Grocery budget for this plan"
-        placeholder="$"
-        keyboardType="decimal-pad"
-        value={request.budget.amount > 0 ? String(request.budget.amount) : ''}
-        onChangeText={(value) => {
-          const amount = Number.parseFloat(value.replace(/[^0-9.]/g, ''));
-          const next = Number.isFinite(amount) ? amount : 0;
-          // `enabled` is always derived from the amount, never set by hand.
-          update({ budget: { ...request.budget, amount: next, enabled: next > 0 } });
-        }}
-      />
-      <Text style={uiText.muted}>
-        Leave this blank to plan without a budget.
+    <View style={styles.stepper}>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={`Decrease ${accessibilityLabel}`}
+        disabled={!canDecrease}
+        onPress={() => onChange(value - 1)}
+        style={[styles.stepperButton, !canDecrease && styles.stepperButtonDisabled]}>
+        <Text style={[styles.stepperButtonText, !canDecrease && styles.stepperButtonTextDisabled]}>−</Text>
+      </Pressable>
+      <Text
+        accessibilityLabel={`${accessibilityLabel}: ${value >= max && maxLabel ? maxLabel : value}`}
+        style={styles.stepperValue}>
+        {value >= max && maxLabel ? maxLabel : String(value)}
       </Text>
-
-      {request.budget.amount > 0 ? (
-        <View style={[gap, { marginTop: Spacing.two }]}>
-          <Text style={uiText.body}>Should Penny keep costs as low as possible, or use more of the budget for variety?</Text>
-          {BUDGET_MODE_OPTIONS.map((option) => (
-            <SelectionRow
-              key={option.value}
-              title={option.label}
-              selected={request.budget.mode === option.value}
-              onPress={() => update({ budget: { ...request.budget, mode: option.value } })}
-            />
-          ))}
-        </View>
-      ) : null}
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={`Increase ${accessibilityLabel}`}
+        disabled={!canIncrease}
+        onPress={() => onChange(value + 1)}
+        style={[styles.stepperButton, !canIncrease && styles.stepperButtonDisabled]}>
+        <Text style={[styles.stepperButtonText, !canIncrease && styles.stepperButtonTextDisabled]}>+</Text>
+      </Pressable>
     </View>
   );
 }
 
-/**
- * §4 Pantry — nothing is pre-checked. The spec is explicit that we must not
- * assume a household already owns olive oil or any other expensive staple.
- */
-export function PantrySection({ request, update }: SectionProps) {
+export function MQChipGrid({
+  options,
+  selected,
+  exclusive,
+  onToggle,
+}: {
+  options: string[];
+  selected: string[];
+  exclusive?: string | string[];
+  onToggle: (option: string) => void;
+}) {
   return (
-    <View style={gap}>
-      <View style={chipRow}>
-        {PANTRY_STAPLES.map((staple) => (
-          <Chip
-            key={staple.ingredientId}
-            label={staple.label}
-            selected={request.pantryItems.includes(staple.ingredientId)}
-            onPress={() => update({ pantryItems: toggle(request.pantryItems, staple.ingredientId) })}
-          />
-        ))}
-      </View>
-      <Text style={uiText.small}>Salt, pepper and water are always assumed on hand.</Text>
-    </View>
-  );
-}
-
-/** §5 Dietary requirements. Selected diets are hard requirements by default. */
-export function DietSection({ request, update }: SectionProps) {
-  const isSelected = (diet: Diet) => request.dietaryRequirements.some((item) => item.diet === diet);
-
-  return (
-    <View style={gap}>
-      <SelectionRow
-        title="No specific diet"
-        selected={request.dietaryRequirements.length === 0}
-        onPress={() => update({ dietaryRequirements: [] })}
-      />
-      {DIET_CHOICES.map((diet) => (
-        <CheckboxRow
-          key={diet}
-          title={dietLabel(diet)}
-          selected={isSelected(diet)}
-          onPress={() =>
-            update({
-              dietaryRequirements: isSelected(diet)
-                ? request.dietaryRequirements.filter((item) => item.diet !== diet)
-                : [...request.dietaryRequirements, { diet, strength: 'required' }],
-            })
-          }
-        />
-      ))}
-    </View>
-  );
-}
-
-/**
- * §6 Allergies. Always a hard requirement — the spec rejects any other strength.
- * The engine removes matching recipes by ingredient flag, not by name matching.
- */
-export function AllergiesSection({ request, update }: SectionProps) {
-  const isSelected = (allergen: Allergen) => request.allergies.some((item) => item.allergen === allergen);
-
-  return (
-    <View style={gap}>
-      {ALLERGEN_CHOICES.map((allergen) => (
-        <CheckboxRow
-          key={allergen}
-          title={allergenLabel(allergen)}
-          selected={isSelected(allergen)}
-          onPress={() =>
-            update({
-              allergies: isSelected(allergen)
-                ? request.allergies.filter((item) => item.allergen !== allergen)
-                : [...request.allergies, { allergen, strength: 'required' }],
-            })
-          }
-        />
-      ))}
-      <Text style={uiText.small}>
-        Recipes containing anything you select are removed from every plan we build for you.
-      </Text>
-    </View>
-  );
-}
-
-/** §7 Nutrition goals — preferences, never medical rules or health claims. */
-export function NutritionSection({ request, update }: SectionProps) {
-  const isSelected = (goal: NutritionGoal) => request.nutritionPreferences.some((item) => item.goal === goal);
-
-  return (
-    <View style={gap}>
-      <SelectionRow
-        title="No specific goal"
-        selected={request.nutritionPreferences.length === 0}
-        onPress={() => update({ nutritionPreferences: [] })}
-      />
-      {NUTRITION_GOAL_CHOICES.map((goal) => (
-        <CheckboxRow
-          key={goal}
-          title={nutritionGoalLabel(goal)}
-          selected={isSelected(goal)}
-          onPress={() =>
-            update({
-              nutritionPreferences: isSelected(goal)
-                ? request.nutritionPreferences.filter((item) => item.goal !== goal)
-                : [...request.nutritionPreferences, { goal, strength: 'preferred' }],
-            })
-          }
-        />
-      ))}
-    </View>
-  );
-}
-
-/** §8 Food preferences. Likes are a nudge; dislikes are a hard filter. */
-export function PreferencesSection({ request, update }: SectionProps) {
-  return (
-    <View style={gap}>
-      <Text style={uiText.body}>Cuisines you enjoy</Text>
-      <View style={chipRow}>
-        {CUISINE_CHOICES.map((cuisine) => (
-          <Chip
-            key={cuisine.value}
-            label={cuisine.label}
-            selected={request.likes.cuisines.includes(cuisine.value)}
-            onPress={() =>
-              update({ likes: { ...request.likes, cuisines: toggle(request.likes.cuisines, cuisine.value) } })
-            }
-          />
-        ))}
-      </View>
-
-      <AppTextField
-        label="Anything you especially like?"
-        placeholder="Chicken, rice, beans…"
-        value={request.likes.freeText ?? ''}
-        onChangeText={(value) => update({ likes: { ...request.likes, freeText: value.length > 0 ? value : null } })}
-      />
-      <AppTextField
-        label="Anything you'd rather not eat?"
-        placeholder="Mushrooms, olives…"
-        value={request.dislikes.freeText ?? ''}
-        onChangeText={(value) =>
-          update({ dislikes: { ...request.dislikes, freeText: value.length > 0 ? value : null } })
-        }
-      />
-      <Text style={uiText.small}>
-        We&apos;ll confirm what these map to before using them, so nothing is excluded by mistake.
-      </Text>
-    </View>
-  );
-}
-
-/** §9 Cooking time, with the hard-limit toggle. */
-export function TimeSection({ request, update }: SectionProps) {
-  return (
-    <View style={gap}>
-      {COOKING_TIME_OPTIONS.map((option) => (
-        <SelectionRow
-          key={String(option.value)}
-          title={option.label}
-          selected={request.cookingTime.maxMinutes === option.value}
-          onPress={() => update({ cookingTime: { ...request.cookingTime, maxMinutes: option.value } })}
-        />
-      ))}
-      {request.cookingTime.maxMinutes !== null ? (
-        <CheckboxRow
-          title="This is a hard limit"
-          subtitle="Leave off and we'll treat it as a preference."
-          selected={request.cookingTime.strength === 'required'}
-          onPress={() =>
-            update({
-              cookingTime: {
-                ...request.cookingTime,
-                strength: request.cookingTime.strength === 'required' ? 'preferred' : 'required',
-              },
-            })
-          }
-        />
-      ) : null}
-    </View>
-  );
-}
-
-/** §10 Equipment. Stovetop, oven and microwave start checked. */
-export function EquipmentSection({ request, update }: SectionProps) {
-  return (
-    <View style={gap}>
-      {EQUIPMENT_OPTIONS.map((item: Equipment) => (
-        <CheckboxRow
-          key={item}
-          title={equipmentLabel(item)}
-          selected={request.equipment.includes(item)}
-          onPress={() => update({ equipment: toggle(request.equipment, item) })}
-        />
-      ))}
-    </View>
-  );
-}
-
-/** §11 Cooking style, capped at three selections. */
-export function StyleSection({ request, update }: SectionProps) {
-  const atLimit = request.cookingStyle.length >= MAX_COOKING_STYLES;
-
-  return (
-    <View style={gap}>
-      {COOKING_STYLE_CHOICES.map((style: CookingStyle) => {
-        const selected = request.cookingStyle.includes(style);
+    <View style={styles.chipGrid}>
+      {options.map((option) => {
+        const isSelected = selected.includes(option);
         return (
-          <CheckboxRow
-            key={style}
-            title={cookingStyleLabel(style)}
-            subtitle={!selected && atLimit ? `Pick at most ${MAX_COOKING_STYLES}` : undefined}
-            selected={selected}
-            onPress={() => {
-              if (!selected && atLimit) return;
-              update({ cookingStyle: toggle(request.cookingStyle, style) });
-            }}
-          />
+          <Pressable
+            key={option}
+            accessibilityRole="checkbox"
+            accessibilityState={{ checked: isSelected }}
+            accessibilityLabel={option}
+            onPress={() => onToggle(option)}
+            style={[styles.chip, isSelected && styles.chipSelected]}>
+            {isSelected ? (
+              <HiveIcon name="checkCircle" size={14} color={HiveColors.green} />
+            ) : (
+              <View style={styles.chipCircle} />
+            )}
+            <Text style={[styles.chipText, isSelected && styles.chipTextSelected]}>{option}</Text>
+          </Pressable>
         );
       })}
     </View>
   );
 }
 
-/** §12 Leftovers. */
-export function LeftoversSection({ request, update }: SectionProps) {
+export function MQSingleSelect({
+  options,
+  selected,
+  onSelect,
+  icons,
+}: {
+  options: string[];
+  selected: string;
+  onSelect: (option: string) => void;
+  icons?: (HiveIconName | null)[];
+}) {
   return (
-    <View style={gap}>
-      {LEFTOVERS_OPTIONS.map((option) => (
-        <SelectionRow
-          key={option.value}
-          title={option.label}
-          selected={request.leftovers === option.value}
-          onPress={() => update({ leftovers: option.value })}
-        />
-      ))}
+    <View style={styles.singleSelect}>
+      {options.map((option, index) => {
+        const isSelected = selected === option;
+        const icon = icons?.[index] ?? null;
+        return (
+          <Pressable
+            key={option}
+            accessibilityRole="radio"
+            accessibilityState={{ checked: isSelected }}
+            accessibilityLabel={option}
+            onPress={() => onSelect(option)}
+            style={[styles.selectRow, isSelected && styles.selectRowSelected]}>
+            {icon ? (
+              <HiveIcon
+                name={icon}
+                size={14}
+                color={isSelected ? HiveColors.green : HiveColors.textSecondary}
+              />
+            ) : null}
+            <Text style={[styles.selectText, isSelected && styles.selectTextSelected]}>{option}</Text>
+            {isSelected ? (
+              <HiveIcon name="checkCircle" size={18} color={HiveColors.green} />
+            ) : (
+              <View style={styles.selectCircle} />
+            )}
+          </Pressable>
+        );
+      })}
     </View>
   );
 }
+
+export function MQTextField({
+  placeholder,
+  value,
+  onChangeText,
+}: {
+  placeholder: string;
+  value: string;
+  onChangeText: (value: string) => void;
+}) {
+  return (
+    <TextInput
+      style={styles.textField}
+      placeholder={placeholder}
+      placeholderTextColor={HiveColors.placeholder}
+      value={value}
+      onChangeText={onChangeText}
+      multiline
+      textAlignVertical="top"
+    />
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Step 1 — Household
+// ---------------------------------------------------------------------------
+
+export function HouseholdStep({ answers, update }: QuestionnaireSectionProps) {
+  return (
+    <View style={styles.stepBody}>
+      <View>
+        <QuestionLabel>1. How many people are you planning meals for?</QuestionLabel>
+        <MQStepper
+          value={answers.householdSize}
+          min={MIN_HOUSEHOLD_SIZE}
+          max={MAX_HOUSEHOLD_SIZE}
+          maxLabel={HOUSEHOLD_SIZE_PLUS_LABEL}
+          onChange={(householdSize) => update({ householdSize })}
+          accessibilityLabel="Household size"
+        />
+      </View>
+      <View>
+        <QuestionLabel>2. How many are children?</QuestionLabel>
+        <MQStepper
+          value={answers.childrenCount}
+          min={0}
+          max={MAX_CHILDREN_COUNT}
+          onChange={(childrenCount) => update({ childrenCount })}
+          accessibilityLabel="Children count"
+        />
+      </View>
+      {answers.childrenCount > 0 ? (
+        <View>
+          <QuestionLabel>Which age ranges? (select all that apply)</QuestionLabel>
+          <MQChipGrid
+            options={CHILD_AGE_RANGES}
+            selected={answers.childrenAges}
+            onToggle={(option) =>
+              update({ childrenAges: toggleChip(answers.childrenAges, option) })
+            }
+          />
+        </View>
+      ) : null}
+    </View>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Step 2 — Diets, Allergies & Dislikes
+// ---------------------------------------------------------------------------
+
+export function DietsStep({ answers, update }: QuestionnaireSectionProps) {
+  return (
+    <View style={styles.stepBody}>
+      <View>
+        <QuestionLabel>3. Does anyone in your household follow a specific diet?</QuestionLabel>
+        <MQChipGrid
+          options={DIET_OPTIONS}
+          selected={answers.diets}
+          exclusive={DIET_EXCLUSIVE_OPTION}
+          onToggle={(option) => update({ diets: toggleChip(answers.diets, option, DIET_EXCLUSIVE_OPTION) })}
+        />
+        {answers.diets.includes('Other') ? (
+          <View style={styles.textFieldWrap}>
+            <MQTextField
+              placeholder="Describe the diet…"
+              value={answers.dietOtherText}
+              onChangeText={(dietOtherText) => update({ dietOtherText })}
+            />
+          </View>
+        ) : null}
+      </View>
+      <View>
+        <QuestionLabel>4. Any food allergies or intolerances?</QuestionLabel>
+        <View style={styles.warningRow}>
+          <HiveIcon name="warning" size={11} color="#BF6100" />
+          <Text style={styles.warningText}>Allergies are always treated as hard restrictions.</Text>
+        </View>
+        <MQChipGrid
+          options={ALLERGY_OPTIONS}
+          selected={answers.allergies}
+          exclusive={ALLERGY_EXCLUSIVE_OPTION}
+          onToggle={(option) =>
+            update({ allergies: toggleChip(answers.allergies, option, ALLERGY_EXCLUSIVE_OPTION) })
+          }
+        />
+        {answers.allergies.includes('Other') ? (
+          <View style={styles.textFieldWrap}>
+            <MQTextField
+              placeholder="Describe the allergy or intolerance…"
+              value={answers.allergyOtherText}
+              onChangeText={(allergyOtherText) => update({ allergyOtherText })}
+            />
+          </View>
+        ) : null}
+      </View>
+      <View>
+        <QuestionLabel>5. Any foods you never want in your meal plan?</QuestionLabel>
+        <MQTextField
+          placeholder="e.g. Mushrooms, cilantro, olives"
+          value={answers.dislikes}
+          onChangeText={(dislikes) => update({ dislikes })}
+        />
+      </View>
+    </View>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Step 3 — Health & Goals
+// ---------------------------------------------------------------------------
+
+export function HealthStep({ answers, update }: QuestionnaireSectionProps) {
+  return (
+    <View style={styles.stepBody}>
+      <View>
+        <QuestionLabel>6. Any health considerations to keep in mind?</QuestionLabel>
+        <MQChipGrid
+          options={HEALTH_OPTIONS}
+          selected={answers.health}
+          exclusive={HEALTH_EXCLUSIVE_OPTIONS}
+          onToggle={(option) =>
+            update({ health: toggleChip(answers.health, option, HEALTH_EXCLUSIVE_OPTIONS) })
+          }
+        />
+      </View>
+      <View>
+        <QuestionLabel>7. What goals would you like your plan to support?</QuestionLabel>
+        <MQChipGrid
+          options={GOAL_OPTIONS}
+          selected={answers.goals}
+          exclusive={GOAL_EXCLUSIVE_OPTION}
+          onToggle={(option) => update({ goals: toggleChip(answers.goals, option, GOAL_EXCLUSIVE_OPTION) })}
+        />
+        {answers.goals.includes('Doctor-Recommended Diet') ? (
+          <View style={styles.textFieldWrap}>
+            <MQTextField
+              placeholder="Optional: describe the diet your doctor recommended…"
+              value={answers.doctorDietText}
+              onChangeText={(doctorDietText) => update({ doctorDietText })}
+            />
+          </View>
+        ) : null}
+      </View>
+    </View>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Step 4 — Taste & Cooking
+// ---------------------------------------------------------------------------
+
+const SPICE_ICONS: (HiveIconName | null)[] = [null, null, null];
+const COOK_TIME_ICONS: (HiveIconName | null)[] = ['clock', 'clock', 'clock', 'ellipsis'];
+const SKILL_ICONS: (HiveIconName | null)[] = [null, null, null];
+const BUDGET_ICONS: (HiveIconName | null)[] = ['dollar', 'dollar', 'dollar', 'dollar', 'ellipsis'];
+const SHOPPING_ICONS: (HiveIconName | null)[] = ['doc', 'cart', 'ellipsis'];
+
+export function TasteStep({ answers, update }: QuestionnaireSectionProps) {
+  return (
+    <View style={styles.stepBody}>
+      <View>
+        <QuestionLabel>8. What types of food do you enjoy most?</QuestionLabel>
+        <MQChipGrid
+          options={CUISINE_OPTIONS}
+          selected={answers.cuisines}
+          exclusive={CUISINE_EXCLUSIVE_OPTION}
+          onToggle={(option) =>
+            update({ cuisines: toggleChip(answers.cuisines, option, CUISINE_EXCLUSIVE_OPTION) })
+          }
+        />
+      </View>
+      <View>
+        <QuestionLabel>9. How spicy do you like your food?</QuestionLabel>
+        <MQSingleSelect
+          options={SPICE_OPTIONS}
+          selected={answers.spice}
+          onSelect={(spice) => update({ spice })}
+          icons={SPICE_ICONS}
+        />
+      </View>
+      <View>
+        <QuestionLabel>10. How much time do you usually have to cook?</QuestionLabel>
+        <MQSingleSelect
+          options={COOK_TIME_OPTIONS}
+          selected={answers.cookTime}
+          onSelect={(cookTime) => update({ cookTime })}
+          icons={COOK_TIME_ICONS}
+        />
+      </View>
+      <View>
+        <QuestionLabel>11. How comfortable are you in the kitchen?</QuestionLabel>
+        <MQSingleSelect
+          options={SKILL_OPTIONS}
+          selected={answers.skill}
+          onSelect={(skill) => update({ skill })}
+          icons={SKILL_ICONS}
+        />
+      </View>
+    </View>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Step 5 — Kitchen / Equipment
+// ---------------------------------------------------------------------------
+
+export function KitchenStep({ answers, update }: QuestionnaireSectionProps) {
+  return (
+    <View style={styles.stepBody}>
+      <View>
+        <QuestionLabel>12. What do you have to cook with?</QuestionLabel>
+        <Text style={[uiText.small, styles.helperText]}>Select everything available to you.</Text>
+        <MQChipGrid
+          options={EQUIPMENT_OPTIONS}
+          selected={answers.equipment}
+          exclusive={EQUIPMENT_EXCLUSIVE_OPTION}
+          onToggle={(option) =>
+            update({ equipment: toggleChip(answers.equipment, option, EQUIPMENT_EXCLUSIVE_OPTION) })
+          }
+        />
+      </View>
+    </View>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Step 6 — Meal Planning & Budget
+// ---------------------------------------------------------------------------
+
+export function PlanningStep({ answers, update }: QuestionnaireSectionProps) {
+  return (
+    <View style={styles.stepBody}>
+      <View>
+        <QuestionLabel>13. How many dinners would you like planned each week?</QuestionLabel>
+        <MQStepper
+          value={answers.dinnersPerWeek}
+          min={MIN_PLAN_DAYS}
+          max={MAX_PLAN_DAYS}
+          onChange={(dinnersPerWeek) => update({ dinnersPerWeek })}
+          accessibilityLabel="Dinners per week"
+        />
+      </View>
+      <View>
+        <QuestionLabel>14. Which meals would you like included in your plan?</QuestionLabel>
+        <MQChipGrid
+          options={MEAL_TYPE_OPTIONS}
+          selected={answers.mealTypes}
+          onToggle={(option) => update({ mealTypes: toggleChip(answers.mealTypes, option) })}
+        />
+      </View>
+      <View>
+        <QuestionLabel>15. About how much would you like to spend on groceries per week?</QuestionLabel>
+        <MQSingleSelect
+          options={BUDGET_OPTIONS}
+          selected={answers.budget}
+          onSelect={(budget) => update({ budget })}
+          icons={BUDGET_ICONS}
+        />
+      </View>
+      <View>
+        <QuestionLabel>16. How would you like to shop for your groceries?</QuestionLabel>
+        <MQSingleSelect
+          options={SHOPPING_OPTIONS}
+          selected={answers.shopping}
+          onSelect={(shopping) => update({ shopping })}
+          icons={SHOPPING_ICONS}
+        />
+      </View>
+    </View>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Step 7 — Confirm Pantry + Fridge
+// ---------------------------------------------------------------------------
+
+export function PantryStep() {
+  const { activeItems, status, error, isMutating, markUsed, addItem, refresh } = usePantry();
+  const [quickAdd, setQuickAdd] = useState('');
+  const [saving, setSaving] = useState(false);
+
+  const trimmed = quickAdd.trim();
+
+  async function handleQuickAdd() {
+    if (trimmed.length === 0 || saving) return;
+    setSaving(true);
+    try {
+      await addItem({
+        name: trimmed,
+        quantity: '1',
+        location: 'PANTRY',
+        category: 'Groceries',
+        expirationDate: expirationDateInDays(14),
+      });
+      setQuickAdd('');
+    } catch {
+      // The pantry context surfaces the error; the typed text is kept so
+      // nothing the user wrote is lost.
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <View style={styles.stepBody}>
+      {status === 'loading' ? (
+        <View style={styles.pantryCenter}>
+          <ActivityIndicator size="small" color={HiveColors.green} />
+          <Text style={uiText.muted}>Loading your pantry…</Text>
+        </View>
+      ) : status === 'error' ? (
+        <View style={styles.pantryCenter}>
+          <Text style={uiText.muted}>
+            {error || "We couldn't reach your pantry. You can continue — Penny will plan without it."}
+          </Text>
+          <AppButton title="Try again" variant="secondary" onPress={() => void refresh()} />
+        </View>
+      ) : activeItems.length === 0 ? (
+        <View style={styles.pantryCenter}>
+          <HiveIcon name="box" size={30} color={HiveColors.border} />
+          <Text style={[uiText.body, styles.centerText]}>Nothing saved in your Pantry + Fridge yet.</Text>
+          <Text style={[uiText.small, styles.centerText]}>
+            Add a few items below, or continue and Penny will plan without them.
+          </Text>
+        </View>
+      ) : (
+        <View style={styles.pantryList}>
+          {activeItems.map((item) => (
+            <View key={item.id} style={styles.pantryRow}>
+              <HiveIcon
+                name={item.location === 'REFRIGERATOR' ? 'fridge' : 'box'}
+                size={14}
+                color={HiveColors.green}
+              />
+              <View style={styles.pantryRowText}>
+                <Text style={styles.pantryName}>{item.name}</Text>
+                <Text style={uiText.small}>
+                  {[item.quantity, locationLabel(item.location)].filter(Boolean).join(' · ')}
+                </Text>
+              </View>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={`Remove ${item.name} from the plan`}
+                disabled={isMutating}
+                onPress={() => void markUsed(item.id)}
+                style={styles.pantryRemove}>
+                <HiveIcon name="xCircle" size={18} color={HiveColors.border} />
+              </Pressable>
+            </View>
+          ))}
+        </View>
+      )}
+
+      <View style={styles.quickAddRow}>
+        <TextInput
+          style={styles.quickAddInput}
+          placeholder="Add an item (e.g. rice, eggs)"
+          placeholderTextColor={HiveColors.placeholder}
+          value={quickAdd}
+          onChangeText={setQuickAdd}
+          onSubmitEditing={() => void handleQuickAdd()}
+          returnKeyType="done"
+        />
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Add pantry item"
+          disabled={trimmed.length === 0 || saving}
+          onPress={() => void handleQuickAdd()}
+          style={[
+            styles.quickAddButton,
+            (trimmed.length === 0 || saving) && styles.quickAddButtonDisabled,
+          ]}>
+          {saving ? (
+            <ActivityIndicator size="small" color={HiveColors.white} />
+          ) : (
+            <HiveIcon name="plus" size={16} color={HiveColors.white} />
+          )}
+        </Pressable>
+      </View>
+    </View>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Styles
+// ---------------------------------------------------------------------------
+
+const styles = StyleSheet.create({
+  stepBody: { gap: Spacing.four },
+  stepHeader: { gap: Spacing.two, marginBottom: Spacing.three },
+  stepIconCircle: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  questionLabel: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: HiveColors.text,
+    marginBottom: Spacing.two,
+  },
+  helperText: { marginBottom: Spacing.two },
+  warningRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginBottom: Spacing.two,
+  },
+  warningText: { fontSize: 12, color: '#BF6100' },
+  textFieldWrap: { marginTop: Spacing.two },
+  // MQStepper
+  stepper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: HiveColors.card,
+    borderRadius: Radii.xl,
+    paddingVertical: 20,
+    paddingHorizontal: 24,
+  },
+  stepperButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: HiveColors.green,
+  },
+  stepperButtonDisabled: { backgroundColor: HiveColors.border },
+  stepperButtonText: { fontSize: 24, fontWeight: '700', color: HiveColors.white, lineHeight: 28 },
+  stepperButtonTextDisabled: { color: HiveColors.textSecondary },
+  stepperValue: { fontSize: 42, fontWeight: '800', color: HiveColors.text, minWidth: 60, textAlign: 'center' },
+  // MQChipGrid
+  chipGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
+  chip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 7,
+    flexGrow: 1,
+    flexBasis: '46%',
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+    backgroundColor: HiveColors.card,
+    borderRadius: Radii.md,
+    borderWidth: 1.5,
+    borderColor: 'transparent',
+  },
+  chipSelected: { backgroundColor: HiveColors.greenLight, borderColor: HiveColors.green },
+  chipCircle: {
+    width: 14,
+    height: 14,
+    borderRadius: 7,
+    borderWidth: 1.5,
+    borderColor: HiveColors.border,
+  },
+  chipText: { flex: 1, fontSize: 13, color: HiveColors.text },
+  chipTextSelected: { fontWeight: '600', color: HiveColors.green },
+  // MQSingleSelect
+  singleSelect: { gap: 8 },
+  selectRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 13,
+    backgroundColor: HiveColors.card,
+    borderRadius: Radii.md,
+    borderWidth: 1.5,
+    borderColor: 'transparent',
+  },
+  selectRowSelected: { backgroundColor: HiveColors.greenLight, borderColor: HiveColors.green },
+  selectText: { flex: 1, fontSize: 14, color: HiveColors.text },
+  selectTextSelected: { fontWeight: '600', color: HiveColors.green },
+  selectCircle: {
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    borderWidth: 1.5,
+    borderColor: HiveColors.border,
+  },
+  // MQTextField
+  textField: {
+    minHeight: 80,
+    backgroundColor: HiveColors.card,
+    borderRadius: Radii.md,
+    borderWidth: 1,
+    borderColor: HiveColors.border,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    fontSize: 14,
+    color: HiveColors.text,
+  },
+  // Pantry step
+  pantryCenter: { alignItems: 'center', gap: Spacing.two, paddingVertical: 24 },
+  centerText: { textAlign: 'center' },
+  pantryList: { gap: Spacing.two },
+  pantryRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    padding: 12,
+    backgroundColor: HiveColors.card,
+    borderRadius: Radii.md,
+  },
+  pantryRowText: { flex: 1, gap: 1 },
+  pantryName: { fontSize: 15, fontWeight: '500', color: HiveColors.text },
+  pantryRemove: { padding: 4 },
+  quickAddRow: { flexDirection: 'row', gap: 8, marginTop: Spacing.one },
+  quickAddInput: {
+    flex: 1,
+    height: 46,
+    backgroundColor: HiveColors.card,
+    borderRadius: Radii.md,
+    borderWidth: 1,
+    borderColor: HiveColors.border,
+    paddingHorizontal: 14,
+    fontSize: 15,
+    color: HiveColors.text,
+  },
+  quickAddButton: {
+    width: 46,
+    height: 46,
+    borderRadius: Radii.md,
+    backgroundColor: HiveColors.green,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  quickAddButtonDisabled: { backgroundColor: HiveColors.border },
+});

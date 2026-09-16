@@ -5,6 +5,22 @@ import type {
   CompleteOnboardingMutationVariables,
   DeleteViewerDataMutation,
   DeleteViewerDataMutationVariables,
+  RecordConsentMutation,
+  RecordConsentMutationVariables,
+  RequestVerificationCodeMutation,
+  RequestVerificationCodeMutationVariables,
+  RequestVerificationLinkMutation,
+  RequestVerificationLinkMutationVariables,
+  SaveLocationFallbackMutation,
+  SaveLocationFallbackMutationVariables,
+  SaveOnboardingStepMutation,
+  SaveOnboardingStepMutationVariables,
+  SaveQuestionnaireMutation,
+  SaveQuestionnaireMutationVariables,
+  UpdateCommunicationConsentsMutation,
+  UpdateCommunicationConsentsMutationVariables,
+  VerifyCodeMutation,
+  VerifyCodeMutationVariables,
   HandleAvailabilityQuery,
   HandleAvailabilityQueryVariables,
   DeletePantryItemMutation,
@@ -54,6 +70,8 @@ export const ViewerDocument = `
         email
         createdAt
         updatedAt
+        accountVerifiedAt
+        verificationMethod
       }
       profile {
         handle
@@ -71,6 +89,8 @@ export const ViewerDocument = `
         preferredFinanceTopics
         preferredResources
         wantsGovAssistance
+        selectedBenefitPrograms
+        locationPermissionStatus
         lastMealPlanDate
         notificationsEnabled
         expiringPantryNotificationsEnabled
@@ -82,8 +102,26 @@ export const ViewerDocument = `
       onboardingState {
         hasCompletedOnboarding
         completedAt
+        currentStep
         createdAt
         updatedAt
+      }
+      questionnaireAnswers {
+        weeklyBudget
+        financeTopics
+        resources
+        primaryGoal
+        householdSize
+        incomeBracket
+        updatedAt
+      }
+      verification {
+        verified
+        verifiedAt
+        method
+      }
+      consent {
+        emailMarketingOptIn
       }
     }
   }
@@ -112,6 +150,8 @@ export const UpdatePreferencesDocument = `
       preferredFinanceTopics
       preferredResources
       wantsGovAssistance
+      selectedBenefitPrograms
+      locationPermissionStatus
       lastMealPlanDate
       notificationsEnabled
       expiringPantryNotificationsEnabled
@@ -132,6 +172,8 @@ export const CompleteOnboardingDocument = `
         email
         createdAt
         updatedAt
+        accountVerifiedAt
+        verificationMethod
       }
       profile {
         handle
@@ -149,6 +191,8 @@ export const CompleteOnboardingDocument = `
         preferredFinanceTopics
         preferredResources
         wantsGovAssistance
+        selectedBenefitPrograms
+        locationPermissionStatus
         lastMealPlanDate
         notificationsEnabled
         expiringPantryNotificationsEnabled
@@ -166,6 +210,62 @@ export const CompleteOnboardingDocument = `
     }
   }
 ` as GraphQLDocument<CompleteOnboardingMutation, CompleteOnboardingMutationVariables>;
+
+export const RecordConsentDocument = `
+  mutation RecordConsent($input: RecordConsentInput!) {
+    recordConsent(input: $input)
+  }
+` as GraphQLDocument<RecordConsentMutation, RecordConsentMutationVariables>;
+
+export const RequestVerificationCodeDocument = `
+  mutation RequestVerificationCode($input: RequestVerificationCodeInput!) {
+    requestVerificationCode(input: $input)
+  }
+` as GraphQLDocument<RequestVerificationCodeMutation, RequestVerificationCodeMutationVariables>;
+
+export const RequestVerificationLinkDocument = `
+  mutation RequestVerificationLink($purpose: VerificationPurpose!) {
+    requestVerificationLink(purpose: $purpose)
+  }
+` as GraphQLDocument<RequestVerificationLinkMutation, RequestVerificationLinkMutationVariables>;
+
+export const VerifyCodeDocument = `
+  mutation VerifyCode($code: String!) {
+    verifyCode(code: $code)
+  }
+` as GraphQLDocument<VerifyCodeMutation, VerifyCodeMutationVariables>;
+
+export const SaveQuestionnaireDocument = `
+  mutation SaveQuestionnaire($input: SaveQuestionnaireInput!) {
+    saveQuestionnaire(input: $input) {
+      weeklyBudget
+      financeTopics
+      resources
+      primaryGoal
+      householdSize
+      incomeBracket
+      updatedAt
+    }
+  }
+` as GraphQLDocument<SaveQuestionnaireMutation, SaveQuestionnaireMutationVariables>;
+
+export const SaveOnboardingStepDocument = `
+  mutation SaveOnboardingStep($step: String!) {
+    saveOnboardingStep(step: $step)
+  }
+` as GraphQLDocument<SaveOnboardingStepMutation, SaveOnboardingStepMutationVariables>;
+
+export const UpdateCommunicationConsentsDocument = `
+  mutation UpdateCommunicationConsents($input: UpdateCommunicationConsentsInput!) {
+    updateCommunicationConsents(input: $input)
+  }
+` as GraphQLDocument<UpdateCommunicationConsentsMutation, UpdateCommunicationConsentsMutationVariables>;
+
+export const SaveLocationFallbackDocument = `
+  mutation SaveLocationFallback($zip: String!) {
+    saveLocationFallback(zip: $zip)
+  }
+` as GraphQLDocument<SaveLocationFallbackMutation, SaveLocationFallbackMutationVariables>;
 
 export const HandleAvailabilityDocument = `
   query HandleAvailability($handle: String!) {

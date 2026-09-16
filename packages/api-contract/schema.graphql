@@ -16,6 +16,7 @@ type Mutation {
   updateHandle(handle: String!): Profile!
   updatePreferences(input: UpdatePreferencesInput!): AppPreferences!
   completeOnboarding(input: CompleteOnboardingInput!): Viewer!
+  recordConsent(input: RecordConsentInput!): Boolean!
   addPantryItem(input: AddPantryItemInput!): PantryItem!
   updatePantryItem(id: ID!, input: UpdatePantryItemInput!): PantryItem!
   markPantryItemUsed(id: ID!): PantryItem!
@@ -29,6 +30,7 @@ type Viewer {
   profile: Profile!
   preferences: AppPreferences!
   onboardingState: OnboardingState!
+  consent: Consent
 }
 
 type User {
@@ -37,6 +39,8 @@ type User {
   email: String
   createdAt: String!
   updatedAt: String!
+  accountVerifiedAt: String
+  verificationMethod: String
 }
 
 type Profile {
@@ -79,6 +83,8 @@ type AppPreferences {
   resourceReminderNotificationsEnabled: Boolean!
   benefitsRenewalNotificationsEnabled: Boolean!
   benefitsRenewalDiscreetLockScreen: Boolean!
+  selectedBenefitPrograms: [String!]!
+  locationPermissionStatus: String!
   createdAt: String!
   updatedAt: String!
 }
@@ -88,6 +94,15 @@ type OnboardingState {
   completedAt: String
   createdAt: String!
   updatedAt: String!
+}
+
+type Consent {
+  termsVersion: String!
+  termsAcceptedAt: String!
+  privacyVersion: String!
+  privacyAcceptedAt: String!
+  emailMarketingOptIn: Boolean!
+  emailMarketingUpdatedAt: String!
 }
 
 type PantryItem {
@@ -164,6 +179,15 @@ input UpdatePreferencesInput {
   expiringPantryNotificationsEnabled: Boolean
   weeklyMealPlanNotificationsEnabled: Boolean
   resourceReminderNotificationsEnabled: Boolean
+  selectedBenefitPrograms: [String!]
+  locationPermissionStatus: String
+  emailMarketingOptIn: Boolean
+}
+
+input RecordConsentInput {
+  termsVersion: String!
+  privacyVersion: String!
+  emailMarketingOptIn: Boolean!
 }
 
 input CompleteOnboardingInput {
@@ -192,4 +216,80 @@ input RegisterPushTokenInput {
   token: String!
   platform: PushPlatform!
   deviceId: String
+}
+
+# --- Sign Up / Login / Onboarding v2 (2026-09-14) ---
+
+enum VerificationMethod {
+  EMAIL
+}
+
+enum VerificationPurpose {
+  SIGNUP
+  EMAIL_CHANGE
+  PHONE_CHANGE
+  RECOVERY
+}
+
+type VerificationStatus {
+  verified: Boolean!
+  verifiedAt: String
+  method: VerificationMethod
+}
+
+type QuestionnaireAnswers {
+  weeklyBudget: String
+  financeTopics: [String!]!
+  resources: [String!]!
+  primaryGoal: String
+  householdSize: String
+  incomeBracket: String
+  updatedAt: String!
+}
+
+input SaveQuestionnaireInput {
+  weeklyBudget: String
+  financeTopics: [String!]
+  resources: [String!]
+  primaryGoal: String
+  householdSize: String
+  incomeBracket: String
+}
+
+input RequestVerificationCodeInput {
+  method: VerificationMethod!
+  purpose: VerificationPurpose = SIGNUP
+  newEmail: String
+  newPhone: String
+}
+
+input UpdateCommunicationConsentsInput {
+  emailConsent: Boolean
+  phoneCallConsent: Boolean
+}
+
+extend type Mutation {
+  requestVerificationCode(input: RequestVerificationCodeInput!): Boolean!
+  verifyCode(code: String!): Boolean!
+  # Magic-link verification for signup (September 2026): emails a Verify
+  # button that opens GET /auth/verify?token=... on the API, which consumes
+  # the link and marks the account verified. One-time codes stay for account
+  # recovery and email/phone changes.
+  requestVerificationLink(purpose: VerificationPurpose!): Boolean!
+  saveQuestionnaire(input: SaveQuestionnaireInput!): QuestionnaireAnswers!
+  saveOnboardingStep(step: String!): Boolean!
+  updateCommunicationConsents(input: UpdateCommunicationConsentsInput!): Boolean!
+}
+
+extend type Viewer {
+  questionnaireAnswers: QuestionnaireAnswers!
+  verification: VerificationStatus!
+}
+
+extend type OnboardingState {
+  currentStep: String
+}
+
+extend type Mutation {
+  saveLocationFallback(zip: String!): Boolean!
 }

@@ -35,7 +35,7 @@ type Claims interface {
 
 type UsersService interface {
 	Viewer(ctx context.Context, identity auth.Identity) (db.Viewer, error)
-	UpdatePreferences(ctx context.Context, identity auth.Identity, patch db.PreferencesPatch) (db.Preferences, error)
+	UpdatePreferences(ctx context.Context, identity auth.Identity, patch db.PreferencesPatch, emailMarketingOptIn *bool) (db.Preferences, error)
 }
 
 type PantryService interface {

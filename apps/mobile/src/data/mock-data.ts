@@ -54,9 +54,12 @@ export type ResourceItem = {
   distance: string;
   hours: string;
   description: string;
-  address: string;
-  phone: string;
-  website: string;
+  /** Contact/location details are optional: only verified entries carry them. */
+  address?: string;
+  phone?: string;
+  website?: string;
+  /** Home-carousel badge styling. */
+  badgeTone?: 'green' | 'orange' | 'pink' | 'blue';
 };
 
 export type BenefitProgram = {
@@ -313,39 +316,62 @@ export const allVideos: VideoItem[] = [
   },
 ];
 
+/**
+ * Location-based community resources, closest relevant first.
+ *
+ * Compliance rules (Marcos, Section 2 audit): only government agencies,
+ * established nonprofits, and verified community organizations; only
+ * support-relevant categories (food, housing, health, benefits, family,
+ * financial assistance); NEVER random nearby businesses; every entry must
+ * carry reliable location/contact/hours info. Entries that cannot be
+ * verified are removed rather than shipped.
+ */
 export const nearbyResources: ResourceItem[] = [
   {
     id: 'burbank-food',
     tag: 'Food Pantry',
+    badgeTone: 'green',
     name: 'Burbank Temporary Aid Center',
     distance: '0.8 mi',
-    hours: 'Mon-Fri 9:00 AM - 5:00 PM',
-    description: 'Provides food, clothing, and emergency assistance to families in need.',
+    hours: 'Mon–Fri · 9:00 AM–5:00 PM',
+    description: 'Provides food, clothing, and emergency help.',
     address: '2717 N. Naomi Street, Burbank, CA 91504',
     phone: '(818) 848-2392',
     website: 'www.burtac.org',
   },
   {
+    id: 'la-dpss-burbank',
+    tag: 'SNAP / CalFresh',
+    badgeTone: 'orange',
+    name: 'LA County DPSS — Burbank',
+    distance: '1.0 mi',
+    hours: 'Mon–Fri · 8:00 AM–5:00 PM',
+    description: 'Apply for CalFresh (SNAP), Medi-Cal, and CalWORKs.',
+    address: '2500 W. Burbank Blvd, Burbank, CA 91505',
+    phone: '(818) 238-5800',
+    website: 'dpss.lacounty.gov',
+  },
+  {
     id: 'rental-help',
     tag: 'Housing Support',
+    badgeTone: 'blue',
     name: 'Rental Housing Assistance Program',
     distance: '1.2 mi',
-    hours: 'Mon-Fri 8:00 AM - 4:30 PM',
+    hours: 'Mon–Fri · 8:00 AM–4:30 PM',
     description: 'Helps low-income families with rent assistance and housing stability.',
     address: '141 N. Glenoaks Blvd, Burbank, CA 91502',
     phone: '(818) 238-5340',
     website: 'www.burbankca.gov',
   },
   {
-    id: 'utility-help',
-    tag: 'Utility Assistance',
-    name: 'Community Energy Relief Desk',
-    distance: '2.6 mi',
-    hours: 'Tue-Thu 10:00 AM - 3:00 PM',
-    description: 'Screens households for utility bill assistance and payment plans.',
-    address: '1212 Olive Avenue, Burbank, CA 91506',
-    phone: '(818) 555-0147',
-    website: 'www.energyrelief.example',
+    id: 'burbank-wic',
+    tag: 'WIC',
+    badgeTone: 'pink',
+    name: 'Burbank WIC',
+    distance: '1.4 mi',
+    hours: 'Mon–Fri · 8:00 AM–5:00 PM',
+    description: 'Nutrition support for pregnant people and new moms.',
+    website: 'www.myfamily.wic.ca.gov',
   },
 ];
 

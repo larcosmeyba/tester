@@ -52,6 +52,13 @@ export const HiveColors = {
   blue: BrandColors.infoBlue,
   /** Pale blue-grey tint — auth result icon circle. */
   blueSoft: '#F1F7FB',
+  /** Warm orange banner tint — from Marcos's SwiftUI pantry design. */
+  orangeBanner: '#FFF5E0',
+  /** Warm orange card tint — from Marcos's SwiftUI generate-a-meal design. */
+  orangeSoft: '#FFF8EB',
+  /** Dark-green gradient pair — the Generate a Meal card in the SwiftUI design. */
+  greenGradientStart: '#216B38',
+  greenGradientEnd: '#0F4521',
   text: BrandColors.darkText,
   textSecondary: BrandColors.secondaryText,
   white: BrandColors.white,
@@ -71,14 +78,15 @@ export const HiveColors = {
 } as const;
 
 /**
- * Accent per meal category, echoing the reference app's colour-coded cards.
- * Kept here (exact Xcode values) so screens never hardcode hex.
+ * Accent per meal category — the exact `MealSlotType.accentColor` values from
+ * the Swift design reference (`21_-_MealPlanModels`), so the plan screen
+ * matches Marcos's design. Kept here (never hardcoded in screens).
  */
 export const MealAccents: Record<string, string> = {
-  breakfast: '#F0A81E',
-  lunch: '#3887FF',
-  dinner: '#1F8C38',
-  snack: '#8E5BD8',
+  breakfast: '#FFA600',
+  lunch: '#339933',
+  dinner: '#3359CC',
+  snack: '#9933B3',
 };
 
 const brandTheme = {

@@ -1,6 +1,6 @@
 import { SymbolView, type SymbolViewProps } from 'expo-symbols';
 import { LinearGradient } from 'expo-linear-gradient';
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import {
   Image,
   type ImageSourcePropType,
@@ -36,6 +36,8 @@ const iconMap = {
   next: { ios: 'chevron.right', fallback: '>' },
   plus: { ios: 'plus', fallback: '+' },
   check: { ios: 'checkmark', fallback: 'OK' },
+  link: { ios: 'link.circle.fill', fallback: '🔗' },
+  clipboard: { ios: 'doc.on.clipboard', fallback: '📋' },
   close: { ios: 'xmark', fallback: 'x' },
   card: { ios: 'creditcard.fill', fallback: '$' },
   doc: { ios: 'doc.text.fill', fallback: 'D' },
@@ -60,6 +62,23 @@ const iconMap = {
   moon: { ios: 'moon.fill', fallback: 'PM' },
   mic: { ios: 'mic.fill', fallback: 'Mic' },
   send: { ios: 'arrow.up.circle.fill', fallback: 'Up' },
+  bank: { ios: 'building.columns.fill', fallback: 'Bk' },
+warning: { ios: 'exclamationmark.circle.fill', fallback: '!' },
+carrot: { ios: 'carrot.fill', fallback: '🥕' },
+  sparkles: { ios: 'sparkles', fallback: '✦' },
+  leaf: { ios: 'leaf.fill', fallback: '🍃' },
+  clock: { ios: 'clock', fallback: '◷' },
+  ellipsis: { ios: 'ellipsis', fallback: '•••' },
+  share: { ios: 'square.and.arrow.up', fallback: '↗' },
+  handTap: { ios: 'hand.tap', fallback: '☝' },
+  users: { ios: 'person.2', fallback: '👥' },
+  moonStars: { ios: 'moon.stars.fill', fallback: 'PM' },
+  checkCircle: { ios: 'checkmark.circle.fill', fallback: 'OK' },
+  xCircle: { ios: 'xmark.circle.fill', fallback: '✕' },
+  grid: { ios: 'square.grid.2x2', fallback: '▦' },
+  dollar: { ios: 'dollarsign.circle.fill', fallback: '$' },
+  crown: { ios: 'crown.fill', fallback: '♛' },
+  info: { ios: 'info.circle', fallback: 'i' },
 } as const;
 
 export type HiveIconName = keyof typeof iconMap;
@@ -304,6 +323,7 @@ export function AppTextField({
   onChangeText,
   placeholder,
   secureTextEntry,
+  showSecureToggle,
   keyboardType,
   multiline,
   autoCapitalize,
@@ -315,7 +335,12 @@ export function AppTextField({
   label: string;
   value: string;
   onChangeText: (value: string) => void;
+  /** Show a "Show"/"Hide" text toggle inside password fields. (The HiveIcon
+      set has no eye glyph, so the toggle is text rather than an icon.) */
+  showSecureToggle?: boolean;
 }) {
+  const [revealed, setRevealed] = useState(false);
+  const effectivelySecure = secureTextEntry && !revealed;
   return (
     <View style={styles.fieldWrap}>
       <Text style={styles.fieldLabel}>{label}</Text>
@@ -325,7 +350,7 @@ export function AppTextField({
           onChangeText={onChangeText}
           placeholder={placeholder}
           placeholderTextColor={HiveColors.placeholder}
-          secureTextEntry={secureTextEntry}
+          secureTextEntry={effectivelySecure}
           keyboardType={keyboardType}
           autoCapitalize={autoCapitalize ?? (keyboardType === 'email-address' ? 'none' : undefined)}
           autoCorrect={autoCorrect ?? (keyboardType === 'email-address' ? false : undefined)}
@@ -335,7 +360,17 @@ export function AppTextField({
           multiline={multiline}
           style={[styles.input, multiline && styles.inputMultiline]}
         />
-        {!secureTextEntry && value.length > 0 ? <HiveIcon name="check" size={16} color={HiveColors.green} /> : null}
+        {secureTextEntry && showSecureToggle ? (
+          <Pressable
+            onPress={() => setRevealed((current) => !current)}
+            accessibilityRole="button"
+            accessibilityLabel={revealed ? 'Hide password' : 'Show password'}
+            style={styles.secureToggle}>
+            <Text style={styles.secureToggleLabel}>{revealed ? 'Hide' : 'Show'}</Text>
+          </Pressable>
+        ) : !effectivelySecure && value.length > 0 ? (
+          <HiveIcon name="check" size={16} color={HiveColors.green} />
+        ) : null}
       </View>
     </View>
   );
@@ -453,10 +488,13 @@ export function Chip({
   );
 }
 
-export function SectionHeader({ title, actionLabel = 'See all', onPress }: { title: string; actionLabel?: string; onPress?: PressHandler }) {
+export function SectionHeader({ title, subtitle, actionLabel = 'See all', onPress }: { title: string; subtitle?: string; actionLabel?: string; onPress?: PressHandler }) {
   return (
     <View style={styles.sectionHeader}>
-      <Text style={styles.sectionTitle}>{title}</Text>
+      <View style={styles.sectionHeaderText}>
+        <Text style={styles.sectionTitle}>{title}</Text>
+        {subtitle ? <Text style={styles.sectionSubtitle}>{subtitle}</Text> : null}
+      </View>
       {onPress ? (
         <Pressable onPress={onPress}>
           <Text style={styles.sectionAction}>{actionLabel}</Text>
@@ -491,6 +529,7 @@ export function InfoRow({
   title,
   subtitle,
   badge,
+  value,
   onPress,
   color = HiveColors.green,
 }: {
@@ -498,6 +537,8 @@ export function InfoRow({
   title: string;
   subtitle?: string;
   badge?: string;
+  /** Right-aligned secondary text before the chevron (e.g. a saved ZIP). */
+  value?: string;
   onPress?: PressHandler;
   color?: string;
 }) {
@@ -512,6 +553,7 @@ export function InfoRow({
         <Text style={styles.infoTitle}>{title}</Text>
         {subtitle ? <Text style={styles.infoSubtitle}>{subtitle}</Text> : null}
       </View>
+      {value ? <Text style={styles.infoValue}>{value}</Text> : null}
       {badge ? <Text style={styles.badge}>{badge}</Text> : <HiveIcon name="next" size={13} color={HiveColors.textSecondary} />}
     </Pressable>
   );
@@ -811,6 +853,15 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     paddingVertical: 10,
   },
+  secureToggle: {
+    paddingVertical: 6,
+    paddingLeft: 10,
+  },
+  secureToggleLabel: {
+    color: HiveColors.greenDark,
+    fontSize: 14,
+    fontWeight: '700',
+  },
   input: {
     flex: 1,
     color: HiveColors.text,
@@ -980,6 +1031,14 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     letterSpacing: 0,
   },
+  sectionHeaderText: {
+    flex: 1,
+  },
+  sectionSubtitle: {
+    color: HiveColors.textSecondary,
+    fontSize: 12,
+    marginTop: 2,
+  },
   sectionAction: {
     color: HiveColors.green,
     fontSize: 13,
@@ -1014,6 +1073,11 @@ const styles = StyleSheet.create({
     color: HiveColors.textSecondary,
     fontSize: 12,
     marginTop: 2,
+  },
+  infoValue: {
+    color: HiveColors.textSecondary,
+    fontSize: 15,
+    marginRight: 6,
   },
   statBadge: {
     flex: 1,

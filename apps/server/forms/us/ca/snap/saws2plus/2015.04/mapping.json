@@ -219,7 +219,7 @@
         },
         {
           "op": "truncate",
-          "length": 5
+          "max": 5
         }
       ],
       "strength": "required"
@@ -299,7 +299,7 @@
         },
         {
           "op": "truncate",
-          "length": 5
+          "max": 5
         }
       ]
     },

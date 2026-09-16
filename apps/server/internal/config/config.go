@@ -17,11 +17,32 @@ type Config struct {
 	RateLimitPerMinute int
 	Auth               AuthConfig
 	Penny              PennyConfig
+	// PublicBaseURL is the externally reachable base URL of this API
+	// (e.g. https://helpthehive-dev-api-....run.app), used to build magic
+	// verification links emailed to new users. Empty disables magic links;
+	// requestVerificationLink then fails with a clear message.
+	PublicBaseURL string
+	// AppleTeamID is the Apple Developer Team ID used to build the
+	// apple-app-site-association file for iOS universal links
+	// (applinks:<host> -> /auth/verified* opens the app). Empty disables
+	// the /.well-known/apple-app-site-association endpoint; set it when the
+	// production team ID is known.
+	AppleTeamID string
+	// AndroidSHA256Fingerprints is a comma-separated list of SHA-256
+	// certificate fingerprints for the Android app signing key, used to
+	// build /.well-known/assetlinks.json for Android app links. Empty
+	// disables the endpoint; set it once the release signing key exists.
+	AndroidSHA256Fingerprints string
 	// InternalJobSecret authenticates internal job endpoints
 	// (/internal/jobs/*), called by Cloud Scheduler with the secret in the
 	// X-Job-Secret header. Empty disables those endpoints; the server runs
 	// fine without it.
 	InternalJobSecret string
+	// ResourcesPlacesAPIKey is the Google Places API key behind
+	// GET /resources/nearby. Empty disables community resource lookup: the
+	// endpoint returns 503 and the app renders the lookup as honestly
+	// unavailable, exactly like the other optional integrations.
+	ResourcesPlacesAPIKey string
 }
 
 type AuthConfig struct {
@@ -67,7 +88,11 @@ func Load() (Config, error) {
 			ServiceToken:    strings.TrimSpace(os.Getenv("PENNY_SERVICE_TOKEN")),
 			ToolTokenSecret: strings.TrimSpace(os.Getenv("PENNY_TOOL_TOKEN_SECRET")),
 		},
-		InternalJobSecret: strings.TrimSpace(os.Getenv("INTERNAL_JOB_SECRET")),
+		InternalJobSecret:         strings.TrimSpace(os.Getenv("INTERNAL_JOB_SECRET")),
+		ResourcesPlacesAPIKey:     strings.TrimSpace(os.Getenv("RESOURCES_PLACES_API_KEY")),
+		PublicBaseURL:             strings.TrimSuffix(strings.TrimSpace(os.Getenv("APP_PUBLIC_URL")), "/"),
+		AppleTeamID:               strings.TrimSpace(os.Getenv("APPLE_TEAM_ID")),
+		AndroidSHA256Fingerprints: strings.TrimSpace(os.Getenv("ANDROID_SHA256_FINGERPRINTS")),
 	}
 
 	if cfg.DatabaseURL == "" {

@@ -119,6 +119,38 @@ export function parseBenefitsRenewalPush(data: unknown): BenefitsRenewalPushData
 }
 
 /**
+ * Drop-off reminder for the benefits group questionnaire (Audit Section 3).
+ *
+ * Scheduled locally by `scheduleQuestionnaireDropOffReminder`; the payload is
+ * { kind: 'benefits_questionnaire', applicationIds, state, resumeSection }.
+ * The screen re-fetches the applications rather than trusting the payload.
+ */
+export type QuestionnaireReminderPushData = {
+  kind: 'benefits_questionnaire';
+  applicationIds: string[];
+  state: string;
+  resumeSection: number;
+};
+
+export function parseQuestionnaireReminderPush(data: unknown): QuestionnaireReminderPushData | null {
+  if (typeof data !== 'object' || data === null) return null;
+  const record = data as Record<string, unknown>;
+  // The scheduler sends `kind`; accept the older `type` key as a fallback.
+  const kind = record.kind ?? record.type;
+  if (kind !== 'benefits_questionnaire') return null;
+  if (!Array.isArray(record.applicationIds) || !record.applicationIds.every((id) => typeof id === 'string')) {
+    return null;
+  }
+  if (typeof record.state !== 'string' || record.state === '') return null;
+  return {
+    kind: 'benefits_questionnaire',
+    applicationIds: record.applicationIds as string[],
+    state: record.state,
+    resumeSection: typeof record.resumeSection === 'number' ? record.resumeSection : 0,
+  };
+}
+
+/**
  * Fired when the user taps a notification. Register once at the root layout;
  * the handler deep-links into the renewal detail when the payload is a
  * renewal reminder and ignores everything else.

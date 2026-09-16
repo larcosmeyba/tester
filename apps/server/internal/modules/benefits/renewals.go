@@ -117,7 +117,7 @@ func (s *Service) UpdateRenewalPreferences(ctx context.Context, identity auth.Id
 	return s.users.UpdatePreferences(ctx, identity, db.PreferencesPatch{
 		BenefitsRenewalNotificationsEnabled: &alertsEnabled,
 		BenefitsRenewalDiscreetLockScreen:   &discreetLockScreen,
-	})
+	}, nil)
 }
 
 // ---------------------------------------------------------------------------

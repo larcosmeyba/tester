@@ -4,6 +4,10 @@ import { DEV_PREVIEW_AUTH_ENABLED } from '@/auth/dev-preview';
 
 import { useAuth } from '@/auth/auth-context';
 import { type Deal } from '@/data/mock-data';
+import type {
+  QuestionnaireAnswers,
+  VerificationStatus,
+} from '@helpthehive/api-contract';
 import {
   completeOnboarding as completeOnboardingRemote,
   checkHandleAvailability as checkHandleAvailabilityRemote,
@@ -14,8 +18,11 @@ import {
   updateProfile as updateProfileRemote,
   updatePreferences as updatePreferencesRemote,
   updateHandle as updateHandleRemote,
+  recordConsent as recordConsentRemote,
   type ViewerData,
 } from '@/features/profile/profile-repository';
+import { PRIVACY_VERSION, TERMS_VERSION } from '@/constants/legal';
+import { formatMemberSince } from '@/features/profile/account-helpers';
 import { refreshPushTokenIfPermitted } from '@/features/notifications/notification-service';
 import { clearPendingSignupProfile, loadPendingSignupProfile, savePendingSignupProfile } from './pending-signup-storage';
 import { loadSensitiveProfile, saveSensitiveProfile } from './sensitive-profile-storage';
@@ -48,6 +55,9 @@ export type AppPreferences = {
   preferredFinanceTopics: string[];
   preferredResources: string[];
   wantsGovAssistance: boolean;
+  selectedBenefitPrograms: string[];
+  locationPermissionStatus: 'unset' | 'granted' | 'denied';
+  emailMarketingOptIn: boolean;
   lastMealPlanDate?: string;
   notificationsEnabled: boolean;
   expiringPantryNotificationsEnabled: boolean;
@@ -60,6 +70,10 @@ export type AppRoute = 'welcome' | 'onboarding' | 'main';
 type PersistedState = {
   profileOwnerSubject?: string;
   pendingSignupProfile?: PendingSignupProfile;
+  /** Social signups skip the Sign Up screen: first login still needs onboarding + consent. */
+  isNewSocialAccount?: boolean;
+  /** Set once the signup legal consent has been recorded server-side. */
+  signupConsentRecorded?: boolean;
   hasCompletedOnboarding: boolean;
   hasSeenTour: boolean;
   selectedTab: number;
@@ -77,16 +91,32 @@ type AppStateContextValue = PersistedState & {
   displayName: string;
   formName: { firstName: string; lastName: string };
   shouldPromptNewMealPlan: boolean;
+  /**
+   * The real account creation date from the viewer, formatted for the
+   * Account screen's MEMBER SINCE stat ("SEP 2026"). Null until the viewer
+   * hydrates — the stat card hides entirely rather than showing a placeholder.
+   */
+  memberSinceLabel: string | null;
+  /** Saved questionnaire answers from the viewer (seeds onboarding resume). */
+  questionnaireAnswers: QuestionnaireAnswers | null;
+  /** Email-verification status from the viewer. */
+  verificationStatus: VerificationStatus | null;
+  /** Server-side onboarding step marker used to resume interrupted onboarding. */
+  onboardingCurrentStep: string | null;
   setSelectedTab: (tab: number) => void;
   hydrateViewer: () => Promise<void>;
   completeOnboarding: (preferences: AppPreferences, profileImageUri?: string) => Promise<void>;
   markTourSeen: () => void;
+  markSocialSignupComplete: () => void;
+  setTransientSignupPassword: (password?: string) => void;
+  consumeTransientSignupPassword: () => string | undefined;
   saveProfile: (profile: ProfileUpdate) => Promise<void>;
   checkHandleAvailability: (handle: string) => Promise<HandleAvailability>;
   saveHandle: (handle: string) => Promise<void>;
   savePreferences: (preferences: PreferencesUpdate) => Promise<void>;
   setLocalProfileImage: (profileImageUri?: string) => void;
   rememberPendingSignup: (profile: PendingSignupProfile) => void;
+  recordSignupConsent: (consent?: { emailMarketingOptIn: boolean }) => Promise<void>;
   updateGovernmentProfile: (profile: Partial<GovernmentProfile>) => void;
   setEbtConnected: (connected: boolean) => void;
   addToCart: (deal: Deal) => void;
@@ -100,6 +130,12 @@ export type PendingSignupProfile = {
   firstName: string;
   lastName: string;
   phone: string;
+  /** Set for email signups: routes the first login into onboarding. */
+  isNewAccount?: boolean;
+  /** Legal consent captured on the Sign Up screen (before auth exists). */
+  termsVersion?: string;
+  privacyVersion?: string;
+  emailMarketingOptIn?: boolean;
 };
 
 const defaultProfile: AppProfile = {
@@ -128,6 +164,9 @@ const defaultPreferences: AppPreferences = {
   preferredFinanceTopics: [],
   preferredResources: [],
   wantsGovAssistance: false,
+  selectedBenefitPrograms: [],
+  locationPermissionStatus: 'unset',
+  emailMarketingOptIn: false,
   notificationsEnabled: false,
   expiringPantryNotificationsEnabled: true,
   weeklyMealPlanNotificationsEnabled: true,
@@ -161,18 +200,41 @@ function profileFromViewer(profile: ViewerData['profile'], localImageUri?: strin
   };
 }
 
-function preferencesFromViewer(preferences: ViewerData['preferences']): AppPreferences {
+type ViewerPreferencesSource = {
+  preferences: ViewerData['preferences'];
+  consent?: { emailMarketingOptIn?: boolean | null } | null;
+};
+
+function toLocationPermissionStatus(value: string | null | undefined): 'unset' | 'granted' | 'denied' {
+  return value === 'granted' || value === 'denied' ? value : 'unset';
+}
+
+function preferencesFromViewer(viewer: ViewerPreferencesSource): AppPreferences {
+  const preferences = viewer.preferences;
   return {
     weeklyBudget: preferences.weeklyBudget,
     preferredFinanceTopics: preferences.preferredFinanceTopics,
     preferredResources: preferences.preferredResources,
     wantsGovAssistance: preferences.wantsGovAssistance,
+    selectedBenefitPrograms: preferences.selectedBenefitPrograms ?? [],
+    locationPermissionStatus: toLocationPermissionStatus(preferences.locationPermissionStatus),
+    // The email opt-in lives on the consent record, not on preferences.
+    emailMarketingOptIn: viewer.consent?.emailMarketingOptIn ?? false,
     lastMealPlanDate: preferences.lastMealPlanDate ?? undefined,
     notificationsEnabled: preferences.notificationsEnabled,
     expiringPantryNotificationsEnabled: preferences.expiringPantryNotificationsEnabled,
     weeklyMealPlanNotificationsEnabled: preferences.weeklyMealPlanNotificationsEnabled,
     resourceReminderNotificationsEnabled: preferences.resourceReminderNotificationsEnabled,
   };
+}
+
+const NEW_ACCOUNT_WINDOW_MS = 15 * 60 * 1000;
+
+function isRecentlyCreated(createdAt: string | undefined): boolean {
+  if (!createdAt) return false;
+  const created = new Date(createdAt).getTime();
+  if (Number.isNaN(created)) return false;
+  return Date.now() - created < NEW_ACCOUNT_WINDOW_MS;
 }
 
 function fallbackName(name: string | undefined) {
@@ -187,6 +249,17 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   const [isLocalReady, setIsLocalReady] = useState(false);
   const [profileSyncState, setProfileSyncState] = useState<'idle' | 'loading' | 'ready' | 'error'>('idle');
   const [profileSyncError, setProfileSyncError] = useState('');
+  const [questionnaireAnswers, setQuestionnaireAnswers] = useState<QuestionnaireAnswers | null>(null);
+  const [verificationStatus, setVerificationStatus] = useState<VerificationStatus | null>(null);
+  const [onboardingCurrentStep, setOnboardingCurrentStep] = useState<string | null>(null);
+  // The viewer's real account creation date (viewer.user.createdAt). Kept out
+  // of PersistedState: it is re-hydrated from the server on every login, so
+  // there is nothing to migrate and nothing stale to display.
+  const [memberSince, setMemberSince] = useState<string | undefined>(undefined);
+  // The signup password handed to the verify screen so a successful code
+  // check can sign the user in. In-memory only — never persisted, cleared
+  // the moment it is consumed (or on sign-out).
+  const transientSignupPassword = useRef<string | undefined>(undefined);
   const lastHydratedSubject = useRef<string | undefined>(undefined);
   const previousAuthenticatedSubject = useRef<string | undefined>(undefined);
 
@@ -259,10 +332,14 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     // including children — and they live on the server now, behind the
     // viewer's token, fetched by the benefits screens when needed. Anything
     // already written to this key by an older build is overwritten below.
+    // selectedTab is session UI state, not persisted: every cold start lands
+    // on the Home tab (the designed front door), never on whichever tab was
+    // open when the app was last backgrounded.
     const {
       pendingSignupProfile: _pendingSignupProfile,
       profile: _profile,
       governmentProfile: _governmentProfile,
+      selectedTab: _selectedTab,
       ...nonSensitiveState
     } = state;
     AsyncStorage.setItem(storageKey, JSON.stringify(nonSensitiveState)).catch(() => undefined);
@@ -278,6 +355,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     if (!subject) return;
     if (state.profileOwnerSubject && state.profileOwnerSubject !== subject) {
       void clearPendingSignupProfile().catch(() => undefined);
+      setMemberSince(undefined);
       setState((current) => ({
         ...current,
         profileOwnerSubject: undefined,
@@ -308,15 +386,48 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
           viewer = { ...viewer, profile: seeded };
         }
       }
-      if (pendingMatches) void clearPendingSignupProfile().catch(() => undefined);
+      if (pending && !pendingMatches) {
+        // A signup attempt for a different email: discard it so an existing
+        // account is never routed into the new-account onboarding.
+        void clearPendingSignupProfile().catch(() => undefined);
+      }
+      // A social sign-in that just created the account still needs onboarding
+      // and the legal consent gate, even though it skipped the Sign Up screen.
+      const newSocialAccount =
+        !pendingMatches &&
+        !viewer.onboardingState.hasCompletedOnboarding &&
+        isRecentlyCreated(viewer.user.createdAt);
+      // Record the email-signup legal consent now that auth exists: it was
+      // accepted on the Sign Up screen before the account existed. The server
+      // stamps the acceptance time; a failure retries on the next hydrate.
+      let consentRecorded = false;
+      if (pendingMatches && pending?.termsVersion && pending?.privacyVersion) {
+        try {
+          await recordConsentRemote({
+            termsVersion: pending.termsVersion,
+            privacyVersion: pending.privacyVersion,
+            emailMarketingOptIn: pending.emailMarketingOptIn ?? false,
+          });
+          consentRecorded = true;
+        } catch {
+          // Leave signupConsentRecorded unset; the next hydrate retries.
+        }
+      }
       setState((current) => ({
         ...current,
         profileOwnerSubject: subject,
-        pendingSignupProfile: pendingMatches ? undefined : current.pendingSignupProfile,
+        pendingSignupProfile: pendingMatches ? pending : undefined,
+        // Once set, the flag survives re-hydrates until onboarding completes.
+        isNewSocialAccount: newSocialAccount || current.isNewSocialAccount ? true : undefined,
+        signupConsentRecorded: consentRecorded ? true : current.signupConsentRecorded,
         hasCompletedOnboarding: viewer.onboardingState.hasCompletedOnboarding,
         profile: profileFromViewer(viewer.profile, current.profileOwnerSubject === subject ? current.profile.profileImageUri : undefined),
-        preferences: preferencesFromViewer(viewer.preferences),
+        preferences: preferencesFromViewer(viewer),
       }));
+      setQuestionnaireAnswers(viewer.questionnaireAnswers ?? null);
+      setVerificationStatus(viewer.verification ?? null);
+      setOnboardingCurrentStep(viewer.onboardingState.currentStep ?? null);
+      setMemberSince(viewer.user.createdAt ?? undefined);
       if (viewer.preferences.notificationsEnabled) {
         void refreshPushTokenIfPermitted();
       }
@@ -338,10 +449,17 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       const timer = setTimeout(() => {
         setProfileSyncState('idle');
         setProfileSyncError('');
+        setQuestionnaireAnswers(null);
+        setVerificationStatus(null);
+        setOnboardingCurrentStep(null);
+        setMemberSince(undefined);
+        transientSignupPassword.current = undefined;
         setState((current) => ({
           ...current,
           profileOwnerSubject: undefined,
           hasCompletedOnboarding: false,
+          isNewSocialAccount: undefined,
+          signupConsentRecorded: undefined,
           profile: defaultProfile,
           preferences: defaultPreferences,
           governmentProfile: defaultGovernmentProfile,
@@ -391,8 +509,51 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     const saved = await updatePreferencesRemote(preferences);
     setState((current) => ({
       ...current,
-      preferences: preferencesFromViewer(saved),
+      // updatePreferences accepts the email opt-in but does not return the
+      // consent record, so the requested value is kept locally.
+      preferences: preferencesFromViewer({
+        preferences: saved,
+        consent: { emailMarketingOptIn: preferences.emailMarketingOptIn ?? current.preferences.emailMarketingOptIn },
+      }),
     }));
+  }, []);
+
+  const recordSignupConsent = useCallback(async (consent?: { emailMarketingOptIn: boolean }) => {
+    // Consent is accepted before auth exists (Sign Up screen, or the
+    // onboarding consent gate for social signups), so it is recorded here on
+    // the first authenticated moment. The server stamps the acceptance time.
+    const pending = state.pendingSignupProfile;
+    const emailMarketingOptIn = consent?.emailMarketingOptIn ?? pending?.emailMarketingOptIn ?? false;
+    await recordConsentRemote({
+      termsVersion: pending?.termsVersion ?? TERMS_VERSION,
+      privacyVersion: pending?.privacyVersion ?? PRIVACY_VERSION,
+      emailMarketingOptIn,
+    });
+    setState((current) => ({
+      ...current,
+      signupConsentRecorded: true,
+      preferences: { ...current.preferences, emailMarketingOptIn },
+    }));
+  }, [state.pendingSignupProfile]);
+
+  const markSocialSignupComplete = useCallback(() => {
+    // The social signup's consent gate finished: the account is no longer a
+    // "new social account" for onboarding routing purposes.
+    setState((current) => ({
+      ...current,
+      isNewSocialAccount: undefined,
+      signupConsentRecorded: true,
+    }));
+  }, []);
+
+  const setTransientSignupPassword = useCallback((password?: string) => {
+    transientSignupPassword.current = password;
+  }, []);
+
+  const consumeTransientSignupPassword = useCallback(() => {
+    const password = transientSignupPassword.current;
+    transientSignupPassword.current = undefined;
+    return password;
   }, []);
 
   const completeOnboarding = useCallback(async (preferences: AppPreferences, profileImageUri?: string) => {
@@ -409,6 +570,9 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
         preferredFinanceTopics: preferences.preferredFinanceTopics,
         preferredResources: preferences.preferredResources,
         wantsGovAssistance: preferences.wantsGovAssistance,
+        selectedBenefitPrograms: preferences.selectedBenefitPrograms,
+        locationPermissionStatus: preferences.locationPermissionStatus,
+        emailMarketingOptIn: preferences.emailMarketingOptIn,
         lastMealPlanDate: preferences.lastMealPlanDate,
         notificationsEnabled: preferences.notificationsEnabled,
         expiringPantryNotificationsEnabled: preferences.expiringPantryNotificationsEnabled,
@@ -416,11 +580,15 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
         resourceReminderNotificationsEnabled: preferences.resourceReminderNotificationsEnabled,
       },
     });
+    void clearPendingSignupProfile().catch(() => undefined);
+    transientSignupPassword.current = undefined;
     setState((current) => ({
       ...current,
       hasCompletedOnboarding: viewer.onboardingState.hasCompletedOnboarding,
+      pendingSignupProfile: undefined,
+      isNewSocialAccount: undefined,
       profile: profileFromViewer(viewer.profile, profileImageUri ?? current.profile.profileImageUri),
-      preferences: preferencesFromViewer(viewer.preferences),
+      preferences: preferencesFromViewer(viewer),
     }));
   }, [state.profile]);
 
@@ -433,6 +601,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
 
   const isReady = isLocalReady && auth.isReady && (!auth.isAuthenticated || profileSyncState === 'ready' || profileSyncState === 'error');
   const displayName = `${state.profile.firstName} ${state.profile.lastName}`.trim();
+  const memberSinceLabel = formatMemberSince(memberSince);
   const formName = useMemo(() => ({
     firstName: state.governmentProfile.firstName.trim() || state.profile.firstName,
     lastName: state.governmentProfile.lastName.trim() || state.profile.lastName,
@@ -447,10 +616,17 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       displayName,
       formName,
       shouldPromptNewMealPlan,
+      memberSinceLabel,
+      questionnaireAnswers,
+      verificationStatus,
+      onboardingCurrentStep,
       setSelectedTab: (selectedTab) => patchState({ selectedTab }),
       hydrateViewer,
       completeOnboarding,
       markTourSeen: () => patchState({ hasSeenTour: true }),
+      markSocialSignupComplete,
+      setTransientSignupPassword,
+      consumeTransientSignupPassword,
       saveProfile,
       checkHandleAvailability: checkHandleAvailabilityRemote,
       saveHandle,
@@ -465,6 +641,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
         patchState({ pendingSignupProfile: profile });
         void savePendingSignupProfile(profile).catch(() => undefined);
       },
+      recordSignupConsent,
       updateGovernmentProfile: (profile) => {
         patchState({ governmentProfile: { ...state.governmentProfile, ...profile } });
       },
@@ -488,11 +665,18 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       profileSyncState,
       displayName,
       formName,
+      markSocialSignupComplete,
+      setTransientSignupPassword,
+      consumeTransientSignupPassword,
       saveHandle,
       savePreferences,
       saveProfile,
       shouldPromptNewMealPlan,
+      memberSinceLabel,
       state,
+      questionnaireAnswers,
+      verificationStatus,
+      onboardingCurrentStep,
     ]
   );
 

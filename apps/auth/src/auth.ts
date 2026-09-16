@@ -6,7 +6,6 @@ import { betterAuth } from "better-auth";
 import { jwt } from "better-auth/plugins/jwt";
 import { Pool } from "pg";
 
-import { generateAppleClientSecret } from "./apple.js";
 import { env } from "./env.js";
 import {
   DevelopmentEmailDispatcher,
@@ -21,40 +20,17 @@ export const pool = new Pool({ connectionString: env.databaseURL });
 const emailDispatcher = env.resendAPIKey && env.authEmailFrom
   ? new ResendEmailDispatcher(env.resendAPIKey, env.authEmailFrom)
   : new DevelopmentEmailDispatcher();
-const apple = env.apple;
-const google = env.google;
-
 export const auth = betterAuth({
   appName: "Help The Hive",
   database: pool,
-  socialProviders: {
-    ...(apple
-      ? {
-          apple: async () => ({
-            clientId: apple.clientId,
-            clientSecret: await generateAppleClientSecret(
-              apple.clientId,
-              apple.teamId,
-              apple.keyId,
-              apple.privateKey,
-            ),
-            appBundleIdentifier: apple.appBundleIdentifier,
-          }),
-        }
-      : {}),
-    ...(google
-      ? {
-          google: {
-            clientId: google.clientId,
-            clientSecret: google.clientSecret,
-            prompt: "select_account",
-          },
-        }
-      : {}),
-  },
   emailAndPassword: {
     enabled: true,
-    requireEmailVerification: true,
+    // The app's one-time verification codes (API requestVerificationCode /
+    // verifyCode) are the single verification of record — see the Sign Up /
+    // Login / Onboarding v2 spec. better-auth must not gate sign-in or send
+    // its own verification emails, or new users can never establish a
+    // session. (Marcos: confirm; auth service needs a redeploy.)
+    requireEmailVerification: false,
     resetPasswordTokenExpiresIn: 60 * 60,
     revokeSessionsOnPasswordReset: true,
     sendResetPassword: async ({ user, url }) => {
@@ -63,7 +39,10 @@ export const auth = betterAuth({
   },
   emailVerification: {
     expiresIn: 60 * 60,
-    sendOnSignUp: true,
+    // Disabled: the API's verification codes are the single verification
+    // flow. (Explicit changeEmail verification still uses
+    // sendVerificationEmail below.)
+    sendOnSignUp: false,
     sendOnSignIn: true,
     autoSignInAfterVerification: false,
     sendVerificationEmail: async ({ user, url }) => {
@@ -82,7 +61,6 @@ export const auth = betterAuth({
     },
   },
   trustedOrigins: [
-    "https://appleid.apple.com",
     "helpthehive://",
     "helpthehive://*",
     env.mobileAuthCallbackURL,

@@ -67,7 +67,7 @@ func run(logger *slog.Logger) error {
 	// dependencies it declared, so what a module can reach is visible in this
 	// list rather than hidden behind a shared service object.
 	store := db.NewStore(pool)
-	userService := users.NewService(store)
+	userService := users.NewService(store).WithPublicBaseURL(cfg.PublicBaseURL)
 	catalogService := catalog.NewService(store)
 	// The pantry resolves what a person types against the canonical catalogue,
 	// server-side, so what they actually keep at home can reach the planner.

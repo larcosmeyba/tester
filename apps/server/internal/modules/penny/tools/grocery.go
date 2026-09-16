@@ -168,7 +168,7 @@ func setWeeklyBudget(ctx context.Context, g *Gateway, identity auth.Identity, ar
 	// Stored as text because that is the column's type; formatted to cents so
 	// a model's 119.999 does not become the user's budget.
 	formatted := strconv.FormatFloat(amount, 'f', 2, 64)
-	preferences, err := g.services.Users.UpdatePreferences(ctx, identity, db.PreferencesPatch{WeeklyBudget: &formatted})
+	preferences, err := g.services.Users.UpdatePreferences(ctx, identity, db.PreferencesPatch{WeeklyBudget: &formatted}, nil)
 	if err != nil {
 		return nil, err
 	}

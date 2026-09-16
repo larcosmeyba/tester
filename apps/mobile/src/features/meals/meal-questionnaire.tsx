@@ -1,152 +1,260 @@
 /**
- * The meal-planning questionnaire wizard (product Doc 04).
+ * The AI meal-plan questionnaire wizard — Marcos's SwiftUI 7-step design
+ * (`22_-_MealPlanQuestionnaireView`), rebuilt in React Native.
  *
- * Walks the thirteen sections, then hands the collected `PlanRequest` to the
- * backend. On success it routes to the **main meal plan page** — the user is
- * never left inside the generator.
+ * Walks the seven steps, persists answers to AsyncStorage on every advance
+ * (and on close), then hands the mapped `PlanRequest` to the real backend
+ * generation. On success Penny's generating screen gives way to the plan
+ * review; confirming routes to the meal plan. The user is never left inside
+ * the generator.
+ *
+ * The free-tier gate (`AiLimitGate`) is shown only because the real
+ * `ai-usage-limits` mechanism exists — no paywall gate is invented here.
  */
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'expo-router';
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import { AppButton, AppHeader, ProgressBar, ScrollScreen, uiText } from '@/components/hive-ui';
-import { Spacing } from '@/constants/theme';
+import { AppButton, HiveIcon, ModalSheet, ProgressBar, Screen, uiText } from '@/components/hive-ui';
+import { HiveColors, Spacing } from '@/constants/theme';
 import { useAuth } from '@/auth/auth-context';
-import { MealPlanGenerating } from '@/features/meals/meal-plan-generating';
 import { useMealPlan } from '@/features/meals/meal-plan-context';
+import { usePantry } from '@/features/pantry/pantry-context';
+import { AiLimitGate } from '@/features/meals/ai-limit-gate';
 import {
-  AllergiesSection,
-  BudgetSection,
-  DietSection,
-  EquipmentSection,
-  HouseholdSection,
-  LeftoversSection,
-  MealsSection,
-  NutritionSection,
-  PantrySection,
-  PreferencesSection,
-  StyleSection,
-  TimeSection,
-  type SectionProps,
+  getAiUsage,
+  hasAiUsageRemaining,
+  recordAiUsage,
+  type AiUsage,
+} from '@/features/meals/ai-usage-limits';
+import {
+  DietsStep,
+  HealthStep,
+  HouseholdStep,
+  KitchenStep,
+  PantryStep,
+  PlanningStep,
+  StepHeader,
+  TasteStep,
+  type QuestionnaireSectionProps,
 } from '@/features/meals/questionnaire-sections';
-import { QuestionnaireReview } from '@/features/meals/questionnaire-review';
 import {
   QUESTIONNAIRE_STEPS,
-  canAdvance,
   type QuestionnaireStepId,
 } from '@/features/meals/questionnaire-steps';
+import {
+  DEFAULT_ANSWERS,
+  toPlanRequest,
+  type MealQuestionnaireAnswers,
+} from '@/features/meals/questionnaire-answers';
+import {
+  clearQuestionnaireAnswers,
+  loadQuestionnaireAnswers,
+  saveQuestionnaireAnswers,
+} from '@/features/meals/questionnaire-storage';
+import {
+  GeneratedPlanReview,
+  GeneratingScreen,
+  GenerationErrorScreen,
+} from '@/features/meals/meal-plan-generating';
+import type { PlanRequest } from '@/features/meals/meal-plan-model';
 
-const SECTION_COMPONENTS: Partial<Record<QuestionnaireStepId, (props: SectionProps) => React.ReactElement>> = {
-  household: HouseholdSection,
-  meals: MealsSection,
-  budget: BudgetSection,
-  pantry: PantrySection,
-  diet: DietSection,
-  allergies: AllergiesSection,
-  nutrition: NutritionSection,
-  preferences: PreferencesSection,
-  time: TimeSection,
-  equipment: EquipmentSection,
-  style: StyleSection,
-  leftovers: LeftoversSection,
+const STEP_COMPONENTS: Record<QuestionnaireStepId, (props: QuestionnaireSectionProps) => React.ReactElement> = {
+  household: HouseholdStep,
+  diets: DietsStep,
+  health: HealthStep,
+  taste: TasteStep,
+  kitchen: KitchenStep,
+  planning: PlanningStep,
+  pantry: PantryStep,
 };
+
+type Phase = 'steps' | 'working' | 'review';
 
 export function MealQuestionnaire() {
   const router = useRouter();
   const auth = useAuth();
-  const { request, updateRequest, generate, isGenerating, error, clearError } = useMealPlan();
+  const { generate, error, clearError } = useMealPlan();
+  const { activeItems } = usePantry();
+
+  const [answers, setAnswers] = useState<MealQuestionnaireAnswers>(DEFAULT_ANSWERS);
   const [stepIndex, setStepIndex] = useState(0);
+  const [phase, setPhase] = useState<Phase>('steps');
+  const [limitGate, setLimitGate] = useState<AiUsage | null>(null);
 
-  const step = QUESTIONNAIRE_STEPS[stepIndex]!;
-  const isReview = step.id === 'review';
-  const Section = SECTION_COMPONENTS[step.id];
-
-  const canContinue = useMemo(() => canAdvance(step.id, request), [step.id, request]);
-
-  const goTo = useCallback((id: QuestionnaireStepId) => {
-    const index = QUESTIONNAIRE_STEPS.findIndex((candidate) => candidate.id === id);
-    if (index >= 0) setStepIndex(index);
+  // Reload saved answers once, like the Swift view's UserDefaults init.
+  useEffect(() => {
+    let alive = true;
+    loadQuestionnaireAnswers().then((loaded) => {
+      if (alive) setAnswers(loaded);
+    });
+    return () => {
+      alive = false;
+    };
   }, []);
 
-  const back = useCallback(() => {
-    if (stepIndex === 0) {
-      router.back();
+  const update = useCallback((patch: Partial<MealQuestionnaireAnswers>) => {
+    setAnswers((current) => ({ ...current, ...patch }));
+  }, []);
+
+  const step = QUESTIONNAIRE_STEPS[stepIndex]!;
+  const isLastStep = stepIndex === QUESTIONNAIRE_STEPS.length - 1;
+  const Section = STEP_COMPONENTS[step.id];
+
+  function backToSteps() {
+    clearError();
+    setStepIndex(0);
+    setPhase('steps');
+  }
+
+  function close() {
+    // The Swift view saves on dismiss via its X button.
+    void saveQuestionnaireAnswers(answers);
+    router.back();
+  }
+
+  async function runGeneration() {
+    clearError();
+    // The gate fires AT the limit — checked before any AI work is requested.
+    if (!(await hasAiUsageRemaining('ai_plan'))) {
+      setLimitGate(await getAiUsage('ai_plan'));
       return;
     }
-    setStepIndex((current) => current - 1);
-  }, [stepIndex, router]);
-
-  async function submit() {
-    clearError();
+    const request: PlanRequest = toPlanRequest(
+      answers,
+      activeItems.map((item) => item.name),
+    );
+    setPhase('working');
     try {
-      await generate(auth.user?.id ?? 'anonymous');
-      // Straight to the plan — never leave the user inside the generator.
-      // `/meals/plan` is the real route; the meal tab renders the same screen.
-      router.replace('/meals/plan');
+      await generate(auth.user?.id ?? 'anonymous', request);
+      // The AI work succeeded — this is what consumes the allowance.
+      await recordAiUsage('ai_plan');
+      setPhase('review');
     } catch {
-      // The failure is held in context and rendered by MealPlanGenerating,
-      // which offers a retry. Nothing to do here.
-      return;
+      // The failure is held in context and rendered by GenerationErrorScreen,
+      // which offers a retry. Nothing else to do here.
     }
   }
 
-  if (isGenerating || (error && isReview)) {
+  async function advance() {
+    await saveQuestionnaireAnswers(answers);
+    if (!isLastStep) {
+      setStepIndex((current) => current + 1);
+      return;
+    }
+    await runGeneration();
+  }
+
+  async function confirmPlan() {
+    // Fresh answers next time; the generated plan lives in context.
+    await clearQuestionnaireAnswers();
+    // Swift flow: review → grocery choice (GroceryChoiceView).
+    router.replace('/meals/grocery-list');
+  }
+
+  if (phase === 'working') {
     return (
-      <MealPlanGenerating
-        error={error}
-        onRetry={() => void submit()}
-        onCancel={() => {
-          clearError();
-          goTo('household');
-        }}
-      />
+      <Screen>
+        {error ? (
+          <GenerationErrorScreen
+            error={error}
+            onRetry={() => void runGeneration()}
+            onCancel={backToSteps}
+          />
+        ) : (
+          <GeneratingScreen />
+        )}
+      </Screen>
+    );
+  }
+
+  if (phase === 'review') {
+    return (
+      <Screen>
+        <GeneratedPlanReview onConfirm={() => void confirmPlan()} onBack={backToSteps} />
+      </Screen>
     );
   }
 
   return (
-    <ScrollScreen keyboard>
-      <AppHeader title="Build your meal plan" onBack={back} />
-      <View style={styles.body}>
-        <ProgressBar current={stepIndex + 1} total={QUESTIONNAIRE_STEPS.length} />
-
-        <View style={styles.heading}>
-          <Text style={uiText.subtitle}>{step.title}</Text>
-          {step.subtitle ? <Text style={uiText.muted}>{step.subtitle}</Text> : null}
+    <Screen keyboard>
+      <View style={styles.container}>
+        <View style={styles.topBar}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Close questionnaire"
+            onPress={close}
+            style={styles.closeButton}>
+            <HiveIcon name="close" size={16} color={HiveColors.text} />
+          </Pressable>
+          <Text style={styles.navTitle}>Create Your Meal Plan</Text>
+          <View style={styles.closeButton} />
         </View>
 
-        {isReview ? (
-          <QuestionnaireReview request={request} onEdit={goTo} />
-        ) : Section ? (
-          <Section request={request} update={updateRequest} />
-        ) : null}
+        <View style={styles.progress}>
+          <ProgressBar current={stepIndex + 1} total={QUESTIONNAIRE_STEPS.length} />
+          <Text style={[uiText.small, styles.stepCount]}>
+            Step {stepIndex + 1} of {QUESTIONNAIRE_STEPS.length}
+          </Text>
+        </View>
 
-        <View style={styles.actions}>
-          {isReview ? (
-            <AppButton title="Let Penny plan my week" onPress={() => void submit()} />
-          ) : (
-            <>
+        <ScrollView
+          style={styles.scroll}
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled">
+          <StepHeader step={step} />
+          <Section answers={answers} update={update} />
+        </ScrollView>
+
+        <View style={styles.bottomBar}>
+          <View style={styles.bottomButtons}>
+            {stepIndex > 0 ? (
               <AppButton
-                title="Next"
-                disabled={!canContinue}
-                onPress={() => setStepIndex((current) => current + 1)}
+                title="Back"
+                variant="secondary"
+                onPress={() => setStepIndex((current) => current - 1)}
+                style={styles.backButton}
               />
-              {!step.required ? (
-                <AppButton
-                  title="Skip"
-                  variant="plain"
-                  onPress={() => setStepIndex((current) => current + 1)}
-                />
-              ) : null}
-            </>
-          )}
+            ) : null}
+            <AppButton
+              title={isLastStep ? 'Generate My Meal Plan 🐝' : 'Continue'}
+              onPress={() => void advance()}
+              style={styles.continueButton}
+            />
+          </View>
         </View>
       </View>
-    </ScrollScreen>
+
+      <ModalSheet visible={limitGate !== null} onClose={() => setLimitGate(null)}>
+        {limitGate ? <AiLimitGate usage={limitGate} onClose={() => setLimitGate(null)} /> : null}
+      </ModalSheet>
+    </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  body: { paddingHorizontal: Spacing.three, paddingTop: Spacing.three, gap: Spacing.three },
-  heading: { gap: Spacing.one },
-  actions: { gap: Spacing.two, marginTop: Spacing.four },
+  container: { flex: 1 },
+  topBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: Spacing.three,
+    paddingVertical: Spacing.two,
+  },
+  closeButton: { width: 32, height: 32, alignItems: 'center', justifyContent: 'center' },
+  navTitle: { flex: 1, textAlign: 'center', fontSize: 17, fontWeight: '600', color: HiveColors.text },
+  progress: { paddingHorizontal: 24, paddingTop: 8, gap: 8 },
+  stepCount: { textAlign: 'center' },
+  scroll: { flex: 1 },
+  scrollContent: { paddingHorizontal: 24, paddingTop: 20, paddingBottom: 40 },
+  bottomBar: {
+    borderTopWidth: 1,
+    borderTopColor: HiveColors.border,
+    backgroundColor: HiveColors.white,
+    paddingHorizontal: 24,
+    paddingTop: 8,
+    paddingBottom: 24,
+  },
+  bottomButtons: { flexDirection: 'row', gap: 12 },
+  backButton: { flex: 1 },
+  continueButton: { flex: 2 },
 });

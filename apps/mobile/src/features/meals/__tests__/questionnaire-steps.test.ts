@@ -1,106 +1,94 @@
 /**
- * Questionnaire flow.
+ * The Swift 7-step questionnaire.
  *
- * The two required sections gate progress; everything else is skippable. These
- * tests also pin the "you don't have to plan every meal" rule, which is easy to
- * break by assuming a full week of three meals a day.
+ * Pins the step order, the option lists (including exclusive options), and the
+ * question numbering — the Swift file labels both the budget and the shopping
+ * questions "15.", and the shopping question is renumbered here to "16.".
+ * Also pins the locked product rule: breakfast / lunch / dinner only, no
+ * snack option anywhere in this flow.
  */
 import {
+  ALLERGY_EXCLUSIVE_OPTION,
+  ALLERGY_OPTIONS,
+  BUDGET_OPTIONS,
+  CUISINE_EXCLUSIVE_OPTION,
+  DIET_EXCLUSIVE_OPTION,
+  DIET_OPTIONS,
+  EQUIPMENT_EXCLUSIVE_OPTION,
+  EQUIPMENT_OPTIONS,
+  GOAL_EXCLUSIVE_OPTION,
+  HEALTH_EXCLUSIVE_OPTIONS,
+  MAX_HOUSEHOLD_SIZE,
+  MEAL_TYPE_OPTIONS,
   QUESTIONNAIRE_STEPS,
-  canAdvance,
-  householdSplitError,
-  MAX_COOKING_STYLES,
-  PANTRY_STAPLES,
+  SHOPPING_OPTIONS,
 } from '@/features/meals/questionnaire-steps';
-import { createEmptyPlanRequest, selectedMealTypes, type PlanRequest } from '@/features/meals/meal-plan-model';
-
-const withMeals = (meals: Partial<PlanRequest['meals']>): PlanRequest => ({
-  ...createEmptyPlanRequest(),
-  meals: { ...createEmptyPlanRequest().meals, ...meals },
-});
 
 describe('questionnaire steps', () => {
-  it('covers the thirteen sections the spec defines, ending on review', () => {
-    expect(QUESTIONNAIRE_STEPS).toHaveLength(13);
-    expect(QUESTIONNAIRE_STEPS.at(-1)?.id).toBe('review');
+  it('has the seven Swift steps in order', () => {
+    expect(QUESTIONNAIRE_STEPS.map((step) => step.id)).toEqual([
+      'household',
+      'diets',
+      'health',
+      'taste',
+      'kitchen',
+      'planning',
+      'pantry',
+    ]);
   });
 
-  it('marks only household and meals as required', () => {
-    const required = QUESTIONNAIRE_STEPS.filter((step) => step.required).map((step) => step.id);
-    expect(required).toEqual(['household', 'meals']);
-  });
-});
-
-describe('canAdvance', () => {
-  it('blocks the meals step until at least one category is chosen', () => {
-    expect(canAdvance('meals', createEmptyPlanRequest())).toBe(false);
-  });
-
-  it('allows breakfast and dinner only', () => {
-    const request = withMeals({ breakfast: 5, dinner: 5 });
-    expect(canAdvance('meals', request)).toBe(true);
-    expect(selectedMealTypes(request.meals)).toEqual(['breakfast', 'dinner']);
-  });
-
-  it('allows lunch, dinner and snacks without breakfast', () => {
-    const request = withMeals({ lunch: 3, dinner: 5, snack: 2 });
-    expect(canAdvance('meals', request)).toBe(true);
-    expect(selectedMealTypes(request.meals)).toEqual(['lunch', 'dinner', 'snack']);
-  });
-
-  it('allows a single category', () => {
-    expect(canAdvance('meals', withMeals({ dinner: 5 }))).toBe(true);
-  });
-
-  it('requires a household of at least one', () => {
-    const request = createEmptyPlanRequest();
-    expect(canAdvance('household', request)).toBe(true);
-    expect(canAdvance('household', { ...request, household: { ...request.household, size: 0 } })).toBe(false);
-  });
-
-  it('never blocks an optional step', () => {
-    const empty = createEmptyPlanRequest();
-    for (const step of QUESTIONNAIRE_STEPS.filter((candidate) => !candidate.required)) {
-      expect(canAdvance(step.id, empty)).toBe(true);
+  it('gives every step a header icon, tint, title and subtitle', () => {
+    for (const step of QUESTIONNAIRE_STEPS) {
+      expect(step.icon).toBeTruthy();
+      expect(step.iconTint).toMatch(/^#[0-9A-Fa-f]{6}$/);
+      expect(step.title.length).toBeGreaterThan(0);
+      expect(step.subtitle.length).toBeGreaterThan(0);
     }
   });
-});
 
-describe('householdSplitError', () => {
-  it('passes when neither adults nor children were given', () => {
-    expect(householdSplitError(createEmptyPlanRequest())).toBeNull();
-  });
-
-  it('passes when the split adds up', () => {
-    const request = createEmptyPlanRequest();
-    request.household = { size: 4, adults: 2, children: 2, sizeIsPlus: false };
-    expect(householdSplitError(request)).toBeNull();
-  });
-
-  it('explains when the split does not add up', () => {
-    const request = createEmptyPlanRequest();
-    request.household = { size: 4, adults: 3, children: 3, sizeIsPlus: false };
-    expect(householdSplitError(request)).toMatch(/add up to 4/);
+  it('caps the household stepper at 10 with a "10+" label', () => {
+    expect(MAX_HOUSEHOLD_SIZE).toBe(10);
   });
 });
 
-describe('questionnaire defaults', () => {
-  it('starts with stovetop, oven and microwave checked, per the spec', () => {
-    expect(createEmptyPlanRequest().equipment).toEqual(['stovetop', 'oven', 'microwave']);
+describe('exclusive options', () => {
+  it('marks "None" exclusive for diets', () => {
+    expect(DIET_OPTIONS).toContain(DIET_EXCLUSIVE_OPTION);
   });
 
-  it('pre-checks no pantry staples — we never assume a household owns anything', () => {
-    expect(createEmptyPlanRequest().pantryItems).toEqual([]);
-    expect(PANTRY_STAPLES.length).toBeGreaterThan(0);
+  it('marks "None" exclusive for allergies', () => {
+    expect(ALLERGY_OPTIONS).toContain(ALLERGY_EXCLUSIVE_OPTION);
   });
 
-  it('starts with budget planning off', () => {
-    const { budget } = createEmptyPlanRequest();
-    expect(budget.amount).toBe(0);
-    expect(budget.enabled).toBe(false);
+  it('marks both health exclusives', () => {
+    expect(HEALTH_EXCLUSIVE_OPTIONS).toEqual(['None of These', 'Prefer Not to Say']);
   });
 
-  it('caps cooking styles at three', () => {
-    expect(MAX_COOKING_STYLES).toBe(3);
+  it('marks "No Specific Goal" exclusive for goals', () => {
+    expect(GOAL_EXCLUSIVE_OPTION).toBe('No Specific Goal');
+  });
+
+  it('marks "Surprise Me" exclusive for cuisines', () => {
+    expect(CUISINE_EXCLUSIVE_OPTION).toBe('Surprise Me');
+  });
+
+  it('marks "Microwave Only" exclusive for equipment', () => {
+    expect(EQUIPMENT_OPTIONS).toContain(EQUIPMENT_EXCLUSIVE_OPTION);
+  });
+});
+
+describe('product rules', () => {
+  it('offers breakfast, lunch and dinner only — never a snack slot', () => {
+    expect(MEAL_TYPE_OPTIONS).toEqual(['Breakfast', 'Lunch', 'Dinner']);
+    const everyOption = [
+      ...DIET_OPTIONS,
+      ...ALLERGY_OPTIONS,
+      ...EQUIPMENT_OPTIONS,
+      ...BUDGET_OPTIONS,
+      ...SHOPPING_OPTIONS,
+    ];
+    for (const option of everyOption) {
+      expect(option.toLowerCase()).not.toMatch(/snack/);
+    }
   });
 });

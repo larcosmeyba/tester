@@ -8,9 +8,11 @@
     "scheme": "helpthehive",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "icon": "./assets/expo.icon",
+      "icon": "./assets/images/icon.png",
       "bundleIdentifier": "com.helpthehive",
-      "usesAppleSignIn": true,
+      "associatedDomains": [
+        "applinks:helpthehive-dev-api-bybr7qopwa-uc.a.run.app"
+      ],
       "infoPlist": {
         "LSMinimumSystemVersion": "16.4"
       },
@@ -47,11 +49,12 @@
             ]
           }
         ]
-      }
+      },
+      "buildNumber": "1"
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#000000",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
@@ -59,9 +62,24 @@
       "predictiveBackGestureEnabled": false,
       "package": "com.helpthehive",
       "allowBackup": false,
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "https",
+              "host": "helpthehive-dev-api-bybr7qopwa-uc.a.run.app",
+              "pathPrefix": "/auth/verified"
+            }
+          ],
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
+      ],
       "permissions": [
         "android.permission.POST_NOTIFICATIONS"
-      ]
+      ],
+      "versionCode": 1
     },
     "web": {
       "output": "static",
@@ -95,9 +113,9 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#208AEF",
-          "image": "./assets/images/splash-icon.png",
-          "imageWidth": 76
+          "backgroundColor": "#000000",
+          "image": "./assets/images/hive/logo.png",
+          "imageWidth": 120
         }
       ]
     ],
