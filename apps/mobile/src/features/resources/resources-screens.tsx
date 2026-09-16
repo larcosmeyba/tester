@@ -39,7 +39,6 @@ import { HiveColors, Radii } from '@/constants/theme';
 import { GradientActionRow } from '@/components/hive-cards';
 import { allVideos, benefitPrograms, nearbyResources, type BenefitProgram, type ResourceItem, type VideoItem } from '@/data/mock-data';
 import { BenefitsRenewalBanner } from '@/features/benefits/benefits-renewal-banner';
-import { ResourcesApplicationsSection } from '@/features/resources/resources-applications';
 import { useAppState } from '@/state/app-state';
 import { StyleSheet } from 'react-native';
 import { Bullet, HorizontalScroller, sharedStyles } from '@/features/app/app-shared';
@@ -287,7 +286,6 @@ export function ResourcesScreen({ nav }: { nav: Navigation }) {
       </View>
 
       <ScrollView contentContainerStyle={styles.resourceContent} showsVerticalScrollIndicator={false}>
-        <Text style={styles.sectionTitle}>Government Assistance</Text>
         <View style={styles.sectionInset}>
           <GradientActionRow
             icon="doc"
@@ -301,14 +299,9 @@ export function ResourcesScreen({ nav }: { nav: Navigation }) {
         <View style={styles.pennyNote}>
           <Text style={styles.pennyNoteEmoji}>🐝</Text>
           <Text style={styles.pennyNoteText}>
-            We&apos;ll guide you through your application step by step. Before anything is printed or
-            sent, you&apos;ll have the chance to review every detail and make sure it&apos;s ready to go
-            to the right government office.
+            We&apos;ll guide you through your application step by step — you&apos;ll review
+            every detail before anything is sent.
           </Text>
-        </View>
-
-        <View style={styles.sectionInset}>
-          <ResourcesApplicationsSection nav={nav} />
         </View>
 
         <View style={styles.sectionInset}>
