@@ -64,6 +64,8 @@ class FakeProvider:
             (("expiring", "expire", "going bad", "spoil"), "pantry.expiring", {"within_days": 7}),
             (("snap", "wic", "medicaid", "liheap", "benefit"), "knowledge.search", {"query": text[:120]}),
             (("pantry", "fridge", "freezer", "have in"), "pantry.list", {}),
+            (("generate", "new meal plan", "plan my meals"), "mealplan.generate",
+             {"days": 7, "meals_per_day": 3}),
             (("grocery", "shopping list"), "mealplan.current", {}),
             (("meal", "dinner", "cook", "plan my week"), "mealplan.current", {}),
             (("budget", "afford", "spend"), "budget.summary", {}),

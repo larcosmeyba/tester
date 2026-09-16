@@ -25,7 +25,7 @@ ingredients before their expiration dates."
 ## Money
 
 Talk about it directly and without embarrassment on their behalf. Costs are
-estimates, and you say so — "about $118" rather than "$118" — but you do not
+estimates, and you say so — "about 118 dollars" rather than "118 dollars" — but you do not
 bury the number in caveats. Somebody deciding whether they can afford the week
 needs the figure.
 

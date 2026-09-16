@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from contextlib import asynccontextmanager
+
 import httpx
 import pytest
 import respx
@@ -28,6 +30,7 @@ def client(monkeypatch) -> TestClient:
 
     app = create_app()
 
+    @asynccontextmanager
     async def lifespan_override(app_):
         provider = FakeProvider()
         gateway = ToolGateway(BACKEND, "service-token", 5.0)
@@ -39,7 +42,11 @@ def client(monkeypatch) -> TestClient:
         await gateway.aclose()
 
     app.router.lifespan_context = lifespan_override
-    return TestClient(app)
+    # The context manager runs the lifespan. Without it the app has no
+    # settings, provider or graph, and every request fails. Newer Starlette
+    # versions do not run lifespan for a bare TestClient(app).
+    with TestClient(app) as test_client:
+        yield test_client
 
 
 def test_health_reports_no_database_access(client: TestClient):
