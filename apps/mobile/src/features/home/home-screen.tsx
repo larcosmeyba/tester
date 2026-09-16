@@ -163,7 +163,6 @@ export function HomeScreen({ nav }: { nav: Navigation }) {
                   <HiveIcon name="fork" size={24} color={HiveColors.white} />
                 </View>
                 <Text style={styles.cardTitle}>Budget your meal plan for{'\n'}the week</Text>
-                <View style={sharedStyles.flexOne} />
                 <HiveIcon name="next" size={14} color="rgba(255,255,255,0.65)" />
               </View>
             </LinearGradient>
@@ -513,18 +512,18 @@ function useHomeStyles() {
       },
       pillRow: {
       flexDirection: 'row',
-      flexWrap: 'wrap',
-      gap: s(8),
+      flexWrap: 'nowrap',
+      gap: s(6),
       },
       benefitPill: {
       backgroundColor: 'rgba(255,255,255,0.20)',
       borderRadius: s(14),
-      paddingHorizontal: s(12),
+      paddingHorizontal: s(10),
       paddingVertical: vs(6),
       },
       benefitPillText: {
       color: HiveColors.white,
-      fontSize: ms(13),
+      fontSize: ms(12),
       fontWeight: '700',
       },
       resourcesHeaderRow: {
