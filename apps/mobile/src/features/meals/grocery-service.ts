@@ -5,13 +5,15 @@
  * stores it, so the list a user shops from is the one the server computed, not
  * one the client assembled.
  */
+import { getGraphQLAuthToken } from '@/auth/auth-client';
+import { apiBaseUrl } from '@/constants/env';
 import { graphqlClient } from '@/graphql/client';
 import {
   AcceptMealPlanDocument,
   GroceryListDocument,
   SetGroceryItemCheckedDocument,
 } from '@/graphql/meal-operations';
-import { BackendIntegrationRequiredError } from '@/services/api-error';
+import { ApiError } from '@/services/api-error';
 import { toApiError } from '@/services/graphql-error';
 import { toWireShape } from '@/features/meals/graphql-wire';
 import { groceryListSchema, type GroceryList } from '@/features/meals/meal-plan-model';
@@ -35,6 +37,11 @@ export type GroceryService = {
   setItemChecked(planId: string, ingredientId: string, checked: boolean): Promise<boolean>;
   /** Builds the Instacart cart server-side and returns where to send the user. */
   prepareInstacartOrder(planId: string): Promise<InstacartHandoff>;
+  /**
+   * Affiliate deep-link fallback for when the handoff isn't connected yet.
+   * Returns the finished URL; the server owns the affiliate tag.
+   */
+  instacartFallbackUrl(planId: string): Promise<string>;
 };
 
 export const groceryService: GroceryService = {
@@ -72,11 +79,90 @@ export const groceryService: GroceryService = {
   },
 
   /**
-   * BACKEND INTEGRATION REQUIRED. The Instacart handoff needs the partner
-   * credentials, which live on the server and must never reach this app. There
-   * is no endpoint for it yet, so this reports the feature as pending rather
-   * than opening a cart that does not exist.
+   * Builds the Instacart cart server-side and returns where to send the user.
+   * The server holds the partner credentials and resolves the plan's grocery
+   * list from the plan id — this app only ever sends the id and opens the URL
+   * it gets back. When the server reports the integration as not connected
+   * yet (501/503), the screen renders the affiliate fallback card.
    */
-  prepareInstacartOrder: () =>
-    Promise.reject(new BackendIntegrationRequiredError('Instacart cart handoff')),
+  prepareInstacartOrder: async (planId) => {
+    const body = await instacartRequest<{ checkout_url: string; unmatched_ingredient_ids: string[] }>(
+      '/handoff',
+      { method: 'POST', body: JSON.stringify({ plan_id: planId }) },
+    );
+    if (!body.checkout_url) {
+      throw new ApiError('parse', 'The server did not return a checkout link.');
+    }
+    return {
+      checkoutUrl: body.checkout_url,
+      unmatchedIngredientIds: body.unmatched_ingredient_ids ?? [],
+    };
+  },
+
+  /**
+   * Affiliate deep-link fallback. The server owns the affiliate tag; the
+   * client only receives the finished URL and opens it.
+   */
+  instacartFallbackUrl: async (planId) => {
+    const body = await instacartRequest<{ url: string }>('/fallback-link', {
+      method: 'POST',
+      body: JSON.stringify({ plan_id: planId }),
+    });
+    if (!body.url) {
+      throw new ApiError('parse', 'The server did not return a link.');
+    }
+    return body.url;
+  },
 };
+
+const instacartUrl = (path: string) => `${apiBaseUrl}/api/instacart${path}`;
+
+async function instacartAuthHeaders(): Promise<Record<string, string>> {
+  const token = await getGraphQLAuthToken();
+  return { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` };
+}
+
+/** Maps a response onto the error kinds the UI already knows how to render. */
+function instacartErrorFor(status: number, body: string): ApiError {
+  let message = '';
+  try {
+    const parsed = JSON.parse(body) as { error?: string };
+    message = parsed.error ?? '';
+  } catch {
+    // Leave the message empty; the fallback below covers it.
+  }
+
+  switch (status) {
+    case 401:
+      return new ApiError('unauthorized', message || 'Session expired', { status });
+    case 404:
+      return new ApiError('not_found', message || 'Not found', { status });
+    case 429:
+      return new ApiError('rate_limited', message || 'Too many requests', { status });
+    case 501:
+    case 503:
+      // The server reports the integration as not connected yet. The screen
+      // treats this like the old pending state and offers the fallback card.
+      return new ApiError('not_implemented', message || "That feature isn't available yet.", { status });
+    default:
+      return new ApiError(status >= 500 ? 'server' : 'unknown', message || 'Instacart is unavailable', { status });
+  }
+}
+
+async function instacartRequest<T>(path: string, init: RequestInit = {}): Promise<T> {
+  let response: Response;
+  try {
+    response = await fetch(instacartUrl(path), {
+      ...init,
+      headers: { ...(await instacartAuthHeaders()), ...init.headers },
+    });
+  } catch (cause) {
+    throw new ApiError('network', 'Could not reach Help The Hive', { cause });
+  }
+
+  const body = await response.text();
+  if (!response.ok) {
+    throw instacartErrorFor(response.status, body);
+  }
+  return (body ? JSON.parse(body) : null) as T;
+}

@@ -43,6 +43,13 @@ type Config struct {
 	// endpoint returns 503 and the app renders the lookup as honestly
 	// unavailable, exactly like the other optional integrations.
 	ResourcesPlacesAPIKey string
+	// Kroger supplies the tier-1 retailer price feed. Empty credentials mean
+	// the feed is off and pricing serves the stored estimates, exactly as it
+	// does today.
+	Kroger KrogerConfig
+	// Instacart powers the grocery-list handoff. No key means the handoff
+	// reports itself unconfigured; the list and everything else work.
+	Instacart InstacartConfig
 }
 
 type AuthConfig struct {
@@ -71,6 +78,41 @@ type PennyConfig struct {
 
 func (p PennyConfig) Enabled() bool { return p.AgentURL != "" }
 
+// KrogerConfig configures the live retailer price feed.
+//
+// Kroger is off unless both KROGER_CLIENT_ID and KROGER_CLIENT_SECRET are
+// set, and Help The Hive prices from its stored estimates with it off. A
+// half-configured Kroger is a start-up failure rather than a feed that
+// silently prices against the wrong thing — the same rule the Penny agent
+// follows.
+//
+// KROGER_LOCATION_ID is optional: it pins the feed to one Kroger-family
+// store (a locationId from the Kroger locations API). Without it the feed
+// quotes against the national catalogue, which may not carry store prices,
+// so fewer ingredients get live rows.
+type KrogerConfig struct {
+	ClientID     string
+	ClientSecret string
+	LocationID   string
+}
+
+func (k KrogerConfig) Enabled() bool { return k.ClientID != "" && k.ClientSecret != "" }
+
+// InstacartConfig configures the grocery-list handoff.
+//
+// The handoff is off unless INSTACART_API_KEY is set. The base URL defaults
+// to Instacart's production Connect host; point it at the dev host while the
+// partner integration is being exercised. INSTACART_AFFILIATE_URL is the
+// deep link the app falls back to when the partner handoff is unavailable;
+// without it the fallback endpoint reports itself unconfigured.
+type InstacartConfig struct {
+	APIKey       string
+	BaseURL      string
+	AffiliateURL string
+}
+
+func (c InstacartConfig) Enabled() bool { return c.APIKey != "" }
+
 func Load() (Config, error) {
 	cfg := Config{
 		AppEnv:             getEnv("APP_ENV", "development"),
@@ -93,6 +135,16 @@ func Load() (Config, error) {
 		PublicBaseURL:             strings.TrimSuffix(strings.TrimSpace(os.Getenv("APP_PUBLIC_URL")), "/"),
 		AppleTeamID:               strings.TrimSpace(os.Getenv("APPLE_TEAM_ID")),
 		AndroidSHA256Fingerprints: strings.TrimSpace(os.Getenv("ANDROID_SHA256_FINGERPRINTS")),
+		Kroger: KrogerConfig{
+			ClientID:     strings.TrimSpace(os.Getenv("KROGER_CLIENT_ID")),
+			ClientSecret: strings.TrimSpace(os.Getenv("KROGER_CLIENT_SECRET")),
+			LocationID:   strings.TrimSpace(os.Getenv("KROGER_LOCATION_ID")),
+		},
+		Instacart: InstacartConfig{
+			APIKey:       strings.TrimSpace(os.Getenv("INSTACART_API_KEY")),
+			BaseURL:      getEnv("INSTACART_BASE_URL", "https://connect.instacart.com"),
+			AffiliateURL: strings.TrimSpace(os.Getenv("INSTACART_AFFILIATE_URL")),
+		},
 	}
 
 	if cfg.DatabaseURL == "" {
@@ -114,6 +166,9 @@ func Load() (Config, error) {
 		if len(cfg.Penny.ToolTokenSecret) < 32 {
 			return Config{}, fmt.Errorf("PENNY_TOOL_TOKEN_SECRET must be at least 32 characters when PENNY_AGENT_URL is set")
 		}
+	}
+	if (cfg.Kroger.ClientID != "") != (cfg.Kroger.ClientSecret != "") {
+		return Config{}, fmt.Errorf("KROGER_CLIENT_ID and KROGER_CLIENT_SECRET must be set together")
 	}
 
 	return cfg, nil
