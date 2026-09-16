@@ -59,8 +59,9 @@ export default function AppRoot({ initialPublicScreen }: { initialPublicScreen?:
   const app = useAppState();
   const auth = useAuth();
   const [stack, setStack] = useState<Route[]>([]);
-  // The brand splash video plays once on every cold start — new users and
-  // returning logins alike — before any navigation renders.
+  // The brand splash video is the welcome mat for logged-out users only: it
+  // plays once per cold start, then hands off to the Login/Signup screens.
+  // Logged-in users skip it entirely and go straight into the app.
   const [splashFinished, setSplashFinished] = useState(false);
   // Only new users see the questionnaire: routing comes from the viewer's
   // onboarding state, not local markers. Completed onboarding -> main app;
@@ -119,13 +120,15 @@ export default function AppRoot({ initialPublicScreen }: { initialPublicScreen?:
     return unsubscribe;
   }, [auth.isAuthenticated, app.hasCompletedOnboarding, nav]);
 
-  if (!splashFinished) {
+  // Logged-out (or still-resolving) sessions get the splash video first; once
+  // auth is known-authenticated we skip it and go straight into the app.
+  if (!splashFinished && !(auth.isReady && auth.isAuthenticated)) {
     return <SplashVideoScreen onDone={() => setSplashFinished(true)} />;
   }
 
   if (!app.isReady || !auth.isReady) {
-    // The video finished but the providers are still warming up (rare):
-    // hold on black rather than flashing any loader.
+    // The video finished (or was skipped) but the providers are still warming
+    // up (rare): hold on black rather than flashing any loader.
     return <View style={styles.splashHold} />;
   }
 
