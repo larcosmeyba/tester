@@ -6,6 +6,9 @@
  * opens whatever URL the backend hands back. When the backend reports the
  * integration as not connected yet, the screen offers the affiliate fallback
  * card instead.
+ * The primary call-to-action is Instacart's approved partner button
+ * (InstacartCtaButton): their "Shop ingredients" copy, carrot logo, and
+ * #003D29 / #FAF1E5 color scheme. Only that button wears their branding.
  *
  * No Instacart key, partner id, affiliate tag, or signing secret exists in
  * this bundle, and none should be added.
@@ -13,12 +16,12 @@
 import { useCallback, useState } from 'react';
 import { useRouter } from 'expo-router';
 import { Linking, StyleSheet, Text, View } from 'react-native';
-
 import { AppButton, AppHeader, Card, ScrollScreen, uiText } from '@/components/hive-ui';
 import { Spacing } from '@/constants/theme';
 import { PRICING_NOTICE } from '@/features/meals/pricing-notice';
 import { useMealPlan } from '@/features/meals/meal-plan-context';
 import { groceryService } from '@/features/meals/grocery-service';
+import { InstacartCtaButton } from '@/features/meals/instacart-cta-button';
 import { describeError } from '@/services/api-error';
 
 export function InstacartScreen() {
@@ -103,10 +106,9 @@ export function InstacartScreen() {
         ) : null}
 
         <View style={styles.actions}>
-          <AppButton
-            title="Send my list to Instacart"
-            disabled={!plan || itemCount === 0 || isPreparing}
+          <InstacartCtaButton
             onPress={() => void start()}
+            disabled={!plan || itemCount === 0 || isPreparing}
           />
           {isPreparing ? <Text style={uiText.small}>Preparing your cart…</Text> : null}
           <AppButton
