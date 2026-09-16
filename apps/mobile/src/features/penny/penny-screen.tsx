@@ -398,7 +398,7 @@ export function PennyScreen({ nav, context: propContext }: { nav: Navigation; co
                       pressed && sharedStyles.pressed,
                     ]}>
                     <View style={[styles.suggestionIcon, { backgroundColor: `${suggestion.tint}26` }]}>
-                      <HiveIcon name={suggestion.icon} size={15} color={suggestion.tint} />
+                      <HiveIcon name={suggestion.icon} size={22} color={suggestion.tint} />
                     </View>
                     <Text style={styles.suggestionText}>{suggestion.title}</Text>
                   </Pressable>
@@ -426,8 +426,6 @@ export function PennyScreen({ nav, context: propContext }: { nav: Navigation; co
             ref={inputRef}
             value={messageText}
             onChangeText={setMessageText}
-            placeholder="Ask Penny about benefits, meals, or resources…"
-            placeholderTextColor={HiveColors.placeholder}
             style={styles.pennyInput}
             returnKeyType="send"
             multiline
@@ -639,11 +637,11 @@ const styles = StyleSheet.create({
   suggestionCard: {
     flexBasis: '47%',
     flexGrow: 1,
-    minHeight: 96,
-    padding: 14,
+    minHeight: 128,
+    padding: 16,
     borderRadius: 16,
     borderWidth: 1,
-    gap: 10,
+    gap: 12,
   },
   suggestionGrid: {
     flexDirection: 'row',
@@ -653,13 +651,13 @@ const styles = StyleSheet.create({
     alignSelf: 'stretch',
   },
   suggestionIcon: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  suggestionText: { color: HiveColors.text, fontSize: 13, fontWeight: '700', lineHeight: 18 },
+  suggestionText: { color: HiveColors.text, fontSize: 16, fontWeight: '700', lineHeight: 22 },
   timestamp: {
     alignSelf: 'flex-end',
     fontSize: 10,
