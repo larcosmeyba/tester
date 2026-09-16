@@ -5,9 +5,8 @@
  * imports, or single-meal generations. Viewing, moving, and checking off
  * meals stay free and never route here.
  *
- * Visual pattern mirrors the Penny paywall sheet. The upgrade path is
- * intentionally a TODO: purchase is scaffolded only, and the Hive Plus
- * purchase flow lands with Section 9 (Settings → subscription info).
+ * Visual pattern mirrors the Penny paywall sheet. The upgrade path opens the
+ * Hive Plus paywall (SubscriptionSheet, via Settings → profile).
  */
 import { StyleSheet, Text, View } from 'react-native';
 
@@ -43,8 +42,7 @@ export function AiLimitGate({ usage, onClose }: { usage: AiUsage; onClose: () =>
       </Card>
       <AppButton
         title="Upgrade to Hive Plus"
-        // TODO(Section 9): route to the Hive Plus purchase flow (subscription info
-        // in Settings). Purchase is scaffolded only — do not invent a checkout.
+        // Opens the Hive Plus paywall (SubscriptionSheet, via Settings → profile).
         onPress={onClose}
         style={styles.fullWidth}
       />
