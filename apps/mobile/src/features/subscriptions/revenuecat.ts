@@ -11,16 +11,41 @@
  * - Entitlement identifier in the RevenueCat dashboard: `plus`.
  */
 import { Platform } from 'react-native';
-import Purchases, {
-  PURCHASES_ERROR_CODE,
-  type PurchasesPackage,
-} from 'react-native-purchases';
+import type { PurchasesPackage } from 'react-native-purchases';
 
 /** Entitlement identifier configured in the RevenueCat dashboard. */
 export const PLUS_ENTITLEMENT_ID = 'plus';
 
 const IOS_KEY = process.env.EXPO_PUBLIC_REVENUECAT_IOS_KEY;
 const ANDROID_KEY = process.env.EXPO_PUBLIC_REVENUECAT_ANDROID_KEY;
+
+type PurchasesModule = typeof import('react-native-purchases');
+
+let rcModule: PurchasesModule | null = null;
+let rcLoadFailed = false;
+/** The configured Purchases SDK instance; set by initRevenueCat on success. */
+let sdkInstance: PurchasesModule['default'] | null = null;
+
+/**
+ * Lazily loads react-native-purchases. Returns null when the native module
+ * isn't in this build (Expo Go) — callers fall back to preview mode instead
+ * of crashing at import time.
+ */
+function loadPurchases(): PurchasesModule | null {
+  if (rcModule) return rcModule;
+  if (rcLoadFailed) return null;
+  try {
+    rcModule = require('react-native-purchases') as PurchasesModule;
+    return rcModule;
+  } catch {
+    rcLoadFailed = true;
+    console.warn(
+      '[revenuecat] react-native-purchases native module not present in this build ' +
+        '(Expo Go?) — paywall runs in preview mode.'
+    );
+    return null;
+  }
+}
 
 let configured = false;
 
@@ -45,8 +70,11 @@ export function initRevenueCat(): boolean {
     );
     return false;
   }
+  const mod = loadPurchases();
+  if (!mod) return false;
   try {
-    Purchases.configure({ apiKey });
+    mod.default.configure({ apiKey });
+    sdkInstance = mod.default;
     configured = true;
     return true;
   } catch (error) {
@@ -109,9 +137,9 @@ export type PlusOffering = {
 
 /** Default offering's monthly + annual packages, or static data in preview mode. */
 export async function getPlusOffering(): Promise<PlusOffering> {
-  if (!configured) return { packages: STATIC_PACKAGES, live: false };
+  if (!configured || !sdkInstance) return { packages: STATIC_PACKAGES, live: false };
   try {
-    const offerings = await Purchases.getOfferings();
+    const offerings = await sdkInstance.getOfferings();
     const current = offerings.current;
     if (!current || current.availablePackages.length === 0) {
       return { packages: STATIC_PACKAGES, live: false };
@@ -130,9 +158,9 @@ export async function getPlusOffering(): Promise<PlusOffering> {
 
 /** True when the `plus` entitlement is active on the current customer. */
 export async function isPlusActive(): Promise<boolean> {
-  if (!configured) return false;
+  if (!configured || !sdkInstance) return false;
   try {
-    const info = await Purchases.getCustomerInfo();
+    const info = await sdkInstance.getCustomerInfo();
     return info.entitlements.active[PLUS_ENTITLEMENT_ID] != null;
   } catch (error) {
     console.warn('[revenuecat] getCustomerInfo failed:', error);
@@ -144,13 +172,14 @@ export type PurchaseOutcome = 'purchased' | 'cancelled' | 'unavailable' | 'error
 
 /** Buy the selected package. 'unavailable' = preview mode (no SDK keys yet). */
 export async function purchasePlus(pkg: PlusPackage): Promise<PurchaseOutcome> {
-  if (!configured || !pkg.rcPackage) return 'unavailable';
+  const mod = loadPurchases();
+  if (!configured || !sdkInstance || !pkg.rcPackage || !mod) return 'unavailable';
   try {
-    const { customerInfo } = await Purchases.purchasePackage(pkg.rcPackage);
+    const { customerInfo } = await sdkInstance.purchasePackage(pkg.rcPackage);
     return customerInfo.entitlements.active[PLUS_ENTITLEMENT_ID] != null ? 'purchased' : 'error';
   } catch (error) {
     const code = (error as { code?: unknown } | null)?.code;
-    if (code === PURCHASES_ERROR_CODE.PURCHASE_CANCELLED_ERROR) return 'cancelled';
+    if (code === mod.PURCHASES_ERROR_CODE.PURCHASE_CANCELLED_ERROR) return 'cancelled';
     console.warn('[revenuecat] purchasePackage failed:', error);
     return 'error';
   }
@@ -158,9 +187,9 @@ export async function purchasePlus(pkg: PlusPackage): Promise<PurchaseOutcome> {
 
 /** Restore previous purchases; returns whether Plus is now active. */
 export async function restorePlus(): Promise<boolean> {
-  if (!configured) return false;
+  if (!configured || !sdkInstance) return false;
   try {
-    const info = await Purchases.restorePurchases();
+    const info = await sdkInstance.restorePurchases();
     return info.entitlements.active[PLUS_ENTITLEMENT_ID] != null;
   } catch (error) {
     console.warn('[revenuecat] restorePurchases failed:', error);
