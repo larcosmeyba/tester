@@ -95,7 +95,6 @@ export function FloatingTabBar({
                   resizeMode="contain"
                 />
               )}
-              <Text style={[styles.tabLabel, selected && styles.tabLabelSelected]}>{tab.label}</Text>
             </Pressable>
           );
         })}
@@ -195,16 +194,6 @@ const styles = StyleSheet.create({
     ...Shadows.soft,
   },
   tabButton: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingVertical: 8 },
-  tabLabel: {
-    color: HiveColors.textSecondary,
-    fontSize: 10,
-    fontWeight: '600',
-    marginTop: 2,
-    textAlign: 'center',
-  },
-  tabLabelSelected: {
-    color: HiveColors.green,
-  },
   pennySelectedPill: {
     width: SELECTED_PILL.width,
     height: SELECTED_PILL.height,
