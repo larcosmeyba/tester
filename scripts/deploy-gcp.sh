@@ -85,7 +85,11 @@ elif [[ "$SERVICE_KIND" == "penny" ]]; then
       --project="$PROJECT_ID" --region="$REGION" \
       --format='value(status.url)' 2>/dev/null || true
   )"
-  SUBSTITUTIONS="$COMMON_SUBSTITUTIONS,_SERVICE=$PREFIX-penny"
+  # Penny's template uses neither Cloud SQL nor the instance-scaling
+  # knobs. Cloud Build rejects substitutions that are not matched in
+  # the template, so Penny builds its own list instead of
+  # COMMON_SUBSTITUTIONS.
+  SUBSTITUTIONS="_REGION=$REGION,_REPOSITORY=$REPOSITORY,_SERVICE=$PREFIX-penny"
   SUBSTITUTIONS="$SUBSTITUTIONS,_SERVICE_ACCOUNT=$PREFIX-penny-run@$PROJECT_ID.iam.gserviceaccount.com"
   SUBSTITUTIONS="$SUBSTITUTIONS,_BACKEND_URL=$BACKEND_URL"
   SUBSTITUTIONS="$SUBSTITUTIONS,_PENNY_PROVIDER=${PENNY_PROVIDER:-anthropic}"
