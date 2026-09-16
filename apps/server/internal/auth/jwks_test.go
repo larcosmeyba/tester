@@ -71,7 +71,7 @@ func TestVerifierValidatesEd25519JWTFromJWKS(t *testing.T) {
 	}
 }
 
-func TestVerifierRejectsUnverifiedEmail(t *testing.T) {
+func TestVerifierAllowsUnverifiedEmail(t *testing.T) {
 	publicKey, privateKey, err := ed25519.GenerateKey(rand.Reader)
 	if err != nil {
 		t.Fatalf("GenerateKey() error = %v", err)
@@ -101,8 +101,15 @@ func TestVerifierRejectsUnverifiedEmail(t *testing.T) {
 	verifier.now = func() time.Time { return now }
 	verifier.client = jwksClient(t, jwks)
 
-	if _, err := verifier.Verify(context.Background(), tokenString); err == nil || !strings.Contains(err.Error(), "verified email") {
-		t.Fatalf("Verify() error = %v, want verified email error", err)
+	identity, err := verifier.Verify(context.Background(), tokenString)
+	if err != nil {
+		t.Fatalf("Verify() error = %v, want unverified email accepted", err)
+	}
+	if identity.Subject != "better-auth-user-1" {
+		t.Fatalf("Subject = %q", identity.Subject)
+	}
+	if identity.EmailVerified {
+		t.Fatal("EmailVerified = true, want the unverified claim passed through")
 	}
 }
 
