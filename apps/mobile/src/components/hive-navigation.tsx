@@ -71,7 +71,7 @@ export function FloatingTabBar({
               accessibilityState={{ selected }}
               accessibilityLabel={tab.label}
               onPress={() => onSelect(index)}
-              style={[styles.tabButton, { paddingVertical: s(8) }]}>
+              style={[styles.tabButton, { paddingVertical: s(4) }]}>
               {selected && tab.drawsSelectedPill ? (
                 <View
                   style={[
@@ -80,7 +80,7 @@ export function FloatingTabBar({
                   ]}>
                   <Image
                     source={tab.selected}
-                    style={{ width: s(32), height: s(32) }}
+                    style={{ width: s(26), height: s(26) }}
                     resizeMode="contain"
                   />
                 </View>
@@ -95,7 +95,6 @@ export function FloatingTabBar({
                   resizeMode="contain"
                 />
               )}
-              <Text style={[styles.tabLabel, selected && styles.tabLabelSelected]}>{tab.label}</Text>
             </Pressable>
           );
         })}
@@ -162,7 +161,7 @@ export function FloatingPillRow({ children }: { children: React.ReactNode }) {
 }
 
 /** Height of the bar itself, excluding the safe-area inset beneath it. */
-export const FLOATING_TAB_BAR_HEIGHT = 84;
+export const FLOATING_TAB_BAR_HEIGHT = 68;
 
 /**
  * Total space the tab bar occupies, inset included. Anything pinned above the
@@ -194,17 +193,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 6,
     ...Shadows.soft,
   },
-  tabButton: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingVertical: 8 },
-  tabLabel: {
-    color: HiveColors.textSecondary,
-    fontSize: 10,
-    fontWeight: '600',
-    marginTop: 2,
-    textAlign: 'center',
-  },
-  tabLabelSelected: {
-    color: HiveColors.green,
-  },
+  tabButton: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingVertical: 4 },
   pennySelectedPill: {
     width: SELECTED_PILL.width,
     height: SELECTED_PILL.height,
