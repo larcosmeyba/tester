@@ -26,6 +26,7 @@ import { formatMemberSince } from '@/features/profile/account-helpers';
 import { refreshPushTokenIfPermitted } from '@/features/notifications/notification-service';
 import { clearPendingSignupProfile, loadPendingSignupProfile, savePendingSignupProfile } from './pending-signup-storage';
 import { loadSensitiveProfile, saveSensitiveProfile } from './sensitive-profile-storage';
+import { syncAnalyticsConsent } from '@/features/analytics/vexo-client';
 
 export type AppProfile = {
   handle?: string;
@@ -78,6 +79,13 @@ type PersistedState = {
   hasSeenTour: boolean;
   selectedTab: number;
   ebtConnected: boolean;
+  /**
+   * Vexo engagement-analytics consent. OFF by default; the user opts in from
+   * the Settings screen's Analytics toggle. Persisted in AsyncStorage (a plain
+   * boolean carries no PII). The Vexo SDK is only initialized when this is
+   * true — see syncAnalyticsConsent in features/analytics/vexo-client.ts.
+   */
+  analyticsConsentGranted: boolean;
   profile: AppProfile;
   preferences: AppPreferences;
   governmentProfile: GovernmentProfile;
@@ -119,6 +127,12 @@ type AppStateContextValue = PersistedState & {
   recordSignupConsent: (consent?: { emailMarketingOptIn: boolean }) => Promise<void>;
   updateGovernmentProfile: (profile: Partial<GovernmentProfile>) => void;
   setEbtConnected: (connected: boolean) => void;
+  /**
+   * Record the user's analytics consent choice: persists the flag and brings
+   * the Vexo SDK in line with it (initializes + enables on opt-in,
+   * disables + stops in-flight recording on opt-out).
+   */
+  setAnalyticsConsent: (granted: boolean) => Promise<void>;
   addToCart: (deal: Deal) => void;
   clearCart: () => void;
   isInCart: (dealId: string) => boolean;
@@ -178,6 +192,7 @@ const defaultState: PersistedState = {
   hasSeenTour: false,
   selectedTab: 0,
   ebtConnected: false,
+  analyticsConsentGranted: false,
   profile: defaultProfile,
   preferences: defaultPreferences,
   governmentProfile: defaultGovernmentProfile,
@@ -345,6 +360,17 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     AsyncStorage.setItem(storageKey, JSON.stringify(nonSensitiveState)).catch(() => undefined);
     void saveSensitiveProfile(state.profile).catch(() => undefined);
   }, [isLocalReady, state]);
+
+  // Cold start: bring the Vexo SDK in line with the stored analytics consent.
+  // Consent defaults to OFF, so a fresh install initializes nothing. Runs once
+  // local state is ready; later changes go through setAnalyticsConsent.
+  useEffect(() => {
+    if (!isLocalReady) {
+      return;
+    }
+    void syncAnalyticsConsent(state.analyticsConsentGranted).catch(() => undefined);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLocalReady]);
 
   const patchState = useCallback((patch: Partial<PersistedState>) => {
     setState((current) => ({ ...current, ...patch }));
@@ -646,6 +672,13 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
         patchState({ governmentProfile: { ...state.governmentProfile, ...profile } });
       },
       setEbtConnected: (ebtConnected) => patchState({ ebtConnected }),
+      setAnalyticsConsent: async (granted) => {
+        patchState({ analyticsConsentGranted: granted });
+        // The persisted flag is the consent record; this brings the SDK in
+        // line with the choice immediately (stops in-flight recording on
+        // opt-out). Never throws: the client no-ops in dev / without a key.
+        await syncAnalyticsConsent(granted);
+      },
       addToCart: (deal) => {
         if (state.cart.some((item) => item.id === deal.id)) {
           return;

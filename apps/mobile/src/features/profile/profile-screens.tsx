@@ -25,6 +25,8 @@ import {
 import { HomeZipSheet } from '@/features/profile/home-zip-sheet';
 import { SubscriptionSheet } from '@/features/profile/subscription-sheet';
 import { updateBenefitsRenewalPreferences } from '@/features/benefits/benefits-repository';
+import { isAnalyticsConfigured } from '@/features/analytics/vexo-client';
+import { SensitiveScreen } from '@/features/analytics/sensitive-screen';
 import { useAppState } from '@/state/app-state';
 import { sharedStyles } from '@/features/app/app-shared';
 import { type Navigation } from '@/features/app/navigation-types';
@@ -73,14 +75,14 @@ export function AccountScreen({ nav }: { nav: Navigation }) {
   return (
     <ScrollScreen>
       <AppHeader title="My Account" onBack={nav.back} right={<Pressable accessibilityRole="button" accessibilityLabel="Settings" onPress={() => nav.push('settings')} style={styles.iconButtonPlain}><HiveIcon name="gear" size={18} /></Pressable>} />
-      {/* Profile header — the avatar taps through to Edit Profile. */}
-      <View style={styles.accountHeader}>
+      {/* Profile header — the avatar taps through to Edit Profile. Masked out of session replays (name + email). */}
+      <SensitiveScreen style={styles.accountHeader}>
         <AvatarButton imageUri={app.profile.profileImageUri} onPress={() => nav.push('editProfile')} size={58} />
         <View style={sharedStyles.flexOne}>
           <Text style={styles.accountName}>{app.displayName}</Text>
           <Text style={sharedStyles.miniMuted}>{auth.user?.email ?? ''}</Text>
         </View>
-      </View>
+      </SensitiveScreen>
       {/*
         Stats row — real values only. MEMBER SINCE comes from the viewer's
         actual account creation date and hides until the viewer hydrates.
@@ -108,12 +110,15 @@ export function AccountScreen({ nav }: { nav: Navigation }) {
         as its location fallback when permission is denied. "Not set" until
         the user saves one.
       */}
-      <InfoRow
-        icon="map"
-        title="Home ZIP Code"
-        value={homeZip || 'Not set'}
-        onPress={() => setShowZipSheet(true)}
-      />
+      {/* The ZIP is personal data — masked out of session replays. */}
+      <SensitiveScreen>
+        <InfoRow
+          icon="map"
+          title="Home ZIP Code"
+          value={homeZip || 'Not set'}
+          onPress={() => setShowZipSheet(true)}
+        />
+      </SensitiveScreen>
       <AccountSection title="PRIVACY & LEGAL" />
       <InfoRow icon="shield" title="Privacy Policy" onPress={() => void Linking.openURL(PRIVACY_URL)} />
       <InfoRow icon="doc" title="Terms of Service" onPress={() => void Linking.openURL(TERMS_URL)} />
@@ -325,7 +330,8 @@ export function EditProfileScreen({ nav }: { nav: Navigation }) {
   return (
     <ScrollScreen keyboard>
       <AppHeader title="Edit Profile" onBack={nav.back} />
-      <View style={styles.editProfileBody}>
+      {/* Name, email, phone, ZIP: masked out of session replays. */}
+      <SensitiveScreen style={styles.editProfileBody}>
         {/* Profile photo — tap to choose from the photo library. */}
         <View style={styles.photoWrap}>
           <Pressable
@@ -390,7 +396,7 @@ export function EditProfileScreen({ nav }: { nav: Navigation }) {
         <Text style={sharedStyles.helperText}>Profile photos are stored on this device until cloud uploads are available.</Text>
         {saveError ? <Text style={sharedStyles.authError}>{saveError}</Text> : null}
         <AppButton title={isSaving ? 'Saving…' : 'Save Changes'} disabled={isSaving} onPress={() => void save()} />
-      </View>
+      </SensitiveScreen>
     </ScrollScreen>
   );
 }
@@ -452,7 +458,8 @@ export function ChangeEmailScreen({ nav }: { nav: Navigation }) {
   return (
     <ScrollScreen keyboard>
       <AppHeader title="Login Email" onBack={nav.back} />
-      <View style={sharedStyles.formScreen}>
+      {/* Current + new email: masked out of session replays. */}
+      <SensitiveScreen style={sharedStyles.formScreen}>
         <Text style={uiText.subtitle}>Change your login email</Text>
         <Text style={uiText.muted}>Current email: {auth.user?.email ?? ''}</Text>
         <AppTextField label="New email" value={newEmail} onChangeText={setNewEmail} placeholder="you@example.com" keyboardType="email-address" />
@@ -462,7 +469,7 @@ export function ChangeEmailScreen({ nav }: { nav: Navigation }) {
           disabled={!newEmail.includes('@') || newEmail.trim().toLowerCase() === auth.user?.email.toLowerCase() || isSubmitting}
           onPress={() => void submit()}
         />
-      </View>
+      </SensitiveScreen>
     </ScrollScreen>
   );
 }
@@ -548,6 +555,25 @@ export function SettingsScreen({ nav }: { nav: Navigation }) {
         icon="shield"
         title="Privacy Policy"
         onPress={() => void Linking.openURL(PRIVACY_URL)}
+      />
+      <AccountSection title="ANALYTICS" />
+      {/*
+        Vexo engagement analytics + session replay. OFF by default; the user
+        opts in here. Sensitive screens (benefits, onboarding, profile) are
+        always masked out of replays, and text inputs are masked by default.
+        The toggle renders disabled until a Vexo API key is provisioned for
+        the build (EXPO_PUBLIC_VEXO_API_KEY) — no toggle that writes nowhere.
+      */}
+      <SettingsToggleRow
+        title="Analytics"
+        subtitle={
+          isAnalyticsConfigured()
+            ? 'Anonymous usage analytics and session replays help improve the app. Sensitive screens are always masked. Turn off anytime.'
+            : 'Not available in this build yet'
+        }
+        value={app.analyticsConsentGranted && isAnalyticsConfigured()}
+        disabled={!isAnalyticsConfigured()}
+        onValueChange={(value) => void app.setAnalyticsConsent(value)}
       />
       <AccountSection title="SUBSCRIPTION" />
       {/*
@@ -687,11 +713,13 @@ function SettingsToggleRow({
   title,
   subtitle,
   value,
+  disabled = false,
   onValueChange,
 }: {
   title: string;
   subtitle?: string;
   value: boolean;
+  disabled?: boolean;
   onValueChange: (value: boolean) => void;
 }) {
   return (
@@ -702,6 +730,7 @@ function SettingsToggleRow({
       </View>
       <Switch
         value={value}
+        disabled={disabled}
         onValueChange={onValueChange}
         trackColor={{ false: HiveColors.border, true: HiveColors.green }}
         thumbColor={HiveColors.white}

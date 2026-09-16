@@ -20,6 +20,7 @@ import {
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { BottomTabInset, HiveColors, MaxContentWidth, Radii, Spacing } from '@/constants/theme';
+import { AnalyticsRecordingIndicator } from '@/features/analytics/recording-indicator';
 
 type PressHandler = () => void;
 
@@ -122,6 +123,8 @@ export function Screen({
       <Wrapper behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={[styles.screenWrapper, style]}>
         <View style={styles.maxWidth}>{children}</View>
       </Wrapper>
+      {/* Persistent while Vexo session replay is recording (null otherwise). */}
+      <AnalyticsRecordingIndicator />
     </SafeAreaView>
   );
 }
@@ -157,11 +160,19 @@ export function ScrollScreen({
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.screenWrapper}>
           {scroll}
         </KeyboardAvoidingView>
+        {/* Persistent while Vexo session replay is recording (null otherwise). */}
+        <AnalyticsRecordingIndicator />
       </SafeAreaView>
     );
   }
 
-  return <SafeAreaView style={styles.safeArea}>{scroll}</SafeAreaView>;
+  return (
+    <SafeAreaView style={styles.safeArea}>
+      {scroll}
+      {/* Persistent while Vexo session replay is recording (null otherwise). */}
+      <AnalyticsRecordingIndicator />
+    </SafeAreaView>
+  );
 }
 
 export function AppHeader({
