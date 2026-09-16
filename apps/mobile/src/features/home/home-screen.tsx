@@ -266,7 +266,7 @@ function HomeResourcesSection({ nav }: { nav: Navigation }) {
         <Pressable
           accessibilityRole="button"
           accessibilityLabel="See all resources"
-          onPress={() => nav.push('resources')}
+          onPress={() => nav.push('resourceSearch')}
           style={({ pressed }) => [styles.seeAllPill, pressed && sharedStyles.pressed]}>
           <Text style={styles.seeAllText}>See all</Text>
         </Pressable>

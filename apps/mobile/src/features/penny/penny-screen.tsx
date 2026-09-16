@@ -7,7 +7,7 @@
 // output guard); the client adds three pre-send checks it can do honestly:
 // the SSN block (never transmit a Social Security number), the scope
 // redirect (clearly out-of-scope questions get a graceful local reply), and
-// the paywall gate (10 free questions/day, with safety-critical application
+// the paywall gate (60 free turns/month on Hive Free, with safety-critical application
 // help always exempt). If the backend is unreachable, the chat says so
 // honestly — it never fakes a reply.
 
@@ -223,8 +223,8 @@ export function PennyScreen({ nav, context: propContext }: { nav: Navigation; co
       return;
     }
 
-    // Paywall gate: 10 free questions/day. Safety-critical help finishing an
-    // existing government application is never blocked.
+    // Paywall gate: 60 free turns/month on Hive Free. Safety-critical help
+    // finishing an existing government application is never blocked.
     if (!isApplicationSafetyMessage(trimmed, pennyContext) && !(await hasPennyMessagesRemaining())) {
       setShowPaywall(true);
       return;
@@ -472,13 +472,13 @@ export function PaywallContent({ onClose }: { onClose: () => void }) {
   return (
     <View style={styles.sheetStack}>
       <PennyImage source={pennySource} size={78} />
-      <Text style={uiText.subtitle}>You have used your free chats today</Text>
+      <Text style={uiText.subtitle}>You have used your free Penny chats this month</Text>
       <Text style={[uiText.muted, sharedStyles.centerText]}>
-        Your free chats renew tomorrow. Upgrade to Hive Plus for unlimited Penny conversations,
-        more AI meal plans, and an ad-free experience.
+        Your free chats renew on the 1st. Hive Plus gives you unlimited Penny conversations,
+        unlimited AI meal plans, and unlimited recipe imports.
       </Text>
       <Card style={sharedStyles.fullWidth}>
-        {['Unlimited Penny conversations', 'More AI meal plans every month', 'Ad-free experience', 'Priority resource matching'].map((benefit) => (
+        {['Unlimited Penny conversations', 'Unlimited AI meal plans', 'Unlimited recipe imports'].map((benefit) => (
           <View key={benefit} style={styles.benefitRow}>
             <HiveIcon name="check" size={14} color={HiveColors.green} />
             <Text style={sharedStyles.cardBody}>{benefit}</Text>
