@@ -29,9 +29,9 @@ export type FooterTabAsset = {
 };
 
 export const SELECTED_PILL = {
-  width: 56,
-  height: 36,
-  borderRadius: 18,
+  width: 46,
+  height: 30,
+  borderRadius: 15,
   backgroundColor: '#E9E9EC',
 } as const;
 
@@ -41,24 +41,24 @@ export const FOOTER_TABS: readonly FooterTabAsset[] = [
     label: 'Home',
     unselected: require('@/assets/images/footer/tab-home-unselected.png'),
     selected: require('@/assets/images/footer/tab-home-selected.png'),
-    unselectedSize: { width: 62, height: 36 },
-    selectedSize: { width: 56, height: 36 },
+    unselectedSize: { width: 50, height: 29 },
+    selectedSize: { width: 45, height: 29 },
   },
   {
     id: 'resources',
     label: 'Applications & Resources',
     unselected: require('@/assets/images/footer/tab-resources-unselected.png'),
     selected: require('@/assets/images/footer/tab-resources-selected.png'),
-    unselectedSize: { width: 62, height: 36 },
-    selectedSize: { width: 62, height: 36 },
+    unselectedSize: { width: 50, height: 29 },
+    selectedSize: { width: 50, height: 29 },
   },
   {
     id: 'penny',
     label: 'Penny',
     unselected: require('@/assets/images/footer/tab-penny-unselected.png'),
     selected: require('@/assets/images/footer/tab-penny-selected.png'),
-    unselectedSize: { width: 37, height: 37 },
-    selectedSize: { width: 37, height: 37 },
+    unselectedSize: { width: 30, height: 30 },
+    selectedSize: { width: 30, height: 30 },
     drawsSelectedPill: true,
   },
   {
@@ -66,15 +66,15 @@ export const FOOTER_TABS: readonly FooterTabAsset[] = [
     label: 'Meal Plan',
     unselected: require('@/assets/images/footer/tab-mealplan-unselected.png'),
     selected: require('@/assets/images/footer/tab-mealplan-selected.png'),
-    unselectedSize: { width: 62, height: 36 },
-    selectedSize: { width: 56, height: 36 },
+    unselectedSize: { width: 50, height: 29 },
+    selectedSize: { width: 45, height: 29 },
   },
   {
     id: 'profile',
     label: 'Profile',
     unselected: require('@/assets/images/footer/tab-profile-unselected.png'),
     selected: require('@/assets/images/footer/tab-profile-selected.png'),
-    unselectedSize: { width: 62, height: 32 },
-    selectedSize: { width: 62, height: 32 },
+    unselectedSize: { width: 50, height: 26 },
+    selectedSize: { width: 50, height: 26 },
   },
 ];
