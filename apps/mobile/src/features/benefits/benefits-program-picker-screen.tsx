@@ -25,6 +25,7 @@ import {
   startBenefitsApplication,
 } from './benefits-repository';
 import { programCatalog, type CatalogProgram } from './benefits-program-catalog';
+import { findState } from './benefits-flow-state';
 
 // TODO (Section 3 audit): confirm this is the exact Penny illustration from
 // Marcos's screenshots. penny-money.png is the closest shipped asset.
@@ -64,12 +65,16 @@ export function BenefitsProgramPickerScreen({ nav, state }: { nav: Navigation; s
       const existing = await fetchBenefitsApplications();
       const applicationIds: string[] = [];
       const missing: string[] = [];
+      // The API keys forms by two-letter code ("CA"); the picker carries the
+      // display name ("California"). Normalise both sides so returning users'
+      // drafts are actually reused instead of duplicated.
+      const stateCode = findState(state)?.code ?? state;
 
       for (const programId of selected) {
         const already = existing.find(
           (application) =>
             normaliseProgram(application.form.program) === programId &&
-            (application.form.state ?? '') === state &&
+            (findState(application.form.state)?.code ?? application.form.state ?? '') === stateCode &&
             application.status !== 'COMPLETED' &&
             application.status !== 'SUPERSEDED',
         );
@@ -107,7 +112,7 @@ export function BenefitsProgramPickerScreen({ nav, state }: { nav: Navigation; s
 
   return (
     <Screen>
-      <ScrollView contentContainerStyle={styles.body} showsVerticalScrollIndicator={false}>
+      <ScrollView style={styles.scroll} contentContainerStyle={styles.body} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
           <Image source={pennySource} style={styles.penny} resizeMode="contain" />
           <View style={styles.headerText}>
@@ -206,6 +211,7 @@ function ProgramCard({
 }
 
 const styles = StyleSheet.create({
+  scroll: { flex: 1 },
   body: { paddingHorizontal: Spacing.three, paddingTop: Spacing.three, paddingBottom: Spacing.two, gap: Spacing.two },
   header: { flexDirection: 'row', alignItems: 'center', gap: Spacing.two },
   penny: { width: 56, height: 56 },

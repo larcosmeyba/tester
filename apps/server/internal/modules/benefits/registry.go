@@ -198,10 +198,13 @@ func (r *Registry) ByKey(key string) (*Form, bool) {
 }
 
 // List returns the active forms, optionally narrowed by state and program.
+// The state filter accepts a two-letter code ("CA") or a full name
+// ("California"); names are normalised to codes before matching.
 func (r *Registry) List(state, program string) []*Form {
+	wantState := normalizeState(state)
 	var out []*Form
 	for _, form := range r.byID {
-		if state != "" && !strings.EqualFold(form.Mapping.Jurisdiction.State, state) {
+		if state != "" && !strings.EqualFold(form.Mapping.Jurisdiction.State, wantState) {
 			continue
 		}
 		if program != "" && !strings.EqualFold(form.Mapping.Program, program) {
