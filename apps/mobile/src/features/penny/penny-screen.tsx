@@ -71,6 +71,7 @@ type ChatMessage = {
 };
 
 const pennySource = require('@/assets/images/hive/penny.png');
+const pennyChatAvatarSource = require('@/assets/images/hive/penny-chat-avatar.png');
 
 type SuggestionAction =
   | { kind: 'tab'; tab: number }
@@ -309,7 +310,7 @@ export function PennyScreen({ nav, context: propContext }: { nav: Navigation; co
       {/* Header: Penny avatar with online dot, name, status. */}
       <View style={styles.header}>
         <View style={styles.headerAvatarWrap}>
-          <PennyImage source={pennySource} size={40} />
+          <PennyImage source={pennyChatAvatarSource} size={40} />
           <View style={styles.headerOnlineDot} />
         </View>
         <View>
