@@ -83,15 +83,26 @@ let clipboardModule: ClipboardLike | null | undefined;
  * Lazily resolves expo-clipboard. The dependency is declared in package.json,
  * but the screen still builds in checkouts where `pnpm install` has not run
  * yet — the "Paste from Clipboard" button simply hides until it is.
+ *
+ * The nested try/catch guards the native proxy: on builds where the JS
+ * package resolves but the native module is not linked (stale dev client,
+ * mismatched Expo Go), property access on the module proxy throws
+ * "Cannot find native module" — that must never crash the screen.
  */
 function getClipboard(): ClipboardLike | null {
   if (clipboardModule !== undefined) return clipboardModule;
+  clipboardModule = null;
   try {
-    const mod = require('expo-clipboard') as Partial<ClipboardLike>;
-    clipboardModule =
-      mod && typeof mod.getStringAsync === 'function' ? (mod as ClipboardLike) : null;
+    const mod = require('expo-clipboard') as Partial<ClipboardLike> | undefined;
+    try {
+      if (mod && typeof mod.getStringAsync === 'function') {
+        clipboardModule = mod as ClipboardLike;
+      }
+    } catch {
+      // Native module not linked in this build — clipboard stays unavailable.
+    }
   } catch {
-    clipboardModule = null;
+    // Package not installed — clipboard stays unavailable.
   }
   return clipboardModule;
 }

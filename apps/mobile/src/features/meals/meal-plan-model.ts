@@ -111,6 +111,8 @@ export interface PlanRequest {
   meals: MealCounts;
   days: number;
   budget: BudgetRequest;
+  /** User's ZIP code. When present, the plan is priced with live Kroger quotes from the nearest store. */
+  postalCode?: string | null;
   /** Canonical ingredient ids, not free text. */
   pantryItems: string[];
   dietaryRequirements: DietRequirement[];

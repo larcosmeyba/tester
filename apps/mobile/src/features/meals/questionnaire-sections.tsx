@@ -44,7 +44,6 @@ import {
   MEAL_TYPE_OPTIONS,
   MIN_HOUSEHOLD_SIZE,
   MIN_PLAN_DAYS,
-  SHOPPING_OPTIONS,
   SKILL_OPTIONS,
   SPICE_OPTIONS,
   type QuestionnaireStep,
@@ -378,7 +377,6 @@ const SPICE_ICONS: (HiveIconName | null)[] = [null, null, null];
 const COOK_TIME_ICONS: (HiveIconName | null)[] = ['clock', 'clock', 'clock', 'ellipsis'];
 const SKILL_ICONS: (HiveIconName | null)[] = [null, null, null];
 const BUDGET_ICONS: (HiveIconName | null)[] = ['dollar', 'dollar', 'dollar', 'dollar', 'ellipsis'];
-const SHOPPING_ICONS: (HiveIconName | null)[] = ['doc', 'cart', 'ellipsis'];
 
 export function TasteStep({ answers, update }: QuestionnaireSectionProps) {
   return (
@@ -480,15 +478,6 @@ export function PlanningStep({ answers, update }: QuestionnaireSectionProps) {
           selected={answers.budget}
           onSelect={(budget) => update({ budget })}
           icons={BUDGET_ICONS}
-        />
-      </View>
-      <View>
-        <QuestionLabel>16. How would you like to shop for your groceries?</QuestionLabel>
-        <MQSingleSelect
-          options={SHOPPING_OPTIONS}
-          selected={answers.shopping}
-          onSelect={(shopping) => update({ shopping })}
-          icons={SHOPPING_ICONS}
         />
       </View>
     </View>

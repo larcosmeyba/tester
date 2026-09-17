@@ -21,7 +21,7 @@ type readinessChecker interface {
 	Ping(ctx context.Context) error
 }
 
-func NewRouter(cfg config.Config, verifier *auth.Verifier, readiness readinessChecker, resolver *hthgraphql.Resolver, pennyDeps PennyDeps, jobs JobsDeps, logger *slog.Logger) http.Handler {
+func NewRouter(cfg config.Config, verifier *auth.Verifier, readiness readinessChecker, resolver *hthgraphql.Resolver, pennyDeps PennyDeps, jobs JobsDeps, instacartDeps InstacartDeps, logger *slog.Logger) http.Handler {
 	router := chi.NewRouter()
 	router.Use(middleware.RequestID)
 	router.Use(middleware.RealIP)
@@ -105,6 +105,18 @@ func NewRouter(cfg config.Config, verifier *auth.Verifier, readiness readinessCh
 	// secret (Cloud Scheduler), never with a user token. The sweep is
 	// idempotent, so scheduler retries are safe.
 	router.Post("/internal/jobs/benefits-renewal-sweep", BenefitsRenewalSweep(jobs, logger))
+
+	// Kroger tier-1 price feed refresh. Same internal-only authentication as
+	// the renewal sweep; idempotent, so scheduler retries are safe.
+	router.Post("/internal/jobs/kroger-price-sync", KrogerPriceSync(jobs, logger))
+
+	// Instacart grocery-list handoff. Behind the same user auth middleware as
+	// /graphql: the client sends a plan id and the server resolves the
+	// finished grocery list from it — no ingredient lists, prices, or
+	// credentials ever travel to the client.
+	if instacartDeps.Grocery != nil {
+		router.With(auth.Middleware(verifier)).Route("/api/instacart", InstacartRoutes(instacartDeps))
+	}
 
 	return router
 }

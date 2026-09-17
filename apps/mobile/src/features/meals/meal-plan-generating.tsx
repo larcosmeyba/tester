@@ -33,10 +33,8 @@ import { groupByDay, type MealPlan, type MealSlot, type SwapAction } from '@/fea
 import { mealTypeLabel } from '@/features/meals/meal-enums';
 import { useMealPlan } from '@/features/meals/meal-plan-context';
 
-// TODO(Marcos): replace with the Penny-cooking asset from the design ZIP --
-// penny-money.png is a stand-in so the layout matches the approved flow.
-const pennyCookingSource = require('@/assets/images/hive/penny-money.png');
-const pennySource = require('@/assets/images/hive/penny.png');
+const pennyCookingSource = require('@/assets/images/hive/penny-chef-full.png');
+const pennyChefHeadshotSource = require('@/assets/images/hive/penny-chef-headshot.png');
 
 /** The Swift sandbox's rotating progress lines, in order. */
 export const PROGRESS_MESSAGES = [
@@ -82,13 +80,14 @@ export function GeneratingScreen() {
 
   return (
     <View style={styles.generating} accessibilityLiveRegion="polite">
-      <View style={styles.pennyCircle}>
-        <PennyImage source={pennyCookingSource} size={70} />
+      <View style={styles.generatingMain}>
+        <View style={styles.pennyCircle}>
+          <PennyImage source={pennyCookingSource} size={70} />
+        </View>
+        <Text style={[uiText.subtitle, styles.centered]}>Let Penny cook{'\n'}for a moment.</Text>
+        <Text style={[uiText.body, styles.centered, styles.progressMessage]}>{PROGRESS_MESSAGES[index]}</Text>
+        <ProgressDots />
       </View>
-      <Text style={[uiText.subtitle, styles.centered]}>Let Penny cook{'\n'}for a moment.</Text>
-      <Text style={[uiText.body, styles.centered, styles.progressMessage]}>{PROGRESS_MESSAGES[index]}</Text>
-      <ProgressDots />
-      <View style={styles.spacer} />
       <Text style={[uiText.small, styles.centered, styles.faint]}>
         This usually takes about 10–20 seconds
       </Text>
@@ -229,7 +228,7 @@ export function GeneratedPlanReview({
 
       <ScrollView contentContainerStyle={styles.reviewScroll}>
         <View style={styles.reviewHeader}>
-          <PennyImage source={pennySource} size={32} />
+          <PennyImage source={pennyChefHeadshotSource} size={32} />
           <Text style={styles.reviewTitle}>Your meal plan is ready!</Text>
         </View>
         <Text style={[uiText.small, styles.reviewSubtitle]}>
@@ -285,7 +284,7 @@ export function GeneratedPlanReview({
 
       <View style={styles.reviewFooter}>
         <View style={styles.footerNote}>
-          <PennyImage source={pennySource} size={18} />
+          <PennyImage source={pennyChefHeadshotSource} size={18} />
           <Text style={[uiText.small, styles.footerNoteText]}>
             You can move meals to different days or slots anytime from your calendar.
           </Text>
@@ -321,10 +320,14 @@ const styles = StyleSheet.create({
   generating: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
-    gap: Spacing.three,
     paddingHorizontal: Spacing.four,
     paddingBottom: 48,
+  },
+  generatingMain: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing.three,
   },
   pennyCircle: {
     width: 110,
@@ -340,7 +343,6 @@ const styles = StyleSheet.create({
   dot: { width: 8, height: 8, borderRadius: 4 },
   dotActive: { width: 10, height: 10, borderRadius: 5, backgroundColor: HiveColors.green },
   dotInactive: { backgroundColor: HiveColors.greenLight },
-  spacer: { flex: 1 },
   actions: { alignSelf: 'stretch', gap: Spacing.two, marginTop: Spacing.two, paddingHorizontal: 16 },
   // Review
   review: { flex: 1 },

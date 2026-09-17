@@ -446,6 +446,8 @@ input PlanRequestInput {
   leftovers: LeftoversPreference!
   excludeRecipeIds: [ID!]!
   seed: Int
+  "User's ZIP code. When present and Kroger is configured, the plan is priced with live quotes from the nearest Kroger-family store."
+  postalCode: String
 }
 
 input MealSlotInput {

@@ -15,7 +15,8 @@
 import { useState } from 'react';
 import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import { AppButton, HiveIcon, Screen } from '@/components/hive-ui';
+import { AppButton, AppHeader, HiveIcon, Screen } from '@/components/hive-ui';
+import { useFloatingTabBarSpace } from '@/components/hive-navigation';
 import { HiveColors, Spacing } from '@/constants/theme';
 import { type Navigation } from '@/features/app/navigation-types';
 import {
@@ -25,6 +26,7 @@ import {
   startBenefitsApplication,
 } from './benefits-repository';
 import { programCatalog, type CatalogProgram } from './benefits-program-catalog';
+import { findState } from './benefits-flow-state';
 
 // TODO (Section 3 audit): confirm this is the exact Penny illustration from
 // Marcos's screenshots. penny-money.png is the closest shipped asset.
@@ -44,6 +46,7 @@ export function BenefitsProgramPickerScreen({ nav, state }: { nav: Navigation; s
   const [selected, setSelected] = useState<string[]>([]);
   const [starting, setStarting] = useState(false);
   const [error, setError] = useState('');
+  const tabBarSpace = useFloatingTabBarSpace();
 
   function toggle(programId: string) {
     setSelected((current) =>
@@ -64,12 +67,16 @@ export function BenefitsProgramPickerScreen({ nav, state }: { nav: Navigation; s
       const existing = await fetchBenefitsApplications();
       const applicationIds: string[] = [];
       const missing: string[] = [];
+      // The API keys forms by two-letter code ("CA"); the picker carries the
+      // display name ("California"). Normalise both sides so returning users'
+      // drafts are actually reused instead of duplicated.
+      const stateCode = findState(state)?.code ?? state;
 
       for (const programId of selected) {
         const already = existing.find(
           (application) =>
             normaliseProgram(application.form.program) === programId &&
-            (application.form.state ?? '') === state &&
+            (findState(application.form.state)?.code ?? application.form.state ?? '') === stateCode &&
             application.status !== 'COMPLETED' &&
             application.status !== 'SUPERSEDED',
         );
@@ -107,7 +114,8 @@ export function BenefitsProgramPickerScreen({ nav, state }: { nav: Navigation; s
 
   return (
     <Screen>
-      <ScrollView contentContainerStyle={styles.body} showsVerticalScrollIndicator={false}>
+      <AppHeader title="Apply for benefits" onBack={nav.back} />
+      <ScrollView style={styles.scroll} contentContainerStyle={styles.body} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
           <Image source={pennySource} style={styles.penny} resizeMode="contain" />
           <View style={styles.headerText}>
@@ -124,7 +132,7 @@ export function BenefitsProgramPickerScreen({ nav, state }: { nav: Navigation; s
         <View style={styles.privacyBanner}>
           <HiveIcon name="shield" size={18} color={HiveColors.green} />
           <Text style={styles.privacyText}>
-            Your information stays private and is never submitted without your review.
+            Your information stays private. We prepare your application documents — you review them and submit them yourself.
           </Text>
         </View>
 
@@ -159,7 +167,7 @@ export function BenefitsProgramPickerScreen({ nav, state }: { nav: Navigation; s
         {error !== '' ? <Text style={styles.error}>{error}</Text> : null}
       </ScrollView>
 
-      <View style={styles.ctaWrap}>
+      <View style={[styles.ctaWrap, { paddingBottom: tabBarSpace + Spacing.four }]}>
         <AppButton
           title={starting ? 'Starting…' : selected.length === 0 ? 'Select at least one program above' : 'Continue'}
           onPress={continueToQuestionnaire}
@@ -206,6 +214,7 @@ function ProgramCard({
 }
 
 const styles = StyleSheet.create({
+  scroll: { flex: 1 },
   body: { paddingHorizontal: Spacing.three, paddingTop: Spacing.three, paddingBottom: Spacing.two, gap: Spacing.two },
   header: { flexDirection: 'row', alignItems: 'center', gap: Spacing.two },
   penny: { width: 56, height: 56 },

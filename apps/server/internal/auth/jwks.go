@@ -93,11 +93,12 @@ func (v *Verifier) Verify(ctx context.Context, tokenString string) (Identity, er
 	if claims.Subject == "" {
 		return Identity{}, apperrors.Public("token subject is required")
 	}
-	if !claims.EmailVerified {
-		return Identity{}, apperrors.Public("verified email is required")
-	}
-
-	return Identity{Subject: claims.Subject, Email: claims.Email, EmailVerified: true}, nil
+	// The API gate does not require a verified email: the verification flow
+	// itself (requestVerificationLink, verification status checks, post-signup
+	// writes) must work before the email is verified. The app fences
+	// unverified users to the verify screen; the claim passes through so
+	// resolvers can check it when they need to.
+	return Identity{Subject: claims.Subject, Email: claims.Email, EmailVerified: claims.EmailVerified}, nil
 }
 
 func (v *Verifier) keyForToken(ctx context.Context, token *jwt.Token) (any, error) {

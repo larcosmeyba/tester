@@ -20,6 +20,14 @@ func (r *mutationResolver) GenerateMealPlan(ctx context.Context, input model.Pla
 	if err != nil {
 		return nil, err
 	}
+	// When the client did not send a postal code, fall back to the ZIP the
+	// user saved during onboarding. Live Kroger pricing needs it; without
+	// either, the plan keeps its stored estimates.
+	if input.PostalCode == nil || *input.PostalCode == "" {
+		if zip, err := r.Users.GetLocationFallback(ctx, identity); err == nil && zip != "" {
+			input.PostalCode = &zip
+		}
+	}
 	plan, err := r.MealPlans.Generate(ctx, identity, planRequestFromInput(input))
 	if err != nil {
 		return nil, mealError(err)

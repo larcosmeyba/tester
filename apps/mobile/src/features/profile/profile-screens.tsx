@@ -72,7 +72,7 @@ export function AccountScreen({ nav }: { nav: Navigation }) {
 
   return (
     <ScrollScreen>
-      <AppHeader title="My Account" onBack={nav.back} right={<Pressable accessibilityRole="button" accessibilityLabel="Settings" onPress={() => nav.push('settings')} style={styles.iconButtonPlain}><HiveIcon name="gear" size={18} /></Pressable>} />
+      <AppHeader title="My Account" right={<Pressable accessibilityRole="button" accessibilityLabel="Settings" onPress={() => nav.push('settings')} style={styles.iconButtonPlain}><HiveIcon name="gear" size={18} /></Pressable>} />
       {/* Profile header — the avatar taps through to Edit Profile. */}
       <View style={styles.accountHeader}>
         <AvatarButton imageUri={app.profile.profileImageUri} onPress={() => nav.push('editProfile')} size={58} />
@@ -119,7 +119,7 @@ export function AccountScreen({ nav }: { nav: Navigation }) {
       <InfoRow icon="doc" title="Terms of Service" onPress={() => void Linking.openURL(TERMS_URL)} />
       <AccountSection title="SUPPORT" />
       <InfoRow icon="chat" title="Send Feedback" onPress={() => nav.push('feedback')} />
-      <InfoRow icon="info" title="About Help The Hive" onPress={() => void Linking.openURL('https://helpthehive.com')} />
+      <InfoRow icon="info" title="About Help The Hive" onPress={() => void Linking.openURL('https://www.helpthehive.com/about')} />
       <View style={styles.accountFooter}>
         {app.profileSyncError ? (
           <>
@@ -758,7 +758,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 14,
     paddingHorizontal: 20,
-    paddingTop: 18,
+    paddingTop: 8,
     paddingBottom: 16,
   },
   accountName: {
