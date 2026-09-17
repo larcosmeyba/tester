@@ -6,6 +6,8 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+
+	domain "github.com/helpthehive/server/internal/domain/benefits"
 )
 
 // formsRoot is the checked-in forms tree.
@@ -198,4 +200,62 @@ func field(t *testing.T, mapping map[string]any, id string) map[string]any {
 	}
 	t.Fatalf("no field %q in the mapping", id)
 	return nil
+}
+
+// TestListServesFederalFormsForAnyState guards the fix for the federal VA
+// forms: a mapping with no state jurisdiction (country US only) applies in
+// every state, so Registry.List must return it however the caller filters by
+// state. A form that declares a different state must still be excluded.
+func TestListServesFederalFormsForAnyState(t *testing.T) {
+	newForm := func(id, state, program string) *Form {
+		return &Form{Mapping: &domain.FormMapping{
+			ID:           id,
+			Jurisdiction: domain.Jurisdiction{Country: "US", State: state},
+			Program:      program,
+			FormVersion:  "2026.01",
+			Revision:     1,
+			Status:       "active",
+		}}
+	}
+	r := NewRegistry()
+	for _, f := range []*Form{
+		newForm("us-federal-va-21-526ez", "", "va_disability"),
+		newForm("us-mo-snap-test", "MO", "SNAP"),
+	} {
+		if err := r.add(f); err != nil {
+			t.Fatalf("add form: %v", err)
+		}
+	}
+
+	seen := func(forms []*Form, id string) bool {
+		for _, f := range forms {
+			if f.Mapping.ID == id {
+				return true
+			}
+		}
+		return false
+	}
+
+	// The federal VA disability form is served for a state filter, by full
+	// state name, and for the matching program — in every state.
+	for _, state := range []string{"CA", "California", "TX", "MO"} {
+		listed := r.List(state, "")
+		if !seen(listed, "us-federal-va-21-526ez") {
+			t.Errorf("List(%q, \"\"): federal VA form missing", state)
+		}
+	}
+	if listed := r.List("CA", "va_disability"); !seen(listed, "us-federal-va-21-526ez") {
+		t.Error("List(CA, va_disability): federal VA form missing")
+	}
+	// A state form is still scoped to its own state.
+	if listed := r.List("CA", ""); seen(listed, "us-mo-snap-test") {
+		t.Error("List(CA, \"\"): Missouri SNAP form must not be served for California")
+	}
+	if listed := r.List("MO", ""); !seen(listed, "us-mo-snap-test") {
+		t.Error("List(MO, \"\"): Missouri SNAP form missing for its own state")
+	}
+	// Program filtering still applies to federal forms.
+	if listed := r.List("CA", "SNAP"); seen(listed, "us-federal-va-21-526ez") {
+		t.Error("List(CA, SNAP): VA disability form must not match a SNAP filter")
+	}
 }

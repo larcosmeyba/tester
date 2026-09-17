@@ -204,7 +204,9 @@ func (r *Registry) List(state, program string) []*Form {
 	wantState := normalizeState(state)
 	var out []*Form
 	for _, form := range r.byID {
-		if state != "" && !strings.EqualFold(form.Mapping.Jurisdiction.State, wantState) {
+		// Federal forms carry no state and apply in every state: only skip a
+		// form when it declares a state that differs from the requested one.
+		if state != "" && form.Mapping.Jurisdiction.State != "" && !strings.EqualFold(form.Mapping.Jurisdiction.State, wantState) {
 			continue
 		}
 		if program != "" && !strings.EqualFold(form.Mapping.Program, program) {
