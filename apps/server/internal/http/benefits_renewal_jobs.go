@@ -20,6 +20,9 @@ type JobsDeps struct {
 	Sender benefits.RenewalPushSender
 	// JobSecret is the INTERNAL_JOB_SECRET value. Empty disables the endpoint.
 	JobSecret string
+	// KrogerFeed refreshes the tier-1 retailer price rows. Nil means Kroger
+	// is not configured and the sync endpoint reports itself unavailable.
+	KrogerFeed KrogerPriceSyncer
 }
 
 // RenewalSweeper is the one service method the sweep endpoint needs.
