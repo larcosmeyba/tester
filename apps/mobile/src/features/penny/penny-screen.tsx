@@ -428,7 +428,7 @@ export function PennyScreen({ nav, context: propContext }: { nav: Navigation; co
 
         {/* Composer: Penny avatar, input, mic (empty) / send (typing). */}
         <View style={styles.pennyComposer}>
-          <PennyImage source={pennySource} size={26} />
+          <PennyImage source={pennyChatAvatarSource} size={26} />
           <TextInput
             ref={inputRef}
             value={messageText}
