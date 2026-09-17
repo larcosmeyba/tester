@@ -9,7 +9,7 @@
   "formTitle": "Application for Disability Compensation and Related Compensation Benefits",
   "formVersion": "2026.01",
   "revision": 1,
-  "status": "draft",
+  "status": "active",
   "vocabularyVersion": 1,
   "effectiveDate": "2026-01-01",
   "agencyUrl": "https://www.va.gov/find-forms/about-form-21-526ez/",
@@ -276,8 +276,8 @@
         "fieldPath": "address.residential.is_homeless"
       },
       "valueMap": {
-        "true": "/0",
-        "false": "/1"
+        "true": "0",
+        "false": "1"
       },
       "note": "Verified on the template: /0 is the YES box, /1 is the NO box for item 14A."
     },
@@ -421,6 +421,3384 @@
       "source": {},
       "fillPolicy": "never",
       "note": "Date beside the witness signature."
+    },
+    {
+      "id": "claim_type_fdc_program",
+      "target": {
+        "type": "checkbox",
+        "name": "F[0].Page_10[0].FULLY_DEVELOPED_CLAIM_FDC_PROGRAM[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Claim-track selection (FDC Program); no vocabulary equivalent - applicant completes."
+    },
+    {
+      "id": "claim_type_standard_process",
+      "target": {
+        "type": "checkbox",
+        "name": "F[0].Page_10[0].Standard_Claim_Process[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Claim-track selection (Standard Claim Process); no vocabulary equivalent - applicant completes."
+    },
+    {
+      "id": "claim_type_ides",
+      "target": {
+        "type": "checkbox",
+        "name": "F[0].Page_10[0].IDES[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "IDES referral claim track; no vocabulary equivalent - applicant completes."
+    },
+    {
+      "id": "claim_type_bdd_program",
+      "target": {
+        "type": "checkbox",
+        "name": "F[0].Page_10[0].BDD_Program_Claim[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "BDD (Benefits Delivery at Discharge) claim track; no vocabulary equivalent - applicant completes."
+    },
+    {
+      "id": "va_file_number",
+      "target": {
+        "type": "text",
+        "name": "F[0].Page_10[0].VA_File_Number[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "VA-issued claim/file number; no vocabulary equivalent - applicant completes."
+    },
+    {
+      "id": "veteran_ssn_mid",
+      "target": {
+        "type": "text",
+        "name": "F[0].Page_10[0].SocialSecurityNumber_SecondTwoNumbers[0]"
+      },
+      "source": {
+        "fieldPath": "applicant.ssn"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "note": "SSN box; NeverAsk - left blank, applicant fills by hand."
+    },
+    {
+      "id": "veteran_ssn_first",
+      "target": {
+        "type": "text",
+        "name": "F[0].Page_10[0].SocialSecurityNumber_FirstThreeNumbers[0]"
+      },
+      "source": {
+        "fieldPath": "applicant.ssn"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "note": "SSN box; NeverAsk - left blank, applicant fills by hand."
+    },
+    {
+      "id": "veteran_ssn_last",
+      "target": {
+        "type": "text",
+        "name": "F[0].Page_10[0].SocialSecurityNumber_LastFourNumbers[0]"
+      },
+      "source": {
+        "fieldPath": "applicant.ssn"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "note": "SSN box; NeverAsk - left blank, applicant fills by hand."
+    },
+    {
+      "id": "veteran_service_number",
+      "target": {
+        "type": "text",
+        "name": "F[0].Page_10[0].Veterans_Service_Number_If_Applicable[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Military service number; no vocabulary equivalent - applicant completes."
+    },
+    {
+      "id": "veteran_phone_area_code",
+      "target": {
+        "type": "text",
+        "name": "F[0].Page_10[0].Daytime_Phone_Number_Area_Code[0]"
+      },
+      "source": {
+        "fieldPath": "contact.phone_primary"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "note": "Veteran daytime phone, area-code split box."
+    },
+    {
+      "id": "veteran_phone_middle",
+      "target": {
+        "type": "text",
+        "name": "F[0].Page_10[0].Telephone_Middle_Three_Numbers[0]"
+      },
+      "source": {
+        "fieldPath": "contact.phone_primary"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "note": "Veteran daytime phone, middle-three split box."
+    },
+    {
+      "id": "veteran_phone_last",
+      "target": {
+        "type": "text",
+        "name": "F[0].Page_10[0].Telephone_Last_Four_Numbers[0]"
+      },
+      "source": {
+        "fieldPath": "contact.phone_primary"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "note": "Veteran daytime phone, last-four split box."
+    },
+    {
+      "id": "bdd_release_month",
+      "target": {
+        "type": "text",
+        "name": "F[0].Page_10[0].BDD_Claims_Only__Provide_The_Date_Or_Anticipated_Date_Of_Release_From_Active_Duty_Month[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "BDD-only anticipated release-from-active-duty date (month); service history, no vocabulary equivalent - applicant completes."
+    },
+    {
+      "id": "bdd_release_day",
+      "target": {
+        "type": "text",
+        "name": "F[0].Page_10[0].BDD_Claims_Only__Provide_The_Date_Or_Anticipated_Date_Of_Release_From_Active_Duty_Day[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "BDD-only anticipated release-from-active-duty date (day); service history, no vocabulary equivalent - applicant completes."
+    },
+    {
+      "id": "bdd_release_year",
+      "target": {
+        "type": "text",
+        "name": "F[0].Page_10[0].BDD_Claims_Only_Provide_The_Date_Or_Anticipated_Date_Of_Release_From_Active_Duty_Year[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "BDD-only anticipated release-from-active-duty date (year); service history, no vocabulary equivalent - applicant completes."
+    },
+    {
+      "id": "veteran_phone_international",
+      "target": {
+        "type": "text",
+        "name": "F[0].Page_10[0].International_Telephone_Number_If_Applicable[0]"
+      },
+      "source": {
+        "fieldPath": "contact.phone_secondary"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "note": "Veteran's own optional international number."
+    },
+    {
+      "id": "mailing_zip_plus4",
+      "target": {
+        "type": "text",
+        "name": "F[0].Page_10[0].CurrentMailingAddress_ZIPOrPostalCode_LastFourNumbers[0]"
+      },
+      "source": {
+        "fieldPath": "address.mailing.postal_code"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "note": "Mailing-address ZIP+4 last-four split box."
+    },
+    {
+      "id": "mailing_country",
+      "target": {
+        "type": "text",
+        "name": "F[0].Page_10[0].CurrentMailingAddress_Country[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Mailing-address country; vocabulary has no country path - applicant completes."
+    },
+    {
+      "id": "va_employee_checkbox",
+      "target": {
+        "type": "checkbox",
+        "name": "F[0].Page_10[0].Current_VA_Employee_Check_Box[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Current VA-employee attestation checkbox; no vocabulary equivalent - applicant completes."
+    },
+    {
+      "id": "new_address_temp_or_permanent",
+      "target": {
+        "type": "radio",
+        "name": "F[0].Page_10[0].RadioButtonList6[0]"
+      },
+      "note": "Address-change type (temporary vs permanent); no vocabulary equivalent - applicant completes.",
+      "source": {},
+      "fillPolicy": "never"
+    },
+    {
+      "id": "new_address_street",
+      "target": {
+        "type": "text",
+        "name": "F[0].Page_10[0].New_Address_NumberAndStreet[0]"
+      },
+      "source": {
+        "fieldPath": "address.mailing.street1"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "note": "New mailing address, street split."
+    },
+    {
+      "id": "new_address_city",
+      "target": {
+        "type": "text",
+        "name": "F[0].Page_10[0].New_Address_City[0]"
+      },
+      "source": {
+        "fieldPath": "address.mailing.city"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "note": "New mailing address, city."
+    },
+    {
+      "id": "new_address_apt",
+      "target": {
+        "type": "text",
+        "name": "F[0].Page_10[0].New_Address_ApartmentOrUnitNumber[0]"
+      },
+      "source": {
+        "fieldPath": "address.mailing.street2"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "note": "New mailing address, apt/unit split."
+    },
+    {
+      "id": "new_address_state",
+      "target": {
+        "type": "text",
+        "name": "F[0].Page_10[0].New_Address_StateOrProvince[0]"
+      },
+      "source": {
+        "fieldPath": "address.mailing.state"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "note": "New mailing address, state."
+    },
+    {
+      "id": "new_address_country",
+      "target": {
+        "type": "text",
+        "name": "F[0].Page_10[0].New_Address_Country[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "New-address country; vocabulary has no country path - applicant completes."
+    },
+    {
+      "id": "new_address_zip5",
+      "target": {
+        "type": "text",
+        "name": "F[0].Page_10[0].New_Address_ZIPOrPostalCode_FirstFiveNumbers[0]"
+      },
+      "source": {
+        "fieldPath": "address.mailing.postal_code"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "note": "New mailing address, ZIP first-five split box."
+    },
+    {
+      "id": "new_address_zip4",
+      "target": {
+        "type": "text",
+        "name": "F[0].Page_10[0].New_Address_ZIPOrPostalCode_LastFourNumbers[0]"
+      },
+      "source": {
+        "fieldPath": "address.mailing.postal_code"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "note": "New mailing address, ZIP last-four split box."
+    },
+    {
+      "id": "address_change_end_day",
+      "target": {
+        "type": "text",
+        "name": "F[0].Page_10[0].Ending_Date_Day[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Address-change ending date (day); no vocabulary equivalent - applicant completes."
+    },
+    {
+      "id": "address_change_end_year",
+      "target": {
+        "type": "text",
+        "name": "F[0].Page_10[0].Ending_Date_Year[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Address-change ending date (year); no vocabulary equivalent - applicant completes."
+    },
+    {
+      "id": "address_change_begin_month",
+      "target": {
+        "type": "text",
+        "name": "F[0].Page_10[0].Beginning_Date_Month[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Address-change beginning date (month); no vocabulary equivalent - applicant completes."
+    },
+    {
+      "id": "address_change_begin_day",
+      "target": {
+        "type": "text",
+        "name": "F[0].Page_10[0].Beginning_Date_Day[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Address-change beginning date (day); no vocabulary equivalent - applicant completes."
+    },
+    {
+      "id": "address_change_begin_year",
+      "target": {
+        "type": "text",
+        "name": "F[0].Page_10[0].Beginning_Date_Year[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Address-change beginning date (year); no vocabulary equivalent - applicant completes."
+    },
+    {
+      "id": "address_change_end_month",
+      "target": {
+        "type": "text",
+        "name": "F[0].Page_10[0].Ending_Date_Month[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Address-change ending date (month); no vocabulary equivalent - applicant completes."
+    },
+    {
+      "id": "ssn_header_first",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[9].SocialSecurityNumber_FirstThreeNumbers[0]"
+      },
+      "source": {
+        "fieldPath": "applicant.ssn"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "note": "SSN box; NeverAsk - left blank, applicant fills by hand."
+    },
+    {
+      "id": "ssn_header_last",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[9].SocialSecurityNumber_LastFourNumbers[0]"
+      },
+      "source": {
+        "fieldPath": "applicant.ssn"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "note": "SSN box; NeverAsk - left blank, applicant fills by hand."
+    },
+    {
+      "id": "ssn_header_mid",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[9].SocialSecurityNumber_SecondTwoNumbers[0]"
+      },
+      "source": {
+        "fieldPath": "applicant.ssn"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "note": "SSN box; NeverAsk - left blank, applicant fills by hand."
+    },
+    {
+      "id": "currently_homeless_header",
+      "target": {
+        "type": "radio",
+        "name": "F[0].#subform[9].RadioButtonList2[0]"
+      },
+      "note": "Item 14A: are you currently homeless (Yes=0, No=1).",
+      "source": {
+        "fieldPath": "address.residential.is_homeless"
+      },
+      "valueMap": {
+        "true": "0",
+        "false": "1"
+      }
+    },
+    {
+      "id": "living_situation_unsheltered",
+      "target": {
+        "type": "checkbox",
+        "name": "F[0].#subform[9].Not_Currently_In_A_Sheltered_Environment_e\\.g\\._Living_In_A_Car_Or_Tent[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Homeless living-situation detail (not currently in a sheltered environment); no vocabulary equivalent - applicant completes."
+    },
+    {
+      "id": "living_situation_staying_with_person",
+      "target": {
+        "type": "checkbox",
+        "name": "F[0].#subform[9].Staying_With_Another_Person[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Homeless living-situation detail (staying with another person); no vocabulary equivalent - applicant completes."
+    },
+    {
+      "id": "living_situation_fleeing_residence",
+      "target": {
+        "type": "checkbox",
+        "name": "F[0].#subform[9].Fleeing_Current_Residence[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Homeless living-situation detail (fleeing current residence); no vocabulary equivalent - applicant completes."
+    },
+    {
+      "id": "living_situation_other_text",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[9].OTHER_SPECIFY[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Free-text 'other' living-situation detail; no vocabulary equivalent - applicant completes."
+    },
+    {
+      "id": "living_situation_other_checkbox",
+      "target": {
+        "type": "checkbox",
+        "name": "F[0].#subform[9].OTHER_Specify[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Homeless living-situation 'other (specify)' checkbox; no vocabulary equivalent - applicant completes."
+    },
+    {
+      "id": "living_situation_housing_lost_30_days",
+      "target": {
+        "type": "checkbox",
+        "name": "F[0].#subform[9].Housing_Will_Be_Lost_In_30_Days[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "At-risk living-situation detail (housing will be lost in 30 days); no vocabulary equivalent - applicant completes."
+    },
+    {
+      "id": "at_risk_of_homelessness",
+      "target": {
+        "type": "radio",
+        "name": "F[0].#subform[9].RadioButtonList2[1]"
+      },
+      "note": "At-risk-of-homelessness Yes/No question; no vocabulary equivalent - applicant completes.",
+      "source": {},
+      "fillPolicy": "never"
+    },
+    {
+      "id": "living_situation_leaving_system_of_care",
+      "target": {
+        "type": "checkbox",
+        "name": "F[0].#subform[9].Leaving_Publicly_Funded_System_Of_Care_e\\.g\\._Homeless_Shelter[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "At-risk living-situation detail (leaving publicly funded system of care); no vocabulary equivalent - applicant completes."
+    },
+    {
+      "id": "living_situation_other_text_2",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[9].OTHER_SPECIFY[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Free-text 'other' at-risk living-situation detail; no vocabulary equivalent - applicant completes."
+    },
+    {
+      "id": "living_situation_other_checkbox_2",
+      "target": {
+        "type": "checkbox",
+        "name": "F[0].#subform[9].OTHER_Specify[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "At-risk living-situation 'other (specify)' checkbox; no vocabulary equivalent - applicant completes."
+    },
+    {
+      "id": "poc_phone_middle",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[9].Telephone_Middle_Three_Numbers[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Point-of-contact phone, middle-three split box (a third party, not the applicant); no vocabulary equivalent - applicant completes."
+    },
+    {
+      "id": "poc_phone_area",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[9].Telephone_Number_Area_Code[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Point-of-contact phone, area-code split box (a third party, not the applicant); no vocabulary equivalent - applicant completes."
+    },
+    {
+      "id": "point_of_contact_name",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[9].POINT_OF_CONTACT[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Point-of-contact name (someone VA can reach, not the applicant); no vocabulary equivalent - applicant completes."
+    },
+    {
+      "id": "poc_phone_last",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[9].Telephone_Last_Four_Numbers[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Point-of-contact phone, last-four split box (a third party, not the applicant); no vocabulary equivalent - applicant completes."
+    },
+    {
+      "id": "poc_phone_international",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[9].International_Telephone_Number_If_Applicable[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Point-of-contact international number (a third party, not the applicant); no vocabulary equivalent - applicant completes."
+    },
+    {
+      "id": "military_exposures_question",
+      "target": {
+        "type": "radio",
+        "name": "F[0].#subform[9].RadioButtonList2[2]"
+      },
+      "note": "Military public-health exposures Yes/No (Item 15A); no vocabulary equivalent - applicant completes.",
+      "source": {},
+      "fillPolicy": "never"
+    },
+    {
+      "id": "served_in_listed_locations",
+      "target": {
+        "type": "radio",
+        "name": "F[0].#subform[9].RadioButtonList2[3]"
+      },
+      "note": "Served-in-listed-locations Yes/No (Item 15C); service history, no vocabulary equivalent - applicant completes.",
+      "source": {},
+      "fillPolicy": "never"
+    },
+    {
+      "id": "gulf_service_from_month",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[9].From_Date_Month[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Service-location from-date month (Item 15C); service history, no vocabulary equivalent - applicant completes."
+    },
+    {
+      "id": "gulf_service_from_year",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[9].From_Date_Year[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Service-location from-date year (Item 15C); service history, no vocabulary equivalent - applicant completes."
+    },
+    {
+      "id": "gulf_service_to_month",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[9].To_Date_Month[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Service-location to-date month (Item 15C); service history, no vocabulary equivalent - applicant completes."
+    },
+    {
+      "id": "gulf_service_to_year",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[9].To_Date_Year[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Service-location to-date year (Item 15C); service history, no vocabulary equivalent - applicant completes."
+    },
+    {
+      "id": "other_service_locations",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[9].List_Other_Locations_Where_You_Served[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Other service locations (free text, Item 15C); no vocabulary equivalent - applicant completes."
+    },
+    {
+      "id": "served_other_locations",
+      "target": {
+        "type": "radio",
+        "name": "F[0].#subform[9].RadioButtonList2[4]"
+      },
+      "note": "Served-in-other-locations Yes/No (Item 15C); service history, no vocabulary equivalent - applicant completes.",
+      "source": {},
+      "fillPolicy": "never"
+    },
+    {
+      "id": "other_service_from_month",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[9].From_Date_Month[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Other-service-location from-date month; service history, no vocabulary equivalent - applicant completes."
+    },
+    {
+      "id": "other_service_from_year",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[9].From_Date_Year[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Other-service-location from-date year; service history, no vocabulary equivalent - applicant completes."
+    },
+    {
+      "id": "other_service_to_month",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[9].To_Date_Month[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Other-service-location to-date month; service history, no vocabulary equivalent - applicant completes."
+    },
+    {
+      "id": "other_service_to_year",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[9].To_Date_Year[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Other-service-location to-date year; service history, no vocabulary equivalent - applicant completes."
+    },
+    {
+      "id": "exposure_asbestos",
+      "target": {
+        "type": "checkbox",
+        "name": "F[0].#subform[9].ASBESTOS[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Toxin-exposure checkbox (asbestos, Item 15D); no vocabulary equivalent - applicant completes."
+    },
+    {
+      "id": "exposure_mustard_gas",
+      "target": {
+        "type": "checkbox",
+        "name": "F[0].#subform[9].Mustard_Gas[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Toxin-exposure checkbox (mustard gas, Item 15D); no vocabulary equivalent - applicant completes."
+    },
+    {
+      "id": "exposure_radiation",
+      "target": {
+        "type": "checkbox",
+        "name": "F[0].#subform[9].Radiation[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Toxin-exposure checkbox (radiation, Item 15D); no vocabulary equivalent - applicant completes."
+    },
+    {
+      "id": "exposure_shad",
+      "target": {
+        "type": "checkbox",
+        "name": "F[0].#subform[9].SHAD_Shipboard_Hazard_And_Defense[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Toxin-exposure checkbox (SHAD, Item 15D); no vocabulary equivalent - applicant completes."
+    },
+    {
+      "id": "exposure_mos_toxin",
+      "target": {
+        "type": "checkbox",
+        "name": "F[0].#subform[9].Military_Occupational_Specialty_MOS_Related_Toxin[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Toxin-exposure checkbox (MOS-related toxin, Item 15D); no vocabulary equivalent - applicant completes."
+    },
+    {
+      "id": "exposure_camp_lejeune_water",
+      "target": {
+        "type": "checkbox",
+        "name": "F[0].#subform[9].Contaminated_Water_At_Camp_Lejeune[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Toxin-exposure checkbox (contaminated water at Camp Lejeune, Item 15D); no vocabulary equivalent - applicant completes."
+    },
+    {
+      "id": "exposure_other_text",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[9].Other_Specify[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Free-text 'other' toxin exposure (Item 15D); no vocabulary equivalent - applicant completes."
+    },
+    {
+      "id": "exposure_other_checkbox",
+      "target": {
+        "type": "checkbox",
+        "name": "F[0].#subform[9].OTHER_Specify[2]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Toxin-exposure 'other (specify)' checkbox (Item 15D); no vocabulary equivalent - applicant completes."
+    },
+    {
+      "id": "exposure_from_month",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[9].From_Date_Month[2]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Potential-exposure from-date month (Item 15E); no vocabulary equivalent - applicant completes."
+    },
+    {
+      "id": "exposure_from_year",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[9].From_Date_Year[2]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Potential-exposure from-date year (Item 15E); no vocabulary equivalent - applicant completes."
+    },
+    {
+      "id": "exposure_to_month",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[9].To_Date_Month[2]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Potential-exposure to-date month (Item 15E); no vocabulary equivalent - applicant completes."
+    },
+    {
+      "id": "exposure_to_year",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[9].To_Date_Year[2]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Potential-exposure to-date year (Item 15E); no vocabulary equivalent - applicant completes."
+    },
+    {
+      "id": "additional_exposure_details",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[9].Provide_Additional_Dates_And_Locations_Of_Potential_Exposure[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Additional exposure dates/locations (free text, Item 15E); no vocabulary equivalent - applicant completes."
+    },
+    {
+      "id": "ssn_last_four",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[10].SocialSecurityNumber_LastFourNumbers[1]"
+      },
+      "source": {
+        "fieldPath": "applicant.ssn"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "note": "SSN box; NeverAsk — left blank, applicant fills by hand."
+    },
+    {
+      "id": "ssn_first_three",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[10].SocialSecurityNumber_FirstThreeNumbers[1]"
+      },
+      "source": {
+        "fieldPath": "applicant.ssn"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "note": "SSN box; NeverAsk — left blank, applicant fills by hand."
+    },
+    {
+      "id": "ssn_middle_two",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[10].SocialSecurityNumber_SecondTwoNumbers[1]"
+      },
+      "source": {
+        "fieldPath": "applicant.ssn"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "note": "SSN box; NeverAsk — left blank, applicant fills by hand."
+    },
+    {
+      "id": "disability_1_name",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[10].CURRENTDISABILITY[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Current disability name (row 1 of 15) — no vocabulary path for claimed disability names; applicant fills by hand."
+    },
+    {
+      "id": "disability_1_exposure_type",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[10].Specify_Type_Of_Exposure_Event_Or_Injury[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Exposure event or injury type (row 1 of 15) — no vocabulary path for exposure details; applicant fills by hand."
+    },
+    {
+      "id": "disability_1_nexus",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[10].ExplainHowDisabilityRelatesToEvent_Exposure_Injury[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Explanation of how disability relates to the event/exposure/injury (row 1 of 15) — no vocabulary path for nexus statements; applicant fills by hand."
+    },
+    {
+      "id": "disability_1_onset_date",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[10].Date_Disability_Began_Or_Worsened[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Date disability began or worsened (row 1 of 15) — no vocabulary path for disability onset dates; applicant fills by hand."
+    },
+    {
+      "id": "disability_2_name",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[10].CURRENTDISABILITY[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Current disability name (row 2 of 15) — no vocabulary path for claimed disability names; applicant fills by hand."
+    },
+    {
+      "id": "disability_2_exposure_type",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[10].Specify_Type_Of_Exposure_Event_Or_Injury[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Exposure event or injury type (row 2 of 15) — no vocabulary path for exposure details; applicant fills by hand."
+    },
+    {
+      "id": "disability_2_nexus",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[10].ExplainHowDisabilityRelatesToEvent_Exposure_Injury[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Explanation of how disability relates to the event/exposure/injury (row 2 of 15) — no vocabulary path for nexus statements; applicant fills by hand."
+    },
+    {
+      "id": "disability_2_onset_date",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[10].Date12[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Date disability began or worsened (row 2 of 15) — no vocabulary path for disability onset dates; applicant fills by hand."
+    },
+    {
+      "id": "disability_3_name",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[10].CURRENTDISABILITY[2]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Current disability name (row 3 of 15) — no vocabulary path for claimed disability names; applicant fills by hand."
+    },
+    {
+      "id": "disability_3_exposure_type",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[10].Specify_Type_Of_Exposure_Event_Or_Injury[2]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Exposure event or injury type (row 3 of 15) — no vocabulary path for exposure details; applicant fills by hand."
+    },
+    {
+      "id": "disability_3_nexus",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[10].ExplainHowDisabilityRelatesToEvent_Exposure_Injury[2]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Explanation of how disability relates to the event/exposure/injury (row 3 of 15) — no vocabulary path for nexus statements; applicant fills by hand."
+    },
+    {
+      "id": "disability_3_onset_date",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[10].Date12[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Date disability began or worsened (row 3 of 15) — no vocabulary path for disability onset dates; applicant fills by hand."
+    },
+    {
+      "id": "disability_4_name",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[10].CURRENTDISABILITY[3]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Current disability name (row 4 of 15) — no vocabulary path for claimed disability names; applicant fills by hand."
+    },
+    {
+      "id": "disability_4_exposure_type",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[10].Specify_Type_Of_Exposure_Event_Or_Injury[3]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Exposure event or injury type (row 4 of 15) — no vocabulary path for exposure details; applicant fills by hand."
+    },
+    {
+      "id": "disability_4_nexus",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[10].ExplainHowDisabilityRelatesToEvent_Exposure_Injury[3]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Explanation of how disability relates to the event/exposure/injury (row 4 of 15) — no vocabulary path for nexus statements; applicant fills by hand."
+    },
+    {
+      "id": "disability_4_onset_date",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[10].Date12[2]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Date disability began or worsened (row 4 of 15) — no vocabulary path for disability onset dates; applicant fills by hand."
+    },
+    {
+      "id": "disability_5_name",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[10].CURRENTDISABILITY[4]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Current disability name (row 5 of 15) — no vocabulary path for claimed disability names; applicant fills by hand."
+    },
+    {
+      "id": "disability_5_exposure_type",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[10].Specify_Type_Of_Exposure_Event_Or_Injury[4]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Exposure event or injury type (row 5 of 15) — no vocabulary path for exposure details; applicant fills by hand."
+    },
+    {
+      "id": "disability_5_nexus",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[10].ExplainHowDisabilityRelatesToEvent_Exposure_Injury[4]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Explanation of how disability relates to the event/exposure/injury (row 5 of 15) — no vocabulary path for nexus statements; applicant fills by hand."
+    },
+    {
+      "id": "disability_5_onset_date",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[10].Date12[3]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Date disability began or worsened (row 5 of 15) — no vocabulary path for disability onset dates; applicant fills by hand."
+    },
+    {
+      "id": "disability_6_name",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[10].CURRENTDISABILITY[5]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Current disability name (row 6 of 15) — no vocabulary path for claimed disability names; applicant fills by hand."
+    },
+    {
+      "id": "disability_6_exposure_type",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[10].Specify_Type_Of_Exposure_Event_Or_Injury[5]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Exposure event or injury type (row 6 of 15) — no vocabulary path for exposure details; applicant fills by hand."
+    },
+    {
+      "id": "disability_6_nexus",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[10].ExplainHowDisabilityRelatesToEvent_Exposure_Injury[5]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Explanation of how disability relates to the event/exposure/injury (row 6 of 15) — no vocabulary path for nexus statements; applicant fills by hand."
+    },
+    {
+      "id": "disability_6_onset_date",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[10].Date12[4]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Date disability began or worsened (row 6 of 15) — no vocabulary path for disability onset dates; applicant fills by hand."
+    },
+    {
+      "id": "disability_7_name",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[10].CURRENTDISABILITY[6]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Current disability name (row 7 of 15) — no vocabulary path for claimed disability names; applicant fills by hand."
+    },
+    {
+      "id": "disability_7_exposure_type",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[10].Specify_Type_Of_Exposure_Event_Or_Injury[6]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Exposure event or injury type (row 7 of 15) — no vocabulary path for exposure details; applicant fills by hand."
+    },
+    {
+      "id": "disability_7_nexus",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[10].ExplainHowDisabilityRelatesToEvent_Exposure_Injury[6]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Explanation of how disability relates to the event/exposure/injury (row 7 of 15) — no vocabulary path for nexus statements; applicant fills by hand."
+    },
+    {
+      "id": "disability_7_onset_date",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[10].Date12[5]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Date disability began or worsened (row 7 of 15) — no vocabulary path for disability onset dates; applicant fills by hand."
+    },
+    {
+      "id": "disability_8_name",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[10].CURRENTDISABILITY[7]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Current disability name (row 8 of 15) — no vocabulary path for claimed disability names; applicant fills by hand."
+    },
+    {
+      "id": "disability_8_exposure_type",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[10].Specify_Type_Of_Exposure_Event_Or_Injury[7]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Exposure event or injury type (row 8 of 15) — no vocabulary path for exposure details; applicant fills by hand."
+    },
+    {
+      "id": "disability_8_nexus",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[10].ExplainHowDisabilityRelatesToEvent_Exposure_Injury[7]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Explanation of how disability relates to the event/exposure/injury (row 8 of 15) — no vocabulary path for nexus statements; applicant fills by hand."
+    },
+    {
+      "id": "disability_8_onset_date",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[10].Date12[6]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Date disability began or worsened (row 8 of 15) — no vocabulary path for disability onset dates; applicant fills by hand."
+    },
+    {
+      "id": "disability_9_name",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[10].CURRENTDISABILITY[8]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Current disability name (row 9 of 15) — no vocabulary path for claimed disability names; applicant fills by hand."
+    },
+    {
+      "id": "disability_9_exposure_type",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[10].Specify_Type_Of_Exposure_Event_Or_Injury[8]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Exposure event or injury type (row 9 of 15) — no vocabulary path for exposure details; applicant fills by hand."
+    },
+    {
+      "id": "disability_9_nexus",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[10].ExplainHowDisabilityRelatesToEvent_Exposure_Injury[8]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Explanation of how disability relates to the event/exposure/injury (row 9 of 15) — no vocabulary path for nexus statements; applicant fills by hand."
+    },
+    {
+      "id": "disability_9_onset_date",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[10].Date12[7]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Date disability began or worsened (row 9 of 15) — no vocabulary path for disability onset dates; applicant fills by hand."
+    },
+    {
+      "id": "disability_10_name",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[10].CURRENTDISABILITY[9]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Current disability name (row 10 of 15) — no vocabulary path for claimed disability names; applicant fills by hand."
+    },
+    {
+      "id": "disability_10_exposure_type",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[10].Specify_Type_Of_Exposure_Event_Or_Injury[9]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Exposure event or injury type (row 10 of 15) — no vocabulary path for exposure details; applicant fills by hand."
+    },
+    {
+      "id": "disability_10_nexus",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[10].ExplainHowDisabilityRelatesToEvent_Exposure_Injury[9]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Explanation of how disability relates to the event/exposure/injury (row 10 of 15) — no vocabulary path for nexus statements; applicant fills by hand."
+    },
+    {
+      "id": "disability_10_onset_date",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[10].Date12[8]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Date disability began or worsened (row 10 of 15) — no vocabulary path for disability onset dates; applicant fills by hand."
+    },
+    {
+      "id": "disability_11_name",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[10].CURRENTDISABILITY[10]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Current disability name (row 11 of 15) — no vocabulary path for claimed disability names; applicant fills by hand."
+    },
+    {
+      "id": "disability_11_exposure_type",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[10].Specify_Type_Of_Exposure_Event_Or_Injury[10]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Exposure event or injury type (row 11 of 15) — no vocabulary path for exposure details; applicant fills by hand."
+    },
+    {
+      "id": "disability_11_nexus",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[10].ExplainHowDisabilityRelatesToEvent_Exposure_Injury[10]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Explanation of how disability relates to the event/exposure/injury (row 11 of 15) — no vocabulary path for nexus statements; applicant fills by hand."
+    },
+    {
+      "id": "disability_11_onset_date",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[10].Date12[9]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Date disability began or worsened (row 11 of 15) — no vocabulary path for disability onset dates; applicant fills by hand."
+    },
+    {
+      "id": "disability_12_name",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[10].CURRENTDISABILITY[11]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Current disability name (row 12 of 15) — no vocabulary path for claimed disability names; applicant fills by hand."
+    },
+    {
+      "id": "disability_12_exposure_type",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[10].Specify_Type_Of_Exposure_Event_Or_Injury[11]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Exposure event or injury type (row 12 of 15) — no vocabulary path for exposure details; applicant fills by hand."
+    },
+    {
+      "id": "disability_12_nexus",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[10].ExplainHowDisabilityRelatesToEvent_Exposure_Injury[11]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Explanation of how disability relates to the event/exposure/injury (row 12 of 15) — no vocabulary path for nexus statements; applicant fills by hand."
+    },
+    {
+      "id": "disability_12_onset_date",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[10].Date12[10]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Date disability began or worsened (row 12 of 15) — no vocabulary path for disability onset dates; applicant fills by hand."
+    },
+    {
+      "id": "disability_13_name",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[10].CURRENTDISABILITY[12]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Current disability name (row 13 of 15) — no vocabulary path for claimed disability names; applicant fills by hand."
+    },
+    {
+      "id": "disability_13_exposure_type",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[10].Specify_Type_Of_Exposure_Event_Or_Injury[12]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Exposure event or injury type (row 13 of 15) — no vocabulary path for exposure details; applicant fills by hand."
+    },
+    {
+      "id": "disability_13_nexus",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[10].ExplainHowDisabilityRelatesToEvent_Exposure_Injury[12]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Explanation of how disability relates to the event/exposure/injury (row 13 of 15) — no vocabulary path for nexus statements; applicant fills by hand."
+    },
+    {
+      "id": "disability_13_onset_date",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[10].Date12[11]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Date disability began or worsened (row 13 of 15) — no vocabulary path for disability onset dates; applicant fills by hand."
+    },
+    {
+      "id": "disability_14_name",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[10].CURRENTDISABILITY[13]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Current disability name (row 14 of 15) — no vocabulary path for claimed disability names; applicant fills by hand."
+    },
+    {
+      "id": "disability_14_exposure_type",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[10].Specify_Type_Of_Exposure_Event_Or_Injury[13]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Exposure event or injury type (row 14 of 15) — no vocabulary path for exposure details; applicant fills by hand."
+    },
+    {
+      "id": "disability_14_nexus",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[10].ExplainHowDisabilityRelatesToEvent_Exposure_Injury[13]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Explanation of how disability relates to the event/exposure/injury (row 14 of 15) — no vocabulary path for nexus statements; applicant fills by hand."
+    },
+    {
+      "id": "disability_14_onset_date",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[10].Date12[12]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Date disability began or worsened (row 14 of 15) — no vocabulary path for disability onset dates; applicant fills by hand."
+    },
+    {
+      "id": "disability_15_name",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[10].CURRENTDISABILITY[14]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Current disability name (row 15 of 15) — no vocabulary path for claimed disability names; applicant fills by hand."
+    },
+    {
+      "id": "disability_15_exposure_type",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[10].Specify_Type_Of_Exposure_Event_Or_Injury[14]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Exposure event or injury type (row 15 of 15) — no vocabulary path for exposure details; applicant fills by hand."
+    },
+    {
+      "id": "disability_15_nexus",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[10].ExplainHowDisabilityRelatesToEvent_Exposure_Injury[14]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Explanation of how disability relates to the event/exposure/injury (row 15 of 15) — no vocabulary path for nexus statements; applicant fills by hand."
+    },
+    {
+      "id": "disability_15_onset_date",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[10].Date12[13]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Date disability began or worsened (row 15 of 15) — no vocabulary path for disability onset dates; applicant fills by hand."
+    },
+    {
+      "id": "treatment_3_facility",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[10].Enter_Disability_Treated_And_Name_And_Location_Of_Treatment_Facility[2]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Disability treated plus treatment facility name/location (entry 3 of 3) — no vocabulary path for treatment records; applicant fills by hand."
+    },
+    {
+      "id": "treatment_1_month",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[10].Date_Of_Treatment_Month[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Treatment month (entry 1 of 3) — no vocabulary path for treatment dates; applicant fills by hand."
+    },
+    {
+      "id": "treatment_1_year",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[10].Date_Of_Treatment_Year[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Treatment year (entry 1 of 3) — no vocabulary path for treatment dates; applicant fills by hand."
+    },
+    {
+      "id": "treatment_1_no_date",
+      "target": {
+        "type": "checkbox",
+        "name": "F[0].#subform[10].Check_Box_Do_Not_Have_Date_s[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "\"Don't have date\" checkbox (entry 1 of 3) — no vocabulary equivalent for unknown-treatment-date flag; applicant checks by hand."
+    },
+    {
+      "id": "treatment_2_facility",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[10].Enter_Disability_Treated_And_Name_And_Location_Of_Treatment_Facility[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Disability treated plus treatment facility name/location (entry 2 of 3) — no vocabulary path for treatment records; applicant fills by hand."
+    },
+    {
+      "id": "treatment_3_month",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[10].Date_Of_Treatment_Month[2]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Treatment month (entry 3 of 3) — no vocabulary path for treatment dates; applicant fills by hand."
+    },
+    {
+      "id": "treatment_2_year",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[10].Date_Of_Treatment_Year[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Treatment year (entry 2 of 3) — no vocabulary path for treatment dates; applicant fills by hand."
+    },
+    {
+      "id": "treatment_2_no_date",
+      "target": {
+        "type": "checkbox",
+        "name": "F[0].#subform[10].Check_Box_Do_Not_Have_Date_s[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "\"Don't have date\" checkbox (entry 2 of 3) — no vocabulary equivalent for unknown-treatment-date flag; applicant checks by hand."
+    },
+    {
+      "id": "treatment_1_facility",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[10].Enter_Disability_Treated_And_Name_And_Location_Of_Treatment_Facility[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Disability treated plus treatment facility name/location (entry 1 of 3) — no vocabulary path for treatment records; applicant fills by hand."
+    },
+    {
+      "id": "treatment_2_month",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[10].Date_Of_Treatment_Month[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Treatment month (entry 2 of 3) — no vocabulary path for treatment dates; applicant fills by hand."
+    },
+    {
+      "id": "treatment_3_year",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[10].Date_Of_Treatment_Year[2]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Treatment year (entry 3 of 3) — no vocabulary path for treatment dates; applicant fills by hand."
+    },
+    {
+      "id": "treatment_3_no_date",
+      "target": {
+        "type": "checkbox",
+        "name": "F[0].#subform[10].Check_Box_Do_Not_Have_Date_s[2]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "\"Don't have date\" checkbox (entry 3 of 3) — no vocabulary equivalent for unknown-treatment-date flag; applicant checks by hand."
+    },
+    {
+      "id": "ssn_first_three_p11",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[11].SocialSecurityNumber_FirstThreeNumbers[2]"
+      },
+      "source": {
+        "fieldPath": "applicant.ssn"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "note": "SSN box (first three digits); NeverAsk — left blank, applicant fills by hand."
+    },
+    {
+      "id": "ssn_last_four_p11",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[11].SocialSecurityNumber_LastFourNumbers[2]"
+      },
+      "source": {
+        "fieldPath": "applicant.ssn"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "note": "SSN box (last four digits); NeverAsk — left blank, applicant fills by hand."
+    },
+    {
+      "id": "ssn_middle_two_p11",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[11].SocialSecurityNumber_SecondTwoNumbers[2]"
+      },
+      "source": {
+        "fieldPath": "applicant.ssn"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "note": "SSN box (middle two digits); NeverAsk — left blank, applicant fills by hand."
+    },
+    {
+      "id": "other_names_served_under",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[11].List_Other_Name_You_Served_Under[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Item 18B — other names the veteran served under; no vocabulary equivalent, veteran lists on paper."
+    },
+    {
+      "id": "served_under_another_name",
+      "target": {
+        "type": "radio",
+        "name": "F[0].#subform[11].RadioButtonList[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Item 18A — whether veteran served under another name (Yes=0/No=1); no vocabulary equivalent."
+    },
+    {
+      "id": "branch_of_service_19a",
+      "target": {
+        "type": "radio",
+        "name": "F[0].#subform[11].RadioButtonList[10]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Item 19A — branch of service (Army/Air Force/NOAA/Navy/Coast Guard/USPHS/Marine Corps/Space Force); no vocabulary equivalent."
+    },
+    {
+      "id": "service_component_19b",
+      "target": {
+        "type": "radio",
+        "name": "F[0].#subform[11].RadioButtonList[12]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Item 19B — service component (Active/Reserve/Guard); no vocabulary equivalent."
+    },
+    {
+      "id": "place_of_separation_1",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[11].PlaceOfLastOrAnticipatedSeparation[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Place of last or anticipated separation; no vocabulary equivalent — veteran completes on paper."
+    },
+    {
+      "id": "service_entry_date_month",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[11].EntryDate_Month[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Most recent active service entry date (month); no vocabulary equivalent."
+    },
+    {
+      "id": "service_entry_date_day",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[11].MostRecentActiveServiceEntryDate_Day[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Most recent active service entry date (day); no vocabulary equivalent."
+    },
+    {
+      "id": "service_entry_date_year",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[11].EntryDate_Year[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Most recent active service entry date (year); no vocabulary equivalent."
+    },
+    {
+      "id": "service_exit_date_day",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[11].ExitDate_Day[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Service exit date (day); no vocabulary equivalent."
+    },
+    {
+      "id": "place_of_separation_2",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[11].PlaceOfLastOrAnticipatedSeparation[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Place of separation for additional period of service; no vocabulary equivalent — veteran completes on paper."
+    },
+    {
+      "id": "service_exit_date_month",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[11].ExitDate_Month[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Service exit date (month); no vocabulary equivalent."
+    },
+    {
+      "id": "service_exit_date_year",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[11].ExitDate_Year[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Service exit date (year); no vocabulary equivalent."
+    },
+    {
+      "id": "addl_service_from_day",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[11].AdditionalPeriodsOfService_Day[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Additional period of service, FROM date (day); no vocabulary equivalent."
+    },
+    {
+      "id": "addl_service_from_month",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[11].AdditionalPeriodsOfService_Month[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Additional period of service, FROM date (month); no vocabulary equivalent."
+    },
+    {
+      "id": "addl_service_from_year",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[11].AdditionalPeriodsOfService_Year[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Additional period of service, FROM date (year); no vocabulary equivalent."
+    },
+    {
+      "id": "addl_service_to_day",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[11].AdditionalPeriodsOfService_Day[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Additional period of service, TO date (day); no vocabulary equivalent."
+    },
+    {
+      "id": "addl_service_to_month",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[11].AdditionalPeriodsOfService_Month[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Additional period of service, TO date (month); no vocabulary equivalent."
+    },
+    {
+      "id": "addl_service_to_year",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[11].AdditionalPeriodsOfService_Year[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Additional period of service, TO date (year); no vocabulary equivalent."
+    },
+    {
+      "id": "service_since_911",
+      "target": {
+        "type": "radio",
+        "name": "F[0].#subform[11].RadioButtonList[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Service since 9-11-2001 question (Yes=0/No=1); no vocabulary equivalent."
+    },
+    {
+      "id": "obligation_term_from_day",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[11].ObligationTermOfService_Day[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Reserve/Guard obligation term, FROM date (day); no vocabulary equivalent."
+    },
+    {
+      "id": "currently_reserves_or_guard",
+      "target": {
+        "type": "radio",
+        "name": "F[0].#subform[11].RadioButtonList[2]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Item 21A — currently serving in the Reserves or National Guard (Yes=0/No=1); no vocabulary equivalent."
+    },
+    {
+      "id": "reserve_vs_guard_component",
+      "target": {
+        "type": "radio",
+        "name": "F[0].#subform[11].RadioButtonList[3]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Item 21B — Reserve vs National Guard component (National Guard=0/Reserves=1); no vocabulary equivalent."
+    },
+    {
+      "id": "obligation_term_from_month",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[11].ObligationTermOfService_Month[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Reserve/Guard obligation term, FROM date (month); no vocabulary equivalent."
+    },
+    {
+      "id": "obligation_term_from_year",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[11].ObligationTermOfService_Year[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Reserve/Guard obligation term, FROM date (year); no vocabulary equivalent."
+    },
+    {
+      "id": "obligation_term_to_day",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[11].ObligationTermOfService_Day[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Reserve/Guard obligation term, TO date (day); no vocabulary equivalent."
+    },
+    {
+      "id": "obligation_term_to_month",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[11].ObligationTermOfService_Month[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Reserve/Guard obligation term, TO date (month); no vocabulary equivalent."
+    },
+    {
+      "id": "obligation_term_to_year",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[11].ObligationTermOfService_Year[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Reserve/Guard obligation term, TO date (year); no vocabulary equivalent."
+    },
+    {
+      "id": "unit_name_and_address",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[11].CURRENT_OR_LAST_ASSIGNED_NAME_AND_ADDRESS_OF_UNIT[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Current or last assigned unit name and address; no vocabulary equivalent — veteran completes on paper."
+    },
+    {
+      "id": "unit_phone",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[11].Current_Or_Assigned_Phone_Number_Of_Unit_Include_Area_Code[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Military unit phone number; no vocabulary equivalent — veteran completes on paper."
+    },
+    {
+      "id": "receiving_training_pay",
+      "target": {
+        "type": "radio",
+        "name": "F[0].#subform[11].RadioButtonList[4]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Training pay receipt question (Yes=0/No=1); no vocabulary equivalent."
+    },
+    {
+      "id": "activated_from_reserves",
+      "target": {
+        "type": "radio",
+        "name": "F[0].#subform[11].RadioButtonList[5]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Item 22A — activated from the Reserves (Yes=0/No=1); no vocabulary equivalent."
+    },
+    {
+      "id": "activation_date_month",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[11].DateOfActivation_Month[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Reserve activation date (month); no vocabulary equivalent."
+    },
+    {
+      "id": "activation_date_day",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[11].DateOfActivation_Day[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Reserve activation date (day); no vocabulary equivalent."
+    },
+    {
+      "id": "activation_date_year",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[11].DateOfActivation_Year[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Reserve activation date (year); no vocabulary equivalent."
+    },
+    {
+      "id": "anticipated_separation_month",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[11].AnticipatedSeparationDate_Month[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Anticipated separation date (month); no vocabulary equivalent."
+    },
+    {
+      "id": "anticipated_separation_day",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[11].AnticipatedSeparationDate_Day[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Anticipated separation date (day); no vocabulary equivalent."
+    },
+    {
+      "id": "anticipated_separation_year",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[11].AnticipatedSeparationDate_Year[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Anticipated separation date (year); no vocabulary equivalent."
+    },
+    {
+      "id": "was_prisoner_of_war",
+      "target": {
+        "type": "radio",
+        "name": "F[0].#subform[11].RadioButtonList[6]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Item 23A — prisoner of war question (Yes=0/No=1); no vocabulary equivalent."
+    },
+    {
+      "id": "pow_confinement_1_from_month",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[11].DatesOfConfinement_Month[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "POW confinement period 1, FROM date (month); no vocabulary equivalent."
+    },
+    {
+      "id": "pow_confinement_1_from_day",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[11].DatesOfConfinement_Day[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "POW confinement period 1, FROM date (day); no vocabulary equivalent."
+    },
+    {
+      "id": "pow_confinement_1_from_year",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[11].DatesOfConfinement_Year[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "POW confinement period 1, FROM date (year); no vocabulary equivalent."
+    },
+    {
+      "id": "pow_confinement_1_to_month",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[11].DatesOfConfinement_Month[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "POW confinement period 1, TO date (month); no vocabulary equivalent."
+    },
+    {
+      "id": "pow_confinement_1_to_day",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[11].DatesOfConfinement_Day[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "POW confinement period 1, TO date (day); no vocabulary equivalent."
+    },
+    {
+      "id": "pow_confinement_1_to_year",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[11].DatesOfConfinement_Year[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "POW confinement period 1, TO date (year); no vocabulary equivalent."
+    },
+    {
+      "id": "pow_confinement_2_from_month",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[11].DatesOfConfinement_Month[2]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "POW confinement period 2, FROM date (month); no vocabulary equivalent."
+    },
+    {
+      "id": "pow_confinement_2_from_day",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[11].DatesOfConfinement_Day[2]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "POW confinement period 2, FROM date (day); no vocabulary equivalent."
+    },
+    {
+      "id": "pow_confinement_2_from_year",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[11].DatesOfConfinement_Year[2]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "POW confinement period 2, FROM date (year); no vocabulary equivalent."
+    },
+    {
+      "id": "pow_confinement_2_to_month",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[11].DatesOfConfinement_Month[3]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "POW confinement period 2, TO date (month); no vocabulary equivalent."
+    },
+    {
+      "id": "pow_confinement_2_to_day",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[11].DatesOfConfinement_Day[3]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "POW confinement period 2, TO date (day); no vocabulary equivalent."
+    },
+    {
+      "id": "pow_confinement_2_to_year",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[11].DatesOfConfinement_Year[3]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "POW confinement period 2, TO date (year); no vocabulary equivalent."
+    },
+    {
+      "id": "future_military_retired_pay",
+      "target": {
+        "type": "radio",
+        "name": "F[0].#subform[11].RadioButtonList[8]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Item 24B — will receive military retired pay in the future (Yes=0/No=1); no vocabulary equivalent."
+    },
+    {
+      "id": "currently_receiving_retired_pay",
+      "target": {
+        "type": "radio",
+        "name": "F[0].#subform[11].RadioButtonList[7]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Item 24A — currently receiving military retired pay (Yes=0/No=1); no vocabulary equivalent."
+    },
+    {
+      "id": "retired_pay_explanation",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[11].EXPLAIN[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Explanation of future retired pay (Item 24B); no vocabulary equivalent."
+    },
+    {
+      "id": "retired_pay_monthly_amount_1",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[11].Monthly_Amount[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Monthly retired pay amount box 1; no vocabulary equivalent — veteran completes on paper."
+    },
+    {
+      "id": "retired_pay_monthly_amount_2",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[11].Monthly_Amount[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Monthly retired pay amount box 2; no vocabulary equivalent — veteran completes on paper."
+    },
+    {
+      "id": "retired_pay_branch",
+      "target": {
+        "type": "radio",
+        "name": "F[0].#subform[11].RadioButtonList[11]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Item 24C — branch of service for retired pay (Army=0/Air Force=3/NOAA=6); no vocabulary equivalent."
+    },
+    {
+      "id": "retired_pay_status",
+      "target": {
+        "type": "radio",
+        "name": "F[0].#subform[11].RadioButtonList[9]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Item 24D — retired list vs temporary disability retired list status; no vocabulary equivalent."
+    },
+    {
+      "id": "decline_va_comp_retired_pay",
+      "target": {
+        "type": "checkbox",
+        "name": "F[0].#subform[11].Do_Not_Pay_Me_VA_Compensation_I_Do_Not_Want_To_Receive-VA_Compensation_In_Lieu_Of_Retired_Pay[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Item 26 — election to decline VA compensation in lieu of retired pay; the applicant's choice, never auto-filled."
+    },
+    {
+      "id": "ssn_first_three_p12",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[12].SocialSecurityNumber_FirstThreeNumbers[3]"
+      },
+      "source": {
+        "fieldPath": "applicant.ssn"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "note": "SSN box (first three digits); NeverAsk — left blank, applicant fills by hand."
+    },
+    {
+      "id": "ssn_last_four_p12",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[12].SocialSecurityNumber_LastFourNumbers[3]"
+      },
+      "source": {
+        "fieldPath": "applicant.ssn"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "note": "SSN box (last four digits); NeverAsk — left blank, applicant fills by hand."
+    },
+    {
+      "id": "ssn_middle_two_p12",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[12].SocialSecurityNumber_SecondTwoNumbers[3]"
+      },
+      "source": {
+        "fieldPath": "applicant.ssn"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "note": "SSN box (middle two digits); NeverAsk — left blank, applicant fills by hand."
+    },
+    {
+      "id": "received_separation_pay",
+      "target": {
+        "type": "radio",
+        "name": "F[0].#subform[12].RadioButtonList[13]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Item 27A — received separation/disability severance/lump-sum pay from branch of service (Yes=0/No=1); no vocabulary equivalent."
+    },
+    {
+      "id": "separation_pay_branch",
+      "target": {
+        "type": "radio",
+        "name": "F[0].#subform[12].RadioButtonList[15]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Item 27B — branch that paid the separation pay (Army=0/Air Force=3/NOAA=6); no vocabulary equivalent."
+    },
+    {
+      "id": "separation_pay_date_month",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[12].DatePaymentReceived_Month[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Date separation payment was received (month); no vocabulary equivalent."
+    },
+    {
+      "id": "separation_pay_date_day",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[12].DatePaymentReceived_Day[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Date separation payment was received (day); no vocabulary equivalent."
+    },
+    {
+      "id": "separation_pay_date_year",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[12].DatePaymentReceived_Year[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Date separation payment was received (year); no vocabulary equivalent."
+    },
+    {
+      "id": "separation_pay_amount_first3",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[12].Amount_Received_First_Three_Digits[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Separation pay amount (first three digits); no vocabulary equivalent — veteran completes on paper."
+    },
+    {
+      "id": "separation_pay_amount_last3",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[12].Amount_Received_Last_Three_Digits[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Separation pay amount (last three digits); no vocabulary equivalent — veteran completes on paper."
+    },
+    {
+      "id": "decline_va_comp_training_pay",
+      "target": {
+        "type": "checkbox",
+        "name": "F[0].#subform[12].Do_NOT_Pay_Me_VA_Compensation_I_Do_Not_Want_To_Receive_VA_Compensation_In_Lieu_Of_Training_Pay[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Item 28 — election to decline VA compensation in lieu of training pay; the applicant's choice, never auto-filled."
+    },
+    {
+      "id": "certify_no_bank_account",
+      "target": {
+        "type": "checkbox",
+        "name": "F[0].#subform[12].ICertifyThatIDoNotHaveAnAccountWithAFinancialInstitutionOrCertifiedPaymentAgent[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Item 29 — certification of having no bank account; an applicant attestation, never auto-filled (also the negation of resources.has_bank_accounts, so no direct mapping)."
+    },
+    {
+      "id": "bank_account_number",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[12].Account_Number[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Account number; no vocabulary equivalent — applicant fills by hand."
+    },
+    {
+      "id": "account_type",
+      "target": {
+        "type": "radio",
+        "name": "F[0].#subform[12].RadioButtonList[14]"
+      },
+      "source": {
+        "fieldPath": "resources.accounts[0].kind"
+      },
+      "valueMap": {
+        "checking": "0",
+        "savings": "1"
+      },
+      "note": "Item 30 — direct deposit account type. Both widgets were labeled CHECKING by the extractor, but the form order is Checking (left, state 0) then Savings (right, state 1); confirm on the placement map."
+    },
+    {
+      "id": "bank_institution_name",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[12].NAME_OF_FINANCIAL_INSTITUTION[0]"
+      },
+      "source": {
+        "fieldPath": "resources.accounts[0].institution"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "note": "Direct deposit financial institution name."
+    },
+    {
+      "id": "bank_routing_number",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[12].Routing_Or_Transit_Number[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Routing/transit number; no vocabulary equivalent — applicant fills by hand."
+    },
+    {
+      "id": "witness_name_address_1",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[12].Print_Name_And_Address_Of_Witness[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Witness printed name and address (first witness block); completed by the witness, never auto-filled."
+    },
+    {
+      "id": "witness_name_address_2",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[12].Print_Name_And_Address_Of_Witness[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Witness printed name and address (second witness block); completed by the witness, never auto-filled."
+    },
+    {
+      "id": "ssn_first_three_p13",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[13].SocialSecurityNumber_FirstThreeNumbers[4]"
+      },
+      "source": {
+        "fieldPath": "applicant.ssn"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "note": "SSN box (first three digits); NeverAsk — left blank, applicant fills by hand."
+    },
+    {
+      "id": "ssn_middle_two_p13",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[13].SocialSecurityNumber_SecondTwoNumbers[4]"
+      },
+      "source": {
+        "fieldPath": "applicant.ssn"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "note": "SSN box (middle two digits); NeverAsk — left blank, applicant fills by hand."
+    },
+    {
+      "id": "ssn_last_four_p13",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[13].SocialSecurityNumber_LastFourNumbers[4]"
+      },
+      "source": {
+        "fieldPath": "applicant.ssn"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "note": "SSN box (last four digits); NeverAsk — left blank, applicant fills by hand."
+    },
+    {
+      "id": "ssn_first_three_alt",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].SocialSecurityNumber_FirstThreeNumbers[5]"
+      },
+      "source": {
+        "fieldPath": "applicant.ssn"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "note": "SSN box (first 3 digits); NeverAsk — left blank, applicant fills by hand."
+    },
+    {
+      "id": "ssn_last_four_alt",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].SocialSecurityNumber_LastFourNumbers[5]"
+      },
+      "source": {
+        "fieldPath": "applicant.ssn"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "note": "SSN box (last 4 digits); NeverAsk — left blank, applicant fills by hand."
+    },
+    {
+      "id": "ssn_middle_two_alt",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].SocialSecurityNumber_SecondTwoNumbers[5]"
+      },
+      "source": {
+        "fieldPath": "applicant.ssn"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "note": "SSN box (middle 2 digits); NeverAsk — left blank, applicant fills by hand."
+    },
+    {
+      "id": "disability_16_name",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].CURRENTDISABILITY[15]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Claimed disability name, table row 1; no vocabulary path for claimed disability descriptions — claimant completes by hand."
+    },
+    {
+      "id": "disability_16_exposure",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].Specify_Type_Of_Exposure_Event_Or_Injury[15]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Exposure/event/injury type, table row 1; no vocabulary path — claimant completes by hand."
+    },
+    {
+      "id": "disability_16_nexus",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].ExplainHowDisabilityRelatesToEvent_Exposure_Injury[15]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Nexus explanation (how disability relates to event/exposure/injury), table row 1; no vocabulary path — claimant completes by hand."
+    },
+    {
+      "id": "disability_1_date_began",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].Date_Disability_Began_Or_Worsened[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Date disability began or worsened, table row 1; no vocabulary date path for disability onset — claimant completes by hand."
+    },
+    {
+      "id": "disability_17_name",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].CURRENTDISABILITY[16]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Claimed disability name, table row 2; no vocabulary path for claimed disability descriptions — claimant completes by hand."
+    },
+    {
+      "id": "disability_17_exposure",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].Specify_Type_Of_Exposure_Event_Or_Injury[16]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Exposure/event/injury type, table row 2; no vocabulary path — claimant completes by hand."
+    },
+    {
+      "id": "disability_17_nexus",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].ExplainHowDisabilityRelatesToEvent_Exposure_Injury[16]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Nexus explanation (how disability relates to event/exposure/injury), table row 2; no vocabulary path — claimant completes by hand."
+    },
+    {
+      "id": "disability_2_date_began",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].Date12[14]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Date disability began or worsened, table row 2; no vocabulary date path for disability onset — claimant completes by hand."
+    },
+    {
+      "id": "disability_18_name",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].CURRENTDISABILITY[17]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Claimed disability name, table row 3; no vocabulary path for claimed disability descriptions — claimant completes by hand."
+    },
+    {
+      "id": "disability_18_exposure",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].Specify_Type_Of_Exposure_Event_Or_Injury[17]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Exposure/event/injury type, table row 3; no vocabulary path — claimant completes by hand."
+    },
+    {
+      "id": "disability_18_nexus",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].ExplainHowDisabilityRelatesToEvent_Exposure_Injury[17]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Nexus explanation (how disability relates to event/exposure/injury), table row 3; no vocabulary path — claimant completes by hand."
+    },
+    {
+      "id": "disability_3_date_began",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].Date12[15]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Date disability began or worsened, table row 3; no vocabulary date path for disability onset — claimant completes by hand."
+    },
+    {
+      "id": "disability_19_name",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].CURRENTDISABILITY[18]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Claimed disability name, table row 4; no vocabulary path for claimed disability descriptions — claimant completes by hand."
+    },
+    {
+      "id": "disability_19_exposure",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].Specify_Type_Of_Exposure_Event_Or_Injury[18]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Exposure/event/injury type, table row 4; no vocabulary path — claimant completes by hand."
+    },
+    {
+      "id": "disability_19_nexus",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].ExplainHowDisabilityRelatesToEvent_Exposure_Injury[18]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Nexus explanation (how disability relates to event/exposure/injury), table row 4; no vocabulary path — claimant completes by hand."
+    },
+    {
+      "id": "disability_4_date_began",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].Date12[16]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Date disability began or worsened, table row 4; no vocabulary date path for disability onset — claimant completes by hand."
+    },
+    {
+      "id": "disability_20_name",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].CURRENTDISABILITY[19]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Claimed disability name, table row 5; no vocabulary path for claimed disability descriptions — claimant completes by hand."
+    },
+    {
+      "id": "disability_20_exposure",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].Specify_Type_Of_Exposure_Event_Or_Injury[19]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Exposure/event/injury type, table row 5; no vocabulary path — claimant completes by hand."
+    },
+    {
+      "id": "disability_20_nexus",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].ExplainHowDisabilityRelatesToEvent_Exposure_Injury[19]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Nexus explanation (how disability relates to event/exposure/injury), table row 5; no vocabulary path — claimant completes by hand."
+    },
+    {
+      "id": "disability_5_date_began",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].Date12[17]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Date disability began or worsened, table row 5; no vocabulary date path for disability onset — claimant completes by hand."
+    },
+    {
+      "id": "disability_21_name",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].CURRENTDISABILITY[20]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Claimed disability name, table row 6; no vocabulary path for claimed disability descriptions — claimant completes by hand."
+    },
+    {
+      "id": "disability_21_exposure",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].Specify_Type_Of_Exposure_Event_Or_Injury[20]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Exposure/event/injury type, table row 6; no vocabulary path — claimant completes by hand."
+    },
+    {
+      "id": "disability_21_nexus",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].ExplainHowDisabilityRelatesToEvent_Exposure_Injury[20]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Nexus explanation (how disability relates to event/exposure/injury), table row 6; no vocabulary path — claimant completes by hand."
+    },
+    {
+      "id": "disability_6_date_began",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].Date12[18]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Date disability began or worsened, table row 6; no vocabulary date path for disability onset — claimant completes by hand."
+    },
+    {
+      "id": "disability_22_name",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].CURRENTDISABILITY[21]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Claimed disability name, table row 7; no vocabulary path for claimed disability descriptions — claimant completes by hand."
+    },
+    {
+      "id": "disability_22_exposure",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].Specify_Type_Of_Exposure_Event_Or_Injury[21]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Exposure/event/injury type, table row 7; no vocabulary path — claimant completes by hand."
+    },
+    {
+      "id": "disability_22_nexus",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].ExplainHowDisabilityRelatesToEvent_Exposure_Injury[21]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Nexus explanation (how disability relates to event/exposure/injury), table row 7; no vocabulary path — claimant completes by hand."
+    },
+    {
+      "id": "disability_7_date_began",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].Date12[19]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Date disability began or worsened, table row 7; no vocabulary date path for disability onset — claimant completes by hand."
+    },
+    {
+      "id": "disability_23_name",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].CURRENTDISABILITY[22]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Claimed disability name, table row 8; no vocabulary path for claimed disability descriptions — claimant completes by hand."
+    },
+    {
+      "id": "disability_23_exposure",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].Specify_Type_Of_Exposure_Event_Or_Injury[22]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Exposure/event/injury type, table row 8; no vocabulary path — claimant completes by hand."
+    },
+    {
+      "id": "disability_23_nexus",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].ExplainHowDisabilityRelatesToEvent_Exposure_Injury[22]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Nexus explanation (how disability relates to event/exposure/injury), table row 8; no vocabulary path — claimant completes by hand."
+    },
+    {
+      "id": "disability_8_date_began",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].Date12[20]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Date disability began or worsened, table row 8; no vocabulary date path for disability onset — claimant completes by hand."
+    },
+    {
+      "id": "disability_24_name",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].CURRENTDISABILITY[23]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Claimed disability name, table row 9; no vocabulary path for claimed disability descriptions — claimant completes by hand."
+    },
+    {
+      "id": "disability_24_exposure",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].Specify_Type_Of_Exposure_Event_Or_Injury[23]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Exposure/event/injury type, table row 9; no vocabulary path — claimant completes by hand."
+    },
+    {
+      "id": "disability_24_nexus",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].ExplainHowDisabilityRelatesToEvent_Exposure_Injury[23]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Nexus explanation (how disability relates to event/exposure/injury), table row 9; no vocabulary path — claimant completes by hand."
+    },
+    {
+      "id": "disability_9_date_began",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].Date12[21]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Date disability began or worsened, table row 9; no vocabulary date path for disability onset — claimant completes by hand."
+    },
+    {
+      "id": "disability_25_name",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].CURRENTDISABILITY[24]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Claimed disability name, table row 10; no vocabulary path for claimed disability descriptions — claimant completes by hand."
+    },
+    {
+      "id": "disability_25_exposure",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].Specify_Type_Of_Exposure_Event_Or_Injury[24]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Exposure/event/injury type, table row 10; no vocabulary path — claimant completes by hand."
+    },
+    {
+      "id": "disability_25_nexus",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].ExplainHowDisabilityRelatesToEvent_Exposure_Injury[24]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Nexus explanation (how disability relates to event/exposure/injury), table row 10; no vocabulary path — claimant completes by hand."
+    },
+    {
+      "id": "disability_10_date_began",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].Date12[22]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Date disability began or worsened, table row 10; no vocabulary date path for disability onset — claimant completes by hand."
+    },
+    {
+      "id": "disability_26_name",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].CURRENTDISABILITY[25]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Claimed disability name, table row 11; no vocabulary path for claimed disability descriptions — claimant completes by hand."
+    },
+    {
+      "id": "disability_26_exposure",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].Specify_Type_Of_Exposure_Event_Or_Injury[25]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Exposure/event/injury type, table row 11; no vocabulary path — claimant completes by hand."
+    },
+    {
+      "id": "disability_26_nexus",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].ExplainHowDisabilityRelatesToEvent_Exposure_Injury[25]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Nexus explanation (how disability relates to event/exposure/injury), table row 11; no vocabulary path — claimant completes by hand."
+    },
+    {
+      "id": "disability_11_date_began",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].Date12[23]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Date disability began or worsened, table row 11; no vocabulary date path for disability onset — claimant completes by hand."
+    },
+    {
+      "id": "disability_27_name",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].CURRENTDISABILITY[26]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Claimed disability name, table row 12; no vocabulary path for claimed disability descriptions — claimant completes by hand."
+    },
+    {
+      "id": "disability_27_exposure",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].Specify_Type_Of_Exposure_Event_Or_Injury[26]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Exposure/event/injury type, table row 12; no vocabulary path — claimant completes by hand."
+    },
+    {
+      "id": "disability_27_nexus",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].ExplainHowDisabilityRelatesToEvent_Exposure_Injury[26]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Nexus explanation (how disability relates to event/exposure/injury), table row 12; no vocabulary path — claimant completes by hand."
+    },
+    {
+      "id": "disability_12_date_began",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].Date12[24]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Date disability began or worsened, table row 12; no vocabulary date path for disability onset — claimant completes by hand."
+    },
+    {
+      "id": "disability_28_name",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].CURRENTDISABILITY[27]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Claimed disability name, table row 13; no vocabulary path for claimed disability descriptions — claimant completes by hand."
+    },
+    {
+      "id": "disability_28_exposure",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].Specify_Type_Of_Exposure_Event_Or_Injury[27]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Exposure/event/injury type, table row 13; no vocabulary path — claimant completes by hand."
+    },
+    {
+      "id": "disability_28_nexus",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].ExplainHowDisabilityRelatesToEvent_Exposure_Injury[27]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Nexus explanation (how disability relates to event/exposure/injury), table row 13; no vocabulary path — claimant completes by hand."
+    },
+    {
+      "id": "disability_13_date_began",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].Date12[25]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Date disability began or worsened, table row 13; no vocabulary date path for disability onset — claimant completes by hand."
+    },
+    {
+      "id": "disability_29_name",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].CURRENTDISABILITY[28]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Claimed disability name, table row 14; no vocabulary path for claimed disability descriptions — claimant completes by hand."
+    },
+    {
+      "id": "disability_29_exposure",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].Specify_Type_Of_Exposure_Event_Or_Injury[28]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Exposure/event/injury type, table row 14; no vocabulary path — claimant completes by hand."
+    },
+    {
+      "id": "disability_29_nexus",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].ExplainHowDisabilityRelatesToEvent_Exposure_Injury[28]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Nexus explanation (how disability relates to event/exposure/injury), table row 14; no vocabulary path — claimant completes by hand."
+    },
+    {
+      "id": "disability_14_date_began",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].Date12[26]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Date disability began or worsened, table row 14; no vocabulary date path for disability onset — claimant completes by hand."
+    },
+    {
+      "id": "disability_30_name",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].CURRENTDISABILITY[29]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Claimed disability name, table row 15; no vocabulary path for claimed disability descriptions — claimant completes by hand."
+    },
+    {
+      "id": "disability_30_exposure",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].Specify_Type_Of_Exposure_Event_Or_Injury[29]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Exposure/event/injury type, table row 15; no vocabulary path — claimant completes by hand."
+    },
+    {
+      "id": "disability_30_nexus",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].ExplainHowDisabilityRelatesToEvent_Exposure_Injury[29]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Nexus explanation (how disability relates to event/exposure/injury), table row 15; no vocabulary path — claimant completes by hand."
+    },
+    {
+      "id": "disability_15_date_began",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].Date12[27]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Date disability began or worsened, table row 15; no vocabulary date path for disability onset — claimant completes by hand."
+    },
+    {
+      "id": "disability_31_name",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].CURRENTDISABILITY[30]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Claimed disability name, table row 16; no vocabulary path for claimed disability descriptions — claimant completes by hand."
+    },
+    {
+      "id": "disability_31_exposure",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].Specify_Type_Of_Exposure_Event_Or_Injury[30]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Exposure/event/injury type, table row 16; no vocabulary path — claimant completes by hand."
+    },
+    {
+      "id": "disability_31_nexus",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].ExplainHowDisabilityRelatesToEvent_Exposure_Injury[30]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Nexus explanation (how disability relates to event/exposure/injury), table row 16; no vocabulary path — claimant completes by hand."
+    },
+    {
+      "id": "disability_16_date_began",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].Date12[28]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Date disability began or worsened, table row 16; no vocabulary date path for disability onset — claimant completes by hand."
+    },
+    {
+      "id": "disability_32_name",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].CURRENTDISABILITY[31]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Claimed disability name, table row 17; no vocabulary path for claimed disability descriptions — claimant completes by hand."
+    },
+    {
+      "id": "disability_32_exposure",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].Specify_Type_Of_Exposure_Event_Or_Injury[31]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Exposure/event/injury type, table row 17; no vocabulary path — claimant completes by hand."
+    },
+    {
+      "id": "disability_32_nexus",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].ExplainHowDisabilityRelatesToEvent_Exposure_Injury[31]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Nexus explanation (how disability relates to event/exposure/injury), table row 17; no vocabulary path — claimant completes by hand."
+    },
+    {
+      "id": "disability_17_date_began",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].Date12[29]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Date disability began or worsened, table row 17; no vocabulary date path for disability onset — claimant completes by hand."
+    },
+    {
+      "id": "disability_33_name",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].CURRENTDISABILITY[32]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Claimed disability name, table row 18; no vocabulary path for claimed disability descriptions — claimant completes by hand."
+    },
+    {
+      "id": "disability_33_exposure",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].Specify_Type_Of_Exposure_Event_Or_Injury[32]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Exposure/event/injury type, table row 18; no vocabulary path — claimant completes by hand."
+    },
+    {
+      "id": "disability_33_nexus",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].ExplainHowDisabilityRelatesToEvent_Exposure_Injury[32]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Nexus explanation (how disability relates to event/exposure/injury), table row 18; no vocabulary path — claimant completes by hand."
+    },
+    {
+      "id": "disability_18_date_began",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].Date12[30]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Date disability began or worsened, table row 18; no vocabulary date path for disability onset — claimant completes by hand."
+    },
+    {
+      "id": "disability_34_name",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].CURRENTDISABILITY[33]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Claimed disability name, table row 19; no vocabulary path for claimed disability descriptions — claimant completes by hand."
+    },
+    {
+      "id": "disability_34_exposure",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].Specify_Type_Of_Exposure_Event_Or_Injury[33]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Exposure/event/injury type, table row 19; no vocabulary path — claimant completes by hand."
+    },
+    {
+      "id": "disability_34_nexus",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].ExplainHowDisabilityRelatesToEvent_Exposure_Injury[33]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Nexus explanation (how disability relates to event/exposure/injury), table row 19; no vocabulary path — claimant completes by hand."
+    },
+    {
+      "id": "disability_19_date_began",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].Date12[31]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Date disability began or worsened, table row 19; no vocabulary date path for disability onset — claimant completes by hand."
+    },
+    {
+      "id": "disability_35_name",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].CURRENTDISABILITY[34]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Claimed disability name, table row 20; no vocabulary path for claimed disability descriptions — claimant completes by hand."
+    },
+    {
+      "id": "disability_35_exposure",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].Specify_Type_Of_Exposure_Event_Or_Injury[34]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Exposure/event/injury type, table row 20; no vocabulary path — claimant completes by hand."
+    },
+    {
+      "id": "disability_35_nexus",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].ExplainHowDisabilityRelatesToEvent_Exposure_Injury[34]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Nexus explanation (how disability relates to event/exposure/injury), table row 20; no vocabulary path — claimant completes by hand."
+    },
+    {
+      "id": "disability_20_date_began",
+      "target": {
+        "type": "text",
+        "name": "F[0].#subform[14].Date12[32]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Date disability began or worsened, table row 20; no vocabulary date path for disability onset — claimant completes by hand."
     }
   ]
 }
