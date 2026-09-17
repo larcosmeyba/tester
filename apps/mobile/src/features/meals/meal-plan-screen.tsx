@@ -739,7 +739,7 @@ function NoPlanState({ onGenerate }: { onGenerate: () => void }) {
         Penny can build a week of budget-friendly meals for your household in about a minute.
       </Text>
       <AppButton
-        title="Generate My Meal Plan 🐝"
+        title="Generate"
         onPress={onGenerate}
         style={styles.generateButton}
       />

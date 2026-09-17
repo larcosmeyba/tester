@@ -217,7 +217,7 @@ export function MealQuestionnaire() {
               />
             ) : null}
             <AppButton
-              title={isLastStep ? 'Generate My Meal Plan 🐝' : 'Continue'}
+              title={isLastStep ? 'Generate' : 'Continue'}
               onPress={() => void advance()}
               style={styles.continueButton}
             />
