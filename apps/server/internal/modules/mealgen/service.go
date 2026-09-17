@@ -41,11 +41,12 @@ type Repository interface {
 }
 
 type Service struct {
-	repo     Repository
-	catalog  *catalog.Service
-	arranger *Arranger
-	narrator *Narrator
-	logger   *slog.Logger
+	repo      Repository
+	catalog   *catalog.Service
+	arranger  *Arranger
+	narrator  *Narrator
+	generator *Generator
+	logger    *slog.Logger
 }
 
 func NewService(repo Repository, catalogService *catalog.Service, aiProvider provider.Provider, logger *slog.Logger) *Service {
@@ -53,11 +54,12 @@ func NewService(repo Repository, catalogService *catalog.Service, aiProvider pro
 		logger = slog.Default()
 	}
 	return &Service{
-		repo:     repo,
-		catalog:  catalogService,
-		arranger: NewArranger(aiProvider, logger),
-		narrator: NewNarrator(aiProvider, logger),
-		logger:   logger,
+		repo:      repo,
+		catalog:   catalogService,
+		arranger:  NewArranger(aiProvider, logger),
+		narrator:  NewNarrator(aiProvider, logger),
+		generator: NewGenerator(aiProvider, nil, logger),
+		logger:    logger,
 	}
 }
 
@@ -73,11 +75,30 @@ func (s *Service) Build(ctx context.Context, userID string, request meals.PlanRe
 		return meals.Plan{}, "", err
 	}
 
+	// When the library cannot fill the week, the AI invents recipes from the
+	// questionnaire answers. This is how a new user with no saved recipes
+	// still gets a full plan: the model generates, the arranger places, and
+	// the planner costs.
+	slots := RequestedSlots(request)
+	if len(pool) < len(slots) {
+		needed := len(slots) - len(pool)
+		// The resolver maps the AI's free-text ingredient names to catalog
+		// IDs so pricing works. Unresolved names stay as free text.
+		if resolver, err := s.catalog.Resolver(ctx); err == nil {
+			s.generator.Resolve = catalogResolver{resolver}
+		}
+		if generated := s.generator.Generate(ctx, request, needed); len(generated) > 0 {
+			pool = append(pool, generated...)
+			s.logger.Info("ai generated recipes for empty library",
+				"generated", len(generated), "library", len(pool)-len(generated))
+		}
+	}
+
 	// The model is asked which of the already-safe recipes go where. It cannot
 	// widen the pool, and anything it does not answer for is filled
 	// deterministically — so with no provider configured this is a no-op and
 	// the week is exactly the one the planner would have built alone.
-	arrangement := s.arranger.Arrange(ctx, request, pool, RequestedSlots(request),
+	arrangement := s.arranger.Arrange(ctx, request, pool, slots,
 		meals.Set(request.PantryItems...), cat)
 
 	plan := NewPlanner(cat).BuildWith(request, pool, planID, arrangement)
@@ -228,4 +249,21 @@ func (s *Service) Chosen(ctx context.Context, userID string, request meals.PlanR
 		PantryIngredientIDs: pantryUsed(chosen, pantry, cat),
 		ConsumedCost:        consumedCost(chosen, scale, pantry, cat),
 	}, nil
+}
+
+// catalogResolver adapts *catalog.Resolver to the generator's
+// IngredientResolver interface.
+type catalogResolver struct {
+	inner *catalog.Resolver
+}
+
+func (c catalogResolver) ResolveIngredient(name string) string {
+	if c.inner == nil {
+		return ""
+	}
+	resolution := c.inner.Resolve(name)
+	if !resolution.Resolved() {
+		return ""
+	}
+	return resolution.IngredientID
 }
