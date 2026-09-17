@@ -27,7 +27,8 @@ type LinkSender interface {
 }
 
 // DefaultEmailFrom is used for verification emails unless EMAIL_FROM is set.
-const DefaultEmailFrom = "Help The Hive <support@helpthehive.com>"
+// It uses the auth subdomain, which is the domain verified in Resend.
+const DefaultEmailFrom = "Help The Hive <support@auth.helpthehive.com>"
 
 // ResendEmailSender delivers verification codes through the Resend HTTP API.
 // It reads RESEND_API_KEY (and the optional EMAIL_FROM override) at send
