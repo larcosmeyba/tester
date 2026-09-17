@@ -86,10 +86,10 @@ type Suggestion = {
 
 // Matches the Swift suggestion cards (icon, title, tint).
 const SUGGESTIONS: Suggestion[] = [
-  { icon: 'map', title: 'Find resources near me', tint: '#2E7D32', action: { kind: 'tab', tab: 1 } },
-  { icon: 'doc', title: 'Start a benefits application', tint: '#472EAD', action: { kind: 'route', route: 'benefitsState' } },
-  { icon: 'fork', title: 'Create a meal from my pantry', tint: '#D98C0D', action: { kind: 'route', route: 'cookWhatIHave' } },
-  { icon: 'plus', title: 'Add items to my pantry', tint: '#D9772A', action: { kind: 'route', route: 'addPantry' } },
+  { icon: 'map', title: 'Find resources near me', tint: '#2E7D32', action: { kind: 'seed', text: 'Find resources near me' } },
+  { icon: 'doc', title: 'Start a benefits application', tint: '#472EAD', action: { kind: 'seed', text: 'I want to start a benefits application' } },
+  { icon: 'fork', title: 'Create a meal from my pantry', tint: '#D98C0D', action: { kind: 'seed', text: 'Create a meal from my pantry' } },
+  { icon: 'plus', title: 'Add items to my pantry', tint: '#D9772A', action: { kind: 'seed', text: 'I want to add items to my pantry' } },
   { icon: 'bolt', title: 'Help lower my utility bill', tint: '#0061EB', action: { kind: 'seed', text: 'Help lower my utility bill' } },
   { icon: 'chat', title: 'What can Help The Hive do?', tint: '#00857A', action: { kind: 'seed', text: 'What can Help The Hive do?' } },
 ];
@@ -193,9 +193,9 @@ export function PennyScreen({ nav, context: propContext }: { nav: Navigation; co
       nav.push(action.route);
       return;
     }
-    // Seed the composer; the user reviews and sends it — never auto-sent.
-    setMessageText(action.text);
-    inputRef.current?.focus();
+    // Tapping a suggestion sends it to Penny straight away — Penny figures
+    // out the intent and points the user in the right direction.
+    void sendMessage(action.text);
   }
 
   async function sendMessage(text: string) {
@@ -213,6 +213,9 @@ export function PennyScreen({ nav, context: propContext }: { nav: Navigation; co
     // Scope: graceful local redirect — no backend call, no usage consumed.
     if (classifyPennyScope(trimmed) === 'out-of-scope') {
       const stamp = nextMessageStamp();
+      // react-hooks/purity false positive: sendMessage only runs from event
+      // handlers (composer submit, suggestion tap), never during render.
+      // eslint-disable-next-line react-hooks/purity
       const now = Date.now();
       setMessages((current) => [
         ...current,
@@ -230,6 +233,9 @@ export function PennyScreen({ nav, context: propContext }: { nav: Navigation; co
       return;
     }
 
+    // react-hooks/purity false positive: sendMessage only runs from event
+    // handlers (composer submit, suggestion tap), never during render.
+    // eslint-disable-next-line react-hooks/purity
     const sentAt = Date.now();
     setMessages((current) => [...current, { id: `u-${nextMessageStamp()}`, text: trimmed, isUser: true, at: sentAt }]);
     setMessageText('');
@@ -398,7 +404,7 @@ export function PennyScreen({ nav, context: propContext }: { nav: Navigation; co
                       pressed && sharedStyles.pressed,
                     ]}>
                     <View style={[styles.suggestionIcon, { backgroundColor: `${suggestion.tint}26` }]}>
-                      <HiveIcon name={suggestion.icon} size={22} color={suggestion.tint} />
+                      <HiveIcon name={suggestion.icon} size={18} color={suggestion.tint} />
                     </View>
                     <Text style={styles.suggestionText}>{suggestion.title}</Text>
                   </Pressable>
@@ -636,11 +642,11 @@ const styles = StyleSheet.create({
   suggestionCard: {
     flexBasis: '47%',
     flexGrow: 1,
-    minHeight: 128,
-    padding: 16,
-    borderRadius: 16,
+    minHeight: 96,
+    padding: 12,
+    borderRadius: 14,
     borderWidth: 1,
-    gap: 12,
+    gap: 8,
   },
   suggestionGrid: {
     flexDirection: 'row',
@@ -650,13 +656,13 @@ const styles = StyleSheet.create({
     alignSelf: 'stretch',
   },
   suggestionIcon: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  suggestionText: { color: HiveColors.text, fontSize: 16, fontWeight: '700', lineHeight: 22 },
+  suggestionText: { color: HiveColors.text, fontSize: 14, fontWeight: '700', lineHeight: 19 },
   timestamp: {
     alignSelf: 'flex-end',
     fontSize: 10,

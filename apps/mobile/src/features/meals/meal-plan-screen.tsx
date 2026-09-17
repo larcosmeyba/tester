@@ -62,8 +62,8 @@ import {
 import { shareRecipeBook } from '@/features/meals/recipe-book-print';
 import type { MealSlot, PlannedMeal } from '@/features/meals/meal-plan-model';
 
-const pennyHeaderSource = require('@/assets/images/hive/penny.png');
-const pennyEmptySource = require('@/assets/images/hive/ask-penny.png');
+const pennyHeaderSource = require('@/assets/images/hive/penny-chef-full.png');
+const pennyEmptySource = require('@/assets/images/hive/penny-chef-headshot.png');
 
 const WEEKDAY_LETTERS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
