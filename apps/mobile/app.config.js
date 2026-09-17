@@ -17,7 +17,8 @@ const deepLinkHost =
 
 // Data types the app actually collects (linked to the user, never used for
 // tracking, purpose: app functionality):
-// - Name, Email Address: account signup (better-auth)
+// - Name, Email Address, Phone Number: account signup (better-auth);
+//   phone stored on user profile, change flow verified by one-time code
 // - Photos or Videos: optional profile photo, pantry scan images
 // - Precise Location: "resources near you" (optional, ZIP fallback)
 // - User ID, Device ID: account id + Expo push token
@@ -30,6 +31,7 @@ const deepLinkHost =
 const collectedDataTypes = [
   'NSPrivacyCollectedDataTypeName',
   'NSPrivacyCollectedDataTypeEmailAddress',
+  'NSPrivacyCollectedDataTypePhoneNumber',
   'NSPrivacyCollectedDataTypePhotosorVideos',
   'NSPrivacyCollectedDataTypePreciseLocation',
   'NSPrivacyCollectedDataTypeUserID',
