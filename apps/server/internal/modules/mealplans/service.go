@@ -54,6 +54,10 @@ type Repository interface {
 	DeletePlanMealsForDay(ctx context.Context, userID string, planID string, day int) ([]string, error)
 	UpdatePlanMealServings(ctx context.Context, userID string, planID string, day int, mealType string, servings float64, scale float64) error
 	SetMealPlanStatus(ctx context.Context, userID string, planID string, status string) error
+
+	// AI-generated recipes are saved to the user's private library so plans
+	// built from them survive read-back.
+	UpsertRecipe(ctx context.Context, recipe meals.Recipe) error
 }
 
 // Service resolves the viewer from the verified token on every call and scopes
@@ -117,11 +121,11 @@ func (s *Service) Generate(ctx context.Context, identity auth.Identity, request 
 		return meals.Plan{}, err
 	}
 
-	plan, source, err := s.generator.Build(ctx, userID, request, db.NewID())
+	plan, source, generated, err := s.generator.Build(ctx, userID, request, db.NewID())
 	if err != nil {
 		return meals.Plan{}, err
 	}
-	return s.persist(ctx, userID, request, plan, source)
+	return s.persist(ctx, userID, request, plan, source, generated)
 }
 
 // Current returns the plan the user is on, or nil when they have none. Having

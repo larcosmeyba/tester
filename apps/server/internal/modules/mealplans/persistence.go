@@ -18,7 +18,7 @@ import (
 // always be rebuilt from what the user actually said rather than from what the
 // engine happened to do with it.
 
-func (s *Service) persist(ctx context.Context, userID string, request meals.PlanRequest, plan meals.Plan, source string) (meals.Plan, error) {
+func (s *Service) persist(ctx context.Context, userID string, request meals.PlanRequest, plan meals.Plan, source string, generated []meals.Recipe) (meals.Plan, error) {
 	snapshot, err := json.Marshal(request)
 	if err != nil {
 		return meals.Plan{}, err
@@ -62,6 +62,20 @@ func (s *Service) persist(ctx context.Context, userID string, request meals.Plan
 		return meals.Plan{}, err
 	}
 	plan.PlanID = saved.ID
+
+	// AI-invented recipes are saved to the user's private library, attributed
+	// to Penny. The grocery list and plan detail are rebuilt from the library
+	// by recipe ID on every read — without this, a plan made of generated
+	// recipes would come back with "ai-…" IDs as dish names and an empty
+	// grocery list. Saved recipes also seed the user's library, so next
+	// week's plan needs less generation.
+	for i := range generated {
+		generated[i].OwnerUserID = &userID
+		if err := s.repo.UpsertRecipe(ctx, generated[i]); err != nil {
+			return meals.Plan{}, err
+		}
+	}
+
 	return plan, nil
 }
 

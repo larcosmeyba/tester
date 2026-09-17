@@ -77,16 +77,23 @@ func NewService(repo Repository, catalogService *catalog.Service, aiProvider pro
 // The second return value is where the message came from — "ai" or
 // "deterministic" — which is recorded on the plan so a message can always be
 // traced to what wrote it.
-func (s *Service) Build(ctx context.Context, userID string, request meals.PlanRequest, planID string) (meals.Plan, string, error) {
+func (s *Service) Build(ctx context.Context, userID string, request meals.PlanRequest, planID string) (meals.Plan, string, []meals.Recipe, error) {
 	pool, cat, err := s.eligible(ctx, userID, request)
 	if err != nil {
-		return meals.Plan{}, "", err
+		return meals.Plan{}, "", nil, err
 	}
 
 	// When the library cannot fill the week, the AI invents recipes from the
 	// questionnaire answers. This is how a new user with no saved recipes
 	// still gets a full plan: the model generates, the arranger places, and
 	// the planner costs.
+	//
+	// Generated recipes are NOT run through EligibleRecipes: its hard filters
+	// reject any recipe with an unresolvable ingredient when the user has
+	// allergies, which would nuke every AI recipe for exactly the users who
+	// need them. Allergy safety for generated recipes is enforced in the
+	// generator's parse step, which checks the raw ingredient names directly.
+	var generated []meals.Recipe
 	slots := RequestedSlots(request)
 	if len(pool) < len(slots) {
 		needed := len(slots) - len(pool)
@@ -95,7 +102,8 @@ func (s *Service) Build(ctx context.Context, userID string, request meals.PlanRe
 		if resolver, err := s.catalog.Resolver(ctx); err == nil {
 			s.generator.Resolve = catalogResolver{resolver}
 		}
-		if generated := s.generator.Generate(ctx, request, needed); len(generated) > 0 {
+		if g := s.generator.Generate(ctx, request, needed, planID); len(g) > 0 {
+			generated = g
 			pool = append(pool, generated...)
 			s.logger.Info("ai generated recipes for empty library",
 				"generated", len(generated), "library", len(pool)-len(generated))
@@ -125,7 +133,7 @@ func (s *Service) Build(ctx context.Context, userID string, request meals.PlanRe
 
 	message, source := s.narrator.Describe(ctx, plan)
 	plan.PennyMessage = message
-	return plan, source, nil
+	return plan, source, generated, nil
 }
 
 // Replacement re-picks one slot and returns the meal row to store in its place.

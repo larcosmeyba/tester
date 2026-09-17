@@ -83,12 +83,14 @@ func NewGenerator(p provider.Provider, resolve IngredientResolver, logger *slog.
 const recipesPerBatch = 5
 
 // Generate invents count recipes for the request, in batches of
-// recipesPerBatch. It returns nil when there is no provider configured — the
-// caller falls back to whatever the library holds. An AI failure is also
-// nil, never an error: a partial week from the library beats no week at
-// all. Recipes already generated are named in later prompts so the model
-// does not repeat dishes across batches.
-func (g *Generator) Generate(ctx context.Context, request meals.PlanRequest, count int) []meals.Recipe {
+// recipesPerBatch. idPrefix namespaces the invented recipe IDs (callers pass
+// the plan ID) so two plans never collide on "ai-generated-N". It returns
+// nil when there is no provider configured — the caller falls back to
+// whatever the library holds. An AI failure is also nil, never an error: a
+// partial week from the library beats no week at all. Recipes already
+// generated are named in later prompts so the model does not repeat dishes
+// across batches.
+func (g *Generator) Generate(ctx context.Context, request meals.PlanRequest, count int, idPrefix string) []meals.Recipe {
 	if g == nil || g.Provider == nil || count <= 0 {
 		return nil
 	}
@@ -97,6 +99,7 @@ func (g *Generator) Generate(ctx context.Context, request meals.PlanRequest, cou
 	}
 
 	var out []meals.Recipe
+	seq := 0
 	for len(out) < count {
 		need := count - len(out)
 		if need > recipesPerBatch {
@@ -115,13 +118,14 @@ func (g *Generator) Generate(ctx context.Context, request meals.PlanRequest, cou
 			break
 		}
 
-		recipes := g.parse(response.Text, request)
+		recipes, consumed := g.parse(response.Text, request, idPrefix, seq)
 		if len(recipes) == 0 {
 			g.Logger.Warn("ai recipe generation returned nothing usable",
 				"provider", g.Provider.Name(), "model", response.Model,
 				"generated", len(out), "wanted", count)
 			break
 		}
+		seq += consumed
 		out = append(out, recipes...)
 	}
 	return out
@@ -182,8 +186,11 @@ func (g *Generator) userPrompt(request meals.PlanRequest, count int, already []s
 
 // parse turns the model's JSON into recipes, dropping anything malformed or
 // unsafe. A recipe with no title, no ingredients, or no instructions is not
-// a recipe.
-func (g *Generator) parse(raw string, request meals.PlanRequest) []meals.Recipe {
+// a recipe. baseSeq is the running recipe sequence across batches, so IDs
+// stay unique for the whole generation. It also returns how many sequence
+// numbers the batch consumed (including dropped recipes) so the caller's
+// counter never reuses one.
+func (g *Generator) parse(raw string, request meals.PlanRequest, idPrefix string, baseSeq int) ([]meals.Recipe, int) {
 	cleaned := strings.TrimSpace(raw)
 	cleaned = strings.TrimPrefix(cleaned, "```json")
 	cleaned = strings.TrimPrefix(cleaned, "```")
@@ -195,7 +202,7 @@ func (g *Generator) parse(raw string, request meals.PlanRequest) []meals.Recipe 
 	}
 	if err := json.Unmarshal([]byte(cleaned), &decoded); err != nil {
 		g.Logger.Warn("ai recipe JSON did not parse", "error", err)
-		return nil
+		return nil, 0
 	}
 
 	var out []meals.Recipe
@@ -205,13 +212,13 @@ func (g *Generator) parse(raw string, request meals.PlanRequest) []meals.Recipe 
 				"recipe", ar.Title, "allergen", hit)
 			continue
 		}
-		recipe := g.toRecipe(ar, i)
+		recipe := g.toRecipe(ar, idPrefix, baseSeq+i)
 		if recipe == nil {
 			continue
 		}
 		out = append(out, *recipe)
 	}
-	return out
+	return out, len(decoded.Recipes)
 }
 
 // allergenHit returns the first allergy whose name appears inside an
@@ -235,8 +242,9 @@ func allergenHit(ingredients []aiIngredient, allergies []meals.AllergyRequiremen
 
 // toRecipe converts one AI recipe to the domain shape. Ingredients are
 // resolved against the catalog so pricing works; unresolved names stay as
-// free text rather than dropping the ingredient.
-func (g *Generator) toRecipe(ar aiRecipe, index int) *meals.Recipe {
+// free text rather than dropping the ingredient. seq is the recipe's unique
+// sequence number for this generation, namespaced by idPrefix.
+func (g *Generator) toRecipe(ar aiRecipe, idPrefix string, seq int) *meals.Recipe {
 	title := strings.TrimSpace(ar.Title)
 	if title == "" || len(ar.Ingredients) == 0 || len(ar.Instructions) == 0 {
 		return nil
@@ -262,13 +270,14 @@ func (g *Generator) toRecipe(ar aiRecipe, index int) *meals.Recipe {
 	total := prep + cook
 
 	ingredients := make([]meals.RecipeIngredient, 0, len(ar.Ingredients))
+	base := fmt.Sprintf("ai-%s-%d", idPrefix, seq)
 	for pos, ai := range ar.Ingredients {
 		name := strings.TrimSpace(ai.Name)
 		if name == "" {
 			continue
 		}
 		ri := meals.RecipeIngredient{
-			ID:       fmt.Sprintf("ai-%d-%d", index, pos),
+			ID:       fmt.Sprintf("%s-i%d", base, pos),
 			Position: pos,
 			RawText:  name,
 		}
@@ -306,7 +315,7 @@ func (g *Generator) toRecipe(ar aiRecipe, index int) *meals.Recipe {
 			continue
 		}
 		instructions = append(instructions, meals.RecipeInstruction{
-			ID:   fmt.Sprintf("ai-%d-s%d", index, step),
+			ID:   fmt.Sprintf("%s-s%d", base, step),
 			Step: step,
 			Text: text,
 		})
@@ -316,7 +325,7 @@ func (g *Generator) toRecipe(ar aiRecipe, index int) *meals.Recipe {
 	}
 
 	return &meals.Recipe{
-		ID:                 fmt.Sprintf("ai-generated-%d", index),
+		ID:                 base,
 		Title:              title,
 		SourceType:         "ai_generated",
 		SourceName:         stringPtr("Penny"),
