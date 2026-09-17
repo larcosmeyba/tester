@@ -492,7 +492,8 @@ export function PaywallContent({ onClose }: { onClose: () => void }) {
       </Card>
       <AppButton
         title="Upgrade to Hive Plus"
-        // Opens the Hive Plus paywall (SubscriptionSheet, via Settings → profile).
+        // TODO(Section 9): route to the Hive Plus purchase flow (subscription info
+        // in Settings). Purchase is scaffolded only — do not invent a checkout.
         onPress={onClose}
         style={sharedStyles.fullWidth}
       />

@@ -41,7 +41,6 @@ import {
 } from '@/features/notifications/pending-deep-link';
 import type { QuestionnaireReminderPushData } from '@/features/notifications/notification-service';
 import { sharedStyles } from '@/features/app/app-shared';
-import { initRevenueCat } from '@/features/subscriptions/revenuecat';
 import { StyleSheet } from 'react-native';
 import { HiveColors } from '@/constants/theme';
 
@@ -92,12 +91,6 @@ export default function AppRoot({ initialPublicScreen }: { initialPublicScreen?:
     }),
     [initialRouteName]
   );
-
-  // RevenueCat (Hive Plus): configure once at cold start. Missing public SDK
-  // keys just log a warning and leave the paywall in preview mode.
-  useEffect(() => {
-    initRevenueCat();
-  }, []);
 
   // Questionnaire drop-off reminder deep link (Audit Section 3): a tap on the
   // "You're almost done" notification lands back on the exact questionnaire
