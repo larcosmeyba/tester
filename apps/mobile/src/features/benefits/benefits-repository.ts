@@ -191,6 +191,14 @@ export {
  * here beside the other calls rather than with the pure answer logic.
  */
 export function benefitsDocumentUrl(path: string): string {
-  const base = process.env.EXPO_PUBLIC_API_URL ?? "http://localhost:8080/graphql";
+  const rawApiUrl = process.env.EXPO_PUBLIC_API_URL;
+  if (!rawApiUrl && !__DEV__) {
+    throw new Error(
+      '[benefits] EXPO_PUBLIC_API_URL is not set. Production builds require it ' +
+        '(set it in the EAS "production" environment). Refusing to fall back to ' +
+        'http://localhost:8080, which would be unreachable in a shipped app.',
+    );
+  }
+  const base = rawApiUrl ?? 'http://localhost:8080/graphql';
   return joinDocumentUrl(base, path);
 }

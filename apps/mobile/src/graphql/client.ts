@@ -26,8 +26,15 @@ function responseSummary(response: Response, body: string) {
   return detail ? `${status}: ${detail}` : `${status}: Empty response from GraphQL server`;
 }
 
-const defaultEndpoint =
-  process.env.EXPO_PUBLIC_API_URL ?? "http://localhost:8080/graphql";
+const rawApiUrl = process.env.EXPO_PUBLIC_API_URL;
+if (!rawApiUrl && !__DEV__) {
+  throw new Error(
+    '[graphql/client] EXPO_PUBLIC_API_URL is not set. Production builds require it ' +
+      '(set it in the EAS "production" environment). Refusing to fall back to ' +
+      'http://localhost:8080/graphql, which would be unreachable in a shipped app.',
+  );
+}
+const defaultEndpoint = rawApiUrl ?? 'http://localhost:8080/graphql';
 
 export const graphqlClientStatus: GraphQLClientStatus = "configured";
 

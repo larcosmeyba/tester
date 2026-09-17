@@ -22,7 +22,15 @@ const webStorage = {
   },
 };
 
-const authURL = process.env.EXPO_PUBLIC_BETTER_AUTH_URL ?? 'http://localhost:3000';
+const rawAuthUrl = process.env.EXPO_PUBLIC_BETTER_AUTH_URL;
+if (!rawAuthUrl && !__DEV__) {
+  throw new Error(
+    '[auth] EXPO_PUBLIC_BETTER_AUTH_URL is not set. Production builds require it ' +
+      '(set it in the EAS "production" environment). Refusing to fall back to ' +
+      'http://localhost:3000, which would be unreachable in a shipped app.',
+  );
+}
+const authURL = rawAuthUrl ?? 'http://localhost:3000';
 const authCallbackURL = process.env.EXPO_PUBLIC_AUTH_CALLBACK_URL ?? 'helpthehive://auth';
 
 export const verificationCallbackURL = `${authCallbackURL}/verified`;

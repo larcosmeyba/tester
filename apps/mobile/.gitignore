@@ -5,3 +5,5 @@
 expo-env.d.ts
 # @end expo-cli
 .env
+# Expo managed workflow: native projects are generated via `npx expo prebuild`
+android/
