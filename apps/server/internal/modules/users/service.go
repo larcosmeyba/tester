@@ -670,3 +670,13 @@ func trimStringSlice(values []string) {
 		values[index] = strings.TrimSpace(values[index])
 	}
 }
+
+// GetLocationFallback returns the ZIP the user saved, or "" when none was.
+// It is used to price meal plans with live Kroger data for the user's area.
+func (s *Service) GetLocationFallback(ctx context.Context, identity auth.Identity) (string, error) {
+	viewer, err := s.Viewer(ctx, identity)
+	if err != nil {
+		return "", err
+	}
+	return s.store.GetLocationFallback(ctx, viewer.User.ID)
+}

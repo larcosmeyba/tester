@@ -25,6 +25,7 @@ import (
 
 	"github.com/helpthehive/server/internal/domain/meals"
 	"github.com/helpthehive/server/internal/modules/catalog"
+	"github.com/helpthehive/server/internal/modules/kroger"
 	"github.com/helpthehive/server/internal/modules/mealgen/provider"
 )
 
@@ -46,12 +47,17 @@ type Service struct {
 	arranger  *Arranger
 	narrator  *Narrator
 	generator *Generator
+	pricer    *LivePricer
+	kroger    kroger.Provider
 	logger    *slog.Logger
 }
 
-func NewService(repo Repository, catalogService *catalog.Service, aiProvider provider.Provider, logger *slog.Logger) *Service {
+func NewService(repo Repository, catalogService *catalog.Service, aiProvider provider.Provider, krogerProvider kroger.Provider, logger *slog.Logger) *Service {
 	if logger == nil {
 		logger = slog.Default()
+	}
+	if krogerProvider == nil {
+		krogerProvider = kroger.Unconfigured{}
 	}
 	return &Service{
 		repo:      repo,
@@ -59,6 +65,8 @@ func NewService(repo Repository, catalogService *catalog.Service, aiProvider pro
 		arranger:  NewArranger(aiProvider, logger),
 		narrator:  NewNarrator(aiProvider, logger),
 		generator: NewGenerator(aiProvider, nil, logger),
+		pricer:    NewLivePricer(krogerProvider, logger),
+		kroger:    krogerProvider,
 		logger:    logger,
 	}
 }
@@ -102,6 +110,19 @@ func (s *Service) Build(ctx context.Context, userID string, request meals.PlanRe
 		meals.Set(request.PantryItems...), cat)
 
 	plan := NewPlanner(cat).BuildWith(request, pool, planID, arrangement)
+
+	// Live Kroger pricing for the user's area replaces the stored estimates
+	// on the grocery list when a postal code was provided. Without one, or
+	// when Kroger is unconfigured, the estimates stand.
+	if request.PostalCode != "" {
+		var liveCount int
+		plan, liveCount = s.pricer.PricePlan(ctx, request.PostalCode, plan)
+		if liveCount > 0 {
+			s.logger.Info("plan priced with live kroger data",
+				"live_items", liveCount, "postal_code", request.PostalCode)
+		}
+	}
+
 	message, source := s.narrator.Describe(ctx, plan)
 	plan.PennyMessage = message
 	return plan, source, nil

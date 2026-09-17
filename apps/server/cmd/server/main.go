@@ -151,7 +151,7 @@ func run(logger *slog.Logger) error {
 	}
 
 	mealProfileService := mealprofile.NewService(store, userService)
-	generatorService := mealgen.NewService(store, catalogService, aiProvider, logger)
+	generatorService := mealgen.NewService(store, catalogService, aiProvider, krogerProvider, logger)
 
 	// The plan service completes a request from the user's saved questionnaire
 	// answers and their pantry before generating. Both only ever fill in what

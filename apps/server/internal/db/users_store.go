@@ -1293,3 +1293,19 @@ func (s *Store) SavePhoneNumber(ctx context.Context, userID, phoneNumber string)
 	`, userID, phoneNumber)
 	return err
 }
+
+// GetLocationFallback returns the manual ZIP the user typed, or "" when none
+// was saved.
+func (s *Store) GetLocationFallback(ctx context.Context, userID string) (string, error) {
+	var zip *string
+	err := s.pool.QueryRow(ctx, `
+		SELECT location_zip_fallback FROM users WHERE id = $1
+	`, userID).Scan(&zip)
+	if err != nil {
+		return "", err
+	}
+	if zip == nil {
+		return "", nil
+	}
+	return *zip, nil
+}

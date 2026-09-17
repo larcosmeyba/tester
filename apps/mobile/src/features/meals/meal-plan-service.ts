@@ -127,6 +127,7 @@ export function toPlanRequestInput(
     leftovers: request.leftovers,
     excludeRecipeIds: request.excludeRecipeIds,
     seed: options.seed ?? null,
+    postalCode: request.postalCode ?? null,
   };
 }
 

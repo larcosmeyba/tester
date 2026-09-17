@@ -90,6 +90,10 @@ type PlanRequest struct {
 	Meals                MealCounts `json:"meals"`
 	Days                 int        `json:"days"`
 	Budget               Budget     `json:"budget"`
+	// PostalCode is the user's ZIP. When present and Kroger is configured,
+	// the plan is priced with live quotes from the nearest Kroger-family
+	// store instead of the stored estimates.
+	PostalCode string `json:"postal_code,omitempty"`
 	// Canonical ingredient ids, not free text.
 	PantryItems []string `json:"pantry_items"`
 	// PantryHoldings is how much of each pantry ingredient the user has, where

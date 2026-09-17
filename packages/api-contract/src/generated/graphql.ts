@@ -1244,6 +1244,8 @@ export type PlanRequestInput = {
   /** Canonical ingredient ids, not free text. */
   pantryItems: Array<Scalars['ID']['input']>;
   planScope?: InputMaybe<Scalars['String']['input']>;
+  /** User's ZIP code. When present and Kroger is configured, the plan is priced with live quotes from the nearest Kroger-family store. */
+  postalCode?: InputMaybe<Scalars['String']['input']>;
   questionnaireVersion: Scalars['String']['input'];
   seed?: InputMaybe<Scalars['Int']['input']>;
 };

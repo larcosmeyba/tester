@@ -676,6 +676,8 @@ type PlanRequestInput struct {
 	Leftovers            LeftoversPreference         `json:"leftovers"`
 	ExcludeRecipeIds     []string                    `json:"excludeRecipeIds"`
 	Seed                 *int                        `json:"seed,omitempty"`
+	// User's ZIP code for live Kroger pricing.
+	PostalCode *string `json:"postalCode,omitempty"`
 }
 
 type PlanSummary struct {

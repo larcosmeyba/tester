@@ -25,6 +25,9 @@ func planRequestFromInput(input model.PlanRequestInput) meals.PlanRequest {
 		ExcludeRecipeIDs:     input.ExcludeRecipeIds,
 		Seed:                 input.Seed,
 	}
+	if input.PostalCode != nil {
+		request.PostalCode = *input.PostalCode
+	}
 	if input.PlanScope != nil {
 		request.PlanScope = *input.PlanScope
 	}
