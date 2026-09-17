@@ -9,7 +9,7 @@
   "formTitle": "Application for Veterans Pension",
   "formVersion": "2025.12",
   "revision": 1,
-  "status": "draft",
+  "status": "active",
   "vocabularyVersion": 1,
   "effectiveDate": "2025-12-01",
   "agencyUrl": "https://www.va.gov/find-forms/about-form-21p-527ez/",
@@ -582,6 +582,4923 @@
       "source": {},
       "fillPolicy": "never",
       "note": "Date beside the in-home care signature."
+    },
+    {
+      "id": "filed_claim_with_va",
+      "target": {
+        "type": "radio",
+        "name": "form1[0].#subform[21].RadioButtonList[0]"
+      },
+      "source": {
+        "fieldPath": "benefits.has_applied_before"
+      },
+      "valueMap": {
+        "true": "0",
+        "false": "1"
+      },
+      "note": "1D ever filed a claim with VA."
+    },
+    {
+      "id": "pow_ever",
+      "target": {
+        "type": "radio",
+        "name": "form1[0].#subform[21].RadioButtonList[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "3G ever a prisoner of war — no POW vocabulary path; applicant answers."
+    },
+    {
+      "id": "nursing_home_resident",
+      "target": {
+        "type": "radio",
+        "name": "form1[0].#subform[21].RadioButtonList[2]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "4C lives in a nursing home — no vocabulary path; applicant answers."
+    },
+    {
+      "id": "medically_incapable_of_work",
+      "target": {
+        "type": "radio",
+        "name": "form1[0].#subform[21].RadioButtonList[3]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "4B medically incapable of working — no vocabulary path; applicant answers."
+    },
+    {
+      "id": "medicaid_covers_nursing_home",
+      "target": {
+        "type": "radio",
+        "name": "form1[0].#subform[21].RadioButtonList[4]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "4D Medicaid covers nursing-home costs or applied for Medicaid — no vocabulary path."
+    },
+    {
+      "id": "special_monthly_pension_housebound",
+      "target": {
+        "type": "radio",
+        "name": "form1[0].#subform[21].RadioButtonList[5]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "4E claiming special monthly pension / housebound — no vocabulary path; applicant answers."
+    },
+    {
+      "id": "va_medical_center_treatment",
+      "target": {
+        "type": "radio",
+        "name": "form1[0].#subform[21].RadioButtonList[6]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "4F received treatment from a VA medical center — no vocabulary path; applicant answers."
+    },
+    {
+      "id": "federal_medical_facility_treatment",
+      "target": {
+        "type": "radio",
+        "name": "form1[0].#subform[21].RadioButtonList[7]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "4G received treatment from a federal medical facility — no vocabulary path; applicant answers."
+    },
+    {
+      "id": "currently_employed",
+      "target": {
+        "type": "radio",
+        "name": "form1[0].#subform[22].RadioButtonList[8]"
+      },
+      "source": {
+        "fieldPath": "employment.status"
+      },
+      "strength": "required",
+      "valueMap": {
+        "employed_full_time": "0",
+        "employed_part_time": "0",
+        "self_employed": "0",
+        "seasonal": "0",
+        "unemployed": "1",
+        "retired": "1",
+        "student": "1",
+        "unable_to_work": "1"
+      },
+      "note": "5A currently employed. Seasonal counts as employed; a between-seasons worker may answer NO by hand."
+    },
+    {
+      "id": "marital_status",
+      "target": {
+        "type": "radio",
+        "name": "form1[0].#subform[22].RadioButtonList[9]"
+      },
+      "source": {
+        "fieldPath": "applicant.marital_status"
+      },
+      "strength": "required",
+      "valueMap": {
+        "married": "0",
+        "separated": "1",
+        "single": "2",
+        "divorced": "2",
+        "widowed": "2",
+        "domestic_partnership": "2"
+      },
+      "note": "6A marital status: MARRIED=0, SEPARATED=1, NOT MARRIED=2. Divorced/widowed check NOT MARRIED per the form's skip logic; domestic partnership is approximated as NOT MARRIED."
+    },
+    {
+      "id": "marriage_type",
+      "target": {
+        "type": "radio",
+        "name": "form1[0].#subform[22].RadioButtonList[10]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "6I type of marriage (ceremonial / other) — no vocabulary path; applicant answers."
+    },
+    {
+      "id": "spouse_also_veteran",
+      "target": {
+        "type": "radio",
+        "name": "form1[0].#subform[22].RadioButtonList[11]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "6J spouse also a veteran — no spouse vocabulary paths; applicant answers."
+    },
+    {
+      "id": "separation_reason",
+      "target": {
+        "type": "radio",
+        "name": "form1[0].#subform[22].RadioButtonList[12]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "6L separation reason: MEDICAL REASON=0, MARITAL DISCORD=1, WORK=2, OTHER=3 — no vocabulary path."
+    },
+    {
+      "id": "prior_marriage1_how_ended",
+      "target": {
+        "type": "radio",
+        "name": "form1[0].#subform[22].RadioButtonList[13]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "7B how the previous marriage ended (death / divorce / other) — no prior-marriage vocabulary path."
+    },
+    {
+      "id": "prior_marriage2_how_ended",
+      "target": {
+        "type": "radio",
+        "name": "form1[0].#subform[23].RadioButtonList[14]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "7H how the previous marriage ended (death / divorce / other) — no prior-marriage vocabulary path."
+    },
+    {
+      "id": "spouse_prior_marriage2_how_ended",
+      "target": {
+        "type": "radio",
+        "name": "form1[0].#subform[23].RadioButtonList[15]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "7U how the spouse's previous marriage ended — no prior-marriage vocabulary path."
+    },
+    {
+      "id": "spouse_additional_marriages",
+      "target": {
+        "type": "radio",
+        "name": "form1[0].#subform[23].RadioButtonList[16]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "7Z additional marriages to report for spouse — no vocabulary path; applicant answers."
+    },
+    {
+      "id": "additional_marriages_to_report",
+      "target": {
+        "type": "radio",
+        "name": "form1[0].#subform[23].RadioButtonList[17]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "7M additional marriages to report — no vocabulary path; applicant answers."
+    },
+    {
+      "id": "spouse_prior_marriage1_how_ended",
+      "target": {
+        "type": "radio",
+        "name": "form1[0].#subform[23].RadioButtonList[18]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "7O how the spouse's previous marriage ended — no prior-marriage vocabulary path."
+    },
+    {
+      "id": "children_same_address",
+      "target": {
+        "type": "radio",
+        "name": "form1[0].#subform[24].RadioButtonList[19]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "8Q whether children not living with the veteran all reside at the same address — no vocabulary path."
+    },
+    {
+      "id": "assets_over_75k",
+      "target": {
+        "type": "radio",
+        "name": "form1[0].#subform[24].RadioButtonList[20]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "9A assets over $75,000 — no asset-total vocabulary path; applicant answers."
+    },
+    {
+      "id": "transferred_assets",
+      "target": {
+        "type": "radio",
+        "name": "form1[0].#subform[24].RadioButtonList[21]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "9B transferred assets in the three calendar years before this year — no vocabulary path."
+    },
+    {
+      "id": "own_primary_residence",
+      "target": {
+        "type": "radio",
+        "name": "form1[0].#subform[24].RadioButtonList[22]"
+      },
+      "source": {
+        "fieldPath": "housing.status"
+      },
+      "valueMap": {
+        "own": "0",
+        "rent": "1",
+        "shared": "1",
+        "shelter": "1",
+        "homeless": "1",
+        "no_cost": "1"
+      },
+      "note": "9C own the primary residence: YES=0, NO=1."
+    },
+    {
+      "id": "lot_over_2_acres",
+      "target": {
+        "type": "radio",
+        "name": "form1[0].#subform[24].RadioButtonList[23]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "9D lot over 2 acres — no vocabulary path; applicant answers."
+    },
+    {
+      "id": "land_marketable",
+      "target": {
+        "type": "radio",
+        "name": "form1[0].#subform[24].RadioButtonList[24]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "9F land over 2 acres reported as marketable — no vocabulary path; applicant answers."
+    },
+    {
+      "id": "income0_recipient",
+      "target": {
+        "type": "radio",
+        "name": "form1[0].#subform[24].RadioButtonList[25]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "9H(1) income recipient (veteran / spouse / child) — vocabulary member_ref is free text, not a select-one; applicant selects."
+    },
+    {
+      "id": "income0_type",
+      "target": {
+        "type": "radio",
+        "name": "form1[0].#subform[24].RadioButtonList[26]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "9H(2) income type — the five PDF boxes (0=SOCIAL SECURITY, 1=INTEREST/DIVIDENDS, 2=CIVIL SERVICE, 3=PENSION/RETIREMENT, 4=OTHER) cannot cover the vocabulary's 16 income kinds, and a partial valueMap fails validation; applicant marks the type by hand."
+    },
+    {
+      "id": "income_sources_count",
+      "target": {
+        "type": "radio",
+        "name": "form1[0].#subform[24].RadioButtonList[27]"
+      },
+      "source": {
+        "fieldPath": "income.has_no_income"
+      },
+      "valueMap": {
+        "true": "1",
+        "false": "0"
+      },
+      "note": "9N NO INCOME box: checked when income.has_no_income is true, unchecked when false. (Single checkbox, so the map values go through the check-state parser: 1=tick, 0=leave blank.)"
+    },
+    {
+      "id": "claiming_medical_expenses",
+      "target": {
+        "type": "radio",
+        "name": "form1[0].#subform[25].RadioButtonList[28]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10A claiming unreimbursed medical expenses — no boolean vocabulary path; the medical-expense rows below are mapped individually, applicant checks this box."
+    },
+    {
+      "id": "medical0_payment_frequency",
+      "target": {
+        "type": "radio",
+        "name": "form1[0].#subform[25].RadioButtonList[29]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10B(8) payment frequency (monthly / annually) — no frequency path on expenses.medical."
+    },
+    {
+      "id": "income3_recipient",
+      "target": {
+        "type": "radio",
+        "name": "form1[0].#subform[25].RadioButtonList[30]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "9K(1) income recipient (veteran / spouse / child) — vocabulary member_ref is free text; applicant selects."
+    },
+    {
+      "id": "income2_recipient",
+      "target": {
+        "type": "radio",
+        "name": "form1[0].#subform[25].RadioButtonList[31]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "9J(1) income recipient (veteran / spouse / child) — vocabulary member_ref is free text; applicant selects."
+    },
+    {
+      "id": "income1_recipient",
+      "target": {
+        "type": "radio",
+        "name": "form1[0].#subform[25].RadioButtonList[32]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "9I(1) income recipient (veteran / spouse / child) — vocabulary member_ref is free text; applicant selects."
+    },
+    {
+      "id": "medical0_whose_expenses",
+      "target": {
+        "type": "radio",
+        "name": "form1[0].#subform[25].RadioButtonList[33]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10B(1) whose expenses (veteran / spouse / child) — vocabulary member_ref is free text, not a select-one; applicant selects."
+    },
+    {
+      "id": "income1_type",
+      "target": {
+        "type": "radio",
+        "name": "form1[0].#subform[25].RadioButtonList[34]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "9I(2) income type — same as 9H(2): the five boxes cannot cover all 16 income kinds; marked by hand."
+    },
+    {
+      "id": "income2_type",
+      "target": {
+        "type": "radio",
+        "name": "form1[0].#subform[25].RadioButtonList[35]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "9J(2) income type — same as 9H(2): the five boxes cannot cover all 16 income kinds; marked by hand."
+    },
+    {
+      "id": "income3_type",
+      "target": {
+        "type": "radio",
+        "name": "form1[0].#subform[25].RadioButtonList[36]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "9K(2) income type — same as 9H(2): the five boxes cannot cover all 16 income kinds; marked by hand."
+    },
+    {
+      "id": "medical0_type_of_care",
+      "target": {
+        "type": "radio",
+        "name": "form1[0].#subform[25].RadioButtonList[37]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10B(3) type of care: NURSING HOME=0, ADULT DAYCARE=1, RESIDENTIAL CARE FACILITY=2, IN-HOME CARE ATTENDANT=3 — no vocabulary path."
+    },
+    {
+      "id": "medical1_payment_frequency",
+      "target": {
+        "type": "radio",
+        "name": "form1[0].#subform[25].RadioButtonList[38]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10C(8) payment frequency (monthly / annually) — no frequency path on expenses.medical."
+    },
+    {
+      "id": "medical1_whose_expenses",
+      "target": {
+        "type": "radio",
+        "name": "form1[0].#subform[25].RadioButtonList[39]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10C(1) whose expenses (veteran / spouse / child) — vocabulary member_ref is free text; applicant selects."
+    },
+    {
+      "id": "medical1_type_of_care",
+      "target": {
+        "type": "radio",
+        "name": "form1[0].#subform[25].RadioButtonList[40]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10C(3) type of care: NURSING HOME=0, ADULT DAYCARE=1, RESIDENTIAL CARE FACILITY=2, IN-HOME CARE ATTENDANT=3 — no vocabulary path."
+    },
+    {
+      "id": "medical4_whose_expenses",
+      "target": {
+        "type": "radio",
+        "name": "form1[0].#subform[26].RadioButtonList[41]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10F(1) whose expenses (veteran / spouse / child) — vocabulary member_ref is free text; applicant selects."
+    },
+    {
+      "id": "medical6_whose_expenses",
+      "target": {
+        "type": "radio",
+        "name": "form1[0].#subform[26].RadioButtonList[42]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10H(1) whose expenses (veteran / spouse / child) — vocabulary member_ref is free text; applicant selects."
+    },
+    {
+      "id": "medical7_payment_frequency",
+      "target": {
+        "type": "radio",
+        "name": "form1[0].#subform[26].RadioButtonList[43]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10I(5) payment frequency (monthly / annually / one-time) — no frequency path on expenses.medical."
+    },
+    {
+      "id": "medical7_whose_expenses",
+      "target": {
+        "type": "radio",
+        "name": "form1[0].#subform[26].RadioButtonList[44]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10I(1) whose expenses (veteran / spouse / child) — vocabulary member_ref is free text; applicant selects."
+    },
+    {
+      "id": "medical6_payment_frequency",
+      "target": {
+        "type": "radio",
+        "name": "form1[0].#subform[26].RadioButtonList[45]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10H(5) payment frequency (monthly / annually / one-time) — no frequency path on expenses.medical."
+    },
+    {
+      "id": "medical5_payment_frequency",
+      "target": {
+        "type": "radio",
+        "name": "form1[0].#subform[26].RadioButtonList[46]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10G(5) payment frequency (monthly / annually / one-time) — no frequency path on expenses.medical."
+    },
+    {
+      "id": "medical5_whose_expenses",
+      "target": {
+        "type": "radio",
+        "name": "form1[0].#subform[26].RadioButtonList[47]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10G(1) whose expenses (veteran / spouse / child) — vocabulary member_ref is free text; applicant selects."
+    },
+    {
+      "id": "medical4_payment_frequency",
+      "target": {
+        "type": "radio",
+        "name": "form1[0].#subform[26].RadioButtonList[48]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10F(5) payment frequency (monthly / annually / one-time) — no frequency path on expenses.medical."
+    },
+    {
+      "id": "medical3_payment_frequency",
+      "target": {
+        "type": "radio",
+        "name": "form1[0].#subform[26].RadioButtonList[49]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10E(5) payment frequency (monthly / annually / one-time) — no frequency path on expenses.medical."
+    },
+    {
+      "id": "medical3_whose_expenses",
+      "target": {
+        "type": "radio",
+        "name": "form1[0].#subform[26].RadioButtonList[50]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10E(1) whose expenses (veteran / spouse / child) — vocabulary member_ref is free text; applicant selects."
+    },
+    {
+      "id": "medical2_payment_frequency",
+      "target": {
+        "type": "radio",
+        "name": "form1[0].#subform[26].RadioButtonList[51]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10D(8) payment frequency (monthly / annually) — no frequency path on expenses.medical."
+    },
+    {
+      "id": "medical2_whose_expenses",
+      "target": {
+        "type": "radio",
+        "name": "form1[0].#subform[26].RadioButtonList[52]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10D(1) whose expenses (veteran / spouse / child) — vocabulary member_ref is free text; applicant selects."
+    },
+    {
+      "id": "medical2_type_of_care",
+      "target": {
+        "type": "radio",
+        "name": "form1[0].#subform[26].RadioButtonList[53]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10D(3) type of care: NURSING HOME=0, ADULT DAYCARE=1, RESIDENTIAL CARE FACILITY=2, IN-HOME CARE ATTENDANT=3 — no vocabulary path."
+    },
+    {
+      "id": "medical8_payment_frequency",
+      "target": {
+        "type": "radio",
+        "name": "form1[0].#subform[26].RadioButtonList[54]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10J(5) payment frequency (monthly / annually / one-time) — no frequency path on expenses.medical."
+    },
+    {
+      "id": "medical8_whose_expenses",
+      "target": {
+        "type": "radio",
+        "name": "form1[0].#subform[26].RadioButtonList[55]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10J(1) whose expenses (veteran / spouse / child) — vocabulary member_ref is free text; applicant selects."
+    },
+    {
+      "id": "account_kind",
+      "target": {
+        "type": "radio",
+        "name": "form1[0].#subform[27].RadioButtonList[56]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "11B account type (CHECKING=0, SAVINGS=1) — the vocabulary's other account kinds (prepaid, cash, investment, other) have no PDF box, and a partial valueMap fails validation; applicant marks by hand."
+    },
+    {
+      "id": "facility_care_provided",
+      "target": {
+        "type": "radio",
+        "name": "form1[0].#subform[29].RadioButtonList[57]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Facility worksheet Q10 (staff provides health/custodial care) — completed by facility staff, not the applicant."
+    },
+    {
+      "id": "facility_licensing_statement1",
+      "target": {
+        "type": "radio",
+        "name": "form1[0].#subform[29].RadioButtonList[58]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Facility worksheet licensing statement — completed by facility staff, not the applicant."
+    },
+    {
+      "id": "facility_licensed",
+      "target": {
+        "type": "radio",
+        "name": "form1[0].#subform[29].RadioButtonList[59]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Facility worksheet 'the facility is licensed' — completed by facility staff, not the applicant."
+    },
+    {
+      "id": "facility_residential",
+      "target": {
+        "type": "radio",
+        "name": "form1[0].#subform[29].RadioButtonList[60]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Facility worksheet 'the facility is residential' — completed by facility staff, not the applicant."
+    },
+    {
+      "id": "facility_staffed_24h",
+      "target": {
+        "type": "radio",
+        "name": "form1[0].#subform[29].RadioButtonList[61]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Facility worksheet 'the facility is staffed 24 hours' — completed by facility staff, not the applicant."
+    },
+    {
+      "id": "facility_care_expected_to_end",
+      "target": {
+        "type": "radio",
+        "name": "form1[0].#subform[29].RadioButtonList[62]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Facility worksheet Q12 expect care to end — completed by facility staff, not the applicant."
+    },
+    {
+      "id": "attendant_licensed_provider",
+      "target": {
+        "type": "radio",
+        "name": "form1[0].#subform[30].RadioButtonList[63]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "In-home attendant worksheet (licensed health-care provider question) — completed by the provider, not the applicant."
+    },
+    {
+      "id": "attendant_works_for_agency",
+      "target": {
+        "type": "radio",
+        "name": "form1[0].#subform[30].RadioButtonList[64]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "In-home attendant worksheet Q4 (work for an agency/organization) — completed by the provider, not the applicant."
+    },
+    {
+      "id": "attendant_care_provided",
+      "target": {
+        "type": "radio",
+        "name": "form1[0].#subform[30].RadioButtonList[65]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "In-home attendant worksheet (provides health/custodial care) — completed by the provider, not the applicant."
+    },
+    {
+      "id": "attendant_care_expected_to_end",
+      "target": {
+        "type": "radio",
+        "name": "form1[0].#subform[30].RadioButtonList[66]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "In-home attendant worksheet Q12 expect care to end — completed by the provider, not the applicant."
+    },
+    {
+      "id": "evidence_checklist_0",
+      "target": {
+        "type": "checkbox",
+        "name": "form1[0].#subform[20].CheckBox1[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Evidence checklist item the applicant ticks when enclosing: Farm income — VA Form 21P-4165 pension claim questionnaire for farm income — applicant action, not profile data."
+    },
+    {
+      "id": "evidence_checklist_1",
+      "target": {
+        "type": "checkbox",
+        "name": "form1[0].#subform[20].CheckBox1[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Evidence checklist item the applicant ticks when enclosing: Business income — VA Form 21P-4185 report of income from property or business — applicant action, not profile data."
+    },
+    {
+      "id": "evidence_checklist_2",
+      "target": {
+        "type": "checkbox",
+        "name": "form1[0].#subform[20].CheckBox1[2]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Evidence checklist item the applicant ticks when enclosing: Rental property income — VA Form 21P-4185 — applicant action, not profile data."
+    },
+    {
+      "id": "evidence_checklist_3",
+      "target": {
+        "type": "checkbox",
+        "name": "form1[0].#subform[20].CheckBox1[3]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Evidence checklist item the applicant ticks when enclosing: Royalties — VA Form 21P-0969 income and asset statement — applicant action, not profile data."
+    },
+    {
+      "id": "evidence_checklist_4",
+      "target": {
+        "type": "checkbox",
+        "name": "form1[0].#subform[20].CheckBox1[4]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Evidence checklist item the applicant ticks when enclosing: Trust documents including the schedule of assets — applicant action, not profile data."
+    },
+    {
+      "id": "evidence_checklist_5",
+      "target": {
+        "type": "checkbox",
+        "name": "form1[0].#subform[20].CheckBox1[5]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Evidence checklist item the applicant ticks when enclosing: Examination for housebound status or permanent need for regular aid and attendance (VA Form 21-2680) — applicant action, not profile data."
+    },
+    {
+      "id": "evidence_checklist_6",
+      "target": {
+        "type": "checkbox",
+        "name": "form1[0].#subform[20].CheckBox1[6]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Evidence checklist item the applicant ticks when enclosing: Request for nursing home information in connection with claim for aid and attendance (VA Form 21-0779) — applicant action, not profile data."
+    },
+    {
+      "id": "evidence_checklist_7",
+      "target": {
+        "type": "checkbox",
+        "name": "form1[0].#subform[20].CheckBox1[7]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Evidence checklist item the applicant ticks when enclosing: Examination for housebound status (second copy / alternate) — applicant action, not profile data."
+    },
+    {
+      "id": "evidence_checklist_8",
+      "target": {
+        "type": "checkbox",
+        "name": "form1[0].#subform[20].CheckBox1[8]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Evidence checklist item the applicant ticks when enclosing: Care worksheets at the end of the application — applicant action, not profile data."
+    },
+    {
+      "id": "evidence_checklist_9",
+      "target": {
+        "type": "checkbox",
+        "name": "form1[0].#subform[20].CheckBox1[9]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Evidence checklist item the applicant ticks when enclosing: Proof of payment for care (canceled checks, bank statements, etc.) — applicant action, not profile data."
+    },
+    {
+      "id": "evidence_checklist_10",
+      "target": {
+        "type": "checkbox",
+        "name": "form1[0].#subform[20].CheckBox1[10]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Evidence checklist item the applicant ticks when enclosing: Signed verification from the care service provider — applicant action, not profile data."
+    },
+    {
+      "id": "evidence_checklist_11",
+      "target": {
+        "type": "checkbox",
+        "name": "form1[0].#subform[20].CheckBox1[11]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Evidence checklist item the applicant ticks when enclosing: Adoption decree or revised birth certificate for adopted children — applicant action, not profile data."
+    },
+    {
+      "id": "evidence_checklist_12",
+      "target": {
+        "type": "checkbox",
+        "name": "form1[0].#subform[20].CheckBox1[12]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Evidence checklist item the applicant ticks when enclosing: VA Form 21-674 for a child over 18 but under 23 — applicant action, not profile data."
+    },
+    {
+      "id": "evidence_checklist_13",
+      "target": {
+        "type": "checkbox",
+        "name": "form1[0].#subform[20].CheckBox1[13]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Evidence checklist item the applicant ticks when enclosing: Medical records for each seriously disabled child — applicant action, not profile data."
+    },
+    {
+      "id": "evidence_checklist_14",
+      "target": {
+        "type": "checkbox",
+        "name": "form1[0].#subform[20].CheckBox1[14]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Evidence checklist item the applicant ticks when enclosing: VA Form 21P-8416 medical expense report (if additional space needed) — applicant action, not profile data."
+    },
+    {
+      "id": "evidence_checklist_15",
+      "target": {
+        "type": "checkbox",
+        "name": "form1[0].#subform[20].CheckBox1[15]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Evidence checklist item the applicant ticks when enclosing: VA Form 21P-0969 income and asset statement (if instructed in Section IX) — applicant action, not profile data."
+    },
+    {
+      "id": "evidence_checklist_16",
+      "target": {
+        "type": "checkbox",
+        "name": "form1[0].#subform[20].CheckBox1[16]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Evidence checklist item the applicant ticks when enclosing: Copy of DD Form 214 (or equivalent) for all periods of military service — applicant action, not profile data."
+    },
+    {
+      "id": "service_branch_army",
+      "target": {
+        "type": "checkbox",
+        "name": "form1[0].#subform[21].Army[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "3E branch of service ARMY — no military-service vocabulary path; applicant checks."
+    },
+    {
+      "id": "service_branch_navy",
+      "target": {
+        "type": "checkbox",
+        "name": "form1[0].#subform[21].Navy[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "3E branch of service NAVY — no military-service vocabulary path; applicant checks."
+    },
+    {
+      "id": "service_branch_air_force",
+      "target": {
+        "type": "checkbox",
+        "name": "form1[0].#subform[21].Air_Force[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "3E branch of service AIR FORCE — no military-service vocabulary path; applicant checks."
+    },
+    {
+      "id": "service_branch_coast_guard",
+      "target": {
+        "type": "checkbox",
+        "name": "form1[0].#subform[21].Coast_Guard[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "3E branch of service COAST GUARD — no military-service vocabulary path; applicant checks."
+    },
+    {
+      "id": "service_branch_marine_corps",
+      "target": {
+        "type": "checkbox",
+        "name": "form1[0].#subform[21].Marine_Corps[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "3E branch of service MARINE CORPS — no military-service vocabulary path; applicant checks."
+    },
+    {
+      "id": "service_branch_space_force",
+      "target": {
+        "type": "checkbox",
+        "name": "form1[0].#subform[21].Space_Force[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "3E branch of service SPACE FORCE — no military-service vocabulary path; applicant checks."
+    },
+    {
+      "id": "service_branch_usphs",
+      "target": {
+        "type": "checkbox",
+        "name": "form1[0].#subform[21].USPHS[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "3E branch of service USPHS — no military-service vocabulary path; applicant checks."
+    },
+    {
+      "id": "service_branch_noaa",
+      "target": {
+        "type": "checkbox",
+        "name": "form1[0].#subform[21].NOAA[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "3E branch of service NOAA — no military-service vocabulary path; applicant checks."
+    },
+    {
+      "id": "stray_checkbox_4d_row",
+      "target": {
+        "type": "checkbox",
+        "name": "form1[0].#subform[21].Navy[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Duplicate checkbox widget co-located with the 4D yes/no row; not a standalone question — left blank."
+    },
+    {
+      "id": "stray_checkbox_4c_row",
+      "target": {
+        "type": "checkbox",
+        "name": "form1[0].#subform[21].Army[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Duplicate checkbox widget co-located with the 4C yes/no row; not a standalone question — left blank."
+    },
+    {
+      "id": "child1_biological",
+      "target": {
+        "type": "checkbox",
+        "name": "form1[0].#subform[23].Biological[0]"
+      },
+      "source": {
+        "fieldPath": "household.members[0].relationship"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 0
+      },
+      "valueMap": {
+        "self": "false",
+        "spouse": "false",
+        "domestic_partner": "false",
+        "child": "true",
+        "stepchild": "false",
+        "foster_child": "false",
+        "parent": "false",
+        "stepparent": "false",
+        "grandparent": "false",
+        "grandchild": "false",
+        "sibling": "false",
+        "other_relative": "false",
+        "unrelated": "false"
+      },
+      "note": "8F child-1 status BIOLOGICAL — checked exactly when the member relationship is child."
+    },
+    {
+      "id": "child1_stepchild",
+      "target": {
+        "type": "checkbox",
+        "name": "form1[0].#subform[23].Stepchild[0]"
+      },
+      "source": {
+        "fieldPath": "household.members[0].relationship"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 0
+      },
+      "valueMap": {
+        "self": "false",
+        "spouse": "false",
+        "domestic_partner": "false",
+        "child": "false",
+        "stepchild": "true",
+        "foster_child": "false",
+        "parent": "false",
+        "stepparent": "false",
+        "grandparent": "false",
+        "grandchild": "false",
+        "sibling": "false",
+        "other_relative": "false",
+        "unrelated": "false"
+      },
+      "note": "8F child-1 status STEPCHILD — checked exactly when the member relationship is stepchild."
+    },
+    {
+      "id": "child1_adopted",
+      "target": {
+        "type": "checkbox",
+        "name": "form1[0].#subform[23].Adopted[0]"
+      },
+      "source": {
+        "fieldPath": "household.members[0].relationship"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 0
+      },
+      "valueMap": {
+        "self": "false",
+        "spouse": "false",
+        "domestic_partner": "false",
+        "child": "false",
+        "stepchild": "false",
+        "foster_child": "false",
+        "parent": "false",
+        "stepparent": "false",
+        "grandparent": "false",
+        "grandchild": "false",
+        "sibling": "false",
+        "other_relative": "false",
+        "unrelated": "false"
+      },
+      "note": "8F child-1 status ADOPTED — the vocabulary has no adopted relationship choice, so this box can never be derived; it stays unchecked and the applicant marks it by hand when it applies."
+    },
+    {
+      "id": "child1_seriously_disabled",
+      "target": {
+        "type": "checkbox",
+        "name": "form1[0].#subform[23].Seriously_Disabled[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "8F child-1 seriously disabled — no disability path for household members; applicant checks."
+    },
+    {
+      "id": "child1_in_school_18_23",
+      "target": {
+        "type": "checkbox",
+        "name": "form1[0].#subform[23].Eighteen_To_Twenty_Three_Years_Old_In_School[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "8F child-1 18-23 years old and in school — no school-attendance path for household members."
+    },
+    {
+      "id": "child1_previously_married",
+      "target": {
+        "type": "checkbox",
+        "name": "form1[0].#subform[23].Previously_Married[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "8F child-1 married/previously married — no marital-status path for household members."
+    },
+    {
+      "id": "child1_not_living_with_you",
+      "target": {
+        "type": "checkbox",
+        "name": "form1[0].#subform[23].Does_Not_Live_With_You_But_Contributes[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "8F child-1 does not live with the veteran but receives monthly contributions — no lives-with-you path for household members; the contribution amount is likewise unmappable."
+    },
+    {
+      "id": "child2_biological",
+      "target": {
+        "type": "checkbox",
+        "name": "form1[0].#subform[24].Biological[1]"
+      },
+      "source": {
+        "fieldPath": "household.members[1].relationship"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 1
+      },
+      "valueMap": {
+        "self": "false",
+        "spouse": "false",
+        "domestic_partner": "false",
+        "child": "true",
+        "stepchild": "false",
+        "foster_child": "false",
+        "parent": "false",
+        "stepparent": "false",
+        "grandparent": "false",
+        "grandchild": "false",
+        "sibling": "false",
+        "other_relative": "false",
+        "unrelated": "false"
+      },
+      "note": "8K child-2 status BIOLOGICAL — checked exactly when the member relationship is child."
+    },
+    {
+      "id": "child2_stepchild",
+      "target": {
+        "type": "checkbox",
+        "name": "form1[0].#subform[24].Stepchild[1]"
+      },
+      "source": {
+        "fieldPath": "household.members[1].relationship"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 1
+      },
+      "valueMap": {
+        "self": "false",
+        "spouse": "false",
+        "domestic_partner": "false",
+        "child": "false",
+        "stepchild": "true",
+        "foster_child": "false",
+        "parent": "false",
+        "stepparent": "false",
+        "grandparent": "false",
+        "grandchild": "false",
+        "sibling": "false",
+        "other_relative": "false",
+        "unrelated": "false"
+      },
+      "note": "8K child-2 status STEPCHILD — checked exactly when the member relationship is stepchild."
+    },
+    {
+      "id": "child2_adopted",
+      "target": {
+        "type": "checkbox",
+        "name": "form1[0].#subform[24].Adopted[1]"
+      },
+      "source": {
+        "fieldPath": "household.members[1].relationship"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 1
+      },
+      "valueMap": {
+        "self": "false",
+        "spouse": "false",
+        "domestic_partner": "false",
+        "child": "false",
+        "stepchild": "false",
+        "foster_child": "false",
+        "parent": "false",
+        "stepparent": "false",
+        "grandparent": "false",
+        "grandchild": "false",
+        "sibling": "false",
+        "other_relative": "false",
+        "unrelated": "false"
+      },
+      "note": "8K child-2 status ADOPTED — the vocabulary has no adopted relationship choice, so this box can never be derived; it stays unchecked and the applicant marks it by hand when it applies."
+    },
+    {
+      "id": "child2_seriously_disabled",
+      "target": {
+        "type": "checkbox",
+        "name": "form1[0].#subform[24].Seriously_Disabled[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "8K child-2 seriously disabled — no disability path for household members; applicant checks."
+    },
+    {
+      "id": "child2_in_school_18_23",
+      "target": {
+        "type": "checkbox",
+        "name": "form1[0].#subform[24].Eighteen_To_Twenty_Three_Years_Old_In_School[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "8K child-2 18-23 years old and in school — no school-attendance path for household members."
+    },
+    {
+      "id": "child2_previously_married",
+      "target": {
+        "type": "checkbox",
+        "name": "form1[0].#subform[24].Previously_Married[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "8K child-2 married/previously married — no marital-status path for household members."
+    },
+    {
+      "id": "child2_not_living_with_you",
+      "target": {
+        "type": "checkbox",
+        "name": "form1[0].#subform[24].Does_Not_Live_With_You_But_Contributes[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "8K child-2 does not live with the veteran but receives monthly contributions — no lives-with-you path for household members; the contribution amount is likewise unmappable."
+    },
+    {
+      "id": "child3_biological",
+      "target": {
+        "type": "checkbox",
+        "name": "form1[0].#subform[24].Biological[2]"
+      },
+      "source": {
+        "fieldPath": "household.members[2].relationship"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 2
+      },
+      "valueMap": {
+        "self": "false",
+        "spouse": "false",
+        "domestic_partner": "false",
+        "child": "true",
+        "stepchild": "false",
+        "foster_child": "false",
+        "parent": "false",
+        "stepparent": "false",
+        "grandparent": "false",
+        "grandchild": "false",
+        "sibling": "false",
+        "other_relative": "false",
+        "unrelated": "false"
+      },
+      "note": "8P child-3 status BIOLOGICAL — checked exactly when the member relationship is child."
+    },
+    {
+      "id": "child3_stepchild",
+      "target": {
+        "type": "checkbox",
+        "name": "form1[0].#subform[24].Stepchild[2]"
+      },
+      "source": {
+        "fieldPath": "household.members[2].relationship"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 2
+      },
+      "valueMap": {
+        "self": "false",
+        "spouse": "false",
+        "domestic_partner": "false",
+        "child": "false",
+        "stepchild": "true",
+        "foster_child": "false",
+        "parent": "false",
+        "stepparent": "false",
+        "grandparent": "false",
+        "grandchild": "false",
+        "sibling": "false",
+        "other_relative": "false",
+        "unrelated": "false"
+      },
+      "note": "8P child-3 status STEPCHILD — checked exactly when the member relationship is stepchild."
+    },
+    {
+      "id": "child3_adopted",
+      "target": {
+        "type": "checkbox",
+        "name": "form1[0].#subform[24].Adopted[2]"
+      },
+      "source": {
+        "fieldPath": "household.members[2].relationship"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 2
+      },
+      "valueMap": {
+        "self": "false",
+        "spouse": "false",
+        "domestic_partner": "false",
+        "child": "false",
+        "stepchild": "false",
+        "foster_child": "false",
+        "parent": "false",
+        "stepparent": "false",
+        "grandparent": "false",
+        "grandchild": "false",
+        "sibling": "false",
+        "other_relative": "false",
+        "unrelated": "false"
+      },
+      "note": "8P child-3 status ADOPTED — the vocabulary has no adopted relationship choice, so this box can never be derived; it stays unchecked and the applicant marks it by hand when it applies."
+    },
+    {
+      "id": "child3_seriously_disabled",
+      "target": {
+        "type": "checkbox",
+        "name": "form1[0].#subform[24].Seriously_Disabled[2]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "8P child-3 seriously disabled — no disability path for household members; applicant checks."
+    },
+    {
+      "id": "child3_in_school_18_23",
+      "target": {
+        "type": "checkbox",
+        "name": "form1[0].#subform[24].Eighteen_To_Twenty_Three_Years_Old_In_School[2]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "8P child-3 18-23 years old and in school — no school-attendance path for household members."
+    },
+    {
+      "id": "child3_previously_married",
+      "target": {
+        "type": "checkbox",
+        "name": "form1[0].#subform[24].Previously_Married[2]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "8P child-3 married/previously married — no marital-status path for household members."
+    },
+    {
+      "id": "child3_not_living_with_you",
+      "target": {
+        "type": "checkbox",
+        "name": "form1[0].#subform[24].Does_Not_Live_With_You_But_Contributes[2]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "8P child-3 does not live with the veteran but receives monthly contributions — no lives-with-you path for household members; the contribution amount is likewise unmappable."
+    },
+    {
+      "id": "medical0_no_end_date",
+      "target": {
+        "type": "checkbox",
+        "name": "form1[0].#subform[25].CheckBox_No_End_Date[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10B(7) no end date / continuing care — no vocabulary path; applicant checks."
+    },
+    {
+      "id": "medical1_no_end_date",
+      "target": {
+        "type": "checkbox",
+        "name": "form1[0].#subform[25].CheckBox_No_End_Date[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10C(7) no end date / continuing care — no vocabulary path; applicant checks."
+    },
+    {
+      "id": "medical2_no_end_date",
+      "target": {
+        "type": "checkbox",
+        "name": "form1[0].#subform[26].CheckBox_No_End_Date[2]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10D(7) no end date / continuing care — no vocabulary path; applicant checks."
+    },
+    {
+      "id": "facility_adl_eating",
+      "target": {
+        "type": "checkbox",
+        "name": "form1[0].#subform[29].Eating[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Facility worksheet Q8 ADL (eating) the facility provides — completed by facility staff, not the applicant."
+    },
+    {
+      "id": "facility_adl_bathing_showering",
+      "target": {
+        "type": "checkbox",
+        "name": "form1[0].#subform[29].Bathing_Showering[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Facility worksheet Q8 ADL (bathing/showering) the facility provides — completed by facility staff, not the applicant."
+    },
+    {
+      "id": "facility_adl_dressing",
+      "target": {
+        "type": "checkbox",
+        "name": "form1[0].#subform[29].Dressing[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Facility worksheet Q8 ADL (dressing) the facility provides — completed by facility staff, not the applicant."
+    },
+    {
+      "id": "facility_adl_transferring_in_or_out_of_bed_or_chair",
+      "target": {
+        "type": "checkbox",
+        "name": "form1[0].#subform[29].Transferring_In_Or_Out_Of_Bed_Or_Chair[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Facility worksheet Q8 ADL (transferring in/out of bed or chair) the facility provides — completed by facility staff, not the applicant."
+    },
+    {
+      "id": "facility_adl_using_the_toilet",
+      "target": {
+        "type": "checkbox",
+        "name": "form1[0].#subform[29].Using_The_Toilet[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Facility worksheet Q8 ADL (using the toilet) the facility provides — completed by facility staff, not the applicant."
+    },
+    {
+      "id": "facility_adl_ambulating_within_home_or_living_area",
+      "target": {
+        "type": "checkbox",
+        "name": "form1[0].#subform[29].Ambulating_Within_Home_Or_Living_Area[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Facility worksheet Q8 ADL (ambulating within home/living area) the facility provides — completed by facility staff, not the applicant."
+    },
+    {
+      "id": "attendant_adl_eating",
+      "target": {
+        "type": "checkbox",
+        "name": "form1[0].#subform[30].Eating[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "In-home attendant worksheet ADL (eating) — completed by the provider, not the applicant."
+    },
+    {
+      "id": "attendant_adl_bathing_showering",
+      "target": {
+        "type": "checkbox",
+        "name": "form1[0].#subform[30].Bathing_Showering[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "In-home attendant worksheet ADL (bathing/showering) — completed by the provider, not the applicant."
+    },
+    {
+      "id": "attendant_adl_dressing",
+      "target": {
+        "type": "checkbox",
+        "name": "form1[0].#subform[30].Dressing[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "In-home attendant worksheet ADL (dressing) — completed by the provider, not the applicant."
+    },
+    {
+      "id": "attendant_adl_transferring_in_or_out_of_bed_or_chair",
+      "target": {
+        "type": "checkbox",
+        "name": "form1[0].#subform[30].Transferring_In_Or_Out_Of_Bed_Or_Chair[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "In-home attendant worksheet ADL (transferring in/out of bed or chair) — completed by the provider, not the applicant."
+    },
+    {
+      "id": "attendant_adl_using_the_toilet",
+      "target": {
+        "type": "checkbox",
+        "name": "form1[0].#subform[30].Using_The_Toilet[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "In-home attendant worksheet ADL (using the toilet) — completed by the provider, not the applicant."
+    },
+    {
+      "id": "attendant_adl_ambulating_within_home_or_living_area",
+      "target": {
+        "type": "checkbox",
+        "name": "form1[0].#subform[30].Ambulating_Within_Home_Or_Living_Area[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "In-home attendant worksheet ADL (ambulating within home/living area) — completed by the provider, not the applicant."
+    },
+    {
+      "id": "attendant_iadl_shopping",
+      "target": {
+        "type": "checkbox",
+        "name": "form1[0].#subform[30].Shopping[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "In-home attendant worksheet IADL (shopping) — completed by the provider, not the applicant."
+    },
+    {
+      "id": "attendant_iadl_food_preparation",
+      "target": {
+        "type": "checkbox",
+        "name": "form1[0].#subform[30].Food_Preparation[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "In-home attendant worksheet IADL (food preparation) — completed by the provider, not the applicant."
+    },
+    {
+      "id": "attendant_iadl_housekeeping",
+      "target": {
+        "type": "checkbox",
+        "name": "form1[0].#subform[30].Housekeeping[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "In-home attendant worksheet IADL (housekeeping) — completed by the provider, not the applicant."
+    },
+    {
+      "id": "attendant_iadl_laundering",
+      "target": {
+        "type": "checkbox",
+        "name": "form1[0].#subform[30].Laundering[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "In-home attendant worksheet IADL (laundering) — completed by the provider, not the applicant."
+    },
+    {
+      "id": "attendant_iadl_managing_finances",
+      "target": {
+        "type": "checkbox",
+        "name": "form1[0].#subform[30].Managing_Finances[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "In-home attendant worksheet IADL (managing finances) — completed by the provider, not the applicant."
+    },
+    {
+      "id": "attendant_iadl_handling_medications",
+      "target": {
+        "type": "checkbox",
+        "name": "form1[0].#subform[30].Handling_Medications[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "In-home attendant worksheet IADL (handling medications) — completed by the provider, not the applicant."
+    },
+    {
+      "id": "attendant_iadl_using_telephone",
+      "target": {
+        "type": "checkbox",
+        "name": "form1[0].#subform[30].Using_Telephone[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "In-home attendant worksheet IADL (using the telephone) — completed by the provider, not the applicant."
+    },
+    {
+      "id": "attendant_iadl_non_medical_transportation",
+      "target": {
+        "type": "checkbox",
+        "name": "form1[0].#subform[30].Non_Medical_Transportation[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "In-home attendant worksheet IADL (non-medical transportation) — completed by the provider, not the applicant."
+    },
+    {
+      "id": "veteran_email",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[21].TextField1[0]"
+      },
+      "source": {
+        "fieldPath": "contact.email"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "note": "2C veteran's e-mail address (optional)."
+    },
+    {
+      "id": "phone_part_first_three_numbers",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[21].Telephone_Number_First_Three_Numbers[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "2B phone number split into three boxes; vocabulary contact.phone is a single field — left blank."
+    },
+    {
+      "id": "phone_part_second_three_numbers",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[21].Telephone_Number_Second_Three_Numbers[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "2B phone number split into three boxes; vocabulary contact.phone is a single field — left blank."
+    },
+    {
+      "id": "phone_part_last_four_numbers",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[21].Telephone_Number_Last_Four_Numbers[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "2B phone number split into three boxes; vocabulary contact.phone is a single field — left blank."
+    },
+    {
+      "id": "international_phone",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[21].International_Phone_Number[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "2B international phone number — no vocabulary path; applicant writes by hand."
+    },
+    {
+      "id": "mailing_country",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[21].Country[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "2A mailing-address country — vocabulary keeps state only, no country path."
+    },
+    {
+      "id": "mailing_zip_plus4",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[21].Zip_Postal_Code[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "2A ZIP+4 extension; vocabulary postal_code already takes the base ZIP — extension left blank."
+    },
+    {
+      "id": "va_file_number",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[21].VAFileNumber[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "1E VA file number — no vocabulary path; applicant writes by hand."
+    },
+    {
+      "id": "veteran_ssn_first3",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[21].VeteransSocialSecurityNumber_FirstThreeNumbers[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Social Security number — never collected per product policy (NeverAsk); applicant fills by hand."
+    },
+    {
+      "id": "veteran_ssn_second2",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[21].VeteransSocialSecurityNumber_SecondTwoNumbers[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Social Security number — never collected per product policy (NeverAsk); applicant fills by hand."
+    },
+    {
+      "id": "veteran_ssn_last4",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[21].VeteransSocialSecurityNumber_LastFourNumbers[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Social Security number — never collected per product policy (NeverAsk); applicant fills by hand."
+    },
+    {
+      "id": "service_other_name_you_served_under_first_name",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[21].Other_Name_You_Served_Under_First_Name[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "3A other service first name served under — no military-service vocabulary path."
+    },
+    {
+      "id": "service_other_name_you_served_under_last_name",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[21].Other_Name_You_Served_Under_Last_Name[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "3A other service last name served under — no military-service vocabulary path."
+    },
+    {
+      "id": "service_date_entered_active_duty_month",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[21].Date_Entered_Active_Duty_Month[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "3B/3C entered active duty month — no military-service vocabulary path; applicant writes by hand."
+    },
+    {
+      "id": "service_date_entered_active_duty_day",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[21].Date_Entered_Active_Duty_Day[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "3B/3C entered active duty day — no military-service vocabulary path; applicant writes by hand."
+    },
+    {
+      "id": "service_date_entered_active_duty_year",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[21].Date_Entered_Active_Duty_Year[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "3B/3C entered active duty year — no military-service vocabulary path; applicant writes by hand."
+    },
+    {
+      "id": "service_date_of_release_from_active_duty_month",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[21].Date_Of_Release_From_Active_Duty_Month[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "3B/3C final release month — no military-service vocabulary path; applicant writes by hand."
+    },
+    {
+      "id": "service_date_of_release_from_active_duty_day",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[21].Date_Of_Release_From_Active_Duty_Day[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "3B/3C final release day — no military-service vocabulary path; applicant writes by hand."
+    },
+    {
+      "id": "service_date_of_release_from_active_duty_year",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[21].Date_Of_Release_From_Active_Duty_Year[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "3B/3C final release year — no military-service vocabulary path; applicant writes by hand."
+    },
+    {
+      "id": "service_number",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[21].Your_Service_Number[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "3D service number — no vocabulary path."
+    },
+    {
+      "id": "last_separation_place_0",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[21].Place_Of_Your_Last_Separation[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "3F place of last separation — no vocabulary path."
+    },
+    {
+      "id": "last_separation_place_1",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[21].Place_Of_Your_Last_Separation[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "3F place of last separation — no vocabulary path."
+    },
+    {
+      "id": "pow_date_confinement_started_month_0",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[21].Date_Confinement_Started_Month[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "3H confinement started date (month, set 1) — no POW vocabulary path."
+    },
+    {
+      "id": "pow_date_confinement_started_day_0",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[21].Date_Confinement_Started_Day[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "3H confinement started date (day, set 1) — no POW vocabulary path."
+    },
+    {
+      "id": "pow_date_confinement_started_year_0",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[21].Date_Confinement_Started_Year[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "3H confinement started date (year, set 1) — no POW vocabulary path."
+    },
+    {
+      "id": "pow_date_confinement_started_month_1",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[21].Date_Confinement_Started_Month[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "3H confinement started date (month, set 2) — no POW vocabulary path."
+    },
+    {
+      "id": "pow_date_confinement_started_day_1",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[21].Date_Confinement_Started_Day[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "3H confinement started date (day, set 2) — no POW vocabulary path."
+    },
+    {
+      "id": "pow_date_confinement_started_year_1",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[21].Date_Confinement_Started_Year[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "3H confinement started date (year, set 2) — no POW vocabulary path."
+    },
+    {
+      "id": "pow_date_confinement_ended_month_0",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[21].Date_Confinement_Ended_Month[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "3I confinement ended date (month, set 1) — no POW vocabulary path."
+    },
+    {
+      "id": "pow_date_confinement_ended_day_0",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[21].Date_Confinement_Ended_Day[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "3I confinement ended date (day, set 1) — no POW vocabulary path."
+    },
+    {
+      "id": "pow_date_confinement_ended_year_0",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[21].Date_Confinement_Ended_Year[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "3I confinement ended date (year, set 1) — no POW vocabulary path."
+    },
+    {
+      "id": "pow_date_confinement_ended_month_1",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[21].Date_Confinement_Ended_Month[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "3I confinement ended date (month, set 2) — no POW vocabulary path."
+    },
+    {
+      "id": "pow_date_confinement_ended_day_1",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[21].Date_Confinement_Ended_Day[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "3I confinement ended date (day, set 2) — no POW vocabulary path."
+    },
+    {
+      "id": "pow_date_confinement_ended_year_1",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[21].Date_Confinement_Ended_Year[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "3I confinement ended date (year, set 2) — no POW vocabulary path."
+    },
+    {
+      "id": "federal_facility_name_0",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[21].Facility[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "4G federal medical facility name — no vocabulary path; applicant writes by hand."
+    },
+    {
+      "id": "federal_facility_name_1",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[21].Facility[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "4G federal medical facility name — no vocabulary path; applicant writes by hand."
+    },
+    {
+      "id": "current_work_kind",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[22].What_Kind_Of_Work_Are_You_Currently_Doing[0]"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].job_title"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 0
+      },
+      "note": "5B kind of work currently doing — closest vocabulary field is job title."
+    },
+    {
+      "id": "current_hours_per_week",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[22].How_Many_Hours_Per_Week_Do_You_Average[0]"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].hours_per_week"
+      },
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 0
+      },
+      "note": "5C hours per week currently averaging (current job)."
+    },
+    {
+      "id": "last_worked_month",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[22].Date_You_Last_Worked_Month[0]"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].end_date"
+      },
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 1
+      },
+      "note": "5D date last worked (month) — mapped to the last job's end date."
+    },
+    {
+      "id": "last_worked_day",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[22].Date_You_Last_Worked_Day[0]"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].end_date"
+      },
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 1
+      },
+      "note": "5D date last worked (day) — mapped to the last job's end date."
+    },
+    {
+      "id": "last_worked_year",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[22].Date_You_Last_Worked_Year[0]"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].end_date"
+      },
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 1
+      },
+      "note": "5D date last worked (year) — mapped to the last job's end date."
+    },
+    {
+      "id": "last_job_hours_per_week",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[22].How_Many_Hours_Per_Week_Did_You_Average[0]"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].hours_per_week"
+      },
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 1
+      },
+      "note": "5E hours per week averaged at the last job."
+    },
+    {
+      "id": "last_job_title",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[22].What_Was_Your_Job_Title[0]"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].job_title"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 1
+      },
+      "note": "5F job title at the last job."
+    },
+    {
+      "id": "last_work_kind",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[22].What_Kind_Of_Work_Did_You_Do[0]"
+      },
+      "source": {
+        "fieldPath": "employment.jobs[].job_title"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 1
+      },
+      "note": "5G kind of work at the last job — closest vocabulary field is job title."
+    },
+    {
+      "id": "spouse_first_name",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[22].Spouses_Current_Legal_Name_First_Name[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "6B spouse's current legal first name — no spouse vocabulary paths; applicant writes by hand."
+    },
+    {
+      "id": "spouse_middle_initial",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[22].Spouses_Middle_Initial1[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "6B spouse's middle initial — no spouse vocabulary paths."
+    },
+    {
+      "id": "spouse_last_name",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[22].Spouses_Last_Name[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "6B spouse's last name — no spouse vocabulary paths."
+    },
+    {
+      "id": "spouse_dob_month",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[22].DOB_Month[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "6C spouse's date of birth (month) — no spouse vocabulary paths."
+    },
+    {
+      "id": "spouse_dob_day",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[22].DOB_Day[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "6C spouse's date of birth (day) — no spouse vocabulary paths."
+    },
+    {
+      "id": "spouse_dob_year",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[22].DOB_Year[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "6C spouse's date of birth (year) — no spouse vocabulary paths."
+    },
+    {
+      "id": "spouse_ssn_first3",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[22].Spouses_SocialSecurityNumber_FirstThreeNumbers[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Social Security number — never collected per product policy (NeverAsk); applicant fills by hand."
+    },
+    {
+      "id": "spouse_ssn_second2",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[22].Spouses_SocialSecurityNumber_SecondTwoNumbers[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Social Security number — never collected per product policy (NeverAsk); applicant fills by hand."
+    },
+    {
+      "id": "spouse_ssn_last4",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[22].Spouses_SocialSecurityNumber_LastFourNumbers[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Social Security number — never collected per product policy (NeverAsk); applicant fills by hand."
+    },
+    {
+      "id": "marriage_date_month",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[22].Date_Of_Marriage_Month[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "6E date of marriage (month) — no marriage vocabulary path."
+    },
+    {
+      "id": "marriage_date_day",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[22].Date_Of_Marriage_Day[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "6E date of marriage (day) — no marriage vocabulary path."
+    },
+    {
+      "id": "marriage_date_year",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[22].Date_Of_Marriage_Year[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "6E date of marriage (year) — no marriage vocabulary path."
+    },
+    {
+      "id": "marriage_place",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[22].Place_Of_Marriage_City_And_State_Or_Country[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "6F place of marriage (city) — no vocabulary path."
+    },
+    {
+      "id": "marriage_state",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[22].State_Or_Province[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "6G marriage state — no vocabulary path."
+    },
+    {
+      "id": "marriage_country",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[22].Country[2]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "6H marriage country — no vocabulary path."
+    },
+    {
+      "id": "marriage_type_other_specify",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[22].Other_Specify[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "6I other marriage type specify — no vocabulary path."
+    },
+    {
+      "id": "spouse_va_file_number",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[22].Spouses_VAFileNumber_If_Any[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "6K spouse's VA file number — no vocabulary path."
+    },
+    {
+      "id": "separation_reason_other_specify",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[22].Other_Specify[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "6L other separation reason specify — no vocabulary path."
+    },
+    {
+      "id": "spouse_mailing_street",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[22].Number_And_Street[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "6M spouse's mailing address (separated) — no spouse vocabulary paths."
+    },
+    {
+      "id": "spouse_mailing_apt",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[22].Apt_Or_Unit_Number[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "6M spouse's mailing address apt/unit — no spouse vocabulary paths."
+    },
+    {
+      "id": "spouse_mailing_city",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[22].City[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "6M spouse's mailing address city — no spouse vocabulary paths."
+    },
+    {
+      "id": "spouse_mailing_state",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[22].State_Or_Province[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "6M spouse's mailing address state — no spouse vocabulary paths."
+    },
+    {
+      "id": "spouse_mailing_country",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[22].Country[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "6M spouse's mailing address country — no spouse vocabulary paths."
+    },
+    {
+      "id": "spouse_mailing_zip",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[22].Zip_Postal_Code[2]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "6M spouse's mailing address ZIP — no spouse vocabulary paths."
+    },
+    {
+      "id": "spouse_mailing_zip_plus4",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[22].Zip_Postal_Code[3]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "6M spouse's mailing address ZIP+4 — no spouse vocabulary paths."
+    },
+    {
+      "id": "spouse_support_contribution",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[22].Monthly_Amount[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "6N monthly contribution to separated spouse's support — no vocabulary path."
+    },
+    {
+      "id": "prior_marriage1_spouse_first",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[22].Veterans_Prior_Spouse_FirstName[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "7A veteran's first prior marriage — spouse first name; no prior-marriage vocabulary paths."
+    },
+    {
+      "id": "prior_marriage1_spouse_mi",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[22].Veterans_Prior_Spouse_MiddleInitial1[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "7A veteran's first prior marriage — spouse middle initial; no prior-marriage vocabulary paths."
+    },
+    {
+      "id": "prior_marriage1_spouse_last",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[22].Veterans_Prior_Spouse_LastName[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "7A veteran's first prior marriage — spouse last name; no prior-marriage vocabulary paths."
+    },
+    {
+      "id": "prior_marriage1_start_month",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[22].Date_Of_Prior_Marriage_Start_Month[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "7C veteran's first prior marriage start date (month) — no prior-marriage vocabulary paths."
+    },
+    {
+      "id": "prior_marriage1_end_month",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[22].Date_Of_Prior_Marriage_End_Month[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "7D veteran's first prior marriage end date (month) — no prior-marriage vocabulary paths."
+    },
+    {
+      "id": "prior_marriage1_start_day",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[22].Date_Of_Prior_Marriage_Start_Day[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "7C veteran's first prior marriage start date (day) — no prior-marriage vocabulary paths."
+    },
+    {
+      "id": "prior_marriage1_end_day",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[22].Date_Of_Prior_Marriage_End_Day[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "7D veteran's first prior marriage end date (day) — no prior-marriage vocabulary paths."
+    },
+    {
+      "id": "prior_marriage1_start_year",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[22].Date_Of_Prior_Marriage_Start_Year[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "7C veteran's first prior marriage start date (year) — no prior-marriage vocabulary paths."
+    },
+    {
+      "id": "prior_marriage1_end_year",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[22].Date_Of_Prior_Marriage_End_Year[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "7D veteran's first prior marriage end date (year) — no prior-marriage vocabulary paths."
+    },
+    {
+      "id": "prior_marriage2_firstname",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[22].Veterans_Prior_Spouse_FirstName[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "7G veteran's second prior marriage — spouse first name; no prior-marriage vocabulary paths."
+    },
+    {
+      "id": "prior_marriage2_middleinitial1",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[22].Veterans_Prior_Spouse_MiddleInitial1[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "7G veteran's second prior marriage — spouse middle initial; no prior-marriage vocabulary paths."
+    },
+    {
+      "id": "prior_marriage2_lastname",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[22].Veterans_Prior_Spouse_LastName[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "7G veteran's second prior marriage — spouse last name; no prior-marriage vocabulary paths."
+    },
+    {
+      "id": "prior_marriage2_start_month",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[23].Date_Of_Prior_Marriage_Start_Month[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "7I veteran's second prior marriage start date (month) — no prior-marriage vocabulary paths."
+    },
+    {
+      "id": "prior_marriage2_end_month",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[23].Date_Of_Prior_Marriage_End_Month[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "7J veteran's second prior marriage end date (month) — no prior-marriage vocabulary paths."
+    },
+    {
+      "id": "prior_marriage2_start_day",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[23].Date_Of_Prior_Marriage_Start_Day[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "7I veteran's second prior marriage start date (day) — no prior-marriage vocabulary paths."
+    },
+    {
+      "id": "prior_marriage2_end_day",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[23].Date_Of_Prior_Marriage_End_Day[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "7J veteran's second prior marriage end date (day) — no prior-marriage vocabulary paths."
+    },
+    {
+      "id": "prior_marriage2_start_year",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[23].Date_Of_Prior_Marriage_Start_Year[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "7I veteran's second prior marriage start date (year) — no prior-marriage vocabulary paths."
+    },
+    {
+      "id": "prior_marriage2_end_year",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[23].Date_Of_Prior_Marriage_End_Year[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "7J veteran's second prior marriage end date (year) — no prior-marriage vocabulary paths."
+    },
+    {
+      "id": "prior_marriage1_place",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[22].Place_Of_Marriage_City_And_State_Or_Country[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "7E first prior marriage place — no prior-marriage vocabulary paths."
+    },
+    {
+      "id": "prior_marriage1_termination_place",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[22].Place_Of_Marriage_Termination_City_And_State_Or_Country[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "7F first prior marriage termination place — no prior-marriage vocabulary paths."
+    },
+    {
+      "id": "prior_marriage2_place",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[23].Place_Of_Marriage_City_And_State_Or_Country[2]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "7K veteran's second prior marriage place — no prior-marriage vocabulary paths."
+    },
+    {
+      "id": "prior_marriage2_termination_place",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[23].Place_Of_Marriage_Termination_City_And_State_Or_Country[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "7L veteran's second prior marriage termination place — no prior-marriage vocabulary paths."
+    },
+    {
+      "id": "prior_marriage2_how_ended_specify",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[23].Specify[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "7H veteran's second prior marriage other-specify — no prior-marriage vocabulary paths."
+    },
+    {
+      "id": "prior_marriage1_how_ended_specify",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[22].Specify[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "7B other-specify for how the first prior marriage ended — no prior-marriage vocabulary paths."
+    },
+    {
+      "id": "prior_marriage_v2_2_start_month",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[23].Date_Of_Prior_Marriage_Start_Month[2]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "7P spouse's first prior marriage start date (month) — no prior-marriage vocabulary paths."
+    },
+    {
+      "id": "prior_marriage_v2_2_end_month",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[23].Date_Of_Prior_Marriage_End_Month[2]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "7Q spouse's first prior marriage end date (month) — no prior-marriage vocabulary paths."
+    },
+    {
+      "id": "prior_marriage_v2_2_start_day",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[23].Date_Of_Prior_Marriage_Start_Day[2]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "7P spouse's first prior marriage start date (day) — no prior-marriage vocabulary paths."
+    },
+    {
+      "id": "prior_marriage_v2_2_end_day",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[23].Date_Of_Prior_Marriage_End_Day[2]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "7Q spouse's first prior marriage end date (day) — no prior-marriage vocabulary paths."
+    },
+    {
+      "id": "prior_marriage_v2_2_start_year",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[23].Date_Of_Prior_Marriage_Start_Year[2]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "7P spouse's first prior marriage start date (year) — no prior-marriage vocabulary paths."
+    },
+    {
+      "id": "prior_marriage_v2_2_end_year",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[23].Date_Of_Prior_Marriage_End_Year[2]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "7Q spouse's first prior marriage end date (year) — no prior-marriage vocabulary paths."
+    },
+    {
+      "id": "prior_marriage_v2_2_how_ended_specify",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[23].Specify[2]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "7O spouse's first prior marriage other-specify — no prior-marriage vocabulary paths."
+    },
+    {
+      "id": "prior_marriage_v2_2_place",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[23].Place_Of_Marriage_City_And_State_Or_Country[3]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "spouse's first prior marriage place — no prior-marriage vocabulary paths."
+    },
+    {
+      "id": "prior_marriage_v2_2_termination_place",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[23].Place_Of_Marriage_Termination_City_And_State_Or_Country[2]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "spouse's first prior marriage termination place — no prior-marriage vocabulary paths."
+    },
+    {
+      "id": "prior_marriage_v2_3_start_month",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[23].Date_Of_Prior_Marriage_Start_Month[3]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "7V spouse's second prior marriage start date (month) — no prior-marriage vocabulary paths."
+    },
+    {
+      "id": "prior_marriage_v2_3_end_month",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[23].Date_Of_Prior_Marriage_End_Month[3]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "7W spouse's second prior marriage end date (month) — no prior-marriage vocabulary paths."
+    },
+    {
+      "id": "prior_marriage_v2_3_start_day",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[23].Date_Of_Prior_Marriage_Start_Day[3]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "7V spouse's second prior marriage start date (day) — no prior-marriage vocabulary paths."
+    },
+    {
+      "id": "prior_marriage_v2_3_end_day",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[23].Date_Of_Prior_Marriage_End_Day[3]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "7W spouse's second prior marriage end date (day) — no prior-marriage vocabulary paths."
+    },
+    {
+      "id": "prior_marriage_v2_3_start_year",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[23].Date_Of_Prior_Marriage_Start_Year[3]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "7V spouse's second prior marriage start date (year) — no prior-marriage vocabulary paths."
+    },
+    {
+      "id": "prior_marriage_v2_3_end_year",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[23].Date_Of_Prior_Marriage_End_Year[3]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "7W spouse's second prior marriage end date (year) — no prior-marriage vocabulary paths."
+    },
+    {
+      "id": "prior_marriage_v2_3_how_ended_specify",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[23].Specify[3]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "7U spouse's second prior marriage other-specify — no prior-marriage vocabulary paths."
+    },
+    {
+      "id": "prior_marriage_v2_3_place",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[23].Place_Of_Marriage_City_And_State_Or_Country[4]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "spouse's second prior marriage place — no prior-marriage vocabulary paths."
+    },
+    {
+      "id": "prior_marriage_v2_3_termination_place",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[23].Place_Of_Marriage_Termination_City_And_State_Or_Country[3]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "spouse's second prior marriage termination place — no prior-marriage vocabulary paths."
+    },
+    {
+      "id": "spouse_prior_marriage1_first",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[23].Spouses_Prior_Spouse_FirstName[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "7N who the spouse was married to (first name) — no prior-marriage vocabulary paths."
+    },
+    {
+      "id": "spouse_prior_marriage1_mi",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[23].Spouses_Prior_Spouse_MiddleInitial1[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "7N who the spouse was married to (middle initial) — no prior-marriage vocabulary paths."
+    },
+    {
+      "id": "spouse_prior_marriage1_last",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[23].Spouses_Prior_Spouse_LastName[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "7N who the spouse was married to (last name) — no prior-marriage vocabulary paths."
+    },
+    {
+      "id": "spouse_prior_marriage2_first",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[23].SpouseFirstName[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "7T who the spouse was married to (first name) — no prior-marriage vocabulary paths."
+    },
+    {
+      "id": "spouse_prior_marriage2_mi",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[23].SpouseMiddleInitial1[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "7T who the spouse was married to (middle initial) — no prior-marriage vocabulary paths."
+    },
+    {
+      "id": "spouse_prior_marriage2_last",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[23].SpouseLastName[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "7T who the spouse was married to (last name) — no prior-marriage vocabulary paths."
+    },
+    {
+      "id": "dependent_1_first_name",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[23].Childs_FirstName[0]"
+      },
+      "source": {
+        "fieldPath": "household.members[0].first_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 0
+      },
+      "note": "8B dependent child 1 first name."
+    },
+    {
+      "id": "dependent_1_middle_initial",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[23].Childs_MiddleInitial1[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "8B dependent child 1 middle initial — no middle-name path for household members."
+    },
+    {
+      "id": "dependent_1_last_name",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[23].Childs_LastName[0]"
+      },
+      "source": {
+        "fieldPath": "household.members[0].last_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 0
+      },
+      "note": "8B dependent child 1 last name."
+    },
+    {
+      "id": "dependent_1_dob_month",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[23].Childs_DOB_Month[0]"
+      },
+      "source": {
+        "fieldPath": "household.members[0].date_of_birth"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 0
+      },
+      "note": "8C dependent child 1 birth date (month)."
+    },
+    {
+      "id": "dependent_1_dob_day",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[23].Childs_DOB_Day[0]"
+      },
+      "source": {
+        "fieldPath": "household.members[0].date_of_birth"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 0
+      },
+      "note": "8C dependent child 1 birth date (day)."
+    },
+    {
+      "id": "dependent_1_dob_year",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[23].Childs_DOB_Year[0]"
+      },
+      "source": {
+        "fieldPath": "household.members[0].date_of_birth"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 0
+      },
+      "note": "8C dependent child 1 birth date (year)."
+    },
+    {
+      "id": "dependent_1_ssn_first3",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[23].Childs_SocialSecurityNumber_FirstThreeNumbers[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Social Security number — never collected per product policy (NeverAsk); applicant fills by hand."
+    },
+    {
+      "id": "dependent_1_ssn_second2",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[23].Childs_SocialSecurityNumber_SecondTwoNumbers[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Social Security number — never collected per product policy (NeverAsk); applicant fills by hand."
+    },
+    {
+      "id": "dependent_1_ssn_last4",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[23].Childs_SocialSecurityNumber_LastFourNumbers[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Social Security number — never collected per product policy (NeverAsk); applicant fills by hand."
+    },
+    {
+      "id": "dependent_2_first_name",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[23].Childs_FirstName[1]"
+      },
+      "source": {
+        "fieldPath": "household.members[1].first_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "note": "8G dependent child 2 first name."
+    },
+    {
+      "id": "dependent_2_middle_initial",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[23].Childs_MiddleInitial1[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "8G dependent child 2 middle initial — no middle-name path for household members."
+    },
+    {
+      "id": "dependent_2_last_name",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[23].Childs_LastName[1]"
+      },
+      "source": {
+        "fieldPath": "household.members[1].last_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "note": "8G dependent child 2 last name."
+    },
+    {
+      "id": "dependent_2_dob_month",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[23].Childs_DOB_Month[1]"
+      },
+      "source": {
+        "fieldPath": "household.members[1].date_of_birth"
+      },
+      "note": "8H dependent child 2 birth date (month)."
+    },
+    {
+      "id": "dependent_2_dob_day",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[23].Childs_DOB_Day[1]"
+      },
+      "source": {
+        "fieldPath": "household.members[1].date_of_birth"
+      },
+      "note": "8H dependent child 2 birth date (day)."
+    },
+    {
+      "id": "dependent_2_dob_year",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[23].Childs_DOB_Year[1]"
+      },
+      "source": {
+        "fieldPath": "household.members[1].date_of_birth"
+      },
+      "note": "8H dependent child 2 birth date (year)."
+    },
+    {
+      "id": "dependent_2_ssn_first3",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[23].Childs_SocialSecurityNumber_FirstThreeNumbers[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Social Security number — never collected per product policy (NeverAsk); applicant fills by hand."
+    },
+    {
+      "id": "dependent_2_ssn_second2",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[23].Childs_SocialSecurityNumber_SecondTwoNumbers[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Social Security number — never collected per product policy (NeverAsk); applicant fills by hand."
+    },
+    {
+      "id": "dependent_2_ssn_last4",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[23].Childs_SocialSecurityNumber_LastFourNumbers[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Social Security number — never collected per product policy (NeverAsk); applicant fills by hand."
+    },
+    {
+      "id": "dependent_1_place_of_birth",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[23].Place_Of_Birth_City_And_State_Or_Country[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "8E dependent child 1 place of birth — no birthplace path for household members."
+    },
+    {
+      "id": "dependent_2_place_of_birth",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[23].Childs_Place_Of_Birth_City_And_State_Or_Country[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "8J dependent child 2 place of birth — no birthplace path for household members."
+    },
+    {
+      "id": "dependent_1_contribution_amount",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[23].Amount_Of_Contribution[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "8F monthly contribution for child 1 not living with the veteran — no vocabulary path."
+    },
+    {
+      "id": "dependent_children_count",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[23].Number_Of_Dependent_Children_Who_Live_With_You[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "8A number of dependent children who live with the veteran — household.size is the whole household, not the child count; applicant writes by hand."
+    },
+    {
+      "id": "dependent_3_first_name",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[24].Childs_FirstName[2]"
+      },
+      "source": {
+        "fieldPath": "household.members[2].first_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 2
+      },
+      "note": "8L dependent child 3 first name."
+    },
+    {
+      "id": "dependent_3_middle_initial",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[24].Childs_MiddleInitial1[2]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "8L dependent child 3 middle initial — no middle-name path for household members."
+    },
+    {
+      "id": "dependent_3_last_name",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[24].Childs_LastName[2]"
+      },
+      "source": {
+        "fieldPath": "household.members[2].last_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 2
+      },
+      "note": "8L dependent child 3 last name."
+    },
+    {
+      "id": "dependent_3_dob_month",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[24].Childs_DOB_Month[2]"
+      },
+      "source": {
+        "fieldPath": "household.members[2].date_of_birth"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 2
+      },
+      "note": "8M dependent child 3 birth date (month)."
+    },
+    {
+      "id": "dependent_3_dob_day",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[24].Childs_DOB_Day[2]"
+      },
+      "source": {
+        "fieldPath": "household.members[2].date_of_birth"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 2
+      },
+      "note": "8M dependent child 3 birth date (day)."
+    },
+    {
+      "id": "dependent_3_dob_year",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[24].Childs_DOB_Year[2]"
+      },
+      "source": {
+        "fieldPath": "household.members[2].date_of_birth"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 2
+      },
+      "note": "8M dependent child 3 birth date (year)."
+    },
+    {
+      "id": "dependent_3_ssn_first3",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[24].Childs_SocialSecurityNumber_FirstThreeNumbers[2]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Social Security number — never collected per product policy (NeverAsk); applicant fills by hand."
+    },
+    {
+      "id": "dependent_3_ssn_second2",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[24].Childs_SocialSecurityNumber_SecondTwoNumbers[2]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Social Security number — never collected per product policy (NeverAsk); applicant fills by hand."
+    },
+    {
+      "id": "dependent_3_ssn_last4",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[24].Childs_SocialSecurityNumber_LastFourNumbers[2]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Social Security number — never collected per product policy (NeverAsk); applicant fills by hand."
+    },
+    {
+      "id": "dependent_3_place_of_birth",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[24].Place_Of_Birth_City_And_State_Or_Country[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "8O dependent child 3 place of birth — no birthplace path for household members."
+    },
+    {
+      "id": "dependent_2_contribution_amount",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[24].Amount_Of_Contribution[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "8K monthly contribution for child 2 not living with the veteran — no vocabulary path."
+    },
+    {
+      "id": "dependent_3_contribution_amount",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[24].Amount_Of_Contribution[2]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "8P monthly contribution for child 3 not living with the veteran — no vocabulary path."
+    },
+    {
+      "id": "custodian_contribution_amount",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[24].Amount_Of_Contribution[3]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Monthly contribution amount near the custodian block — no vocabulary path."
+    },
+    {
+      "id": "custodian_first_name",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[24].Custodians_FirstName[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "8R custodian first name (children not living with the veteran) — no vocabulary path."
+    },
+    {
+      "id": "custodian_middle_initial",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[24].Custodians_MiddleInitial1[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "8R custodian middle initial — no vocabulary path."
+    },
+    {
+      "id": "custodian_last_name",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[24].Custodians_LastName[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "8R custodian last name — no vocabulary path."
+    },
+    {
+      "id": "custodian_street",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[24].NumberStreet[3]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "8S custodian street address — no vocabulary path."
+    },
+    {
+      "id": "custodian_apt",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[24].Apt_Or_Unit_Number[2]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "8S custodian apt/unit — no vocabulary path."
+    },
+    {
+      "id": "custodian_city",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[24].City[2]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "8S custodian city — no vocabulary path."
+    },
+    {
+      "id": "custodian_state",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[24].State_Or_Province[2]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "8S custodian state — no vocabulary path."
+    },
+    {
+      "id": "custodian_country",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[24].Country[3]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "8S custodian country — no vocabulary path."
+    },
+    {
+      "id": "custodian_zip",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[24].Zip_Postal_Code[4]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "8S custodian ZIP — no vocabulary path."
+    },
+    {
+      "id": "custodian_zip_plus4",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[24].Zip_Postal_Code[5]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "8S custodian ZIP+4 — no vocabulary path."
+    },
+    {
+      "id": "total_assets_value",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[24].Total_Value_Of_Assets_Amount[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "9A total value of assets — no asset-total vocabulary path; applicant writes by hand."
+    },
+    {
+      "id": "income0_recipient_child",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[24].Income_Recipient_Child[0]"
+      },
+      "source": {
+        "fieldPath": "income.sources[].member_ref"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "income.sources",
+        "index": 0
+      },
+      "note": "9H(1) child name when the recipient is a child."
+    },
+    {
+      "id": "income0_type_specify",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[24].Specify_Type_Of_Income[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "9H(2) other income type specify — no free-text income-description vocabulary path."
+    },
+    {
+      "id": "income3_recipient_child",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[25].Income_Recipient_Child[1]"
+      },
+      "source": {
+        "fieldPath": "income.sources[].member_ref"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "income.sources",
+        "index": 3
+      },
+      "note": "9K(1) child name when the recipient is a child."
+    },
+    {
+      "id": "income3_type_specify",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[25].Specify_Type_Of_Income[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "9K(2) other income type specify — no free-text income-description vocabulary path."
+    },
+    {
+      "id": "income2_recipient_child",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[25].Income_Recipient_Child[2]"
+      },
+      "source": {
+        "fieldPath": "income.sources[].member_ref"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "income.sources",
+        "index": 2
+      },
+      "note": "9J(1) child name when the recipient is a child."
+    },
+    {
+      "id": "income2_type_specify",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[25].Specify_Type_Of_Income[2]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "9J(2) other income type specify — no free-text income-description vocabulary path."
+    },
+    {
+      "id": "income1_recipient_child",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[25].Income_Recipient_Child[3]"
+      },
+      "source": {
+        "fieldPath": "income.sources[].member_ref"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "income.sources",
+        "index": 1
+      },
+      "note": "9I(1) child name when the recipient is a child."
+    },
+    {
+      "id": "income1_type_specify",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[25].Specify_Type_Of_Income[3]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "9I(2) other income type specify — no free-text income-description vocabulary path."
+    },
+    {
+      "id": "medical0_provider",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[25].Name_Of_Provider[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10B name of provider / paid-to — no provider-name path on expenses.medical."
+    },
+    {
+      "id": "medical0_specify",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[25].Specify[4]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10B other-specify — no vocabulary path."
+    },
+    {
+      "id": "medical0_hours_per_month",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[25].Hours_Worked_Per_Week[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10B in-home care hours worked per month — no hours path on expenses.medical."
+    },
+    {
+      "id": "medical0_hourly_rate",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[25].Rate_Per_Hour_Amount[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10B in-home care hourly rate — vocabulary keeps a monthly amount only; applicant writes by hand."
+    },
+    {
+      "id": "medical0_monthly_amount",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[25].Amount[0]"
+      },
+      "source": {
+        "fieldPath": "expenses.medical[].monthly_amount"
+      },
+      "transforms": [
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "expenses.medical",
+        "index": 0
+      },
+      "note": "10B amount paid based on frequency selected — mapped to the monthly amount; when the frequency is annual the figure is approximate."
+    },
+    {
+      "id": "medical0_provider_start_month",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[25].Date_Of_Prior_Marriage_Start_Month[4]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10B provider start date (month; misnamed field) — no date path on expenses.medical."
+    },
+    {
+      "id": "medical0_provider_end_month",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[25].Date_Of_Prior_Marriage_End_Month[4]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10B provider end date (month; misnamed field) — no date path on expenses.medical."
+    },
+    {
+      "id": "medical0_provider_start_day",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[25].Date_Of_Prior_Marriage_Start_Day[4]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10B provider start date (day; misnamed field) — no date path on expenses.medical."
+    },
+    {
+      "id": "medical0_provider_end_day",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[25].Date_Of_Prior_Marriage_End_Day[4]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10B provider end date (day; misnamed field) — no date path on expenses.medical."
+    },
+    {
+      "id": "medical0_provider_start_year",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[25].Date_Of_Prior_Marriage_Start_Year[4]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10B provider start date (year; misnamed field) — no date path on expenses.medical."
+    },
+    {
+      "id": "medical0_provider_end_year",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[25].Date_Of_Prior_Marriage_End_Year[4]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10B provider end date (year; misnamed field) — no date path on expenses.medical."
+    },
+    {
+      "id": "medical1_provider",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[25].Name_Of_Provider[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10C name of provider / paid-to — no provider-name path on expenses.medical."
+    },
+    {
+      "id": "medical1_specify",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[25].Specify[5]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10C other-specify — no vocabulary path."
+    },
+    {
+      "id": "medical1_hours_per_month",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[25].Hours_Worked_Per_Week[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10C in-home care hours worked per month — no hours path on expenses.medical."
+    },
+    {
+      "id": "medical1_hourly_rate",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[25].Rate_Per_Hour_Amount[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10C in-home care hourly rate — vocabulary keeps a monthly amount only; applicant writes by hand."
+    },
+    {
+      "id": "medical1_monthly_amount",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[25].Amount[1]"
+      },
+      "source": {
+        "fieldPath": "expenses.medical[].monthly_amount"
+      },
+      "transforms": [
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "expenses.medical",
+        "index": 1
+      },
+      "note": "10C amount paid based on frequency selected — mapped to the monthly amount; when the frequency is annual the figure is approximate."
+    },
+    {
+      "id": "medical1_provider_start_month",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[25].Date_Of_Prior_Marriage_Start_Month[5]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10C provider start date (month; misnamed field) — no date path on expenses.medical."
+    },
+    {
+      "id": "medical1_provider_end_month",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[25].Date_Of_Prior_Marriage_End_Month[5]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10C provider end date (month; misnamed field) — no date path on expenses.medical."
+    },
+    {
+      "id": "medical1_provider_start_day",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[25].Date_Of_Prior_Marriage_Start_Day[5]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10C provider start date (day; misnamed field) — no date path on expenses.medical."
+    },
+    {
+      "id": "medical1_provider_end_day",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[25].Date_Of_Prior_Marriage_End_Day[5]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10C provider end date (day; misnamed field) — no date path on expenses.medical."
+    },
+    {
+      "id": "medical1_provider_start_year",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[25].Date_Of_Prior_Marriage_Start_Year[5]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10C provider start date (year; misnamed field) — no date path on expenses.medical."
+    },
+    {
+      "id": "medical1_provider_end_year",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[25].Date_Of_Prior_Marriage_End_Year[5]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10C provider end date (year; misnamed field) — no date path on expenses.medical."
+    },
+    {
+      "id": "medical2_provider",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[26].Name_Of_Provider[2]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10D name of provider / paid-to — no provider-name path on expenses.medical."
+    },
+    {
+      "id": "medical2_specify",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[26].Specify[11]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10D other-specify — no vocabulary path."
+    },
+    {
+      "id": "medical2_hours_per_month",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[26].Hours_Worked_Per_Week[2]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10D in-home care hours worked per month — no hours path on expenses.medical."
+    },
+    {
+      "id": "medical2_hourly_rate",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[26].Rate_Per_Hour_Amount[2]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10D in-home care hourly rate — vocabulary keeps a monthly amount only; applicant writes by hand."
+    },
+    {
+      "id": "medical2_monthly_amount",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[26].Amount[2]"
+      },
+      "source": {
+        "fieldPath": "expenses.medical[].monthly_amount"
+      },
+      "transforms": [
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "expenses.medical",
+        "index": 2
+      },
+      "note": "10D amount paid based on frequency selected — mapped to the monthly amount; when the frequency is annual the figure is approximate."
+    },
+    {
+      "id": "medical2_provider_start_month",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[26].Date_Of_Prior_Marriage_Start_Month[6]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10D provider start date (month; misnamed field) — no date path on expenses.medical."
+    },
+    {
+      "id": "medical2_provider_end_month",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[26].Date_Of_Prior_Marriage_End_Month[6]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10D provider end date (month; misnamed field) — no date path on expenses.medical."
+    },
+    {
+      "id": "medical2_provider_start_day",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[26].Date_Of_Prior_Marriage_Start_Day[6]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10D provider start date (day; misnamed field) — no date path on expenses.medical."
+    },
+    {
+      "id": "medical2_provider_end_day",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[26].Date_Of_Prior_Marriage_End_Day[6]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10D provider end date (day; misnamed field) — no date path on expenses.medical."
+    },
+    {
+      "id": "medical2_provider_start_year",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[26].Date_Of_Prior_Marriage_Start_Year[6]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10D provider start date (year; misnamed field) — no date path on expenses.medical."
+    },
+    {
+      "id": "medical2_provider_end_year",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[26].Date_Of_Prior_Marriage_End_Year[6]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10D provider end date (year; misnamed field) — no date path on expenses.medical."
+    },
+    {
+      "id": "medical3_provider",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[26].Paid_To[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10E name of provider / paid-to — no provider-name path on expenses.medical."
+    },
+    {
+      "id": "medical3_purpose",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[26].Purpose[4]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10E purpose (insurance premium, supplies, etc.) — free text, no vocabulary path; expenses.medical[].kind is a fixed choice, not a description."
+    },
+    {
+      "id": "medical3_specify",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[26].Specify[6]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10E other-specify — no vocabulary path."
+    },
+    {
+      "id": "medical3_amount_paid",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[26].Rate_Per_Hour_Amount[3]"
+      },
+      "source": {
+        "fieldPath": "expenses.medical[].monthly_amount"
+      },
+      "transforms": [
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "expenses.medical",
+        "index": 3
+      },
+      "note": "10E amount paid based on frequency selected — mapped to the monthly amount; when the frequency is annual or one-time the figure is approximate."
+    },
+    {
+      "id": "medical4_provider",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[26].Paid_To[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10F name of provider / paid-to — no provider-name path on expenses.medical."
+    },
+    {
+      "id": "medical4_purpose",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[26].Purpose[3]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10F purpose (insurance premium, supplies, etc.) — free text, no vocabulary path; expenses.medical[].kind is a fixed choice, not a description."
+    },
+    {
+      "id": "medical4_specify",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[26].Specify[7]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10F other-specify — no vocabulary path."
+    },
+    {
+      "id": "medical4_amount_paid",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[26].Rate_Per_Hour_Amount[4]"
+      },
+      "source": {
+        "fieldPath": "expenses.medical[].monthly_amount"
+      },
+      "transforms": [
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "expenses.medical",
+        "index": 4
+      },
+      "note": "10F amount paid based on frequency selected — mapped to the monthly amount; when the frequency is annual or one-time the figure is approximate."
+    },
+    {
+      "id": "medical5_provider",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[26].Paid_To[2]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10G name of provider / paid-to — no provider-name path on expenses.medical."
+    },
+    {
+      "id": "medical5_purpose",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[26].Purpose[2]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10G purpose (insurance premium, supplies, etc.) — free text, no vocabulary path; expenses.medical[].kind is a fixed choice, not a description."
+    },
+    {
+      "id": "medical5_specify",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[26].Specify[8]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10G other-specify — no vocabulary path."
+    },
+    {
+      "id": "medical5_amount_paid",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[26].Rate_Per_Hour_Amount[5]"
+      },
+      "source": {
+        "fieldPath": "expenses.medical[].monthly_amount"
+      },
+      "transforms": [
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "expenses.medical",
+        "index": 5
+      },
+      "note": "10G amount paid based on frequency selected — mapped to the monthly amount; when the frequency is annual or one-time the figure is approximate."
+    },
+    {
+      "id": "medical6_provider",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[26].Paid_To[3]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10H name of provider / paid-to — no provider-name path on expenses.medical."
+    },
+    {
+      "id": "medical6_purpose",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[26].Purpose[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10H purpose (insurance premium, supplies, etc.) — free text, no vocabulary path; expenses.medical[].kind is a fixed choice, not a description."
+    },
+    {
+      "id": "medical6_specify",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[26].Specify[9]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10H other-specify — no vocabulary path."
+    },
+    {
+      "id": "medical6_amount_paid",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[26].Rate_Per_Hour_Amount[6]"
+      },
+      "source": {
+        "fieldPath": "expenses.medical[].monthly_amount"
+      },
+      "transforms": [
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "expenses.medical",
+        "index": 6
+      },
+      "note": "10H amount paid based on frequency selected — mapped to the monthly amount; when the frequency is annual or one-time the figure is approximate."
+    },
+    {
+      "id": "medical7_provider",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[26].Paid_To[4]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10I name of provider / paid-to — no provider-name path on expenses.medical."
+    },
+    {
+      "id": "medical7_purpose",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[26].Purpose[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10I purpose (insurance premium, supplies, etc.) — free text, no vocabulary path; expenses.medical[].kind is a fixed choice, not a description."
+    },
+    {
+      "id": "medical7_specify",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[26].Specify[10]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10I other-specify — no vocabulary path."
+    },
+    {
+      "id": "medical7_amount_paid",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[26].Rate_Per_Hour_Amount[7]"
+      },
+      "source": {
+        "fieldPath": "expenses.medical[].monthly_amount"
+      },
+      "transforms": [
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "expenses.medical",
+        "index": 7
+      },
+      "note": "10I amount paid based on frequency selected — mapped to the monthly amount; when the frequency is annual or one-time the figure is approximate."
+    },
+    {
+      "id": "medical8_provider",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[26].Paid_To[5]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10J name of provider / paid-to — no provider-name path on expenses.medical."
+    },
+    {
+      "id": "medical8_purpose",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[26].Purpose[5]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10J purpose (insurance premium, supplies, etc.) — free text, no vocabulary path; expenses.medical[].kind is a fixed choice, not a description."
+    },
+    {
+      "id": "medical8_specify",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[26].Specify[12]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10J other-specify — no vocabulary path."
+    },
+    {
+      "id": "medical8_amount_paid",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[26].Rate_Per_Hour_Amount[8]"
+      },
+      "source": {
+        "fieldPath": "expenses.medical[].monthly_amount"
+      },
+      "transforms": [
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "repeat": {
+        "over": "expenses.medical",
+        "index": 8
+      },
+      "note": "10J amount paid based on frequency selected — mapped to the monthly amount; when the frequency is annual or one-time the figure is approximate."
+    },
+    {
+      "id": "medical3_date_paid_year",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[26].Date_Costs_Paid_Year[3]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10E date costs paid (year) — no date path on expenses.medical; applicant writes by hand."
+    },
+    {
+      "id": "medical3_date_paid_day",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[26].Date_Costs_Paid_Day[4]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10E date costs paid (day) — no date path on expenses.medical; applicant writes by hand."
+    },
+    {
+      "id": "medical3_date_paid_month",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[26].Date_Costs_Incurred_Month[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10E date costs paid (month) — no date path on expenses.medical; applicant writes by hand."
+    },
+    {
+      "id": "medical4_date_paid_year",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[26].Date_Costs_Paid-Year[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10F date costs paid (year) — no date path on expenses.medical; applicant writes by hand."
+    },
+    {
+      "id": "medical4_date_paid_day",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[26].Date_Costs_Paid_Day[3]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10F date costs paid (day) — no date path on expenses.medical; applicant writes by hand."
+    },
+    {
+      "id": "medical4_date_paid_month",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[26].Date_Costs_Paid_Month[3]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10F date costs paid (month) — no date path on expenses.medical; applicant writes by hand."
+    },
+    {
+      "id": "medical5_date_paid_year",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[26].Date_Costs_Paid_Year[2]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10G date costs paid (year) — no date path on expenses.medical; applicant writes by hand."
+    },
+    {
+      "id": "medical5_date_paid_day",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[26].Date_Costs_Paid_Day[2]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10G date costs paid (day) — no date path on expenses.medical; applicant writes by hand."
+    },
+    {
+      "id": "medical5_date_paid_month",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[26].Date_Costs_Paid_Month[2]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10G date costs paid (month) — no date path on expenses.medical; applicant writes by hand."
+    },
+    {
+      "id": "medical6_date_paid_year",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[26].Date_Costs_Paid_Year[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10H date costs paid (year) — no date path on expenses.medical; applicant writes by hand."
+    },
+    {
+      "id": "medical6_date_paid_day",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[26].Date_Costs_Paid_Day[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10H date costs paid (day) — no date path on expenses.medical; applicant writes by hand."
+    },
+    {
+      "id": "medical6_date_paid_month",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[26].Date_Costs_Paid_Month[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10H date costs paid (month) — no date path on expenses.medical; applicant writes by hand."
+    },
+    {
+      "id": "medical7_date_paid_year",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[26].Date_Costs_Paid_Year[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10I date costs paid (year) — no date path on expenses.medical; applicant writes by hand."
+    },
+    {
+      "id": "medical7_date_paid_day",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[26].Date_Costs_Paid_Day[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10I date costs paid (day) — no date path on expenses.medical; applicant writes by hand."
+    },
+    {
+      "id": "medical7_date_paid_month",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[26].Date_Costs_Paid_Month[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10I date costs paid (month) — no date path on expenses.medical; applicant writes by hand."
+    },
+    {
+      "id": "medical8_date_paid_year",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[26].Date_Costs_Paid_Year[4]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10J date costs paid (year) — no date path on expenses.medical; applicant writes by hand."
+    },
+    {
+      "id": "medical8_date_paid_day",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[26].Date_Costs_Paid_Day[5]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10J date costs paid (day) — no date path on expenses.medical; applicant writes by hand."
+    },
+    {
+      "id": "medical8_date_paid_month",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[26].Date_Costs_Paid_Month[4]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "10J date costs paid (month) — no date path on expenses.medical; applicant writes by hand."
+    },
+    {
+      "id": "direct_deposit_institution",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[27].Name_Of_Financial_Institution[0]"
+      },
+      "source": {
+        "fieldPath": "resources.accounts[].institution"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "strength": "required",
+      "repeat": {
+        "over": "resources.accounts",
+        "index": 0
+      },
+      "note": "11A name of financial institution for direct deposit."
+    },
+    {
+      "id": "direct_deposit_routing",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[27].Routing_Or_Transit_Number[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "11C routing number — sensitive banking detail, no vocabulary path; applicant writes by hand."
+    },
+    {
+      "id": "direct_deposit_account",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[27].Account_Number[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "11D account number — sensitive banking detail, no vocabulary path; applicant writes by hand."
+    },
+    {
+      "id": "witness1_name",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[27].Name_Of_First_Witness[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "13B printed name of first witness — filled by the witness at signing, not applicant profile data."
+    },
+    {
+      "id": "witness1_address",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[27].Address_Of_First_Witness[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "13C printed address of first witness — filled by the witness at signing."
+    },
+    {
+      "id": "witness2_name",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[27].Name_Of_Second_Witness[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "13E printed name of second witness — filled by the witness at signing, not applicant profile data."
+    },
+    {
+      "id": "witness2_address",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[27].Address_Of_Second_Witness[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "13E/13F printed address of second witness — filled by the witness at signing."
+    },
+    {
+      "id": "facility_ws_care_recipient_first",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[29].FirstName[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Q1 care recipient first name. Worksheet completed by a third party (facility administrator / licensed medical professional / care provider), not the applicant — no profile data maps here."
+    },
+    {
+      "id": "facility_ws_care_recipient_last",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[29].LastName[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Q1 care recipient last name. Worksheet completed by a third party (facility administrator / licensed medical professional / care provider), not the applicant — no profile data maps here."
+    },
+    {
+      "id": "facility_ws_completer_first",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[29].FirstName[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Q2 person completing the worksheet first name. Worksheet completed by a third party (facility administrator / licensed medical professional / care provider), not the applicant — no profile data maps here."
+    },
+    {
+      "id": "facility_ws_completer_last",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[29].LastName[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Q2 person completing the worksheet last name. Worksheet completed by a third party (facility administrator / licensed medical professional / care provider), not the applicant — no profile data maps here."
+    },
+    {
+      "id": "facility_ws_role",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[29].Role_Or_Position_You_Perform_At_Facility[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Q3 role/position at the facility. Worksheet completed by a third party (facility administrator / licensed medical professional / care provider), not the applicant — no profile data maps here."
+    },
+    {
+      "id": "facility_ws_name",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[29].Name_Of_The_Facility[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Q4 name of the facility. Worksheet completed by a third party (facility administrator / licensed medical professional / care provider), not the applicant — no profile data maps here."
+    },
+    {
+      "id": "facility_ws_street",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[29].NumberStreet[5]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Facility address street. Worksheet completed by a third party (facility administrator / licensed medical professional / care provider), not the applicant — no profile data maps here."
+    },
+    {
+      "id": "facility_ws_apt",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[29].ApartmentOrUnitNumber[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Facility address apt/unit. Worksheet completed by a third party (facility administrator / licensed medical professional / care provider), not the applicant — no profile data maps here."
+    },
+    {
+      "id": "facility_ws_city",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[29].City[3]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Facility address city. Worksheet completed by a third party (facility administrator / licensed medical professional / care provider), not the applicant — no profile data maps here."
+    },
+    {
+      "id": "facility_ws_state",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[29].State_Or_Province[3]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Facility address state. Worksheet completed by a third party (facility administrator / licensed medical professional / care provider), not the applicant — no profile data maps here."
+    },
+    {
+      "id": "facility_ws_country",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[29].Country[4]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Facility address country. Worksheet completed by a third party (facility administrator / licensed medical professional / care provider), not the applicant — no profile data maps here."
+    },
+    {
+      "id": "facility_ws_zip",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[29].Zip_Code[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Facility address ZIP. Worksheet completed by a third party (facility administrator / licensed medical professional / care provider), not the applicant — no profile data maps here."
+    },
+    {
+      "id": "facility_ws_zip_plus4",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[29].Zip_Code[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Facility address ZIP+4. Worksheet completed by a third party (facility administrator / licensed medical professional / care provider), not the applicant — no profile data maps here."
+    },
+    {
+      "id": "facility_ws_website",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[29].Facility_Website_Address[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Facility website address. Worksheet completed by a third party (facility administrator / licensed medical professional / care provider), not the applicant — no profile data maps here."
+    },
+    {
+      "id": "facility_ws_phone_first3",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[29].Telephone_Number_First_Three_Numbers[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Q5 facility telephone number (first3). Worksheet completed by a third party (facility administrator / licensed medical professional / care provider), not the applicant — no profile data maps here."
+    },
+    {
+      "id": "facility_ws_phone_second2",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[29].Telephone_Number_Second_Three_Numbers[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Q5 facility telephone number (second2). Worksheet completed by a third party (facility administrator / licensed medical professional / care provider), not the applicant — no profile data maps here."
+    },
+    {
+      "id": "facility_ws_phone_last4",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[29].Telephone_Number_Last_Four_Numbers[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Q5 facility telephone number (last4). Worksheet completed by a third party (facility administrator / licensed medical professional / care provider), not the applicant — no profile data maps here."
+    },
+    {
+      "id": "facility_ws_intl_phone",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[29].International_Phone_Number[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Q5 facility international phone. Worksheet completed by a third party (facility administrator / licensed medical professional / care provider), not the applicant — no profile data maps here."
+    },
+    {
+      "id": "facility_ws_admission_month",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[29].Date_Of_Admission_Month[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Q11 care recipient admission date (month). Worksheet completed by a third party (facility administrator / licensed medical professional / care provider), not the applicant — no profile data maps here."
+    },
+    {
+      "id": "facility_ws_care_ends_month",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[29].Date_Care_Ends_Month[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Q13 expected care end date (month). Worksheet completed by a third party (facility administrator / licensed medical professional / care provider), not the applicant — no profile data maps here."
+    },
+    {
+      "id": "facility_ws_admission_day",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[29].Date_Of_Admission_Day[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Q11 care recipient admission date (day). Worksheet completed by a third party (facility administrator / licensed medical professional / care provider), not the applicant — no profile data maps here."
+    },
+    {
+      "id": "facility_ws_care_ends_day",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[29].Date_Care_Ends_Day[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Q13 expected care end date (day). Worksheet completed by a third party (facility administrator / licensed medical professional / care provider), not the applicant — no profile data maps here."
+    },
+    {
+      "id": "facility_ws_admission_year",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[29].Date_Of_Admission_Year[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Q11 care recipient admission date (year). Worksheet completed by a third party (facility administrator / licensed medical professional / care provider), not the applicant — no profile data maps here."
+    },
+    {
+      "id": "facility_ws_care_ends_year",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[29].Date_Care_Ends_Year[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Q13 expected care end date (year). Worksheet completed by a third party (facility administrator / licensed medical professional / care provider), not the applicant — no profile data maps here."
+    },
+    {
+      "id": "facility_ws_monthly_charges",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[29].Amount[3]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Q14 monthly charges for staying at the facility. Worksheet completed by a third party (facility administrator / licensed medical professional / care provider), not the applicant — no profile data maps here."
+    },
+    {
+      "id": "attendant_ws_recipient_first",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[30].FirstName[2]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Care recipient first name. In-home attendant worksheet completed by the care provider/agency, not the applicant — no profile data maps here."
+    },
+    {
+      "id": "attendant_ws_recipient_last",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[30].LastName[2]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Care recipient last name. In-home attendant worksheet completed by the care provider/agency, not the applicant — no profile data maps here."
+    },
+    {
+      "id": "attendant_ws_provider_first",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[30].FirstName[3]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "In-home attendant first name. In-home attendant worksheet completed by the care provider/agency, not the applicant — no profile data maps here."
+    },
+    {
+      "id": "attendant_ws_provider_last",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[30].LastName[3]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "In-home attendant last name. In-home attendant worksheet completed by the care provider/agency, not the applicant — no profile data maps here."
+    },
+    {
+      "id": "attendant_ws_agency",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[30].Name_Of_Agency_Or_Organization[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Q5 agency/organization name. In-home attendant worksheet completed by the care provider/agency, not the applicant — no profile data maps here."
+    },
+    {
+      "id": "attendant_ws_agency_phone_first3",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[30].Agency_Telephone_Number_First_Three_Numbers[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Agency telephone number (first3). In-home attendant worksheet completed by the care provider/agency, not the applicant — no profile data maps here."
+    },
+    {
+      "id": "attendant_ws_agency_phone_second2",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[30].Agency_Telephone_Number_Second_Three_Numbers[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Agency telephone number (second2). In-home attendant worksheet completed by the care provider/agency, not the applicant — no profile data maps here."
+    },
+    {
+      "id": "attendant_ws_agency_phone_last4",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[30].Agency_Telephone_Number_Last_Four_Numbers[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Agency telephone number (last4). In-home attendant worksheet completed by the care provider/agency, not the applicant — no profile data maps here."
+    },
+    {
+      "id": "attendant_ws_street",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[30].NumberStreet[7]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Agency address street. In-home attendant worksheet completed by the care provider/agency, not the applicant — no profile data maps here."
+    },
+    {
+      "id": "attendant_ws_apt",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[30].ApartmentOrUnitNumber[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Agency address apt/unit. In-home attendant worksheet completed by the care provider/agency, not the applicant — no profile data maps here."
+    },
+    {
+      "id": "attendant_ws_city",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[30].City[4]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Agency address city. In-home attendant worksheet completed by the care provider/agency, not the applicant — no profile data maps here."
+    },
+    {
+      "id": "attendant_ws_state",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[30].State_Or_Province[4]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Agency address state. In-home attendant worksheet completed by the care provider/agency, not the applicant — no profile data maps here."
+    },
+    {
+      "id": "attendant_ws_country",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[30].Country[5]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Agency address country. In-home attendant worksheet completed by the care provider/agency, not the applicant — no profile data maps here."
+    },
+    {
+      "id": "attendant_ws_zip",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[30].Zip_Code[2]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Agency address ZIP. In-home attendant worksheet completed by the care provider/agency, not the applicant — no profile data maps here."
+    },
+    {
+      "id": "attendant_ws_zip_plus4",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[30].Zip_Code[3]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Agency address ZIP+4. In-home attendant worksheet completed by the care provider/agency, not the applicant — no profile data maps here."
+    },
+    {
+      "id": "attendant_ws_care_began_month",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[30].Date_Care_Began_Month[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Care began date (month). In-home attendant worksheet completed by the care provider/agency, not the applicant — no profile data maps here."
+    },
+    {
+      "id": "attendant_ws_care_ends_month",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[30].Date_Care_Ends_Month[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Q13 expected care end date (month). In-home attendant worksheet completed by the care provider/agency, not the applicant — no profile data maps here."
+    },
+    {
+      "id": "attendant_ws_care_began_day",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[30].Date_Care_Began_Day[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Care began date (day). In-home attendant worksheet completed by the care provider/agency, not the applicant — no profile data maps here."
+    },
+    {
+      "id": "attendant_ws_care_ends_day",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[30].Date_Care_Ends_Day[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Q13 expected care end date (day). In-home attendant worksheet completed by the care provider/agency, not the applicant — no profile data maps here."
+    },
+    {
+      "id": "attendant_ws_care_began_year",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[30].Date_Care_Began_Year[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Care began date (year). In-home attendant worksheet completed by the care provider/agency, not the applicant — no profile data maps here."
+    },
+    {
+      "id": "attendant_ws_care_ends_year",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[30].Date_Care_Ends_Year[1]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Q13 expected care end date (year). In-home attendant worksheet completed by the care provider/agency, not the applicant — no profile data maps here."
+    },
+    {
+      "id": "attendant_ws_hours_per_month",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[30].Hours_Per_Month[0]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Hours of care per month. In-home attendant worksheet completed by the care provider/agency, not the applicant — no profile data maps here."
+    },
+    {
+      "id": "attendant_ws_amount",
+      "target": {
+        "type": "text",
+        "name": "form1[0].#subform[30].Amount[4]"
+      },
+      "source": {},
+      "fillPolicy": "never",
+      "note": "Amount charged/paid for in-home care. In-home attendant worksheet completed by the care provider/agency, not the applicant — no profile data maps here."
     }
   ]
 }
