@@ -54,7 +54,9 @@ func TestTheAuditTrailStoresNoAnswers(t *testing.T) {
 // logged and stored.
 func TestProblemReasonsDoNotQuoteSensitiveValues(t *testing.T) {
 	profile := domain.NewProfile("u1")
-	if err := profile.Set("applicant.ssn", domain.Text("123456789", domain.SourceUser)); err != nil {
+	// Immigration status is sensitive but collectible (unlike the
+	// never-collected SSN), so it exercises the masking machinery.
+	if err := profile.Set("applicant.immigration_status", domain.Text("permanent resident", domain.SourceUser)); err != nil {
 		t.Fatalf("set: %v", err)
 	}
 
@@ -64,11 +66,11 @@ func TestProblemReasonsDoNotQuoteSensitiveValues(t *testing.T) {
 		VocabularyVersion: domain.VocabularyVersion,
 		Template:          domain.TemplateRef{Kind: domain.TemplateAcroForm, File: "t.pdf", SHA256: strings.Repeat("a", 64), PageCount: 1},
 		Fields: []domain.FieldMapping{{
-			ID:     "ssn_as_date",
-			Target: domain.Target{Type: domain.TargetText, Name: "SSN"},
-			Source: domain.SourceRef{FieldPath: "applicant.ssn"},
-			// A date transform on a Social Security number fails, which is the
-			// point: the failure must not carry the number.
+			ID:     "immigration_status_as_date",
+			Target: domain.Target{Type: domain.TargetText, Name: "Immigration Status"},
+			Source: domain.SourceRef{FieldPath: "applicant.immigration_status"},
+			// A date transform on a text answer fails, which is the
+			// point: the failure must not carry the answer.
 			Transforms: []domain.Transform{{Op: domain.OpDate, Layout: "01/02/2006"}},
 		}},
 	}
@@ -78,8 +80,8 @@ func TestProblemReasonsDoNotQuoteSensitiveValues(t *testing.T) {
 		t.Fatal("expected the transform to fail")
 	}
 	for _, problem := range resolution.Problems {
-		if strings.Contains(problem.Reason, "123456789") {
-			t.Errorf("a problem quoted the Social Security number: %s", problem.Reason)
+		if strings.Contains(problem.Reason, "permanent resident") {
+			t.Errorf("a problem quoted a sensitive answer: %s", problem.Reason)
 		}
 	}
 }

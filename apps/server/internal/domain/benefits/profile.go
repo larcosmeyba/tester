@@ -65,6 +65,12 @@ func (p *Profile) Set(path FieldPath, v Value) error {
 	if !ok {
 		return fmt.Errorf("set %q: %w", path, ErrUnknownFieldPath)
 	}
+	if spec.NeverAsk {
+		// Collection policy: this value (Social Security numbers) is never
+		// collected or stored, no matter which caller asks. The questionnaire
+		// never prompts for it; the API must not accept it either.
+		return fmt.Errorf("set %q: %w", path, ErrNeverAskFieldPath)
+	}
 	if spec.Derived {
 		return fmt.Errorf("set %q: %w", path, ErrDerivedFieldPath)
 	}
@@ -100,6 +106,9 @@ func (p *Profile) SetGroup(group FieldPath, rows []GroupRow) error {
 			memberSpec, ok := Lookup(path)
 			if !ok {
 				return fmt.Errorf("group %q row %d: %w: %s", group, i, ErrUnknownFieldPath, path)
+			}
+			if memberSpec.NeverAsk {
+				return fmt.Errorf("group %q row %d: %q: %w", group, i, path, ErrNeverAskFieldPath)
 			}
 			owner, isMember := path.GroupPath()
 			if !isMember || owner != group {

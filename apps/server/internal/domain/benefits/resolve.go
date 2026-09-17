@@ -73,19 +73,20 @@ func Resolve(profile *Profile, mapping *FormMapping) Resolution {
 		}
 
 		value := lookup(path)
+		// Collection policy: this value (Social Security numbers) is never
+		// written into a form — not when it is missing, and not even if a
+		// value somehow reached the profile. The box stays blank; the
+		// filing kit prints a hand-write line instead. Recorded as a policy
+		// skip so the audit trail shows the decision.
+		if spec, ok := Lookup(path); ok && spec.NeverAsk {
+			resolution.Skipped = append(resolution.Skipped, SkippedField{
+				FieldID: field.ID,
+				Reason:  SkipPolicy,
+				Note:    fmt.Sprintf("%s is never collected by policy — fill in by hand", path),
+			})
+			continue
+		}
 		if !value.Answerable() {
-			if spec, ok := Lookup(path); ok && spec.NeverAsk {
-				// Collection policy: never ask for this value (Social
-				// Security numbers). The box stays blank on the form; the
-				// filing kit prints a hand-write line instead. Recorded as
-				// a policy skip so the audit trail shows the decision.
-				resolution.Skipped = append(resolution.Skipped, SkippedField{
-					FieldID: field.ID,
-					Reason:  SkipPolicy,
-					Note:    fmt.Sprintf("%s is never collected by policy — fill in by hand", path),
-				})
-				continue
-			}
 			missing.add(path, field.strength(), field.ID)
 			continue
 		}

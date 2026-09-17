@@ -1,6 +1,7 @@
 package benefits
 
 import (
+	"errors"
 	"strings"
 	"testing"
 	"time"
@@ -362,22 +363,42 @@ func TestOneQuestionIsAskedOncePerPathNotPerBox(t *testing.T) {
 	}
 }
 
-func TestSensitiveAnswersAreFlaggedButStillFilled(t *testing.T) {
+func TestNeverAskPathsCannotBeSet(t *testing.T) {
+	// Collection policy: Social Security numbers are never collected or
+	// stored. The write path must refuse them no matter which caller asks —
+	// the questionnaire never prompts, and the API must not accept one
+	// either.
 	profile := NewProfile("u1")
-	mustSet(t, profile, "applicant.ssn", Text("123456789", SourceUser))
+	err := profile.Set("applicant.ssn", Text("123456789", SourceUser))
+	if !errors.Is(err, ErrNeverAskFieldPath) {
+		t.Fatalf("setting a never-collected path must fail with ErrNeverAskFieldPath, got %v", err)
+	}
+
+	row := NewGroupRow("m1")
+	row.Values["household.members[].ssn"] = Text("123456789", SourceUser)
+	if err := profile.SetGroup("household.members", []GroupRow{row}); !errors.Is(err, ErrNeverAskFieldPath) {
+		t.Fatalf("a group row with a never-collected path must fail with ErrNeverAskFieldPath, got %v", err)
+	}
+}
+
+func TestSensitiveAnswersAreFlaggedButStillFilled(t *testing.T) {
+	// The Sensitive flag survives independently of the never-collect policy:
+	// a sensitive answer that IS collected (immigration status) still fills
+	// its box, flagged so listings mask it.
+	profile := NewProfile("u1")
+	mustSet(t, profile, "applicant.immigration_status", Text("permanent resident", SourceUser))
 
 	mapping := textMapping(FieldMapping{
-		ID: "ssn", Target: Target{Type: TargetText, Name: "SSN"},
-		Source: SourceRef{FieldPath: "applicant.ssn"}, Strength: Required,
-		Transforms: []Transform{{Op: OpSSN, Style: "full"}},
+		ID: "immigration_status", Target: Target{Type: TargetText, Name: "Immigration Status"},
+		Source: SourceRef{FieldPath: "applicant.immigration_status"}, Strength: Required,
 	})
 
 	got := Resolve(profile, mapping)
-	if len(got.Filled) != 1 || got.Filled[0].Text != "123-45-6789" {
-		t.Fatalf("expected a formatted SSN on the form, got %+v", got.Filled)
+	if len(got.Filled) != 1 || got.Filled[0].Text != "permanent resident" {
+		t.Fatalf("expected the sensitive answer on the form, got %+v", got.Filled)
 	}
 	if !got.Filled[0].Sensitive {
-		t.Fatal("an SSN must be flagged sensitive so listings mask it")
+		t.Fatal("a sensitive answer must be flagged so listings mask it")
 	}
 }
 

@@ -40,7 +40,6 @@ func completeProfile(t *testing.T) *domain.Profile {
 	set(t, profile, "applicant.last_name", domain.Text("Rivera", domain.SourceUser))
 	set(t, profile, "applicant.middle_name", domain.Text("Sofia", domain.SourceUser))
 	set(t, profile, "applicant.date_of_birth", domain.Date(time.Date(1988, 3, 7, 0, 0, 0, 0, time.UTC), domain.SourceUser))
-	set(t, profile, "applicant.ssn", domain.Text("123456789", domain.SourceUser))
 	set(t, profile, "applicant.is_us_citizen", domain.Bool(true, domain.SourceUser))
 	set(t, profile, "contact.phone_primary", domain.Text("5551234567", domain.SourceUser))
 	set(t, profile, "contact.email", domain.Text("Ana.Rivera@Example.com", domain.SourceUser))
@@ -386,7 +385,9 @@ func TestOneUnwritableValueDoesNotCostTheWholeDocument(t *testing.T) {
 func TestRenderProblemsDescribeTheBoxNotTheAnswer(t *testing.T) {
 	form := sampleForm(t)
 	profile := completeProfile(t)
-	set(t, profile, "applicant.ssn", domain.Text("123456789", domain.SourceUser))
+	// Immigration status is sensitive but collectible, so it exercises the
+	// masking path the never-collected SSN no longer can.
+	set(t, profile, "applicant.immigration_status", domain.Text("permanent resident", domain.SourceUser))
 
 	resolution := domain.Resolve(profile, form.Mapping)
 	rendered, err := RenderDraft(form, resolution)
@@ -394,8 +395,8 @@ func TestRenderProblemsDescribeTheBoxNotTheAnswer(t *testing.T) {
 		t.Fatalf("render: %v", err)
 	}
 	for _, problem := range append(rendered.Problems, resolution.Problems...) {
-		if strings.Contains(problem.Reason, "123456789") {
-			t.Errorf("a problem quoted a Social Security number: %s", problem.Reason)
+		if strings.Contains(problem.Reason, "permanent resident") {
+			t.Errorf("a problem quoted a sensitive answer: %s", problem.Reason)
 		}
 	}
 }

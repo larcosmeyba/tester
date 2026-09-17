@@ -17,6 +17,9 @@ var (
 	ErrNotFound = errors.New("not found")
 	// ErrNotReady: an application still has required answers missing.
 	ErrNotReady = errors.New("application is not ready")
+	// ErrNeverAskFieldPath: the path is never collected by policy (Social
+	// Security numbers) and cannot be written, no matter who asks.
+	ErrNeverAskFieldPath = errors.New("field path is never collected")
 	// ErrAlreadyApproved: an approved application is final and is not refilled.
 	ErrAlreadyApproved = errors.New("application is already approved")
 )
