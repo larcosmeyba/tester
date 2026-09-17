@@ -19,6 +19,8 @@ const deepLinkHost =
 // tracking, purpose: app functionality):
 // - Name, Email Address, Phone Number: account signup (better-auth);
 //   phone stored on user profile, change flow verified by one-time code
+// - Physical Address: residential street address from the benefits
+//   questionnaire (needed to fill government applications)
 // - Photos or Videos: optional profile photo, pantry scan images
 // - Precise Location: "resources near you" (optional, ZIP fallback)
 // - User ID, Device ID: account id + Expo push token
@@ -32,6 +34,7 @@ const collectedDataTypes = [
   'NSPrivacyCollectedDataTypeName',
   'NSPrivacyCollectedDataTypeEmailAddress',
   'NSPrivacyCollectedDataTypePhoneNumber',
+  'NSPrivacyCollectedDataTypePhysicalAddress',
   'NSPrivacyCollectedDataTypePhotosorVideos',
   'NSPrivacyCollectedDataTypePreciseLocation',
   'NSPrivacyCollectedDataTypeUserID',
