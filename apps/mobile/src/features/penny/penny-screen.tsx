@@ -13,9 +13,11 @@
 
 import { useEffect, useRef, useState } from 'react';
 import {
+  Alert,
   Animated,
   Easing,
   KeyboardAvoidingView,
+  Linking,
   Platform,
   Pressable,
   ScrollView,
@@ -300,6 +302,28 @@ export function PennyScreen({ nav, context: propContext }: { nav: Navigation; co
     );
   }
 
+  // Play's generative-AI policy requires a way to flag AI-generated content:
+  // long-pressing one of Penny's answers offers a report flow, which opens an
+  // email to the team with her answer quoted.
+  function reportPennyMessage(message: ChatMessage) {
+    Alert.alert(
+      'Report this answer?',
+      'Tell us if something Penny said was wrong or unhelpful. This opens an email to our team with her answer attached.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Report',
+          onPress: () =>
+            void Linking.openURL(
+              `mailto:support@helpthehive.com?subject=${encodeURIComponent(
+                'Penny answer report',
+              )}&body=${encodeURIComponent(`Penny said:\n\n${message.text.slice(0, 2000)}`)}`,
+            ),
+        },
+      ],
+    );
+  }
+
   const hasConversation = messages.length > 0;
   // The free-message gate applies to everyone (no premium state in the app
   // yet); warn while 3 or fewer free messages remain, mirroring the Swift tab.
@@ -359,9 +383,13 @@ export function PennyScreen({ nav, context: propContext }: { nav: Navigation; co
                   <View key={message.id} style={styles.pennyMessageWrap}>
                     <View style={styles.pennyRow}>
                       <PennyImage source={pennySource} size={28} />
-                      <View style={[styles.bubble, styles.bubblePenny]}>
+                      <Pressable
+                        accessibilityRole="button"
+                        accessibilityLabel="Penny's answer — long-press to report it"
+                        onLongPress={() => reportPennyMessage(message)}
+                        style={[styles.bubble, styles.bubblePenny]}>
                         <Text style={styles.bubblePennyText}>{message.text}</Text>
-                      </View>
+                      </Pressable>
                     </View>
                     <Text style={[styles.timestamp, styles.timestampLeft]}>{formatTimestamp(message.at)}</Text>
                     {message.citations && message.citations.length > 0 ? (
