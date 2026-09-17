@@ -15,7 +15,7 @@
 import { useState } from 'react';
 import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import { AppButton, HiveIcon, Screen } from '@/components/hive-ui';
+import { AppButton, AppHeader, HiveIcon, Screen } from '@/components/hive-ui';
 import { useFloatingTabBarSpace } from '@/components/hive-navigation';
 import { HiveColors, Spacing } from '@/constants/theme';
 import { type Navigation } from '@/features/app/navigation-types';
@@ -114,6 +114,7 @@ export function BenefitsProgramPickerScreen({ nav, state }: { nav: Navigation; s
 
   return (
     <Screen>
+      <AppHeader title="Apply for benefits" onBack={nav.back} />
       <ScrollView style={styles.scroll} contentContainerStyle={styles.body} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
           <Image source={pennySource} style={styles.penny} resizeMode="contain" />
@@ -131,7 +132,7 @@ export function BenefitsProgramPickerScreen({ nav, state }: { nav: Navigation; s
         <View style={styles.privacyBanner}>
           <HiveIcon name="shield" size={18} color={HiveColors.green} />
           <Text style={styles.privacyText}>
-            Your information stays private and is never submitted without your review.
+            Your information stays private. We prepare your application documents — you review them and submit them yourself.
           </Text>
         </View>
 
