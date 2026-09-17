@@ -10,7 +10,7 @@
   "formTitle": "Application for Food and Nutrition Services",
   "formVersion": "2024.10",
   "revision": 1,
-  "status": "draft",
+  "status": "active",
   "vocabularyVersion": 1,
   "agencyUrl": "https://www.ncdhhs.gov",
   "template": {
@@ -3548,6 +3548,3785 @@
       },
       "fillPolicy": "never",
       "note": "Attestation date; never filled by the app."
+    },
+    {
+      "id": "nc_a_foster_child",
+      "target": {
+        "type": "checkbox",
+        "name": "A foster child"
+      },
+      "fillPolicy": "never",
+      "note": "Household composition screening; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_a_livein_person_attendant_who_takes_care_of_some",
+      "target": {
+        "type": "checkbox",
+        "name": "A livein person attendant who takes care of someone in your household"
+      },
+      "fillPolicy": "never",
+      "note": "Household composition screening; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_a_person_convicted_of_a_drug_related_felony_or_c",
+      "target": {
+        "type": "text",
+        "name": "A person convicted of a drug related felony or controlled substance committed after Who"
+      },
+      "fillPolicy": "never",
+      "note": "Disqualification screening; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_a_person_convicted_of_buying_or_selling_benefits",
+      "target": {
+        "type": "checkbox",
+        "name": "A person convicted of buying or selling benefits over 500 or more"
+      },
+      "fillPolicy": "never",
+      "note": "Disqualification screening; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_a_person_convicted_of_fraudulently_receiving_dup",
+      "target": {
+        "type": "checkbox",
+        "name": "A person convicted of fraudulently receiving duplicate benefits"
+      },
+      "fillPolicy": "never",
+      "note": "Disqualification screening; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_a_person_convicted_of_trading_benefits_for_guns_",
+      "target": {
+        "type": "checkbox",
+        "name": "A person convicted of trading benefits for guns drugs ammunitions or explosives"
+      },
+      "fillPolicy": "never",
+      "note": "Disqualification screening; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_a_veteran",
+      "target": {
+        "type": "checkbox",
+        "name": "A veteran"
+      },
+      "fillPolicy": "never",
+      "note": "Household composition screening; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_adoption_foster_care_or_guardianship_payments",
+      "target": {
+        "type": "checkbox",
+        "name": "Adoption Foster Care or Guardianship Payments"
+      },
+      "fillPolicy": "never",
+      "note": "Income type checkbox; income is captured in the income source rows."
+    },
+    {
+      "id": "nc_adult_care_home",
+      "target": {
+        "type": "checkbox",
+        "name": "Adult Care Home"
+      },
+      "fillPolicy": "never",
+      "note": "Living situation checkbox; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_after_the_recorded",
+      "target": {
+        "type": "text",
+        "name": "After the recorded"
+      },
+      "fillPolicy": "never",
+      "note": "Informational text; not an answer field."
+    },
+    {
+      "id": "nc_agesexrow2",
+      "target": {
+        "type": "text",
+        "name": "AgeSexRow2"
+      },
+      "fillPolicy": "never",
+      "note": "Age and sex are combined in one box; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_agesexrow3",
+      "target": {
+        "type": "text",
+        "name": "AgeSexRow3"
+      },
+      "fillPolicy": "never",
+      "note": "Age and sex are combined in one box; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_agesexrow4",
+      "target": {
+        "type": "text",
+        "name": "AgeSexRow4"
+      },
+      "fillPolicy": "never",
+      "note": "Age and sex are combined in one box; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_agesexrow5",
+      "target": {
+        "type": "text",
+        "name": "AgeSexRow5"
+      },
+      "fillPolicy": "never",
+      "note": "Age and sex are combined in one box; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_agesexrow6",
+      "target": {
+        "type": "text",
+        "name": "AgeSexRow6"
+      },
+      "fillPolicy": "never",
+      "note": "Age and sex are combined in one box; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_agesexrow7",
+      "target": {
+        "type": "text",
+        "name": "AgeSexRow7"
+      },
+      "fillPolicy": "never",
+      "note": "Age and sex are combined in one box; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_agesexrow8",
+      "target": {
+        "type": "text",
+        "name": "AgeSexRow8"
+      },
+      "fillPolicy": "never",
+      "note": "Age and sex are combined in one box; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_agesexself",
+      "target": {
+        "type": "text",
+        "name": "AgeSexSelf"
+      },
+      "fillPolicy": "never",
+      "note": "Age and sex are combined in one box; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_alcohol_andor_drug_treatment_center",
+      "target": {
+        "type": "checkbox",
+        "name": "Alcohol andor Drug Treatment Center"
+      },
+      "fillPolicy": "never",
+      "note": "Living situation checkbox; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_alimony",
+      "target": {
+        "type": "checkbox",
+        "name": "Alimony"
+      },
+      "fillPolicy": "never",
+      "note": "Income type checkbox; income is captured in the income source rows."
+    },
+    {
+      "id": "nc_amount_billedhomeowners_dues_hoa",
+      "target": {
+        "type": "text",
+        "name": "Amount BilledHomeowners Dues HOA"
+      },
+      "fillPolicy": "never",
+      "note": "Shelter cost component; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_amount_billedlot_rent",
+      "target": {
+        "type": "text",
+        "name": "Amount BilledLot Rent"
+      },
+      "fillPolicy": "never",
+      "note": "Shelter cost component; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_amount_paidrow1",
+      "target": {
+        "type": "text",
+        "name": "Amount PaidRow1"
+      },
+      "fillPolicy": "never",
+      "note": "Dependent-care expense detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_amount_paidrow1_2",
+      "target": {
+        "type": "text",
+        "name": "Amount PaidRow1_2"
+      },
+      "fillPolicy": "never",
+      "note": "Dependent-care expense detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_amount_paidrow2",
+      "target": {
+        "type": "text",
+        "name": "Amount PaidRow2"
+      },
+      "fillPolicy": "never",
+      "note": "Dependent-care expense detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_amount_paidrow2_2",
+      "target": {
+        "type": "text",
+        "name": "Amount PaidRow2_2"
+      },
+      "fillPolicy": "never",
+      "note": "Dependent-care expense detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_amount_paidrow3",
+      "target": {
+        "type": "text",
+        "name": "Amount PaidRow3"
+      },
+      "fillPolicy": "never",
+      "note": "Dependent-care expense detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_amount_paidrow3_2",
+      "target": {
+        "type": "text",
+        "name": "Amount PaidRow3_2"
+      },
+      "fillPolicy": "never",
+      "note": "Dependent-care expense detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_amount_paidyes_no",
+      "target": {
+        "type": "text",
+        "name": "Amount PaidYes No"
+      },
+      "fillPolicy": "never",
+      "note": "Bill-payment yes/no text; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_amount_paidyes_no_2",
+      "target": {
+        "type": "text",
+        "name": "Amount PaidYes No_2"
+      },
+      "fillPolicy": "never",
+      "note": "Bill-payment yes/no text; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_amount_paidyes_no_3",
+      "target": {
+        "type": "text",
+        "name": "Amount PaidYes No_3"
+      },
+      "fillPolicy": "never",
+      "note": "Bill-payment yes/no text; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_amount_paidyes_no_4",
+      "target": {
+        "type": "text",
+        "name": "Amount PaidYes No_4"
+      },
+      "fillPolicy": "never",
+      "note": "Bill-payment yes/no text; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_amount_of_benefits_received",
+      "target": {
+        "type": "text",
+        "name": "Amount of benefits received"
+      },
+      "fillPolicy": "never",
+      "note": "Benefits screening follow-up; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_amount_per_month",
+      "target": {
+        "type": "text",
+        "name": "Amount per month"
+      },
+      "fillPolicy": "never",
+      "note": "Third-party payment amount; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_amount_per_month_2",
+      "target": {
+        "type": "text",
+        "name": "Amount per month_2"
+      },
+      "fillPolicy": "never",
+      "note": "Third-party payment amount; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_shelter_total_exp",
+      "target": {
+        "type": "text",
+        "name": "AmountWhat are the total monthly shelter costs rent or mortgage that the household pays"
+      },
+      "source": {
+        "fieldPath": "housing.total_shelter_monthly"
+      },
+      "transforms": [
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ],
+      "note": "Expedited screening: total monthly shelter costs."
+    },
+    {
+      "id": "nc_amountwhat_is_the_total_household_cash_on_hand_o",
+      "target": {
+        "type": "text",
+        "name": "AmountWhat is the total household cash on hand or in a bank"
+      },
+      "fillPolicy": "never",
+      "note": "Expedited screening; no vocabulary equivalent for total cash on hand."
+    },
+    {
+      "id": "nc_annuities_pensions_or_retirement",
+      "target": {
+        "type": "checkbox",
+        "name": "Annuities Pensions or Retirement"
+      },
+      "fillPolicy": "never",
+      "note": "Income type checkbox; income is captured in the income source rows."
+    },
+    {
+      "id": "nc_applying_for_benefits_yesnoself",
+      "target": {
+        "type": "text",
+        "name": "Applying for Benefits YesNoSelf"
+      },
+      "fillPolicy": "never",
+      "note": "Self row; the applicant is the filer by definition."
+    },
+    {
+      "id": "nc_are_you_a_resident_of_this_state",
+      "target": {
+        "type": "radio",
+        "name": "Are you a resident of this state"
+      },
+      "fillPolicy": "never",
+      "note": "State residency yes/no; no boolean vocabulary equivalent."
+    },
+    {
+      "id": "nc_august_22_1996_if_convicted_what_state",
+      "target": {
+        "type": "text",
+        "name": "August 22 1996 If convicted what state"
+      },
+      "fillPolicy": "never",
+      "note": "Disqualification screening; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_benefits_for_100_disability_or_medicaid_for_disa",
+      "target": {
+        "type": "checkbox",
+        "name": "Benefits for 100 Disability or Medicaid for disabled persons"
+      },
+      "fillPolicy": "never",
+      "note": "Disability screening checkbox; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_business_name_and_account_numbercash",
+      "target": {
+        "type": "text",
+        "name": "Business Name and Account NumberCash"
+      },
+      "fillPolicy": "never",
+      "note": "Typed asset row; rows cannot be matched to the account list positionally."
+    },
+    {
+      "id": "nc_business_name_and_account_numberlotterygambling_",
+      "target": {
+        "type": "text",
+        "name": "Business Name and Account NumberLotteryGambling Winnings"
+      },
+      "fillPolicy": "never",
+      "note": "Typed asset row; rows cannot be matched to the account list positionally."
+    },
+    {
+      "id": "nc_business_name_and_account_numbermutual_funds_or_",
+      "target": {
+        "type": "text",
+        "name": "Business Name and Account NumberMutual Funds or Trust Funds"
+      },
+      "fillPolicy": "never",
+      "note": "Typed asset row; rows cannot be matched to the account list positionally."
+    },
+    {
+      "id": "nc_business_name_and_account_numberother_assets_not",
+      "target": {
+        "type": "text",
+        "name": "Business Name and Account NumberOther Assets Not Listed such as interest income"
+      },
+      "fillPolicy": "never",
+      "note": "Typed asset row; rows cannot be matched to the account list positionally."
+    },
+    {
+      "id": "nc_business_name_and_account_numberprepaid_burial_c",
+      "target": {
+        "type": "text",
+        "name": "Business Name and Account NumberPrepaid Burial Contracts"
+      },
+      "fillPolicy": "never",
+      "note": "Typed asset row; rows cannot be matched to the account list positionally."
+    },
+    {
+      "id": "nc_business_name_and_account_numberstocks_or_bonds",
+      "target": {
+        "type": "text",
+        "name": "Business Name and Account NumberStocks or Bonds"
+      },
+      "fillPolicy": "never",
+      "note": "Typed asset row; rows cannot be matched to the account list positionally."
+    },
+    {
+      "id": "nc_buy_cook_together_yesnoself",
+      "target": {
+        "type": "text",
+        "name": "Buy  Cook Together YesNoSelf"
+      },
+      "fillPolicy": "never",
+      "note": "Self row; the applicant is the filer by definition."
+    },
+    {
+      "id": "nc_caring_for_an_incapacitated_person_does_not_have",
+      "target": {
+        "type": "checkbox",
+        "name": "Caring for an incapacitated person does not have to live in the home"
+      },
+      "fillPolicy": "never",
+      "note": "Household composition screening; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_cash",
+      "target": {
+        "type": "checkbox",
+        "name": "Cash"
+      },
+      "fillPolicy": "never",
+      "note": "Asset type checkbox; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_certificates_of_deposit_cds",
+      "target": {
+        "type": "checkbox",
+        "name": "Certificates of Deposit CDs"
+      },
+      "fillPolicy": "never",
+      "note": "Asset type checkbox; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_checking_andor_savings_acct",
+      "target": {
+        "type": "checkbox",
+        "name": "Checking andor Savings Acct"
+      },
+      "fillPolicy": "never",
+      "note": "Asset type checkbox; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_child_support_from_parent_or",
+      "target": {
+        "type": "checkbox",
+        "name": "Child Support from parent or"
+      },
+      "fillPolicy": "never",
+      "note": "Income type checkbox; income is captured in the income source rows."
+    },
+    {
+      "id": "nc_child_support_from_the_court",
+      "target": {
+        "type": "checkbox",
+        "name": "Child Support from the Court"
+      },
+      "fillPolicy": "never",
+      "note": "Income type checkbox; income is captured in the income source rows."
+    },
+    {
+      "id": "nc_childdisabled_adult_care_transportation_expenses",
+      "target": {
+        "type": "text",
+        "name": "Childdisabled adult care transportation expenses"
+      },
+      "fillPolicy": "never",
+      "note": "Care transportation expense; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_date_established",
+      "target": {
+        "type": "text",
+        "name": "Date Established"
+      },
+      "fillPolicy": "never",
+      "note": "Child support order detail; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_date_last_pay_received_or_will_be_receivedrow1",
+      "target": {
+        "type": "text",
+        "name": "Date Last Pay Received or Will Be ReceivedRow1"
+      },
+      "fillPolicy": "never",
+      "note": "Employment detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_date_last_pay_received_or_will_be_receivedrow2",
+      "target": {
+        "type": "text",
+        "name": "Date Last Pay Received or Will Be ReceivedRow2"
+      },
+      "fillPolicy": "never",
+      "note": "Employment detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_date_last_pay_received_or_will_be_receivedrow3",
+      "target": {
+        "type": "text",
+        "name": "Date Last Pay Received or Will Be ReceivedRow3"
+      },
+      "fillPolicy": "never",
+      "note": "Employment detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_date_last_receivedrow1",
+      "target": {
+        "type": "text",
+        "name": "Date Last ReceivedRow1"
+      },
+      "fillPolicy": "never",
+      "note": "Other-income row date; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_date_last_receivedrow2",
+      "target": {
+        "type": "text",
+        "name": "Date Last ReceivedRow2"
+      },
+      "fillPolicy": "never",
+      "note": "Other-income row date; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_date_last_receivedrow3",
+      "target": {
+        "type": "text",
+        "name": "Date Last ReceivedRow3"
+      },
+      "fillPolicy": "never",
+      "note": "Other-income row date; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_date_last_receivedrow4",
+      "target": {
+        "type": "text",
+        "name": "Date Last ReceivedRow4"
+      },
+      "fillPolicy": "never",
+      "note": "Other-income row date; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_date_of_first_pay_receivedrow1",
+      "target": {
+        "type": "text",
+        "name": "Date of First Pay ReceivedRow1"
+      },
+      "fillPolicy": "never",
+      "note": "Employment detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_date_of_first_pay_receivedrow2",
+      "target": {
+        "type": "text",
+        "name": "Date of First Pay ReceivedRow2"
+      },
+      "fillPolicy": "never",
+      "note": "Employment detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_date_of_first_pay_receivedrow3",
+      "target": {
+        "type": "text",
+        "name": "Date of First Pay ReceivedRow3"
+      },
+      "fillPolicy": "never",
+      "note": "Employment detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_date_of_last_paymentrow1",
+      "target": {
+        "type": "text",
+        "name": "Date of Last PaymentRow1"
+      },
+      "fillPolicy": "never",
+      "note": "Dependent-care expense detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_date_of_last_paymentrow1_2",
+      "target": {
+        "type": "text",
+        "name": "Date of Last PaymentRow1_2"
+      },
+      "fillPolicy": "never",
+      "note": "Dependent-care expense detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_date_of_last_paymentrow1_3",
+      "target": {
+        "type": "text",
+        "name": "Date of Last PaymentRow1_3"
+      },
+      "fillPolicy": "never",
+      "note": "Dependent-care expense detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_date_of_last_paymentrow1_4",
+      "target": {
+        "type": "text",
+        "name": "Date of Last PaymentRow1_4"
+      },
+      "fillPolicy": "never",
+      "note": "Dependent-care expense detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_date_of_last_paymentrow2",
+      "target": {
+        "type": "text",
+        "name": "Date of Last PaymentRow2"
+      },
+      "fillPolicy": "never",
+      "note": "Dependent-care expense detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_date_of_last_paymentrow2_2",
+      "target": {
+        "type": "text",
+        "name": "Date of Last PaymentRow2_2"
+      },
+      "fillPolicy": "never",
+      "note": "Dependent-care expense detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_date_of_last_paymentrow2_3",
+      "target": {
+        "type": "text",
+        "name": "Date of Last PaymentRow2_3"
+      },
+      "fillPolicy": "never",
+      "note": "Dependent-care expense detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_date_of_last_paymentrow2_4",
+      "target": {
+        "type": "text",
+        "name": "Date of Last PaymentRow2_4"
+      },
+      "fillPolicy": "never",
+      "note": "Dependent-care expense detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_date_of_last_paymentrow3",
+      "target": {
+        "type": "text",
+        "name": "Date of Last PaymentRow3"
+      },
+      "fillPolicy": "never",
+      "note": "Dependent-care expense detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_date_of_last_paymentrow3_2",
+      "target": {
+        "type": "text",
+        "name": "Date of Last PaymentRow3_2"
+      },
+      "fillPolicy": "never",
+      "note": "Dependent-care expense detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_date_of_last_paymentrow3_3",
+      "target": {
+        "type": "text",
+        "name": "Date of Last PaymentRow3_3"
+      },
+      "fillPolicy": "never",
+      "note": "Dependent-care expense detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_date_of_last_paymentyes_no",
+      "target": {
+        "type": "text",
+        "name": "Date of Last PaymentYes No"
+      },
+      "fillPolicy": "never",
+      "note": "Bill-payment yes/no text; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_date_of_last_paymentyes_no_2",
+      "target": {
+        "type": "text",
+        "name": "Date of Last PaymentYes No_2"
+      },
+      "fillPolicy": "never",
+      "note": "Bill-payment yes/no text; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_date_of_last_paymentyes_no_3",
+      "target": {
+        "type": "text",
+        "name": "Date of Last PaymentYes No_3"
+      },
+      "fillPolicy": "never",
+      "note": "Bill-payment yes/no text; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_date_of_last_paymentyes_no_4",
+      "target": {
+        "type": "text",
+        "name": "Date of Last PaymentYes No_4"
+      },
+      "fillPolicy": "never",
+      "note": "Bill-payment yes/no text; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_date_started_working",
+      "target": {
+        "type": "text",
+        "name": "Date started working"
+      },
+      "fillPolicy": "never",
+      "note": "Employment screening; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_day_of_week_pay_receivedrow1",
+      "target": {
+        "type": "text",
+        "name": "Day of Week Pay ReceivedRow1"
+      },
+      "fillPolicy": "never",
+      "note": "Self-employment detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_day_of_week_pay_receivedrow2",
+      "target": {
+        "type": "text",
+        "name": "Day of Week Pay ReceivedRow2"
+      },
+      "fillPolicy": "never",
+      "note": "Self-employment detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_day_of_week_pay_receivedrow3",
+      "target": {
+        "type": "text",
+        "name": "Day of Week Pay ReceivedRow3"
+      },
+      "fillPolicy": "never",
+      "note": "Self-employment detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_day_of_the_week_pay_receivedrow1",
+      "target": {
+        "type": "text",
+        "name": "Day of the Week Pay ReceivedRow1"
+      },
+      "fillPolicy": "never",
+      "note": "Self-employment detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_day_of_the_week_pay_receivedrow2",
+      "target": {
+        "type": "text",
+        "name": "Day of the Week Pay ReceivedRow2"
+      },
+      "fillPolicy": "never",
+      "note": "Self-employment detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_day_of_the_week_pay_receivedrow3",
+      "target": {
+        "type": "text",
+        "name": "Day of the Week Pay ReceivedRow3"
+      },
+      "fillPolicy": "never",
+      "note": "Self-employment detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_days_worked_per_weekrow1",
+      "target": {
+        "type": "text",
+        "name": "Days Worked Per WeekRow1"
+      },
+      "fillPolicy": "never",
+      "note": "Self-employment detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_days_worked_per_weekrow1_2",
+      "target": {
+        "type": "text",
+        "name": "Days Worked Per WeekRow1_2"
+      },
+      "fillPolicy": "never",
+      "note": "Self-employment detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_days_worked_per_weekrow2",
+      "target": {
+        "type": "text",
+        "name": "Days Worked Per WeekRow2"
+      },
+      "fillPolicy": "never",
+      "note": "Self-employment detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_days_worked_per_weekrow2_2",
+      "target": {
+        "type": "text",
+        "name": "Days Worked Per WeekRow2_2"
+      },
+      "fillPolicy": "never",
+      "note": "Self-employment detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_days_worked_per_weekrow3",
+      "target": {
+        "type": "text",
+        "name": "Days Worked Per WeekRow3"
+      },
+      "fillPolicy": "never",
+      "note": "Self-employment detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_days_worked_per_weekrow3_2",
+      "target": {
+        "type": "text",
+        "name": "Days Worked Per WeekRow3_2"
+      },
+      "fillPolicy": "never",
+      "note": "Self-employment detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_did_you_get_a_lowincome_energy_assistance_progra",
+      "target": {
+        "type": "text",
+        "name": "Did you get a LowIncome Energy Assistance Program LIEAP check in another state or at your current residence that was"
+      },
+      "fillPolicy": "never",
+      "note": "Energy assistance detail; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_disqualified_from_food_and_nutrition_services_in",
+      "target": {
+        "type": "checkbox",
+        "name": "Disqualified from Food and Nutrition Services in North Carolina or another state"
+      },
+      "fillPolicy": "never",
+      "note": "Disqualification screening; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_does_anyone_get_food_and_nutrition_services_food",
+      "target": {
+        "type": "radio",
+        "name": "Does anyone get Food and Nutrition Services Food Stamps or SNAP in this or another county or state"
+      },
+      "fillPolicy": "never",
+      "note": "Current-benefits screening; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_does_anyone_participate_in_a_food_distribution_p",
+      "target": {
+        "type": "radio",
+        "name": "Does anyone participate in a Food Distribution Program on an Indian Reservation"
+      },
+      "fillPolicy": "never",
+      "note": "Tribal food program screening; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_does_anyone_work_as_a_volunteer_or_participate_i",
+      "target": {
+        "type": "radio",
+        "name": "Does anyone work as a volunteer or participate in a work training program"
+      },
+      "fillPolicy": "never",
+      "note": "Employment screening; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_does_your_household_own_any_of_the_assets_listed",
+      "target": {
+        "type": "radio",
+        "name": "Does your household own any of the assets listed below"
+      },
+      "fillPolicy": "never",
+      "note": "Asset screening question; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_educational_scholarships",
+      "target": {
+        "type": "checkbox",
+        "name": "Educational Scholarships"
+      },
+      "fillPolicy": "never",
+      "note": "Income type checkbox; income is captured in the income source rows."
+    },
+    {
+      "id": "nc_end_daterow1_2",
+      "target": {
+        "type": "text",
+        "name": "End DateRow1_2"
+      },
+      "fillPolicy": "never",
+      "note": "Volunteer/work-training detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_end_daterow2_2",
+      "target": {
+        "type": "text",
+        "name": "End DateRow2_2"
+      },
+      "fillPolicy": "never",
+      "note": "Volunteer/work-training detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_end_daterow3_2",
+      "target": {
+        "type": "text",
+        "name": "End DateRow3_2"
+      },
+      "fillPolicy": "never",
+      "note": "Volunteer/work-training detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_self_first",
+      "target": {
+        "type": "text",
+        "name": "First Middle Initial  Last NameRow1"
+      },
+      "source": {
+        "fieldPath": "applicant.first_name"
+      },
+      "transforms": [
+        {
+          "op": "split",
+          "sep": " ",
+          "index": 0
+        },
+        {
+          "op": "trim"
+        }
+      ],
+      "note": "Self row of household roster; applicant first name."
+    },
+    {
+      "id": "nc_gross_amount_of_last_payrow1",
+      "target": {
+        "type": "text",
+        "name": "Gross Amount of Last PayRow1"
+      },
+      "fillPolicy": "never",
+      "note": "Employment detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_gross_amount_of_last_payrow2",
+      "target": {
+        "type": "text",
+        "name": "Gross Amount of Last PayRow2"
+      },
+      "fillPolicy": "never",
+      "note": "Employment detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_gross_amount_of_last_payrow3",
+      "target": {
+        "type": "text",
+        "name": "Gross Amount of Last PayRow3"
+      },
+      "fillPolicy": "never",
+      "note": "Employment detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_group_home",
+      "target": {
+        "type": "checkbox",
+        "name": "Group Home"
+      },
+      "fillPolicy": "never",
+      "note": "Living situation checkbox; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_halfway_house",
+      "target": {
+        "type": "checkbox",
+        "name": "Halfway House"
+      },
+      "fillPolicy": "never",
+      "note": "Living situation checkbox; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_has_anyone_stopped_working_in_the_past_30_days",
+      "target": {
+        "type": "radio",
+        "name": "Has anyone stopped working in the past 30 days"
+      },
+      "fillPolicy": "never",
+      "note": "Employment screening; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_have_you_or_any_member_of_your_household_been_co",
+      "target": {
+        "type": "text",
+        "name": "Have you or any member of your household been convicted as an adult of aggravated Who"
+      },
+      "fillPolicy": "never",
+      "note": "Disqualification screening; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_home",
+      "target": {
+        "type": "checkbox",
+        "name": "Home"
+      },
+      "fillPolicy": "never",
+      "note": "Living situation checkbox; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_hotel",
+      "target": {
+        "type": "checkbox",
+        "name": "Hotel"
+      },
+      "fillPolicy": "never",
+      "note": "Living situation checkbox; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_hours_per_weekrow1_4",
+      "target": {
+        "type": "text",
+        "name": "Hours Per WeekRow1_4"
+      },
+      "fillPolicy": "never",
+      "note": "Volunteer/work-training detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_hours_per_weekrow2_4",
+      "target": {
+        "type": "text",
+        "name": "Hours Per WeekRow2_4"
+      },
+      "fillPolicy": "never",
+      "note": "Volunteer/work-training detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_hours_per_weekrow3_2",
+      "target": {
+        "type": "text",
+        "name": "Hours Per WeekRow3_2"
+      },
+      "fillPolicy": "never",
+      "note": "Volunteer/work-training detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_how_often_paidhomeowners_dues_hoa",
+      "target": {
+        "type": "text",
+        "name": "How Often PaidHomeowners Dues HOA"
+      },
+      "fillPolicy": "never",
+      "note": "Shelter payment frequency; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_how_often_paidhomeowners_insurance_if_not_includ",
+      "target": {
+        "type": "text",
+        "name": "How Often PaidHomeowners Insurance If not included in mortgage"
+      },
+      "fillPolicy": "never",
+      "note": "Shelter payment frequency; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_how_often_paidlot_rent",
+      "target": {
+        "type": "text",
+        "name": "How Often PaidLot Rent"
+      },
+      "fillPolicy": "never",
+      "note": "Shelter payment frequency; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_how_often_paidproperty_taxes_if_not_included_in_",
+      "target": {
+        "type": "text",
+        "name": "How Often PaidProperty Taxes If not included in mortgage"
+      },
+      "fillPolicy": "never",
+      "note": "Shelter payment frequency; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_how_often_paidrent_or_mortgage",
+      "target": {
+        "type": "text",
+        "name": "How Often PaidRent or Mortgage"
+      },
+      "fillPolicy": "never",
+      "note": "Shelter payment frequency; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_how_often_paidrow1",
+      "target": {
+        "type": "text",
+        "name": "How Often PaidRow1"
+      },
+      "fillPolicy": "never",
+      "note": "Dependent-care expense detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_how_often_paidrow1_2",
+      "target": {
+        "type": "text",
+        "name": "How Often PaidRow1_2"
+      },
+      "fillPolicy": "never",
+      "note": "Dependent-care expense detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_how_often_paidrow1_3",
+      "target": {
+        "type": "text",
+        "name": "How Often PaidRow1_3"
+      },
+      "fillPolicy": "never",
+      "note": "Dependent-care expense detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_how_often_paidrow1_4",
+      "target": {
+        "type": "text",
+        "name": "How Often PaidRow1_4"
+      },
+      "fillPolicy": "never",
+      "note": "Dependent-care expense detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_how_often_paidrow2",
+      "target": {
+        "type": "text",
+        "name": "How Often PaidRow2"
+      },
+      "fillPolicy": "never",
+      "note": "Dependent-care expense detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_how_often_paidrow2_2",
+      "target": {
+        "type": "text",
+        "name": "How Often PaidRow2_2"
+      },
+      "fillPolicy": "never",
+      "note": "Dependent-care expense detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_how_often_paidrow2_3",
+      "target": {
+        "type": "text",
+        "name": "How Often PaidRow2_3"
+      },
+      "fillPolicy": "never",
+      "note": "Dependent-care expense detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_how_often_paidrow2_4",
+      "target": {
+        "type": "text",
+        "name": "How Often PaidRow2_4"
+      },
+      "fillPolicy": "never",
+      "note": "Dependent-care expense detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_how_often_paidrow3",
+      "target": {
+        "type": "text",
+        "name": "How Often PaidRow3"
+      },
+      "fillPolicy": "never",
+      "note": "Dependent-care expense detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_how_often_paidrow3_2",
+      "target": {
+        "type": "text",
+        "name": "How Often PaidRow3_2"
+      },
+      "fillPolicy": "never",
+      "note": "Dependent-care expense detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_how_often_paidrow3_3",
+      "target": {
+        "type": "text",
+        "name": "How Often PaidRow3_3"
+      },
+      "fillPolicy": "never",
+      "note": "Dependent-care expense detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_how_often_paidyes_no",
+      "target": {
+        "type": "text",
+        "name": "How Often PaidYes No"
+      },
+      "fillPolicy": "never",
+      "note": "Bill-payment yes/no text; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_how_often_paidyes_no_2",
+      "target": {
+        "type": "text",
+        "name": "How Often PaidYes No_2"
+      },
+      "fillPolicy": "never",
+      "note": "Bill-payment yes/no text; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_how_often_paidyes_no_3",
+      "target": {
+        "type": "text",
+        "name": "How Often PaidYes No_3"
+      },
+      "fillPolicy": "never",
+      "note": "Bill-payment yes/no text; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_how_often_paidyes_no_4",
+      "target": {
+        "type": "text",
+        "name": "How Often PaidYes No_4"
+      },
+      "fillPolicy": "never",
+      "note": "Bill-payment yes/no text; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_how_do_you_cool_your_home",
+      "target": {
+        "type": "text",
+        "name": "How do you cool your home"
+      },
+      "fillPolicy": "never",
+      "note": "Utility detail; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_how_do_you_heat_your_home",
+      "target": {
+        "type": "text",
+        "name": "How do you heat your home"
+      },
+      "fillPolicy": "never",
+      "note": "Utility detail; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_if_yes",
+      "target": {
+        "type": "radio",
+        "name": "If yes"
+      },
+      "fillPolicy": "never",
+      "note": "Outside-help screening; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_if_yes_what_state_issued_this_card",
+      "target": {
+        "type": "text",
+        "name": "If yes what State issued this card"
+      },
+      "fillPolicy": "never",
+      "note": "Household screening follow-up; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_if_yes_what_is_the_court_order_number",
+      "target": {
+        "type": "text",
+        "name": "If yes what is the Court Order Number"
+      },
+      "fillPolicy": "never",
+      "note": "Child support order detail; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_if_yes_who",
+      "target": {
+        "type": "text",
+        "name": "If yes who"
+      },
+      "fillPolicy": "never",
+      "note": "Household screening follow-up; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_if_yes_who_2",
+      "target": {
+        "type": "text",
+        "name": "If yes who_2"
+      },
+      "fillPolicy": "never",
+      "note": "Employment screening; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_if_you_are_not_registered_to_vote_where_you_live",
+      "target": {
+        "type": "radio",
+        "name": "If you are not registered to vote where you live now would you like to apply to register to vote here today"
+      },
+      "fillPolicy": "never",
+      "note": "Voter registration; not a benefits answer."
+    },
+    {
+      "id": "nc_in_a_drugalcohol_treatment_program",
+      "target": {
+        "type": "checkbox",
+        "name": "In a drugalcohol treatment program"
+      },
+      "fillPolicy": "never",
+      "note": "Household composition screening; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_in_college_or_tradevocationaltechnical_school_at",
+      "target": {
+        "type": "checkbox",
+        "name": "In college or tradevocationaltechnical school at least halftime"
+      },
+      "fillPolicy": "never",
+      "note": "Household composition screening; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_individual_who_is_24_years_of_age_or_younger_and",
+      "target": {
+        "type": "checkbox",
+        "name": "Individual who is 24 years of age or younger and in Foster Care under the responsibility of the State on their 18th"
+      },
+      "fillPolicy": "never",
+      "note": "Household composition screening; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_institution",
+      "target": {
+        "type": "checkbox",
+        "name": "Institution"
+      },
+      "fillPolicy": "never",
+      "note": "Living situation checkbox; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_interest_and_dividends",
+      "target": {
+        "type": "checkbox",
+        "name": "Interest and Dividends"
+      },
+      "fillPolicy": "never",
+      "note": "Income type checkbox; income is captured in the income source rows."
+    },
+    {
+      "id": "nc_is_any_of_the_income_listed_above_child_support",
+      "target": {
+        "type": "radio",
+        "name": "Is any of the income listed above child support"
+      },
+      "fillPolicy": "never",
+      "note": "Child support screening; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_is_anyone_a_migrant_or_seasonal_farm_worker",
+      "target": {
+        "type": "radio",
+        "name": "Is anyone a migrant or seasonal farm worker"
+      },
+      "fillPolicy": "never",
+      "note": "Employment screening; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_is_anyone_on_strike",
+      "target": {
+        "type": "radio",
+        "name": "Is anyone on strike"
+      },
+      "fillPolicy": "never",
+      "note": "Employment screening; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_last_date_pay_receivedrow1",
+      "target": {
+        "type": "text",
+        "name": "Last date Pay ReceivedRow1"
+      },
+      "fillPolicy": "never",
+      "note": "Self-employment detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_last_date_pay_receivedrow2",
+      "target": {
+        "type": "text",
+        "name": "Last date Pay ReceivedRow2"
+      },
+      "fillPolicy": "never",
+      "note": "Self-employment detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_last_date_pay_receivedrow3",
+      "target": {
+        "type": "text",
+        "name": "Last date Pay ReceivedRow3"
+      },
+      "fillPolicy": "never",
+      "note": "Self-employment detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_last_date_worked",
+      "target": {
+        "type": "text",
+        "name": "Last date worked"
+      },
+      "fillPolicy": "never",
+      "note": "Employment screening; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_lotterygambling_winnings",
+      "target": {
+        "type": "checkbox",
+        "name": "LotteryGambling Winnings"
+      },
+      "fillPolicy": "never",
+      "note": "Asset type checkbox; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_message_number",
+      "target": {
+        "type": "text",
+        "name": "Message Number"
+      },
+      "fillPolicy": "never",
+      "note": "Voter registration or agency use; not a benefits answer."
+    },
+    {
+      "id": "nc_military_allotment",
+      "target": {
+        "type": "checkbox",
+        "name": "Military Allotment"
+      },
+      "fillPolicy": "never",
+      "note": "Income type checkbox; income is captured in the income source rows."
+    },
+    {
+      "id": "nc_money_from_friends_or_relatives_that_is_not_a_lo",
+      "target": {
+        "type": "checkbox",
+        "name": "Money from friends or relatives that is not a loan and you dont have"
+      },
+      "fillPolicy": "never",
+      "note": "Income type checkbox; income is captured in the income source rows."
+    },
+    {
+      "id": "nc_monthly_expensesrow1",
+      "target": {
+        "type": "text",
+        "name": "Monthly ExpensesRow1"
+      },
+      "fillPolicy": "never",
+      "note": "Self-employment detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_monthly_expensesrow2",
+      "target": {
+        "type": "text",
+        "name": "Monthly ExpensesRow2"
+      },
+      "fillPolicy": "never",
+      "note": "Self-employment detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_mutual_funds_or_trust_funds",
+      "target": {
+        "type": "checkbox",
+        "name": "Mutual Funds or Trust Funds"
+      },
+      "fillPolicy": "never",
+      "note": "Asset type checkbox; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_no_other_money",
+      "target": {
+        "type": "checkbox",
+        "name": "My Household does not get any other money"
+      },
+      "source": {
+        "fieldPath": "income.has_no_income"
+      },
+      "note": "Household has no other income."
+    },
+    {
+      "id": "nc_name_address_phone_number_of_medical_providerrow",
+      "target": {
+        "type": "text",
+        "name": "Name Address Phone Number of Medical ProviderRow1"
+      },
+      "fillPolicy": "never",
+      "note": "Medical provider contact; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_name_address_phone_number_of_medical_providerrow_2",
+      "target": {
+        "type": "text",
+        "name": "Name Address Phone Number of Medical ProviderRow2"
+      },
+      "fillPolicy": "never",
+      "note": "Medical provider contact; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_name_address_phone_number_of_the_person_that_pay",
+      "target": {
+        "type": "text",
+        "name": "Name Address Phone Number of the Person That Pays the BillRow1"
+      },
+      "fillPolicy": "never",
+      "note": "Third-party bill payer; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_name_address_phone_number_of_the_person_that_pay_2",
+      "target": {
+        "type": "text",
+        "name": "Name Address Phone Number of the Person That Pays the BillRow1_2"
+      },
+      "fillPolicy": "never",
+      "note": "Third-party bill payer; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_name_address_phone_number_of_the_person_that_pay_3",
+      "target": {
+        "type": "text",
+        "name": "Name Address Phone Number of the Person That Pays the BillRow2"
+      },
+      "fillPolicy": "never",
+      "note": "Third-party bill payer; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_name_address_phone_number_of_the_person_that_pay_4",
+      "target": {
+        "type": "text",
+        "name": "Name Address Phone Number of the Person That Pays the BillRow2_2"
+      },
+      "fillPolicy": "never",
+      "note": "Third-party bill payer; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_name_address_phone_number_of_the_person_that_pay_5",
+      "target": {
+        "type": "text",
+        "name": "Name Address Phone Number of the Person That Pays the BillRow3"
+      },
+      "fillPolicy": "never",
+      "note": "Third-party bill payer; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_name_address_phone_number_of_the_person_that_pay_6",
+      "target": {
+        "type": "text",
+        "name": "Name Address Phone Number of the Person That Pays the BillRow3_2"
+      },
+      "fillPolicy": "never",
+      "note": "Third-party bill payer; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_name_address_phone_number_of_the_person_that_pay_7",
+      "target": {
+        "type": "text",
+        "name": "Name Address Phone Number of the Person That Pays the BillRow4"
+      },
+      "fillPolicy": "never",
+      "note": "Third-party bill payer; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_name_address_phone_number_to_whom_you_pay_the_bi",
+      "target": {
+        "type": "text",
+        "name": "Name Address Phone Number to Whom You Pay the BillHomeowners Dues HOA"
+      },
+      "fillPolicy": "never",
+      "note": "Payee name/address/phone combined; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_name_address_phone_number_to_whom_you_pay_the_bi_2",
+      "target": {
+        "type": "text",
+        "name": "Name Address Phone Number to Whom You Pay the BillHomeowners Insurance If not included in mortgage"
+      },
+      "fillPolicy": "never",
+      "note": "Payee name/address/phone combined; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_name_address_phone_number_to_whom_you_pay_the_bi_3",
+      "target": {
+        "type": "text",
+        "name": "Name Address Phone Number to Whom You Pay the BillLot Rent"
+      },
+      "fillPolicy": "never",
+      "note": "Payee name/address/phone combined; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_name_address_phone_number_to_whom_you_pay_the_bi_4",
+      "target": {
+        "type": "text",
+        "name": "Name Address Phone Number to Whom You Pay the BillProperty Taxes If not included in mortgage"
+      },
+      "fillPolicy": "never",
+      "note": "Payee name/address/phone combined; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_name_address_phone_number_to_whom_you_pay_the_bi_5",
+      "target": {
+        "type": "text",
+        "name": "Name Address Phone Number to Whom You Pay the BillRent or Mortgage"
+      },
+      "fillPolicy": "never",
+      "note": "Payee name/address/phone combined; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_name_address_and_phone_number_of_person_that_pay",
+      "target": {
+        "type": "text",
+        "name": "Name Address and Phone Number of Person That Pays the Child SupportRow1"
+      },
+      "fillPolicy": "never",
+      "note": "Child support payer contact; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_name_address_and_phone_number_of_person_that_pay_2",
+      "target": {
+        "type": "text",
+        "name": "Name Address and Phone Number of Person That Pays the Child SupportRow2"
+      },
+      "fillPolicy": "never",
+      "note": "Child support payer contact; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_name_address_and_phone_number_of_person_that_pay_3",
+      "target": {
+        "type": "text",
+        "name": "Name Address and Phone Number of Person That Pays the Child SupportRow3"
+      },
+      "fillPolicy": "never",
+      "note": "Child support payer contact; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_cc0_child",
+      "target": {
+        "type": "text",
+        "name": "Name of ChildRow1"
+      },
+      "source": {
+        "fieldPath": "expenses.childcare[].member_ref"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "expenses.childcare",
+        "index": 0
+      },
+      "note": "Childcare row 1: child name."
+    },
+    {
+      "id": "nc_cc1_child",
+      "target": {
+        "type": "text",
+        "name": "Name of ChildRow2"
+      },
+      "source": {
+        "fieldPath": "expenses.childcare[].member_ref"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "expenses.childcare",
+        "index": 1
+      },
+      "note": "Childcare row 2: child name."
+    },
+    {
+      "id": "nc_cc2_child",
+      "target": {
+        "type": "text",
+        "name": "Name of ChildRow3"
+      },
+      "source": {
+        "fieldPath": "expenses.childcare[].member_ref"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "expenses.childcare",
+        "index": 2
+      },
+      "note": "Childcare row 3: child name."
+    },
+    {
+      "id": "nc_name_of_school",
+      "target": {
+        "type": "text",
+        "name": "Name of School"
+      },
+      "fillPolicy": "never",
+      "note": "Household composition screening; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_name_of_separate_persons",
+      "target": {
+        "type": "text",
+        "name": "Name of Separate Persons"
+      },
+      "fillPolicy": "never",
+      "note": "Household composition screening; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_name_of_volunteer_site_or_work_training_programr",
+      "target": {
+        "type": "text",
+        "name": "Name of Volunteer Site or Work Training ProgramRow1"
+      },
+      "fillPolicy": "never",
+      "note": "Employment detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_name_of_volunteer_site_or_work_training_programr_2",
+      "target": {
+        "type": "text",
+        "name": "Name of Volunteer Site or Work Training ProgramRow2"
+      },
+      "fillPolicy": "never",
+      "note": "Employment detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_name_of_volunteer_site_or_work_training_programr_3",
+      "target": {
+        "type": "text",
+        "name": "Name of Volunteer Site or Work Training ProgramRow3"
+      },
+      "fillPolicy": "never",
+      "note": "Employment detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_name_of_phone_company",
+      "target": {
+        "type": "text",
+        "name": "Name of phone company"
+      },
+      "fillPolicy": "never",
+      "note": "Utility detail; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_namerow1_5",
+      "target": {
+        "type": "text",
+        "name": "NameRow1_5"
+      },
+      "fillPolicy": "never",
+      "note": "Volunteer/work-training detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_namerow2_5",
+      "target": {
+        "type": "text",
+        "name": "NameRow2_5"
+      },
+      "fillPolicy": "never",
+      "note": "Volunteer/work-training detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_namerow3_2",
+      "target": {
+        "type": "text",
+        "name": "NameRow3_2"
+      },
+      "fillPolicy": "never",
+      "note": "Volunteer/work-training detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_no_if_yes_complete_a_d_if_no_go_to_next_section",
+      "target": {
+        "type": "checkbox",
+        "name": "No If Yes complete a  d If no go to next section"
+      },
+      "fillPolicy": "never",
+      "note": "Expedited screening; migrant-worker question No checkbox."
+    },
+    {
+      "id": "nc_no_if_no_who_buys_separately",
+      "target": {
+        "type": "checkbox",
+        "name": "No If no who buys separately"
+      },
+      "fillPolicy": "never",
+      "note": "Household composition screening; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_no_if_yes",
+      "target": {
+        "type": "checkbox",
+        "name": "No If yes"
+      },
+      "fillPolicy": "never",
+      "note": "Outside-help screening; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_selfemp_no",
+      "target": {
+        "type": "checkbox",
+        "name": "No If yes complete below"
+      },
+      "source": {
+        "fieldPath": "employment.is_self_employed"
+      },
+      "valueMap": {
+        "true": "false",
+        "false": "true"
+      },
+      "note": "Self-employment: No checkbox."
+    },
+    {
+      "id": "nc_no_if_yes_complete_below_2",
+      "target": {
+        "type": "checkbox",
+        "name": "No If yes complete below_2"
+      },
+      "fillPolicy": "never",
+      "note": "Work requirement screening; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_no_if_yes_complete_questions_below",
+      "target": {
+        "type": "checkbox",
+        "name": "No If yes complete questions below"
+      },
+      "fillPolicy": "never",
+      "note": "Dependent-care screening; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_no_if_yes_complete_questions_below_2",
+      "target": {
+        "type": "checkbox",
+        "name": "No If yes complete questions below_2"
+      },
+      "fillPolicy": "never",
+      "note": "Dependent-care screening; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_no_if_yes_who",
+      "target": {
+        "type": "checkbox",
+        "name": "No If yes who"
+      },
+      "fillPolicy": "never",
+      "note": "Energy assistance screening; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_no_if_yes_who_2",
+      "target": {
+        "type": "text",
+        "name": "No If yes who_2"
+      },
+      "fillPolicy": "never",
+      "note": "Disability screening follow-up; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_no_who",
+      "target": {
+        "type": "text",
+        "name": "No Who"
+      },
+      "fillPolicy": "never",
+      "note": "Household screening follow-up; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_number_of_hours_per_weekrow1",
+      "target": {
+        "type": "text",
+        "name": "Number of Hours Per WeekRow1"
+      },
+      "fillPolicy": "never",
+      "note": "Dependent-care expense detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_number_of_hours_per_weekrow2",
+      "target": {
+        "type": "text",
+        "name": "Number of Hours Per WeekRow2"
+      },
+      "fillPolicy": "never",
+      "note": "Dependent-care expense detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_number_of_hours_per_weekrow3",
+      "target": {
+        "type": "text",
+        "name": "Number of Hours Per WeekRow3"
+      },
+      "fillPolicy": "never",
+      "note": "Dependent-care expense detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_nutrition_services_an_electronic_benefit_transfe",
+      "target": {
+        "type": "checkbox",
+        "name": "Nutrition Services An Electronic Benefit Transfer Card EBT is a plastic card you use at the store to buy food  Do you"
+      },
+      "fillPolicy": "never",
+      "note": "Informational text; not an answer field."
+    },
+    {
+      "id": "nc_obligated_amount",
+      "target": {
+        "type": "text",
+        "name": "Obligated Amount"
+      },
+      "fillPolicy": "never",
+      "note": "Child support order detail; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_office_visit",
+      "target": {
+        "type": "checkbox",
+        "name": "Office visit"
+      },
+      "fillPolicy": "never",
+      "note": "Voter registration or agency use; not a benefits answer."
+    },
+    {
+      "id": "nc_operates_a_home_school_at_least_30_hours_a_week",
+      "target": {
+        "type": "checkbox",
+        "name": "Operates a Home School at least 30 hours a week"
+      },
+      "fillPolicy": "never",
+      "note": "Household composition screening; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_optional_hispanic_or_latino_yesno_see_belowrow2",
+      "target": {
+        "type": "text",
+        "name": "Optional Hispanic or Latino YesNo see belowRow2"
+      },
+      "fillPolicy": "never",
+      "note": "Optional Hispanic/Latino roster column; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_optional_hispanic_or_latino_yesno_see_belowrow3",
+      "target": {
+        "type": "text",
+        "name": "Optional Hispanic or Latino YesNo see belowRow3"
+      },
+      "fillPolicy": "never",
+      "note": "Optional Hispanic/Latino roster column; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_optional_hispanic_or_latino_yesno_see_belowrow4",
+      "target": {
+        "type": "text",
+        "name": "Optional Hispanic or Latino YesNo see belowRow4"
+      },
+      "fillPolicy": "never",
+      "note": "Optional Hispanic/Latino roster column; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_optional_hispanic_or_latino_yesno_see_belowrow5",
+      "target": {
+        "type": "text",
+        "name": "Optional Hispanic or Latino YesNo see belowRow5"
+      },
+      "fillPolicy": "never",
+      "note": "Optional Hispanic/Latino roster column; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_optional_hispanic_or_latino_yesno_see_belowrow6",
+      "target": {
+        "type": "text",
+        "name": "Optional Hispanic or Latino YesNo see belowRow6"
+      },
+      "fillPolicy": "never",
+      "note": "Optional Hispanic/Latino roster column; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_optional_hispanic_or_latino_yesno_see_belowrow7",
+      "target": {
+        "type": "text",
+        "name": "Optional Hispanic or Latino YesNo see belowRow7"
+      },
+      "fillPolicy": "never",
+      "note": "Optional Hispanic/Latino roster column; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_optional_hispanic_or_latino_yesno_see_belowrow8",
+      "target": {
+        "type": "text",
+        "name": "Optional Hispanic or Latino YesNo see belowRow8"
+      },
+      "fillPolicy": "never",
+      "note": "Optional Hispanic/Latino roster column; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_optional_hispanic_or_latino_yesno_see_belowself",
+      "target": {
+        "type": "text",
+        "name": "Optional Hispanic or Latino YesNo see belowSelf"
+      },
+      "fillPolicy": "never",
+      "note": "Optional Hispanic/Latino roster column; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_optional_race_see_belowrow2",
+      "target": {
+        "type": "text",
+        "name": "Optional Race see belowRow2"
+      },
+      "fillPolicy": "never",
+      "note": "Optional race roster column; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_optional_race_see_belowrow3",
+      "target": {
+        "type": "text",
+        "name": "Optional Race see belowRow3"
+      },
+      "fillPolicy": "never",
+      "note": "Optional race roster column; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_optional_race_see_belowrow4",
+      "target": {
+        "type": "text",
+        "name": "Optional Race see belowRow4"
+      },
+      "fillPolicy": "never",
+      "note": "Optional race roster column; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_optional_race_see_belowrow5",
+      "target": {
+        "type": "text",
+        "name": "Optional Race see belowRow5"
+      },
+      "fillPolicy": "never",
+      "note": "Optional race roster column; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_optional_race_see_belowrow6",
+      "target": {
+        "type": "text",
+        "name": "Optional Race see belowRow6"
+      },
+      "fillPolicy": "never",
+      "note": "Optional race roster column; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_optional_race_see_belowrow7",
+      "target": {
+        "type": "text",
+        "name": "Optional Race see belowRow7"
+      },
+      "fillPolicy": "never",
+      "note": "Optional race roster column; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_optional_race_see_belowrow8",
+      "target": {
+        "type": "text",
+        "name": "Optional Race see belowRow8"
+      },
+      "fillPolicy": "never",
+      "note": "Optional race roster column; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_optional_race_see_belowself",
+      "target": {
+        "type": "text",
+        "name": "Optional Race see belowSelf"
+      },
+      "fillPolicy": "never",
+      "note": "Optional race roster column; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_other",
+      "target": {
+        "type": "text",
+        "name": "Other"
+      },
+      "fillPolicy": "never",
+      "note": "Living situation checkbox; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_other_assets_not_listed_such_as",
+      "target": {
+        "type": "checkbox",
+        "name": "Other Assets Not Listed such as"
+      },
+      "fillPolicy": "never",
+      "note": "Asset type checkbox; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_other_2",
+      "target": {
+        "type": "checkbox",
+        "name": "Other_2"
+      },
+      "fillPolicy": "never",
+      "note": "Income type checkbox; income is captured in the income source rows."
+    },
+    {
+      "id": "nc_participates_in_an_official_refugee_employment_p",
+      "target": {
+        "type": "checkbox",
+        "name": "Participates in an official Refugee Employment Program"
+      },
+      "fillPolicy": "never",
+      "note": "Household composition screening; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_paying_for_food_and_a_place_to_stay",
+      "target": {
+        "type": "checkbox",
+        "name": "Paying for food and a place to stay"
+      },
+      "fillPolicy": "never",
+      "note": "Household composition screening; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_payments_for_the_sale_of_an_asset_such_as_a_car_",
+      "target": {
+        "type": "checkbox",
+        "name": "Payments for the sale of an asset such as a car boat mobile home"
+      },
+      "fillPolicy": "never",
+      "note": "Income type checkbox; income is captured in the income source rows."
+    },
+    {
+      "id": "nc_phone_number_and_address_of_personorganization_t",
+      "target": {
+        "type": "text",
+        "name": "Phone Number and Address of PersonOrganization That Gives You MoneyRow1"
+      },
+      "fillPolicy": "never",
+      "note": "Other-income giver row; income is captured in the income source rows."
+    },
+    {
+      "id": "nc_phone_number_and_address_of_personorganization_t_2",
+      "target": {
+        "type": "text",
+        "name": "Phone Number and Address of PersonOrganization That Gives You MoneyRow2"
+      },
+      "fillPolicy": "never",
+      "note": "Other-income giver row; income is captured in the income source rows."
+    },
+    {
+      "id": "nc_phone_number_and_address_of_personorganization_t_3",
+      "target": {
+        "type": "text",
+        "name": "Phone Number and Address of PersonOrganization That Gives You MoneyRow3"
+      },
+      "fillPolicy": "never",
+      "note": "Other-income giver row; income is captured in the income source rows."
+    },
+    {
+      "id": "nc_phone_number_and_address_of_personorganization_t_4",
+      "target": {
+        "type": "text",
+        "name": "Phone Number and Address of PersonOrganization That Gives You MoneyRow4"
+      },
+      "fillPolicy": "never",
+      "note": "Other-income giver row; income is captured in the income source rows."
+    },
+    {
+      "id": "nc_physically_or_mentally_unfit_for_employment",
+      "target": {
+        "type": "checkbox",
+        "name": "Physically or mentally unfit for employment"
+      },
+      "fillPolicy": "never",
+      "note": "Household composition screening; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_place_worked_phone_number",
+      "target": {
+        "type": "text",
+        "name": "Place worked  phone number"
+      },
+      "fillPolicy": "never",
+      "note": "Employment screening; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_place_working_phone_number",
+      "target": {
+        "type": "text",
+        "name": "Place working  phone number"
+      },
+      "fillPolicy": "never",
+      "note": "Employment screening; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_please_check_all_the_assets_you_own_someone_else",
+      "target": {
+        "type": "radio",
+        "name": "Please check all the assets you own someone else in your household owns or jointly own with nonhousehold member"
+      },
+      "fillPolicy": "never",
+      "note": "Asset screening question; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_please_provide_proof_of_all_income_received_from",
+      "target": {
+        "type": "radio",
+        "name": "Please provide proof of all income received from the last 30 days"
+      },
+      "fillPolicy": "never",
+      "note": "Verification instruction; not an answer field."
+    },
+    {
+      "id": "nc_pregnant_due_date",
+      "target": {
+        "type": "text",
+        "name": "Pregnant Due Date"
+      },
+      "fillPolicy": "never",
+      "note": "Household composition screening; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_prepaid_burial_contracts",
+      "target": {
+        "type": "checkbox",
+        "name": "Prepaid Burial Contracts"
+      },
+      "fillPolicy": "never",
+      "note": "Asset type checkbox; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_private_disability",
+      "target": {
+        "type": "checkbox",
+        "name": "Private Disability"
+      },
+      "fillPolicy": "never",
+      "note": "Income type checkbox; income is captured in the income source rows."
+    },
+    {
+      "id": "nc_reason_stopped_workingrow1",
+      "target": {
+        "type": "text",
+        "name": "Reason Stopped WorkingRow1"
+      },
+      "fillPolicy": "never",
+      "note": "Employment detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_reason_stopped_workingrow2",
+      "target": {
+        "type": "text",
+        "name": "Reason Stopped WorkingRow2"
+      },
+      "fillPolicy": "never",
+      "note": "Employment detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_reason_stopped_workingrow3",
+      "target": {
+        "type": "text",
+        "name": "Reason Stopped WorkingRow3"
+      },
+      "fillPolicy": "never",
+      "note": "Employment detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_renting_a_room_from_you",
+      "target": {
+        "type": "checkbox",
+        "name": "Renting a room from you"
+      },
+      "fillPolicy": "never",
+      "note": "Household composition screening; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_residential_treatment_facility",
+      "target": {
+        "type": "checkbox",
+        "name": "Residential Treatment Facility"
+      },
+      "fillPolicy": "never",
+      "note": "Living situation checkbox; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_retirement_accounts",
+      "target": {
+        "type": "checkbox",
+        "name": "Retirement Accounts"
+      },
+      "fillPolicy": "never",
+      "note": "Asset type checkbox; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_selfrow1",
+      "target": {
+        "type": "text",
+        "name": "SelfRow1"
+      },
+      "fillPolicy": "never",
+      "note": "Self row relationship; the applicant is the filer by definition."
+    },
+    {
+      "id": "nc_m0_rel",
+      "target": {
+        "type": "text",
+        "name": "SelfRow2"
+      },
+      "source": {
+        "fieldPath": "household.members[].relationship"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 0
+      },
+      "valueMap": {
+        "self": "Self",
+        "spouse": "Spouse",
+        "domestic_partner": "Domestic Partner",
+        "child": "Child",
+        "stepchild": "Stepchild",
+        "foster_child": "Foster Child",
+        "parent": "Parent",
+        "stepparent": "Stepparent",
+        "grandparent": "Grandparent",
+        "grandchild": "Grandchild",
+        "sibling": "Sibling",
+        "other_relative": "Other Relative",
+        "unrelated": "Unrelated"
+      },
+      "note": "Member 1 relationship to applicant."
+    },
+    {
+      "id": "nc_m1_rel",
+      "target": {
+        "type": "text",
+        "name": "SelfRow3"
+      },
+      "source": {
+        "fieldPath": "household.members[].relationship"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 1
+      },
+      "valueMap": {
+        "self": "Self",
+        "spouse": "Spouse",
+        "domestic_partner": "Domestic Partner",
+        "child": "Child",
+        "stepchild": "Stepchild",
+        "foster_child": "Foster Child",
+        "parent": "Parent",
+        "stepparent": "Stepparent",
+        "grandparent": "Grandparent",
+        "grandchild": "Grandchild",
+        "sibling": "Sibling",
+        "other_relative": "Other Relative",
+        "unrelated": "Unrelated"
+      },
+      "note": "Member 2 relationship to applicant."
+    },
+    {
+      "id": "nc_m2_rel",
+      "target": {
+        "type": "text",
+        "name": "SelfRow4"
+      },
+      "source": {
+        "fieldPath": "household.members[].relationship"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 2
+      },
+      "valueMap": {
+        "self": "Self",
+        "spouse": "Spouse",
+        "domestic_partner": "Domestic Partner",
+        "child": "Child",
+        "stepchild": "Stepchild",
+        "foster_child": "Foster Child",
+        "parent": "Parent",
+        "stepparent": "Stepparent",
+        "grandparent": "Grandparent",
+        "grandchild": "Grandchild",
+        "sibling": "Sibling",
+        "other_relative": "Other Relative",
+        "unrelated": "Unrelated"
+      },
+      "note": "Member 3 relationship to applicant."
+    },
+    {
+      "id": "nc_m3_rel",
+      "target": {
+        "type": "text",
+        "name": "SelfRow5"
+      },
+      "source": {
+        "fieldPath": "household.members[].relationship"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 3
+      },
+      "valueMap": {
+        "self": "Self",
+        "spouse": "Spouse",
+        "domestic_partner": "Domestic Partner",
+        "child": "Child",
+        "stepchild": "Stepchild",
+        "foster_child": "Foster Child",
+        "parent": "Parent",
+        "stepparent": "Stepparent",
+        "grandparent": "Grandparent",
+        "grandchild": "Grandchild",
+        "sibling": "Sibling",
+        "other_relative": "Other Relative",
+        "unrelated": "Unrelated"
+      },
+      "note": "Member 4 relationship to applicant."
+    },
+    {
+      "id": "nc_m4_rel",
+      "target": {
+        "type": "text",
+        "name": "SelfRow6"
+      },
+      "source": {
+        "fieldPath": "household.members[].relationship"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 4
+      },
+      "valueMap": {
+        "self": "Self",
+        "spouse": "Spouse",
+        "domestic_partner": "Domestic Partner",
+        "child": "Child",
+        "stepchild": "Stepchild",
+        "foster_child": "Foster Child",
+        "parent": "Parent",
+        "stepparent": "Stepparent",
+        "grandparent": "Grandparent",
+        "grandchild": "Grandchild",
+        "sibling": "Sibling",
+        "other_relative": "Other Relative",
+        "unrelated": "Unrelated"
+      },
+      "note": "Member 5 relationship to applicant."
+    },
+    {
+      "id": "nc_m5_rel",
+      "target": {
+        "type": "text",
+        "name": "SelfRow7"
+      },
+      "source": {
+        "fieldPath": "household.members[].relationship"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "repeat": {
+        "over": "household.members",
+        "index": 5
+      },
+      "valueMap": {
+        "self": "Self",
+        "spouse": "Spouse",
+        "domestic_partner": "Domestic Partner",
+        "child": "Child",
+        "stepchild": "Stepchild",
+        "foster_child": "Foster Child",
+        "parent": "Parent",
+        "stepparent": "Stepparent",
+        "grandparent": "Grandparent",
+        "grandchild": "Grandchild",
+        "sibling": "Sibling",
+        "other_relative": "Other Relative",
+        "unrelated": "Unrelated"
+      },
+      "note": "Member 6 relationship to applicant."
+    },
+    {
+      "id": "nc_shelter_for_battered_women_and_children",
+      "target": {
+        "type": "checkbox",
+        "name": "Shelter for Battered Women and Children"
+      },
+      "fillPolicy": "never",
+      "note": "Living situation checkbox; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_site_address_and_phone_number_if_availablerow1",
+      "target": {
+        "type": "text",
+        "name": "Site Address and Phone Number if AvailableRow1"
+      },
+      "fillPolicy": "never",
+      "note": "Employment detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_site_address_and_phone_number_if_availablerow2",
+      "target": {
+        "type": "text",
+        "name": "Site Address and Phone Number if AvailableRow2"
+      },
+      "fillPolicy": "never",
+      "note": "Employment detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_site_address_and_phone_number_if_availablerow3",
+      "target": {
+        "type": "text",
+        "name": "Site Address and Phone Number if AvailableRow3"
+      },
+      "fillPolicy": "never",
+      "note": "Employment detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_social_security",
+      "target": {
+        "type": "checkbox",
+        "name": "Social Security"
+      },
+      "fillPolicy": "never",
+      "note": "Income type checkbox; income is captured in the income source rows."
+    },
+    {
+      "id": "nc_special_assistance_sa",
+      "target": {
+        "type": "checkbox",
+        "name": "Special Assistance SA"
+      },
+      "fillPolicy": "never",
+      "note": "Income type checkbox; income is captured in the income source rows."
+    },
+    {
+      "id": "nc_start_daterow1_4",
+      "target": {
+        "type": "text",
+        "name": "Start DateRow1_4"
+      },
+      "fillPolicy": "never",
+      "note": "Volunteer/work-training detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_start_daterow1_5",
+      "target": {
+        "type": "text",
+        "name": "Start DateRow1_5"
+      },
+      "fillPolicy": "never",
+      "note": "Dependent-care expense detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_start_daterow1_6",
+      "target": {
+        "type": "text",
+        "name": "Start DateRow1_6"
+      },
+      "fillPolicy": "never",
+      "note": "Dependent-care expense detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_start_daterow2_4",
+      "target": {
+        "type": "text",
+        "name": "Start DateRow2_4"
+      },
+      "fillPolicy": "never",
+      "note": "Volunteer/work-training detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_start_daterow2_5",
+      "target": {
+        "type": "text",
+        "name": "Start DateRow2_5"
+      },
+      "fillPolicy": "never",
+      "note": "Dependent-care expense detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_start_daterow2_6",
+      "target": {
+        "type": "text",
+        "name": "Start DateRow2_6"
+      },
+      "fillPolicy": "never",
+      "note": "Dependent-care expense detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_start_daterow3_2",
+      "target": {
+        "type": "text",
+        "name": "Start DateRow3_2"
+      },
+      "fillPolicy": "never",
+      "note": "Volunteer/work-training detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_start_daterow3_4",
+      "target": {
+        "type": "text",
+        "name": "Start DateRow3_4"
+      },
+      "fillPolicy": "never",
+      "note": "Volunteer/work-training detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_start_daterow3_5",
+      "target": {
+        "type": "text",
+        "name": "Start DateRow3_5"
+      },
+      "fillPolicy": "never",
+      "note": "Dependent-care expense detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_stocks_or_bonds",
+      "target": {
+        "type": "checkbox",
+        "name": "Stocks or Bonds"
+      },
+      "fillPolicy": "never",
+      "note": "Asset type checkbox; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_supplemental_security_income_ssi",
+      "target": {
+        "type": "checkbox",
+        "name": "Supplemental Security Income SSI"
+      },
+      "fillPolicy": "never",
+      "note": "Income type checkbox; income is captured in the income source rows."
+    },
+    {
+      "id": "nc_telephone",
+      "target": {
+        "type": "checkbox",
+        "name": "Telephone"
+      },
+      "fillPolicy": "never",
+      "note": "Voter registration or agency use; not a benefits answer."
+    },
+    {
+      "id": "nc_telephone_company_provider",
+      "target": {
+        "type": "text",
+        "name": "Telephone Company Provider"
+      },
+      "fillPolicy": "never",
+      "note": "Voter registration or agency use; not a benefits answer."
+    },
+    {
+      "id": "nc_total_hours_worked_in_past_30_daysrow1",
+      "target": {
+        "type": "text",
+        "name": "Total Hours Worked in Past 30 DaysRow1"
+      },
+      "fillPolicy": "never",
+      "note": "Employment detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_total_hours_worked_in_past_30_daysrow2",
+      "target": {
+        "type": "text",
+        "name": "Total Hours Worked in Past 30 DaysRow2"
+      },
+      "fillPolicy": "never",
+      "note": "Employment detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_total_hours_worked_in_past_30_daysrow3",
+      "target": {
+        "type": "text",
+        "name": "Total Hours Worked in Past 30 DaysRow3"
+      },
+      "fillPolicy": "never",
+      "note": "Employment detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_trying_to_avoid_a_felony_prosecution_or_fleeing_",
+      "target": {
+        "type": "checkbox",
+        "name": "Trying to avoid a felony prosecution or fleeing from law enforcement"
+      },
+      "fillPolicy": "never",
+      "note": "Disqualification screening; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_trying_to_avoid_jail_after_conviction_of_a_felon",
+      "target": {
+        "type": "checkbox",
+        "name": "Trying to avoid jail after conviction of a felony"
+      },
+      "fillPolicy": "never",
+      "note": "Disqualification screening; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_type_of_businessrow1",
+      "target": {
+        "type": "text",
+        "name": "Type of BusinessRow1"
+      },
+      "fillPolicy": "never",
+      "note": "Self-employment detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_type_of_businessrow2",
+      "target": {
+        "type": "text",
+        "name": "Type of BusinessRow2"
+      },
+      "fillPolicy": "never",
+      "note": "Self-employment detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_unable_to_work_due_to_alcohol_andor_drug_addicti",
+      "target": {
+        "type": "checkbox",
+        "name": "Unable to work due to alcohol andor drug addiction"
+      },
+      "fillPolicy": "never",
+      "note": "Household composition screening; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_unemployment_benefits",
+      "target": {
+        "type": "checkbox",
+        "name": "Unemployment Benefits"
+      },
+      "fillPolicy": "never",
+      "note": "Income type checkbox; income is captured in the income source rows."
+    },
+    {
+      "id": "nc_utility_excess_public_housing",
+      "target": {
+        "type": "checkbox",
+        "name": "Utility Excess Public Housing"
+      },
+      "fillPolicy": "never",
+      "note": "Public-housing utility excess; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_value_or_worthcash",
+      "target": {
+        "type": "text",
+        "name": "Value or WorthCash"
+      },
+      "fillPolicy": "never",
+      "note": "Typed asset row; rows cannot be matched to the account list positionally."
+    },
+    {
+      "id": "nc_value_or_worthlotterygambling_winnings",
+      "target": {
+        "type": "text",
+        "name": "Value or WorthLotteryGambling Winnings"
+      },
+      "fillPolicy": "never",
+      "note": "Typed asset row; rows cannot be matched to the account list positionally."
+    },
+    {
+      "id": "nc_value_or_worthmutual_funds_or_trust_funds",
+      "target": {
+        "type": "text",
+        "name": "Value or WorthMutual Funds or Trust Funds"
+      },
+      "fillPolicy": "never",
+      "note": "Typed asset row; rows cannot be matched to the account list positionally."
+    },
+    {
+      "id": "nc_value_or_worthother_assets_not_listed_such_as_in",
+      "target": {
+        "type": "text",
+        "name": "Value or WorthOther Assets Not Listed such as interest income"
+      },
+      "fillPolicy": "never",
+      "note": "Typed asset row; rows cannot be matched to the account list positionally."
+    },
+    {
+      "id": "nc_value_or_worthprepaid_burial_contracts",
+      "target": {
+        "type": "text",
+        "name": "Value or WorthPrepaid Burial Contracts"
+      },
+      "fillPolicy": "never",
+      "note": "Typed asset row; rows cannot be matched to the account list positionally."
+    },
+    {
+      "id": "nc_value_or_worthstocks_or_bonds",
+      "target": {
+        "type": "text",
+        "name": "Value or WorthStocks or Bonds"
+      },
+      "fillPolicy": "never",
+      "note": "Typed asset row; rows cannot be matched to the account list positionally."
+    },
+    {
+      "id": "nc_veterans_benefits",
+      "target": {
+        "type": "checkbox",
+        "name": "Veterans Benefits"
+      },
+      "fillPolicy": "never",
+      "note": "Income type checkbox; income is captured in the income source rows."
+    },
+    {
+      "id": "nc_violating_conditions_of_probation_or_parole",
+      "target": {
+        "type": "checkbox",
+        "name": "Violating conditions of probation or parole"
+      },
+      "fillPolicy": "never",
+      "note": "Disqualification screening; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_what_county_or_state",
+      "target": {
+        "type": "text",
+        "name": "What County or State"
+      },
+      "fillPolicy": "never",
+      "note": "Household screening follow-up; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_when_did_the_expense_startrow1",
+      "target": {
+        "type": "text",
+        "name": "When Did the Expense StartRow1"
+      },
+      "fillPolicy": "never",
+      "note": "Dependent-care expense detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_when_did_the_expense_startrow2",
+      "target": {
+        "type": "text",
+        "name": "When Did the Expense StartRow2"
+      },
+      "fillPolicy": "never",
+      "note": "Dependent-care expense detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_when_did_the_benefits_end",
+      "target": {
+        "type": "text",
+        "name": "When did the benefits end"
+      },
+      "fillPolicy": "never",
+      "note": "Benefits screening follow-up; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_when_did_the_benefits_start",
+      "target": {
+        "type": "text",
+        "name": "When did the benefits start"
+      },
+      "fillPolicy": "never",
+      "note": "Benefits screening follow-up; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_when_was_it_last_used",
+      "target": {
+        "type": "text",
+        "name": "When was it last used"
+      },
+      "fillPolicy": "never",
+      "note": "Benefits screening follow-up; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_which_bill_is_paid",
+      "target": {
+        "type": "text",
+        "name": "Which Bill Is Paid"
+      },
+      "fillPolicy": "never",
+      "note": "Third-party bill detail; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_which_bill_is_paid_2",
+      "target": {
+        "type": "text",
+        "name": "Which Bill Is Paid_2"
+      },
+      "fillPolicy": "never",
+      "note": "Third-party bill detail; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_which_bill_is_paidrow1",
+      "target": {
+        "type": "text",
+        "name": "Which Bill is PaidRow1"
+      },
+      "fillPolicy": "never",
+      "note": "Third-party bill detail; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_which_bill_is_paidrow1_2",
+      "target": {
+        "type": "text",
+        "name": "Which Bill is PaidRow1_2"
+      },
+      "fillPolicy": "never",
+      "note": "Third-party bill detail; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_which_bill_is_paidrow2",
+      "target": {
+        "type": "text",
+        "name": "Which Bill is PaidRow2"
+      },
+      "fillPolicy": "never",
+      "note": "Third-party bill detail; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_which_bill_is_paidrow2_2",
+      "target": {
+        "type": "text",
+        "name": "Which Bill is PaidRow2_2"
+      },
+      "fillPolicy": "never",
+      "note": "Third-party bill detail; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_which_bill_is_paidrow3",
+      "target": {
+        "type": "text",
+        "name": "Which Bill is PaidRow3"
+      },
+      "fillPolicy": "never",
+      "note": "Third-party bill detail; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_which_bill_is_paidrow3_2",
+      "target": {
+        "type": "text",
+        "name": "Which Bill is PaidRow3_2"
+      },
+      "fillPolicy": "never",
+      "note": "Third-party bill detail; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_which_bill_is_paidrow4",
+      "target": {
+        "type": "text",
+        "name": "Which Bill is PaidRow4"
+      },
+      "fillPolicy": "never",
+      "note": "Third-party bill detail; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_who",
+      "target": {
+        "type": "text",
+        "name": "Who"
+      },
+      "fillPolicy": "never",
+      "note": "Disqualification screening follow-up; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_who_does_this_belong_tocash",
+      "target": {
+        "type": "text",
+        "name": "Who Does This Belong ToCash"
+      },
+      "fillPolicy": "never",
+      "note": "Typed asset row; rows cannot be matched to the account list positionally."
+    },
+    {
+      "id": "nc_who_does_this_belong_tocertificates_of_deposit_c",
+      "target": {
+        "type": "text",
+        "name": "Who Does This Belong ToCertificates of Deposit CDs"
+      },
+      "fillPolicy": "never",
+      "note": "Typed asset row; rows cannot be matched to the account list positionally."
+    },
+    {
+      "id": "nc_who_does_this_belong_tochecking_andor_savings_ac",
+      "target": {
+        "type": "text",
+        "name": "Who Does This Belong ToChecking andor Savings Acct"
+      },
+      "fillPolicy": "never",
+      "note": "Typed asset row; rows cannot be matched to the account list positionally."
+    },
+    {
+      "id": "nc_who_does_this_belong_tolotterygambling_winnings",
+      "target": {
+        "type": "text",
+        "name": "Who Does This Belong ToLotteryGambling Winnings"
+      },
+      "fillPolicy": "never",
+      "note": "Typed asset row; rows cannot be matched to the account list positionally."
+    },
+    {
+      "id": "nc_who_does_this_belong_tomutual_funds_or_trust_fun",
+      "target": {
+        "type": "text",
+        "name": "Who Does This Belong ToMutual Funds or Trust Funds"
+      },
+      "fillPolicy": "never",
+      "note": "Typed asset row; rows cannot be matched to the account list positionally."
+    },
+    {
+      "id": "nc_who_does_this_belong_toother_assets_not_listed_s",
+      "target": {
+        "type": "text",
+        "name": "Who Does This Belong ToOther Assets Not Listed such as interest income"
+      },
+      "fillPolicy": "never",
+      "note": "Typed asset row; rows cannot be matched to the account list positionally."
+    },
+    {
+      "id": "nc_who_does_this_belong_toprepaid_burial_contracts",
+      "target": {
+        "type": "text",
+        "name": "Who Does This Belong ToPrepaid Burial Contracts"
+      },
+      "fillPolicy": "never",
+      "note": "Typed asset row; rows cannot be matched to the account list positionally."
+    },
+    {
+      "id": "nc_who_does_this_belong_toretirement_accounts",
+      "target": {
+        "type": "text",
+        "name": "Who Does This Belong ToRetirement Accounts"
+      },
+      "fillPolicy": "never",
+      "note": "Typed asset row; rows cannot be matched to the account list positionally."
+    },
+    {
+      "id": "nc_who_does_this_belong_tostocks_or_bonds",
+      "target": {
+        "type": "text",
+        "name": "Who Does This Belong ToStocks or Bonds"
+      },
+      "fillPolicy": "never",
+      "note": "Typed asset row; rows cannot be matched to the account list positionally."
+    },
+    {
+      "id": "nc_who_pays_for_the_carerow1",
+      "target": {
+        "type": "text",
+        "name": "Who Pays for the CareRow1"
+      },
+      "fillPolicy": "never",
+      "note": "Dependent-care expense detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_who_pays_for_the_carerow2",
+      "target": {
+        "type": "text",
+        "name": "Who Pays for the CareRow2"
+      },
+      "fillPolicy": "never",
+      "note": "Dependent-care expense detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_who_pays_for_the_carerow3",
+      "target": {
+        "type": "text",
+        "name": "Who Pays for the CareRow3"
+      },
+      "fillPolicy": "never",
+      "note": "Dependent-care expense detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_who_pays_the_bill",
+      "target": {
+        "type": "text",
+        "name": "Who Pays the Bill"
+      },
+      "fillPolicy": "never",
+      "note": "Third-party bill payer; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_who_pays_the_billhomeowners_dues_hoa",
+      "target": {
+        "type": "text",
+        "name": "Who Pays the BillHomeowners Dues HOA"
+      },
+      "fillPolicy": "never",
+      "note": "Shelter bill payer; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_who_pays_the_billhomeowners_insurance_if_not_inc",
+      "target": {
+        "type": "text",
+        "name": "Who Pays the BillHomeowners Insurance If not included in mortgage"
+      },
+      "fillPolicy": "never",
+      "note": "Shelter bill payer; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_who_pays_the_billlot_rent",
+      "target": {
+        "type": "text",
+        "name": "Who Pays the BillLot Rent"
+      },
+      "fillPolicy": "never",
+      "note": "Shelter bill payer; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_who_pays_the_billproperty_taxes_if_not_included_",
+      "target": {
+        "type": "text",
+        "name": "Who Pays the BillProperty Taxes If not included in mortgage"
+      },
+      "fillPolicy": "never",
+      "note": "Shelter bill payer; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_who_pays_the_billrent_or_mortgage",
+      "target": {
+        "type": "text",
+        "name": "Who Pays the BillRent or Mortgage"
+      },
+      "fillPolicy": "never",
+      "note": "Shelter bill payer; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_who_pays_the_bill_2",
+      "target": {
+        "type": "text",
+        "name": "Who Pays the Bill_2"
+      },
+      "fillPolicy": "never",
+      "note": "Third-party bill payer; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_who_pays_the_child_supportrow1",
+      "target": {
+        "type": "text",
+        "name": "Who Pays the Child SupportRow1"
+      },
+      "fillPolicy": "never",
+      "note": "Child support payer; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_who_pays_the_child_supportrow2",
+      "target": {
+        "type": "text",
+        "name": "Who Pays the Child SupportRow2"
+      },
+      "fillPolicy": "never",
+      "note": "Child support payer; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_who_pays_the_child_supportrow3",
+      "target": {
+        "type": "text",
+        "name": "Who Pays the Child SupportRow3"
+      },
+      "fillPolicy": "never",
+      "note": "Child support payer; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_who_made_the_disability_determination",
+      "target": {
+        "type": "text",
+        "name": "Who made the disability determination"
+      },
+      "fillPolicy": "never",
+      "note": "Disability screening follow-up; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_who_10",
+      "target": {
+        "type": "text",
+        "name": "Who_10"
+      },
+      "fillPolicy": "never",
+      "note": "Disqualification screening follow-up; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_who_11",
+      "target": {
+        "type": "text",
+        "name": "Who_11"
+      },
+      "fillPolicy": "never",
+      "note": "Disqualification screening follow-up; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_who_12",
+      "target": {
+        "type": "text",
+        "name": "Who_12"
+      },
+      "fillPolicy": "never",
+      "note": "Disqualification screening follow-up; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_who_13",
+      "target": {
+        "type": "text",
+        "name": "Who_13"
+      },
+      "fillPolicy": "never",
+      "note": "Disqualification screening follow-up; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_who_14",
+      "target": {
+        "type": "text",
+        "name": "Who_14"
+      },
+      "fillPolicy": "never",
+      "note": "Disqualification screening follow-up; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_who_15",
+      "target": {
+        "type": "text",
+        "name": "Who_15"
+      },
+      "fillPolicy": "never",
+      "note": "Disqualification screening follow-up; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_who_16",
+      "target": {
+        "type": "text",
+        "name": "Who_16"
+      },
+      "fillPolicy": "never",
+      "note": "Disqualification screening follow-up; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_who_17",
+      "target": {
+        "type": "text",
+        "name": "Who_17"
+      },
+      "fillPolicy": "never",
+      "note": "Disqualification screening follow-up; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_who_18",
+      "target": {
+        "type": "text",
+        "name": "Who_18"
+      },
+      "fillPolicy": "never",
+      "note": "Disqualification screening follow-up; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_who_19",
+      "target": {
+        "type": "text",
+        "name": "Who_19"
+      },
+      "fillPolicy": "never",
+      "note": "Disqualification screening follow-up; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_who_2",
+      "target": {
+        "type": "text",
+        "name": "Who_2"
+      },
+      "fillPolicy": "never",
+      "note": "Disqualification screening follow-up; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_who_20",
+      "target": {
+        "type": "text",
+        "name": "Who_20"
+      },
+      "fillPolicy": "never",
+      "note": "Disqualification screening follow-up; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_who_21",
+      "target": {
+        "type": "text",
+        "name": "Who_21"
+      },
+      "fillPolicy": "never",
+      "note": "Disqualification screening follow-up; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_who_3",
+      "target": {
+        "type": "text",
+        "name": "Who_3"
+      },
+      "fillPolicy": "never",
+      "note": "Disqualification screening follow-up; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_who_4",
+      "target": {
+        "type": "text",
+        "name": "Who_4"
+      },
+      "fillPolicy": "never",
+      "note": "Disqualification screening follow-up; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_who_5",
+      "target": {
+        "type": "text",
+        "name": "Who_5"
+      },
+      "fillPolicy": "never",
+      "note": "Disqualification screening follow-up; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_who_6",
+      "target": {
+        "type": "text",
+        "name": "Who_6"
+      },
+      "fillPolicy": "never",
+      "note": "Disqualification screening follow-up; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_who_7",
+      "target": {
+        "type": "text",
+        "name": "Who_7"
+      },
+      "fillPolicy": "never",
+      "note": "Disqualification screening follow-up; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_who_8",
+      "target": {
+        "type": "text",
+        "name": "Who_8"
+      },
+      "fillPolicy": "never",
+      "note": "Disqualification screening follow-up; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_who_9",
+      "target": {
+        "type": "text",
+        "name": "Who_9"
+      },
+      "fillPolicy": "never",
+      "note": "Disqualification screening follow-up; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_work_firsttanf",
+      "target": {
+        "type": "checkbox",
+        "name": "Work FirstTANF"
+      },
+      "fillPolicy": "never",
+      "note": "Income type checkbox; income is captured in the income source rows."
+    },
+    {
+      "id": "nc_workers_compensation",
+      "target": {
+        "type": "checkbox",
+        "name": "Workers Compensation"
+      },
+      "fillPolicy": "never",
+      "note": "Income type checkbox; income is captured in the income source rows."
+    },
+    {
+      "id": "nc_yes",
+      "target": {
+        "type": "checkbox",
+        "name": "Yes"
+      },
+      "fillPolicy": "never",
+      "note": "Informational text; not an answer field."
+    },
+    {
+      "id": "nc_selfemp_yes",
+      "target": {
+        "type": "checkbox",
+        "name": "Yes_16"
+      },
+      "source": {
+        "fieldPath": "employment.is_self_employed"
+      },
+      "note": "Self-employment: Yes checkbox."
+    },
+    {
+      "id": "nc_yes_17",
+      "target": {
+        "type": "checkbox",
+        "name": "Yes_17"
+      },
+      "fillPolicy": "never",
+      "note": "Work requirement screening; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_yes_2",
+      "target": {
+        "type": "checkbox",
+        "name": "Yes_2"
+      },
+      "fillPolicy": "never",
+      "note": "Expedited screening; migrant-worker question Yes checkbox."
+    },
+    {
+      "id": "nc_yes_24",
+      "target": {
+        "type": "checkbox",
+        "name": "Yes_24"
+      },
+      "fillPolicy": "never",
+      "note": "Energy assistance screening; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_yes_31",
+      "target": {
+        "type": "checkbox",
+        "name": "Yes_31"
+      },
+      "fillPolicy": "never",
+      "note": "Household screening checkbox; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_yes_33",
+      "target": {
+        "type": "checkbox",
+        "name": "Yes_33"
+      },
+      "fillPolicy": "never",
+      "note": "Household screening checkbox; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_yes_34",
+      "target": {
+        "type": "checkbox",
+        "name": "Yes_34"
+      },
+      "fillPolicy": "never",
+      "note": "Household screening checkbox; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_yes_35",
+      "target": {
+        "type": "checkbox",
+        "name": "Yes_35"
+      },
+      "fillPolicy": "never",
+      "note": "Household screening checkbox; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_yes_8",
+      "target": {
+        "type": "checkbox",
+        "name": "Yes_8"
+      },
+      "fillPolicy": "never",
+      "note": "Household screening follow-up; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_yes_9",
+      "target": {
+        "type": "checkbox",
+        "name": "Yes_9"
+      },
+      "fillPolicy": "never",
+      "note": "Household screening follow-up; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_a_did_hisher_job_end_recently",
+      "target": {
+        "type": "radio",
+        "name": "a Did hisher job end recently"
+      },
+      "fillPolicy": "never",
+      "note": "Expedited screening question; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_after_august_22_1996_if_convicted_what_state",
+      "target": {
+        "type": "text",
+        "name": "after August 22 1996 If convicted what state"
+      },
+      "fillPolicy": "never",
+      "note": "Disqualification screening; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_after_august_22_1996_if_convicted_what_state_2",
+      "target": {
+        "type": "text",
+        "name": "after August 22 1996 If convicted what state_2"
+      },
+      "fillPolicy": "never",
+      "note": "Disqualification screening; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_b_did_the_only_income_received_for_the_month_of_",
+      "target": {
+        "type": "radio",
+        "name": "b Did the only income received for the month of application end before today"
+      },
+      "fillPolicy": "never",
+      "note": "Expedited screening question; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_begin",
+      "target": {
+        "type": "text",
+        "name": "begin"
+      },
+      "fillPolicy": "never",
+      "note": "Disability detail; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_birthday",
+      "target": {
+        "type": "checkbox",
+        "name": "birthday"
+      },
+      "fillPolicy": "never",
+      "note": "Household composition screening; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_c_will_heshe_receive_25_or_less_from_a_new_emplo",
+      "target": {
+        "type": "radio",
+        "name": "c Will heshe receive 25 or less from a new employer within 10 days"
+      },
+      "fillPolicy": "never",
+      "note": "Expedited screening question; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_d_will_hisher_liquid_resources_such_as_cash_chec",
+      "target": {
+        "type": "radio",
+        "name": "d Will hisher liquid resources such as cash checkingsavings be 100 or less"
+      },
+      "fillPolicy": "never",
+      "note": "Expedited screening question; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_date_of_conviction",
+      "target": {
+        "type": "text",
+        "name": "date of conviction"
+      },
+      "fillPolicy": "never",
+      "note": "Disqualification screening follow-up; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_date_of_conviction_2",
+      "target": {
+        "type": "text",
+        "name": "date of conviction_2"
+      },
+      "fillPolicy": "never",
+      "note": "Disqualification screening follow-up; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_date_of_conviction_3",
+      "target": {
+        "type": "text",
+        "name": "date of conviction_3"
+      },
+      "fillPolicy": "never",
+      "note": "Disqualification screening follow-up; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_date_of_conviction_4",
+      "target": {
+        "type": "text",
+        "name": "date of conviction_4"
+      },
+      "fillPolicy": "never",
+      "note": "Disqualification screening follow-up; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_in_any_state_after_august_22_1996_if_convicted_w",
+      "target": {
+        "type": "text",
+        "name": "in any State after August 22 1996 If convicted what state"
+      },
+      "fillPolicy": "never",
+      "note": "Disqualification screening; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_undefined",
+      "target": {
+        "type": "checkbox",
+        "name": "undefined"
+      },
+      "fillPolicy": "never",
+      "note": "Living situation checkbox; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_undefined_10",
+      "target": {
+        "type": "radio",
+        "name": "undefined_10"
+      },
+      "fillPolicy": "never",
+      "note": "Bill-payment yes/no; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_email_2",
+      "target": {
+        "type": "text",
+        "name": "undefined_11"
+      },
+      "source": {
+        "fieldPath": "contact.email"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "note": "Additional email address field."
+    },
+    {
+      "id": "nc_email_3",
+      "target": {
+        "type": "text",
+        "name": "undefined_12"
+      },
+      "source": {
+        "fieldPath": "contact.email"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ],
+      "note": "Additional email address field."
+    },
+    {
+      "id": "nc_undefined_2",
+      "target": {
+        "type": "checkbox",
+        "name": "undefined_2"
+      },
+      "fillPolicy": "never",
+      "note": "Screening checkbox; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_undefined_3",
+      "target": {
+        "type": "radio",
+        "name": "undefined_3"
+      },
+      "fillPolicy": "never",
+      "note": "Screening checkbox; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_undefined_4",
+      "target": {
+        "type": "checkbox",
+        "name": "undefined_4"
+      },
+      "fillPolicy": "never",
+      "note": "Screening checkbox; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_undefined_5",
+      "target": {
+        "type": "checkbox",
+        "name": "undefined_5"
+      },
+      "fillPolicy": "never",
+      "note": "Screening checkbox; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_undefined_6",
+      "target": {
+        "type": "text",
+        "name": "undefined_6"
+      },
+      "fillPolicy": "never",
+      "note": "Employment detail row; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_undefined_7",
+      "target": {
+        "type": "radio",
+        "name": "undefined_7"
+      },
+      "fillPolicy": "never",
+      "note": "Bill-payment yes/no; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_undefined_8",
+      "target": {
+        "type": "radio",
+        "name": "undefined_8"
+      },
+      "fillPolicy": "never",
+      "note": "Bill-payment yes/no; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_undefined_9",
+      "target": {
+        "type": "radio",
+        "name": "undefined_9"
+      },
+      "fillPolicy": "never",
+      "note": "Bill-payment yes/no; no vocabulary equivalent."
+    },
+    {
+      "id": "nc_utilities",
+      "target": {
+        "type": "radio",
+        "name": "utilities"
+      },
+      "fillPolicy": "never",
+      "note": "Utility screening; no vocabulary equivalent."
     }
   ],
   "provenanceNote": "DSS-8207 (10-2024). The household roster Self row maps to the applicant; rows 2-8 map to household.members[0..6]. Yes/No write-in boxes take the words 'Yes'/'No'. Skipped as unsupported: total cash on hand (no profile field), stopped-work pay details, age/sex combined box, office-use and signature blocks."
