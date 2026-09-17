@@ -16,6 +16,7 @@ import { useState } from 'react';
 import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { AppButton, HiveIcon, Screen } from '@/components/hive-ui';
+import { useFloatingTabBarSpace } from '@/components/hive-navigation';
 import { HiveColors, Spacing } from '@/constants/theme';
 import { type Navigation } from '@/features/app/navigation-types';
 import {
@@ -45,6 +46,7 @@ export function BenefitsProgramPickerScreen({ nav, state }: { nav: Navigation; s
   const [selected, setSelected] = useState<string[]>([]);
   const [starting, setStarting] = useState(false);
   const [error, setError] = useState('');
+  const tabBarSpace = useFloatingTabBarSpace();
 
   function toggle(programId: string) {
     setSelected((current) =>
@@ -164,7 +166,7 @@ export function BenefitsProgramPickerScreen({ nav, state }: { nav: Navigation; s
         {error !== '' ? <Text style={styles.error}>{error}</Text> : null}
       </ScrollView>
 
-      <View style={styles.ctaWrap}>
+      <View style={[styles.ctaWrap, { paddingBottom: tabBarSpace + Spacing.four }]}>
         <AppButton
           title={starting ? 'Starting…' : selected.length === 0 ? 'Select at least one program above' : 'Continue'}
           onPress={continueToQuestionnaire}
