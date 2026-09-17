@@ -60,6 +60,9 @@ module.exports = {
       associatedDomains: [`applinks:${deepLinkHost}`],
       infoPlist: {
         LSMinimumSystemVersion: '16.4',
+        // App uses only standard HTTPS (exempt encryption) — skips Apple's
+        // annual export-compliance question in App Store Connect.
+        ITSAppUsesNonExemptEncryption: false,
       },
       privacyManifests: {
         NSPrivacyTracking: false,
