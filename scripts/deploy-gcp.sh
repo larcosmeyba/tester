@@ -66,6 +66,15 @@ elif [[ "$SERVICE_KIND" == "api" ]]; then
       --project="$PROJECT_ID" --region="$REGION" \
       --format='value(status.url)' 2>/dev/null || true
   )"
+  # The API's own public base URL, used to build magic verification links
+  # (APP_PUBLIC_URL). Discovered from the deployed service; override with
+  # APP_PUBLIC_URL env when a custom domain fronts the API.
+  API_PUBLIC_URL="$(
+    gcloud run services describe "$PREFIX-api" \
+      --project="$PROJECT_ID" --region="$REGION" \
+      --format='value(status.url)' 2>/dev/null || true
+  )"
+  SUBSTITUTIONS="$SUBSTITUTIONS,_APP_PUBLIC_URL=${APP_PUBLIC_URL:-$API_PUBLIC_URL}"
   SUBSTITUTIONS="$SUBSTITUTIONS,_PENNY_AGENT_URL=$PENNY_URL,_RECIPE_IMPORT_URL=$TRANSCRIBER_URL"
   SUBSTITUTIONS="$SUBSTITUTIONS,_PENNY_SERVICE_TOKEN_SECRET=$PREFIX-penny-service-token"
   SUBSTITUTIONS="$SUBSTITUTIONS,_PENNY_TOOL_TOKEN_SECRET=$PREFIX-penny-tool-token-secret"
