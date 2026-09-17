@@ -12,7 +12,7 @@
 
 import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { ActivityIndicator, Image, Pressable, Text, TextInput, View } from 'react-native';
 
 import { useAuth } from '@/auth/auth-context';
@@ -33,6 +33,7 @@ import { useAppState } from '@/state/app-state';
 import { StyleSheet } from 'react-native';
 import { sharedStyles } from '@/features/app/app-shared';
 import { type Navigation } from '@/features/app/navigation-types';
+import { SensitiveScreen } from '@/features/analytics/sensitive-screen';
 import {
   HOUSEHOLD_SIZE_OPTIONS,
   INCOME_BRACKET_OPTIONS,
@@ -749,26 +750,42 @@ export function OnboardingScreen({ nav, initialStepKey }: { nav: Navigation; ini
   }
 
   if (showZipFallback) {
-    return <LocationZipStep onNext={() => void finish()} onBack={() => setShowZipFallback(false)} busy={busy} />;
+    // The ZIP fallback collects a postal code: mask it like the questionnaire.
+    return (
+      <SensitiveScreen>
+        <LocationZipStep onNext={() => void finish()} onBack={() => setShowZipFallback(false)} busy={busy} />
+      </SensitiveScreen>
+    );
   }
 
   const stepProps = { initial, busy, onBack: back, onNext: persistStep };
 
+  // The questionnaire collects income bracket, household size, and a profile
+  // photo, so the whole flow is masked out of session replays. (The fatal
+  // error screen above stays unmasked — it carries no personal data and
+  // helps debugging.)
+  let stepContent: ReactNode;
   switch (step) {
     case STEP_RESOURCES:
-      return <ResourcesStep {...stepProps} />;
+      stepContent = <ResourcesStep {...stepProps} />;
+      break;
     case STEP_HOUSEHOLD_SIZE:
-      return <HouseholdSizeStep {...stepProps} />;
+      stepContent = <HouseholdSizeStep {...stepProps} />;
+      break;
     case STEP_INTENT:
-      return <IntentStep {...stepProps} />;
+      stepContent = <IntentStep {...stepProps} />;
+      break;
     case STEP_INCOME:
-      return <IncomeStep {...stepProps} />;
+      stepContent = <IncomeStep {...stepProps} />;
+      break;
     case STEP_FINANCE_TOPICS:
-      return <FinanceHelpStep {...stepProps} />;
+      stepContent = <FinanceHelpStep {...stepProps} />;
+      break;
     case STEP_PROFILE_PHOTO:
-      return <ProfilePhotoStep {...stepProps} />;
+      stepContent = <ProfilePhotoStep {...stepProps} />;
+      break;
     case STEP_ALL_SET:
-      return (
+      stepContent = (
         <AllSetStep
           busy={busy}
           onNext={async () => {
@@ -783,8 +800,9 @@ export function OnboardingScreen({ nav, initialStepKey }: { nav: Navigation; ini
           }}
         />
       );
+      break;
     case STEP_PUSH_PERMISSION:
-      return (
+      stepContent = (
         <PermissionStep
           penny
           title="Stay in the loop"
@@ -796,8 +814,9 @@ export function OnboardingScreen({ nav, initialStepKey }: { nav: Navigation; ini
           busy={busy}
         />
       );
+      break;
     case STEP_LOCATION:
-      return (
+      stepContent = (
         <PermissionStep
           penny
           title="Find help near you"
@@ -809,18 +828,21 @@ export function OnboardingScreen({ nav, initialStepKey }: { nav: Navigation; ini
           busy={busy}
         />
       );
+      break;
     default:
       // STEP_COUNT or beyond: onboarding is done — finish honestly rather
       // than rendering a blank screen.
       void finish();
-      return (
+      stepContent = (
         <Screen>
           <View style={styles.fatalScreen}>
             <ActivityIndicator size="large" color={HiveColors.green} />
           </View>
         </Screen>
       );
+      break;
   }
+  return <SensitiveScreen>{stepContent}</SensitiveScreen>;
 }
 
 const styles = StyleSheet.create({

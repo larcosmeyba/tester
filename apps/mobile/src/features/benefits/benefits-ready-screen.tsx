@@ -37,6 +37,7 @@ import { setPennyContext } from '@/features/penny/penny-context';
 import { requiredQuestionsToAsk } from './benefits-answers';
 import { downloadAndSharePdf, printPdf } from './benefits-document-actions';
 import { BenefitsEditAnswers } from './benefits-edit-answers';
+import { SensitiveScreen } from '@/features/analytics/sensitive-screen';
 import { BenefitsSubmissionControl } from './benefits-submission-control';
 import {
   fetchBenefitsApplication,
@@ -160,7 +161,8 @@ export function BenefitsReadyView({
   return (
     <ScrollScreen>
       <AppHeader title="Applications Ready" onBack={nav.back} />
-      <View style={styles.body}>
+      {/* Application previews show filled answers: masked out of session replays. */}
+      <SensitiveScreen style={styles.body}>
         <Text style={uiText.muted}>
           We&apos;ve completed your applications. Review each one before downloading or printing.
         </Text>
@@ -284,7 +286,7 @@ export function BenefitsReadyView({
         {error !== '' ? <Text style={styles.error}>{error}</Text> : null}
 
         <AppButton title="Continue" onPress={() => setStatusSheet(true)} />
-      </View>
+      </SensitiveScreen>
 
       <Modal visible={guideFor !== null} animationType="slide" onRequestClose={() => setGuideFor(null)}>
         {guideFor ? (

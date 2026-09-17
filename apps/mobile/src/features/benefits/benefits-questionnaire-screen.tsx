@@ -55,6 +55,7 @@ import {
 } from '@/features/benefits/benefits-repository';
 import type { BenefitsGroupRowInput } from '@helpthehive/api-contract';
 import { GroupQuestionEditor } from './benefits-group-editor';
+import { SensitiveScreen } from '@/features/analytics/sensitive-screen';
 import { partitionGroupQuestions, type GroupBucket } from './benefits-groups';
 
 const groupTitles: Record<string, string> = {
@@ -267,7 +268,8 @@ export default function BenefitsQuestionnaireScreen() {
         </Text>
       </View>
 
-      <View style={styles.body}>
+      {/* Questionnaire answers: masked out of session replays. */}
+      <SensitiveScreen style={styles.body}>
         {section.questions.map((question) => (
           <QuestionField
             key={question.fieldPath}
@@ -320,7 +322,7 @@ export default function BenefitsQuestionnaireScreen() {
           Anything you leave blank stays blank on the form, and we will ask again. Nothing is
           guessed on your behalf.
         </Text>
-      </View>
+      </SensitiveScreen>
     </ScrollScreen>
   );
 }
