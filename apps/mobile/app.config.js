@@ -30,6 +30,9 @@ const deepLinkHost =
 // - Other User Content: Penny chats, meal plans, pantry/grocery lists,
 //   benefits answers
 // - Search History: grocery product searches (Kroger pricing)
+// - Crash Data: Sentry crash reports, only when EXPO_PUBLIC_SENTRY_DSN is
+//   set at build time. Never linked — the app deliberately never calls
+//   Sentry.setUser, and no tracing/performance monitoring is enabled.
 const collectedDataTypes = [
   'NSPrivacyCollectedDataTypeName',
   'NSPrivacyCollectedDataTypeEmailAddress',
@@ -49,6 +52,14 @@ const collectedDataTypes = [
   NSPrivacyCollectedDataTypeTracking: false,
   NSPrivacyCollectedDataTypePurposes: ['NSPrivacyCollectedDataTypePurposeAppFunctionality'],
 }));
+
+// Crash Data is collected but NOT linked to the user (see comment above).
+collectedDataTypes.push({
+  NSPrivacyCollectedDataType: 'NSPrivacyCollectedDataTypeCrashData',
+  NSPrivacyCollectedDataTypeLinked: false,
+  NSPrivacyCollectedDataTypeTracking: false,
+  NSPrivacyCollectedDataTypePurposes: ['NSPrivacyCollectedDataTypePurposeAppFunctionality'],
+});
 
 module.exports = {
   expo: {
@@ -158,6 +169,11 @@ module.exports = {
           imageWidth: 120,
         },
       ],
+      // Sentry crash reporting (native modules + build config). The DSN comes
+      // from EXPO_PUBLIC_SENTRY_DSN at build time; without it Sentry.init is a
+      // no-op (see src/lib/sentry.ts). No org/project here — sourcemap upload
+      // can be wired later without affecting crash capture.
+      '@sentry/react-native/expo',
     ],
     experiments: {
       typedRoutes: true,

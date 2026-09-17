@@ -8,6 +8,7 @@
     "@expo/ui": "~57.0.11",
     "@helpthehive/api-contract": "workspace:*",
     "@react-native-async-storage/async-storage": "2.2.0",
+    "@sentry/react-native": "^8.26.0",
     "better-auth": "^1.7.1",
     "expo": "~57.0.13",
     "expo-clipboard": "~57.0.1",
