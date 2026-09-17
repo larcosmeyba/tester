@@ -98,7 +98,7 @@
         "expo-image-picker",
         {
           "photosPermission": "Allow $(PRODUCT_NAME) to access your photos",
-          "cameraPermission": false,
+          "cameraPermission": "Allow $(PRODUCT_NAME) to use your camera to scan pantry items",
           "microphonePermission": false
         }
       ],

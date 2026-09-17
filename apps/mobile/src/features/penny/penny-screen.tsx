@@ -33,6 +33,7 @@ import {
   uiText,
 } from '@/components/hive-ui';
 import { HiveColors } from '@/constants/theme';
+import { SubscriptionSheetBody } from '@/features/profile/subscription-sheet';
 import {
   PENNY_DISCLAIMER,
   pennyService,
@@ -474,6 +475,12 @@ export function PennyScreen({ nav, context: propContext }: { nav: Navigation; co
 }
 
 export function PaywallContent({ onClose }: { onClose: () => void }) {
+  // Purchases aren't live yet: the upgrade button swaps to the honest
+  // "coming soon" sheet instead of pretending to sell something.
+  const [showPlus, setShowPlus] = useState(false);
+  if (showPlus) {
+    return <SubscriptionSheetBody onClose={onClose} />;
+  }
   return (
     <View style={styles.sheetStack}>
       <PennyImage source={pennySource} size={78} />
@@ -492,9 +499,7 @@ export function PaywallContent({ onClose }: { onClose: () => void }) {
       </Card>
       <AppButton
         title="Upgrade to Hive Plus"
-        // TODO(Section 9): route to the Hive Plus purchase flow (subscription info
-        // in Settings). Purchase is scaffolded only — do not invent a checkout.
-        onPress={onClose}
+        onPress={() => setShowPlus(true)}
         style={sharedStyles.fullWidth}
       />
       <AppButton title="Maybe later" variant="plain" onPress={onClose} />

@@ -18,17 +18,26 @@ export function SubscriptionSheet({
 }) {
   return (
     <ModalSheet visible={visible} onClose={onClose}>
-      <View style={styles.sheet}>
-        <Text style={uiText.subtitle}>Hive Plus</Text>
-        <Text style={uiText.muted}>You&apos;re on the free plan.</Text>
-        <Text style={sharedStyles.helperText}>
-          Free includes 5 AI meal plans and 5 video imports a month, 10 single-meal
-          generations a month, and 10 Penny questions a day. Hive Plus will add
-          more of each — purchases aren&apos;t available yet.
-        </Text>
-        <AppButton title="Close" variant="secondary" onPress={onClose} />
-      </View>
+      <SubscriptionSheetBody onClose={onClose} />
     </ModalSheet>
+  );
+}
+
+// The sheet content on its own, so paywall gates can swap to it inline
+// instead of nesting modals: tapping "Upgrade to Hive Plus" anywhere shows
+// this honest "coming soon" state rather than a dead button.
+export function SubscriptionSheetBody({ onClose }: { onClose: () => void }) {
+  return (
+    <View style={styles.sheet}>
+      <Text style={uiText.subtitle}>Hive Plus</Text>
+      <Text style={uiText.muted}>You&apos;re on the free plan.</Text>
+      <Text style={sharedStyles.helperText}>
+        Free includes 5 AI meal plans and 5 video imports a month, 10 single-meal
+        generations a month, and 10 Penny questions a day. Hive Plus will add
+        more of each — purchases aren&apos;t available yet.
+      </Text>
+      <AppButton title="Close" variant="secondary" onPress={onClose} />
+    </View>
   );
 }
 

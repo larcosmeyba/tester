@@ -701,7 +701,11 @@ func (s *Service) PurgeExpiredDocuments(ctx context.Context, limit int) (int, er
 }
 
 func (s *Service) saveDocument(ctx context.Context, userID, applicationID, kind string, data []byte, flattened bool) (db.BenefitsDocument, error) {
-	key := documentKey(userID, applicationID, kind)
+	// The storage key is unique per document row, not per application. A
+	// refill inserts a new row, and the retention sweep deletes expired rows
+	// by key — a shared key would let the sweep delete a newer draft's PDF
+	// while its row still references it.
+	key := documentKey(userID, applicationID, kind+"-"+db.NewID())
 	if err := s.documents.Put(ctx, key, data); err != nil {
 		return db.BenefitsDocument{}, err
 	}
