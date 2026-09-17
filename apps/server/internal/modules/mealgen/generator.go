@@ -76,10 +76,18 @@ func NewGenerator(p provider.Provider, resolve IngredientResolver, logger *slog.
 	return &Generator{Provider: p, Resolve: resolve, Logger: logger}
 }
 
-// Generate invents count recipes for the request. It returns nil when there
-// is no provider configured — the caller falls back to whatever the library
-// holds. An AI failure is also nil, never an error: a partial week from the
-// library beats no week at all.
+// recipesPerBatch caps how many recipes one model call invents. A single
+// recipe with ingredients and instructions runs ~300-500 tokens, so a full
+// 21-slot week never fits in one response — without batching the JSON
+// truncates, parsing fails, and the new user gets an empty plan.
+const recipesPerBatch = 5
+
+// Generate invents count recipes for the request, in batches of
+// recipesPerBatch. It returns nil when there is no provider configured — the
+// caller falls back to whatever the library holds. An AI failure is also
+// nil, never an error: a partial week from the library beats no week at
+// all. Recipes already generated are named in later prompts so the model
+// does not repeat dishes across batches.
 func (g *Generator) Generate(ctx context.Context, request meals.PlanRequest, count int) []meals.Recipe {
 	if g == nil || g.Provider == nil || count <= 0 {
 		return nil
@@ -88,28 +96,50 @@ func (g *Generator) Generate(ctx context.Context, request meals.PlanRequest, cou
 		return nil
 	}
 
-	userPrompt := g.userPrompt(request, count)
-	response, err := g.Provider.Complete(ctx, provider.Request{
-		System:    GenerateSystemPrompt,
-		User:      userPrompt,
-		MaxTokens: 4000,
-	})
-	if err != nil {
-		g.Logger.Warn("ai recipe generation failed, falling back to library",
-			"error", err, "provider", g.Provider.Name())
-		return nil
-	}
+	var out []meals.Recipe
+	for len(out) < count {
+		need := count - len(out)
+		if need > recipesPerBatch {
+			need = recipesPerBatch
+		}
+		userPrompt := g.userPrompt(request, need, titles(out))
+		response, err := g.Provider.Complete(ctx, provider.Request{
+			System:    GenerateSystemPrompt,
+			User:      userPrompt,
+			MaxTokens: 4000,
+		})
+		if err != nil {
+			g.Logger.Warn("ai recipe generation failed, falling back to library",
+				"error", err, "provider", g.Provider.Name(),
+				"generated", len(out), "wanted", count)
+			break
+		}
 
-	recipes := g.parse(response.Text, request)
-	if len(recipes) == 0 {
-		g.Logger.Warn("ai recipe generation returned nothing usable",
-			"provider", g.Provider.Name(), "model", response.Model)
+		recipes := g.parse(response.Text, request)
+		if len(recipes) == 0 {
+			g.Logger.Warn("ai recipe generation returned nothing usable",
+				"provider", g.Provider.Name(), "model", response.Model,
+				"generated", len(out), "wanted", count)
+			break
+		}
+		out = append(out, recipes...)
 	}
-	return recipes
+	return out
 }
 
-// userPrompt turns the questionnaire into the facts the model needs.
-func (g *Generator) userPrompt(request meals.PlanRequest, count int) string {
+// titles returns the titles already generated, so follow-up batches can be
+// told not to repeat them.
+func titles(recipes []meals.Recipe) []string {
+	out := make([]string, 0, len(recipes))
+	for _, r := range recipes {
+		out = append(out, r.Title)
+	}
+	return out
+}
+
+// userPrompt turns the questionnaire into the facts the model needs. already
+// names dishes invented in earlier batches so the model varies the week.
+func (g *Generator) userPrompt(request meals.PlanRequest, count int, already []string) string {
 	var b strings.Builder
 	fmt.Fprintf(&b, "Create %d recipes for a %d-day meal plan.\n", count, request.Days)
 	fmt.Fprintf(&b, "Household: %d people.\n", request.Household.Size)
@@ -143,6 +173,10 @@ func (g *Generator) userPrompt(request meals.PlanRequest, count int) string {
 	}
 	fmt.Fprintf(&b, "Meals per day: breakfast %d, lunch %d, dinner %d.\n",
 		request.Meals.Breakfast, request.Meals.Lunch, request.Meals.Dinner)
+	if len(already) > 0 {
+		fmt.Fprintf(&b, "Do not repeat these dishes already planned this week: %s.\n",
+			strings.Join(already, "; "))
+	}
 	return b.String()
 }
 
@@ -166,6 +200,11 @@ func (g *Generator) parse(raw string, request meals.PlanRequest) []meals.Recipe 
 
 	var out []meals.Recipe
 	for i, ar := range decoded.Recipes {
+		if hit := allergenHit(ar.Ingredients, request.Allergies); hit != "" {
+			g.Logger.Warn("ai recipe dropped: ingredient matches an allergy",
+				"recipe", ar.Title, "allergen", hit)
+			continue
+		}
 		recipe := g.toRecipe(ar, i)
 		if recipe == nil {
 			continue
@@ -173,6 +212,25 @@ func (g *Generator) parse(raw string, request meals.PlanRequest) []meals.Recipe 
 		out = append(out, *recipe)
 	}
 	return out
+}
+
+// allergenHit returns the first allergy whose name appears inside an
+// ingredient name, or "". The prompt already forbids allergens absolutely;
+// this is the backstop — a conservative substring match, because a false
+// positive only drops a recipe while a false negative could harm someone.
+func allergenHit(ingredients []aiIngredient, allergies []meals.AllergyRequirement) string {
+	for _, a := range allergies {
+		needle := strings.ToLower(strings.TrimSpace(a.Allergen))
+		if needle == "" {
+			continue
+		}
+		for _, ing := range ingredients {
+			if strings.Contains(strings.ToLower(ing.Name), needle) {
+				return a.Allergen
+			}
+		}
+	}
+	return ""
 }
 
 // toRecipe converts one AI recipe to the domain shape. Ingredients are
