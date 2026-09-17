@@ -5,8 +5,8 @@
 // what new signups accept and what the backend records until he approves the
 // real documents.
 
-export const TERMS_URL = 'https://helpthehive.com/terms';
-export const PRIVACY_URL = 'https://helpthehive.com/privacy';
+export const TERMS_URL = 'https://www.helpthehive.com/terms-of-service';
+export const PRIVACY_URL = 'https://www.helpthehive.com/privacy-policy';
 
 // UNAPPROVED placeholder versions — bump when the site's Terms / Privacy
 // Policy content is approved so new signups accept the current revision.

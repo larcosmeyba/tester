@@ -119,7 +119,7 @@ export function AccountScreen({ nav }: { nav: Navigation }) {
       <InfoRow icon="doc" title="Terms of Service" onPress={() => void Linking.openURL(TERMS_URL)} />
       <AccountSection title="SUPPORT" />
       <InfoRow icon="chat" title="Send Feedback" onPress={() => nav.push('feedback')} />
-      <InfoRow icon="info" title="About Help The Hive" onPress={() => void Linking.openURL('https://helpthehive.com')} />
+      <InfoRow icon="info" title="About Help The Hive" onPress={() => void Linking.openURL('https://www.helpthehive.com/about')} />
       <View style={styles.accountFooter}>
         {app.profileSyncError ? (
           <>
