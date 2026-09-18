@@ -18,7 +18,10 @@ dependencies = [
 [project.optional-dependencies]
 # Provider SDKs are optional. Penny runs on the fake provider with neither
 # installed, which is what CI and the eval suite use.
-anthropic = ["anthropic>=0.39"]
+# NOTE: anthropic is pinned below 1.0. The 1.x SDK migrated from httpx to
+# httpx2 and hangs during client construction on Cloud Run (startup probe
+# failure, no traceback). The 0.x series is the stack this code was built on.
+anthropic = ["anthropic>=0.39,<1.0"]
 openai = ["openai>=1.54"]
 dev = [
   "pytest>=8.3",
