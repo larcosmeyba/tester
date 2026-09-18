@@ -6,3 +6,12 @@
 - New template sha256: `ea526c55a87fe13077092ac45453b22834018151c50291d70cb8e4ca70794b93`.
 - Widgets: 196; mapped fields: 196.
 - Status: draft — pending placement-map review.
+
+## 2026-09-18 re-pass (missing boxes + certain areas)
+- Marcos: first fillable pass was missing boxes and certain areas.
+- Detector tuned for curve-drawn boxes/checkboxes; added circle-the-option
+  checkboxes (Y|N, months, frequencies, program/race/ethnicity/asset options),
+  supplement grid tables, footer name/ID boxes, notes-page areas.
+- Fields: 196 -> 953 (462 text / 567 checkbox).
+- Existing 196 field IDs/names/rects unchanged; mapping revision 2.
+- Template rebuilt from original-flat; new sha256 8ffd8a6bf635919b9715f402df18a4dae130d6a2cf0042063da282d7242da5db.
