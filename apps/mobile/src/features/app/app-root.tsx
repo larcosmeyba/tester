@@ -139,7 +139,13 @@ export default function AppRoot({ initialPublicScreen }: { initialPublicScreen?:
 
   switch (route.name) {
     case 'signup':
-      return <SignUpScreen nav={nav} />;
+      return (
+        <SignUpScreen
+          nav={nav}
+          initialEmail={(route.params?.email as string | undefined) ?? ''}
+          initialPhone={(route.params?.phone as string | undefined) ?? ''}
+        />
+      );
     case 'login':
       return <LoginScreen nav={nav} />;
     case 'forgot':

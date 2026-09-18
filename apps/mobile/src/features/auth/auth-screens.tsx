@@ -119,13 +119,21 @@ function ValidatedField({
   );
 }
 
-export function SignUpScreen({ nav }: { nav: Navigation }) {
+export function SignUpScreen({
+  nav,
+  initialEmail = '',
+  initialPhone = '',
+}: {
+  nav: Navigation;
+  initialEmail?: string;
+  initialPhone?: string;
+}) {
   const styles = useAuthStyles();
   const app = useAppState();
   const auth = useAuth();
   const [fullName, setFullName] = useState('');
-  const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState(initialEmail);
+  const [phone, setPhone] = useState(initialPhone);
   const [password, setPassword] = useState('');
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -515,16 +523,32 @@ export function VerifyScreen({
     }
   }
 
+  // Back button: the misspelled-email escape hatch. Signup reaches this
+  // screen via nav.reset, so the stack holds only 'verify' — a plain
+  // nav.back() would be a no-op, and the auth fence would bounce a
+  // signed-in-but-unverified user straight back here anyway. Sign out
+  // first so the signup screen is reachable, and pre-fill the email +
+  // phone already typed so only the typo needs fixing.
+  async function backToSignup() {
+    try {
+      await auth.signOut();
+    } catch {
+      // Best effort: never leave the user stuck on this screen.
+    }
+    nav.reset('signup', { email, phone });
+  }
+
   const resendLabel =
     secondsLeft > 0 ? `Resend in 0:${String(secondsLeft).padStart(2, '0')}` : 'Resend email';
 
   return (
     <ScrollScreen>
-      <AppHeader title="Verify your email" onBack={nav.back} />
+      <AppHeader title="Verify your email" onBack={() => void backToSignup()} />
       <View style={sharedStyles.formScreen}>
         <PennyImage source={pennyWaveSource} size={110} />
         <Text style={uiText.title}>Verify your email</Text>
         <Text style={uiText.muted}>We sent a verification email to {maskEmailAddress(email)}.</Text>
+        <Text style={uiText.muted}>Wrong address? Tap back to fix it and try again.</Text>
         <View style={styles.verifyStepsCard}>
           {VERIFY_STEPS.map((text, index) => (
             <VerifyStepRow key={text} number={String(index + 1)} text={text} />
