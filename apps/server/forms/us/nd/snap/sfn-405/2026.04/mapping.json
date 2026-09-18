@@ -2971,6 +2971,10 @@
         "type": "text",
         "name": "sfn00405[0].page14[0].CCAP[0].CCAPMember[0]"
       },
+      "repeat": {
+        "over": "expenses.childcare",
+        "index": 0
+      },
       "source": {
         "fieldPath": "expenses.childcare[].member_ref"
       },
@@ -2995,6 +2999,10 @@
         "type": "text",
         "name": "sfn00405[0].page14[0].CCAP[0].ProviderName[0]"
       },
+      "repeat": {
+        "over": "expenses.childcare",
+        "index": 0
+      },
       "source": {
         "fieldPath": "expenses.childcare[].provider_name"
       },
@@ -3018,6 +3026,10 @@
       "target": {
         "type": "text",
         "name": "sfn00405[0].page14[0].Commissions[0].AmtRec[0]"
+      },
+      "repeat": {
+        "over": "income.sources",
+        "index": 0
       },
       "source": {
         "fieldPath": "income.sources[].gross_amount"
@@ -3046,6 +3058,10 @@
         "type": "text",
         "name": "sfn00405[0].page14[0].Commissions[0].DateRec[0]"
       },
+      "repeat": {
+        "over": "income.sources",
+        "index": 0
+      },
       "source": {
         "fieldPath": "income.sources[].start_date"
       },
@@ -3063,6 +3079,10 @@
       "target": {
         "type": "text",
         "name": "sfn00405[0].page14[0].Commissions[0].HHMember[0]"
+      },
+      "repeat": {
+        "over": "income.sources",
+        "index": 0
       },
       "source": {
         "fieldPath": "income.sources[].member_ref"
@@ -3322,6 +3342,10 @@
         "type": "text",
         "name": "sfn00405[0].page15[0].ChildCareExpenses[0].AmountPd[0]"
       },
+      "repeat": {
+        "over": "expenses.childcare",
+        "index": 1
+      },
       "source": {
         "fieldPath": "expenses.childcare[].monthly_amount"
       },
@@ -3339,6 +3363,10 @@
       "target": {
         "type": "text",
         "name": "sfn00405[0].page15[0].ChildCareExpenses[0].ChildCareExpense[0]"
+      },
+      "repeat": {
+        "over": "expenses.childcare",
+        "index": 1
       },
       "source": {
         "fieldPath": "expenses.childcare[].monthly_amount"
@@ -3412,6 +3440,10 @@
         "type": "text",
         "name": "sfn00405[0].page15[0].ChildCareExpenses[0].PersonPaying[0]"
       },
+      "repeat": {
+        "over": "expenses.childcare",
+        "index": 1
+      },
       "source": {
         "fieldPath": "expenses.childcare[].member_ref"
       },
@@ -3426,6 +3458,10 @@
       "target": {
         "type": "text",
         "name": "sfn00405[0].page15[0].ChildCareExpenses[0].PersonPdTo[0]"
+      },
+      "repeat": {
+        "over": "expenses.childcare",
+        "index": 1
       },
       "source": {
         "fieldPath": "expenses.childcare[].provider_name"
@@ -3532,6 +3568,10 @@
         "type": "text",
         "name": "sfn00405[0].page15[0].IncomeFollowup[0].EpxlainTable[0].Row1[0].AmtThisMonth[0]"
       },
+      "repeat": {
+        "over": "income.sources",
+        "index": 0
+      },
       "source": {
         "fieldPath": "income.sources[].gross_amount"
       },
@@ -3568,6 +3608,10 @@
         "type": "text",
         "name": "sfn00405[0].page15[0].IncomeFollowup[0].EpxlainTable[0].Row1[0].Member[0]"
       },
+      "repeat": {
+        "over": "income.sources",
+        "index": 0
+      },
       "source": {
         "fieldPath": "income.sources[].member_ref"
       },
@@ -3591,6 +3635,10 @@
       "target": {
         "type": "text",
         "name": "sfn00405[0].page15[0].IncomeFollowup[0].EpxlainTable[0].Row2[0].AmtThisMonth[0]"
+      },
+      "repeat": {
+        "over": "income.sources",
+        "index": 1
       },
       "source": {
         "fieldPath": "income.sources[].gross_amount"
@@ -3628,6 +3676,10 @@
         "type": "text",
         "name": "sfn00405[0].page15[0].IncomeFollowup[0].EpxlainTable[0].Row2[0].Member[0]"
       },
+      "repeat": {
+        "over": "income.sources",
+        "index": 1
+      },
       "source": {
         "fieldPath": "income.sources[].member_ref"
       },
@@ -3651,6 +3703,10 @@
       "target": {
         "type": "text",
         "name": "sfn00405[0].page15[0].IncomeFollowup[0].EpxlainTable[0].Row3[0].AmtThisMonth[0]"
+      },
+      "repeat": {
+        "over": "income.sources",
+        "index": 2
       },
       "source": {
         "fieldPath": "income.sources[].gross_amount"
@@ -3688,6 +3744,10 @@
         "type": "text",
         "name": "sfn00405[0].page15[0].IncomeFollowup[0].EpxlainTable[0].Row3[0].Member[0]"
       },
+      "repeat": {
+        "over": "income.sources",
+        "index": 2
+      },
       "source": {
         "fieldPath": "income.sources[].member_ref"
       },
@@ -3711,6 +3771,10 @@
       "target": {
         "type": "text",
         "name": "sfn00405[0].page15[0].IncomeFollowup[0].EpxlainTable[0].Row4[0].AmtThisMonth[0]"
+      },
+      "repeat": {
+        "over": "income.sources",
+        "index": 3
       },
       "source": {
         "fieldPath": "income.sources[].gross_amount"
@@ -3747,6 +3811,10 @@
       "target": {
         "type": "text",
         "name": "sfn00405[0].page15[0].IncomeFollowup[0].EpxlainTable[0].Row4[0].Member[0]"
+      },
+      "repeat": {
+        "over": "income.sources",
+        "index": 3
       },
       "source": {
         "fieldPath": "income.sources[].member_ref"
@@ -5556,6 +5624,10 @@
       "target": {
         "type": "text",
         "name": "sfn00405[0].page22[0].HouseholdWork[0].DateEmpStopped[0]"
+      },
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 0
       },
       "source": {
         "fieldPath": "employment.jobs[].end_date"
@@ -8384,6 +8456,10 @@
         "type": "text",
         "name": "sfn00405[0].page31[0].ActivitySchedule1[0].NameChild[0]"
       },
+      "repeat": {
+        "over": "expenses.childcare",
+        "index": 2
+      },
       "source": {
         "fieldPath": "expenses.childcare[].member_ref"
       },
@@ -8407,6 +8483,10 @@
       "target": {
         "type": "text",
         "name": "sfn00405[0].page31[0].ActivitySchedule1[0].ProviderName[0]"
+      },
+      "repeat": {
+        "over": "expenses.childcare",
+        "index": 2
       },
       "source": {
         "fieldPath": "expenses.childcare[].provider_name"
@@ -8594,6 +8674,10 @@
         "type": "text",
         "name": "sfn00405[0].page32[0].ActivitySchedule2[0].NameChild[0]"
       },
+      "repeat": {
+        "over": "expenses.childcare",
+        "index": 3
+      },
       "source": {
         "fieldPath": "expenses.childcare[].member_ref"
       },
@@ -8617,6 +8701,10 @@
       "target": {
         "type": "text",
         "name": "sfn00405[0].page32[0].ActivitySchedule2[0].ProviderName[0]"
+      },
+      "repeat": {
+        "over": "expenses.childcare",
+        "index": 3
       },
       "source": {
         "fieldPath": "expenses.childcare[].provider_name"
@@ -8696,6 +8784,10 @@
         "type": "text",
         "name": "sfn00405[0].page32[0].ActivitySchedule3[0].NameChild[0]"
       },
+      "repeat": {
+        "over": "expenses.childcare",
+        "index": 4
+      },
       "source": {
         "fieldPath": "expenses.childcare[].member_ref"
       },
@@ -8719,6 +8811,10 @@
       "target": {
         "type": "text",
         "name": "sfn00405[0].page32[0].ActivitySchedule3[0].ProviderName[0]"
+      },
+      "repeat": {
+        "over": "expenses.childcare",
+        "index": 4
       },
       "source": {
         "fieldPath": "expenses.childcare[].provider_name"
@@ -8798,6 +8894,10 @@
         "type": "text",
         "name": "sfn00405[0].page32[0].ActivitySchedule4[0].NameChild[0]"
       },
+      "repeat": {
+        "over": "expenses.childcare",
+        "index": 5
+      },
       "source": {
         "fieldPath": "expenses.childcare[].member_ref"
       },
@@ -8821,6 +8921,10 @@
       "target": {
         "type": "text",
         "name": "sfn00405[0].page32[0].ActivitySchedule4[0].ProviderName[0]"
+      },
+      "repeat": {
+        "over": "expenses.childcare",
+        "index": 5
       },
       "source": {
         "fieldPath": "expenses.childcare[].provider_name"
@@ -8900,6 +9004,10 @@
         "type": "text",
         "name": "sfn00405[0].page33[0].ActivitySchedule1[0].NameChild[0]"
       },
+      "repeat": {
+        "over": "expenses.childcare",
+        "index": 5
+      },
       "source": {
         "fieldPath": "expenses.childcare[].member_ref"
       },
@@ -8923,6 +9031,10 @@
       "target": {
         "type": "text",
         "name": "sfn00405[0].page33[0].ActivitySchedule1[0].ProviderName[0]"
+      },
+      "repeat": {
+        "over": "expenses.childcare",
+        "index": 5
       },
       "source": {
         "fieldPath": "expenses.childcare[].provider_name"
@@ -9002,6 +9114,10 @@
         "type": "text",
         "name": "sfn00405[0].page33[0].ActivitySchedule2[0].NameChild[0]"
       },
+      "repeat": {
+        "over": "expenses.childcare",
+        "index": 6
+      },
       "source": {
         "fieldPath": "expenses.childcare[].member_ref"
       },
@@ -9025,6 +9141,10 @@
       "target": {
         "type": "text",
         "name": "sfn00405[0].page33[0].ActivitySchedule2[0].ProviderName[0]"
+      },
+      "repeat": {
+        "over": "expenses.childcare",
+        "index": 6
       },
       "source": {
         "fieldPath": "expenses.childcare[].provider_name"
@@ -9167,6 +9287,10 @@
         "type": "text",
         "name": "sfn00405[0].page34[0].ActivitySchedule3[0].NameChild[0]"
       },
+      "repeat": {
+        "over": "expenses.childcare",
+        "index": 7
+      },
       "source": {
         "fieldPath": "expenses.childcare[].member_ref"
       },
@@ -9190,6 +9314,10 @@
       "target": {
         "type": "text",
         "name": "sfn00405[0].page34[0].ActivitySchedule3[0].ProviderName[0]"
+      },
+      "repeat": {
+        "over": "expenses.childcare",
+        "index": 7
       },
       "source": {
         "fieldPath": "expenses.childcare[].provider_name"
@@ -9269,6 +9397,10 @@
         "type": "text",
         "name": "sfn00405[0].page34[0].ActivitySchedule4[0].NameChild[0]"
       },
+      "repeat": {
+        "over": "expenses.childcare",
+        "index": 8
+      },
       "source": {
         "fieldPath": "expenses.childcare[].member_ref"
       },
@@ -9292,6 +9424,10 @@
       "target": {
         "type": "text",
         "name": "sfn00405[0].page34[0].ActivitySchedule4[0].ProviderName[0]"
+      },
+      "repeat": {
+        "over": "expenses.childcare",
+        "index": 8
       },
       "source": {
         "fieldPath": "expenses.childcare[].provider_name"
@@ -9564,9 +9700,6 @@
         "fieldPath": "applicant.first_name"
       },
       "transforms": [
-        {
-          "op": "split"
-        },
         {
           "op": "trim"
         }

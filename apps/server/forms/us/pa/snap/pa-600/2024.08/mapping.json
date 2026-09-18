@@ -3136,6 +3136,10 @@
         "type": "radio",
         "name": "Is person 2 in school?"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 0
+      },
       "source": {
         "fieldPath": "household.members[].is_student"
       },
@@ -3151,6 +3155,10 @@
       "target": {
         "type": "radio",
         "name": "Is person 3 in school?"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 1
       },
       "source": {
         "fieldPath": "household.members[].is_student"
@@ -3168,6 +3176,10 @@
         "type": "radio",
         "name": "Is person 4 in school?"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 2
+      },
       "source": {
         "fieldPath": "household.members[].is_student"
       },
@@ -3183,6 +3195,10 @@
       "target": {
         "type": "radio",
         "name": "Is person 5 in school?"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 3
       },
       "source": {
         "fieldPath": "household.members[].is_student"
@@ -3200,6 +3216,10 @@
         "type": "radio",
         "name": "Is person 6 in school?"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 4
+      },
       "source": {
         "fieldPath": "household.members[].is_student"
       },
@@ -3215,6 +3235,10 @@
       "target": {
         "type": "radio",
         "name": "Is person 7 in school?"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 5
       },
       "source": {
         "fieldPath": "household.members[].is_student"
@@ -4201,6 +4225,10 @@
         "type": "radio",
         "name": "Person 2 Sex"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 0
+      },
       "source": {
         "fieldPath": "household.members[].sex"
       },
@@ -4286,6 +4314,10 @@
       "target": {
         "type": "radio",
         "name": "Person 2 fulltime student"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 0
       },
       "source": {
         "fieldPath": "household.members[].is_student"
@@ -4463,6 +4495,10 @@
         "type": "radio",
         "name": "Person 3 Sex"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 1
+      },
       "source": {
         "fieldPath": "household.members[].sex"
       },
@@ -4548,6 +4584,10 @@
       "target": {
         "type": "radio",
         "name": "Person 3 fulltime student"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 1
       },
       "source": {
         "fieldPath": "household.members[].is_student"
@@ -4734,6 +4774,10 @@
         "type": "radio",
         "name": "Person 4 Sex"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 2
+      },
       "source": {
         "fieldPath": "household.members[].sex"
       },
@@ -4819,6 +4863,10 @@
       "target": {
         "type": "radio",
         "name": "Person 4 fulltime student"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 2
       },
       "source": {
         "fieldPath": "household.members[].is_student"
@@ -4995,6 +5043,10 @@
         "type": "radio",
         "name": "Person 5 Sex"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 3
+      },
       "source": {
         "fieldPath": "household.members[].sex"
       },
@@ -5070,6 +5122,10 @@
       "target": {
         "type": "radio",
         "name": "Person 5 fulltime student"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 3
       },
       "source": {
         "fieldPath": "household.members[].is_student"
@@ -5246,6 +5302,10 @@
         "type": "radio",
         "name": "Person 6 Sex"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 4
+      },
       "source": {
         "fieldPath": "household.members[].sex"
       },
@@ -5321,6 +5381,10 @@
       "target": {
         "type": "radio",
         "name": "Person 6 fulltime student"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 4
       },
       "source": {
         "fieldPath": "household.members[].is_student"
@@ -5497,6 +5561,10 @@
         "type": "radio",
         "name": "Person 7 Sex"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 5
+      },
       "source": {
         "fieldPath": "household.members[].sex"
       },
@@ -5572,6 +5640,10 @@
       "target": {
         "type": "radio",
         "name": "Person 7 fulltime student"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 5
       },
       "source": {
         "fieldPath": "household.members[].is_student"
