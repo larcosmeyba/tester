@@ -170,8 +170,11 @@ export function DeleteAccountScreen({ nav }: { nav: Navigation }) {
       } catch {
         // App-owned data deletion also removes any remaining push tokens.
       }
-      await deleteViewerData();
+      // Delete from the auth service FIRST. If this fails, the API data
+      // is still intact and the user can retry. (Deleting API data first
+      // leaves the email locked in auth with no way to recover.)
       await auth.deleteAccount(password);
+      await deleteViewerData();
       nav.reset('login');
     } catch (error) {
       setErrorMessage(error instanceof Error ? error.message : 'Unable to delete your account.');
