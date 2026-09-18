@@ -31,6 +31,7 @@ import {
 import type { BenefitsFieldSpec, BenefitsProfileData } from './benefits-types';
 import { GroupQuestionEditor } from './benefits-group-editor';
 import { rowSpecsFor, type GroupBucket } from './benefits-groups';
+import { SensitiveScreen } from '@/features/analytics/sensitive-screen';
 
 type EditableKind = 'TEXT' | 'NUMBER' | 'MONEY' | 'DATE' | 'BOOLEAN';
 
@@ -226,7 +227,8 @@ export function BenefitsEditAnswers({
   return (
     <ScrollScreen>
       <AppHeader title="Edit answers" onBack={onClose} />
-      <View style={styles.body}>
+      {/* Saved answers: masked out of session replays. */}
+      <SensitiveScreen style={styles.body}>
         <Text style={uiText.muted}>
           These answers are reused across your applications. Saving updates every application
           listed here and marks them as not yet reviewed, so you confirm the new details before
@@ -293,7 +295,7 @@ export function BenefitsEditAnswers({
 
         <AppButton title={saving ? 'Saving…' : 'Save answers'} onPress={() => void save()} disabled={saving} />
         <AppButton title="Cancel" variant="plain" onPress={onClose} disabled={saving} />
-      </View>
+      </SensitiveScreen>
     </ScrollScreen>
   );
 }

@@ -22,6 +22,7 @@ import { programCatalog } from '@/features/benefits/benefits-program-catalog';
 import { BenefitsSubmissionGuide } from '@/features/benefits/benefits-submission-guide';
 import { productStatusFor, statusToneFor } from '@/features/benefits/benefits-status';
 import { BenefitsSubmissionControl } from '@/features/benefits/benefits-submission-control';
+import { SensitiveScreen } from '@/features/analytics/sensitive-screen';
 import {
   type BenefitsApplication,
   approveBenefitsApplication,
@@ -232,7 +233,8 @@ export default function BenefitsReviewScreen() {
     <ScrollScreen>
       <AppHeader title={application.form.formTitle} onBack={router.back} />
 
-      <View style={styles.body}>
+      {/* Application answers: masked out of session replays. */}
+      <SensitiveScreen style={styles.body}>
         <View style={styles.pills}>
           <Chip
             label={`${catalogEntry?.name ?? application.form.program}${application.form.state ? ` · ${application.form.state}` : ''}`}
@@ -445,7 +447,7 @@ export default function BenefitsReviewScreen() {
             disabled={approving || outstanding.length > 0 || application.problems.length > 0}
           />
         )}
-      </View>
+      </SensitiveScreen>
 
       <Modal visible={guideOpen} animationType="slide" onRequestClose={() => setGuideOpen(false)}>
         <BenefitsSubmissionGuide application={application} onClose={() => setGuideOpen(false)} />

@@ -20,5 +20,8 @@
   },
   "submit": {
     "production": {}
+  },
+  "hooks": {
+    "preInstall": "./scripts/check-android-fcm.js"
   }
 }

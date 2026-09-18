@@ -270,7 +270,8 @@ export const pennyService: PennyService = {
 };
 
 /**
- * Required disclaimer — Marcos's exact copy, shown under the Penny composer.
+ * Required disclaimer, shown under the Penny composer. First sentence is the
+ * in-app AI disclosure both stores require; the rest is Marcos's exact copy.
  */
 export const PENNY_DISCLAIMER =
-  'Penny provides general guidance and does not determine eligibility or provide legal, financial, or medical advice.';
+  'Penny is an AI assistant. She provides general guidance and does not determine eligibility or provide legal, financial, or medical advice.';

@@ -49,6 +49,7 @@ import {
   uiText,
 } from '@/components/hive-ui';
 import { HiveColors, Spacing } from '@/constants/theme';
+import { SensitiveScreen } from '@/features/analytics/sensitive-screen';
 import { type Navigation } from '@/features/app/navigation-types';
 import type { BenefitsGroupRowInput } from '@helpthehive/api-contract';
 import {
@@ -381,7 +382,8 @@ export function BenefitsGroupQuestionnaireScreen({
           {totalQuestions === 1 ? 'question' : 'questions'} · {percent}% complete
         </Text>
       </View>
-      <View style={styles.body}>
+      {/* Questionnaire answers + household rows: masked out of session replays. */}
+      <SensitiveScreen style={styles.body}>
         <Text style={uiText.title}>{groupTitles[section.group] ?? section.group}</Text>
         {jumpNotice !== '' ? <Text style={styles.jumpNotice}>{jumpNotice}</Text> : null}
         {section.questions.map((question) => (
@@ -443,7 +445,7 @@ export function BenefitsGroupQuestionnaireScreen({
           onPress={onContinue}
           disabled={saving}
         />
-      </View>
+      </SensitiveScreen>
     </ScrollScreen>
   );
 }

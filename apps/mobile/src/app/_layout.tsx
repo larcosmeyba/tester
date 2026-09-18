@@ -1,3 +1,8 @@
+// Sentry crash reporting — side-effect import. Initializes only when
+// EXPO_PUBLIC_SENTRY_DSN is set (see src/lib/sentry.ts); must run before
+// anything else so the native crash handler is installed first.
+import '@/lib/sentry';
+
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
