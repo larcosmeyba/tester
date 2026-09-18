@@ -990,6 +990,10 @@
         "type": "text",
         "name": "r2_name"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 0
+      },
       "source": {
         "fieldPath": "household.members[].first_name"
       },
@@ -1005,6 +1009,10 @@
       "target": {
         "type": "text",
         "name": "r2_rel"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 0
       },
       "source": {
         "fieldPath": "household.members[].relationship"
@@ -1036,6 +1044,10 @@
         "type": "text",
         "name": "r2_ssn"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 0
+      },
       "source": {
         "fieldPath": "household.members[].ssn"
       },
@@ -1051,6 +1063,10 @@
       "target": {
         "type": "text",
         "name": "r2_dob"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 0
       },
       "source": {
         "fieldPath": "household.members[].date_of_birth"
@@ -1076,6 +1092,10 @@
       "target": {
         "type": "text",
         "name": "r2_sex"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 0
       },
       "source": {
         "fieldPath": "household.members[].sex"
@@ -1118,6 +1138,10 @@
         "type": "text",
         "name": "r2_citizen"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 0
+      },
       "source": {
         "fieldPath": "household.members[].is_us_citizen"
       },
@@ -1137,6 +1161,10 @@
         "type": "text",
         "name": "r3_name"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 1
+      },
       "source": {
         "fieldPath": "household.members[].first_name"
       },
@@ -1152,6 +1180,10 @@
       "target": {
         "type": "text",
         "name": "r3_rel"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 1
       },
       "source": {
         "fieldPath": "household.members[].relationship"
@@ -1183,6 +1215,10 @@
         "type": "text",
         "name": "r3_ssn"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 1
+      },
       "source": {
         "fieldPath": "household.members[].ssn"
       },
@@ -1198,6 +1234,10 @@
       "target": {
         "type": "text",
         "name": "r3_dob"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 1
       },
       "source": {
         "fieldPath": "household.members[].date_of_birth"
@@ -1223,6 +1263,10 @@
       "target": {
         "type": "text",
         "name": "r3_sex"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 1
       },
       "source": {
         "fieldPath": "household.members[].sex"
@@ -1265,6 +1309,10 @@
         "type": "text",
         "name": "r3_citizen"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 1
+      },
       "source": {
         "fieldPath": "household.members[].is_us_citizen"
       },
@@ -1284,6 +1332,10 @@
         "type": "text",
         "name": "r4_name"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 2
+      },
       "source": {
         "fieldPath": "household.members[].first_name"
       },
@@ -1299,6 +1351,10 @@
       "target": {
         "type": "text",
         "name": "r4_rel"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 2
       },
       "source": {
         "fieldPath": "household.members[].relationship"
@@ -1330,6 +1386,10 @@
         "type": "text",
         "name": "r4_ssn"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 2
+      },
       "source": {
         "fieldPath": "household.members[].ssn"
       },
@@ -1345,6 +1405,10 @@
       "target": {
         "type": "text",
         "name": "r4_dob"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 2
       },
       "source": {
         "fieldPath": "household.members[].date_of_birth"
@@ -1370,6 +1434,10 @@
       "target": {
         "type": "text",
         "name": "r4_sex"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 2
       },
       "source": {
         "fieldPath": "household.members[].sex"
@@ -1412,6 +1480,10 @@
         "type": "text",
         "name": "r4_citizen"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 2
+      },
       "source": {
         "fieldPath": "household.members[].is_us_citizen"
       },
@@ -1431,6 +1503,10 @@
         "type": "text",
         "name": "r5_name"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 3
+      },
       "source": {
         "fieldPath": "household.members[].first_name"
       },
@@ -1446,6 +1522,10 @@
       "target": {
         "type": "text",
         "name": "r5_rel"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 3
       },
       "source": {
         "fieldPath": "household.members[].relationship"
@@ -1477,6 +1557,10 @@
         "type": "text",
         "name": "r5_ssn"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 3
+      },
       "source": {
         "fieldPath": "household.members[].ssn"
       },
@@ -1492,6 +1576,10 @@
       "target": {
         "type": "text",
         "name": "r5_dob"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 3
       },
       "source": {
         "fieldPath": "household.members[].date_of_birth"
@@ -1517,6 +1605,10 @@
       "target": {
         "type": "text",
         "name": "r5_sex"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 3
       },
       "source": {
         "fieldPath": "household.members[].sex"
@@ -1559,6 +1651,10 @@
         "type": "text",
         "name": "r5_citizen"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 3
+      },
       "source": {
         "fieldPath": "household.members[].is_us_citizen"
       },
@@ -1578,6 +1674,10 @@
         "type": "text",
         "name": "r6_name"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 4
+      },
       "source": {
         "fieldPath": "household.members[].first_name"
       },
@@ -1593,6 +1693,10 @@
       "target": {
         "type": "text",
         "name": "r6_rel"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 4
       },
       "source": {
         "fieldPath": "household.members[].relationship"
@@ -1624,6 +1728,10 @@
         "type": "text",
         "name": "r6_ssn"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 4
+      },
       "source": {
         "fieldPath": "household.members[].ssn"
       },
@@ -1639,6 +1747,10 @@
       "target": {
         "type": "text",
         "name": "r6_dob"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 4
       },
       "source": {
         "fieldPath": "household.members[].date_of_birth"
@@ -1664,6 +1776,10 @@
       "target": {
         "type": "text",
         "name": "r6_sex"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 4
       },
       "source": {
         "fieldPath": "household.members[].sex"
@@ -1706,6 +1822,10 @@
         "type": "text",
         "name": "r6_citizen"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 4
+      },
       "source": {
         "fieldPath": "household.members[].is_us_citizen"
       },
@@ -1725,6 +1845,10 @@
         "type": "text",
         "name": "r7_name"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 5
+      },
       "source": {
         "fieldPath": "household.members[].first_name"
       },
@@ -1740,6 +1864,10 @@
       "target": {
         "type": "text",
         "name": "r7_rel"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 5
       },
       "source": {
         "fieldPath": "household.members[].relationship"
@@ -1771,6 +1899,10 @@
         "type": "text",
         "name": "r7_ssn"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 5
+      },
       "source": {
         "fieldPath": "household.members[].ssn"
       },
@@ -1786,6 +1918,10 @@
       "target": {
         "type": "text",
         "name": "r7_dob"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 5
       },
       "source": {
         "fieldPath": "household.members[].date_of_birth"
@@ -1811,6 +1947,10 @@
       "target": {
         "type": "text",
         "name": "r7_sex"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 5
       },
       "source": {
         "fieldPath": "household.members[].sex"
@@ -1853,6 +1993,10 @@
         "type": "text",
         "name": "r7_citizen"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 5
+      },
       "source": {
         "fieldPath": "household.members[].is_us_citizen"
       },
@@ -1872,6 +2016,10 @@
         "type": "text",
         "name": "r8_name"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 6
+      },
       "source": {
         "fieldPath": "household.members[].first_name"
       },
@@ -1887,6 +2035,10 @@
       "target": {
         "type": "text",
         "name": "r8_rel"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 6
       },
       "source": {
         "fieldPath": "household.members[].relationship"
@@ -1918,6 +2070,10 @@
         "type": "text",
         "name": "r8_ssn"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 6
+      },
       "source": {
         "fieldPath": "household.members[].ssn"
       },
@@ -1933,6 +2089,10 @@
       "target": {
         "type": "text",
         "name": "r8_dob"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 6
       },
       "source": {
         "fieldPath": "household.members[].date_of_birth"
@@ -1958,6 +2118,10 @@
       "target": {
         "type": "text",
         "name": "r8_sex"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 6
       },
       "source": {
         "fieldPath": "household.members[].sex"
@@ -2000,6 +2164,10 @@
         "type": "text",
         "name": "r8_citizen"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 6
+      },
       "source": {
         "fieldPath": "household.members[].is_us_citizen"
       },
@@ -2019,6 +2187,10 @@
         "type": "text",
         "name": "r9_name"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 7
+      },
       "source": {
         "fieldPath": "household.members[].first_name"
       },
@@ -2034,6 +2206,10 @@
       "target": {
         "type": "text",
         "name": "r9_rel"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 7
       },
       "source": {
         "fieldPath": "household.members[].relationship"
@@ -2065,6 +2241,10 @@
         "type": "text",
         "name": "r9_ssn"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 7
+      },
       "source": {
         "fieldPath": "household.members[].ssn"
       },
@@ -2080,6 +2260,10 @@
       "target": {
         "type": "text",
         "name": "r9_dob"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 7
       },
       "source": {
         "fieldPath": "household.members[].date_of_birth"
@@ -2105,6 +2289,10 @@
       "target": {
         "type": "text",
         "name": "r9_sex"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 7
       },
       "source": {
         "fieldPath": "household.members[].sex"
@@ -2147,6 +2335,10 @@
         "type": "text",
         "name": "r9_citizen"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 7
+      },
       "source": {
         "fieldPath": "household.members[].is_us_citizen"
       },
@@ -2166,6 +2358,10 @@
         "type": "text",
         "name": "r10_name"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 8
+      },
       "source": {
         "fieldPath": "household.members[].first_name"
       },
@@ -2181,6 +2377,10 @@
       "target": {
         "type": "text",
         "name": "r10_rel"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 8
       },
       "source": {
         "fieldPath": "household.members[].relationship"
@@ -2212,6 +2412,10 @@
         "type": "text",
         "name": "r10_ssn"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 8
+      },
       "source": {
         "fieldPath": "household.members[].ssn"
       },
@@ -2227,6 +2431,10 @@
       "target": {
         "type": "text",
         "name": "r10_dob"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 8
       },
       "source": {
         "fieldPath": "household.members[].date_of_birth"
@@ -2252,6 +2460,10 @@
       "target": {
         "type": "text",
         "name": "r10_sex"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 8
       },
       "source": {
         "fieldPath": "household.members[].sex"
@@ -2294,6 +2506,10 @@
         "type": "text",
         "name": "r10_citizen"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 8
+      },
       "source": {
         "fieldPath": "household.members[].is_us_citizen"
       },
@@ -2313,6 +2529,10 @@
         "type": "text",
         "name": "r11_name"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 9
+      },
       "source": {
         "fieldPath": "household.members[].first_name"
       },
@@ -2328,6 +2548,10 @@
       "target": {
         "type": "text",
         "name": "r11_rel"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 9
       },
       "source": {
         "fieldPath": "household.members[].relationship"
@@ -2359,6 +2583,10 @@
         "type": "text",
         "name": "r11_ssn"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 9
+      },
       "source": {
         "fieldPath": "household.members[].ssn"
       },
@@ -2374,6 +2602,10 @@
       "target": {
         "type": "text",
         "name": "r11_dob"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 9
       },
       "source": {
         "fieldPath": "household.members[].date_of_birth"
@@ -2399,6 +2631,10 @@
       "target": {
         "type": "text",
         "name": "r11_sex"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 9
       },
       "source": {
         "fieldPath": "household.members[].sex"
@@ -2441,6 +2677,10 @@
         "type": "text",
         "name": "r11_citizen"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 9
+      },
       "source": {
         "fieldPath": "household.members[].is_us_citizen"
       },
@@ -2460,6 +2700,10 @@
         "type": "text",
         "name": "r12_name"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 10
+      },
       "source": {
         "fieldPath": "household.members[].first_name"
       },
@@ -2475,6 +2719,10 @@
       "target": {
         "type": "text",
         "name": "r12_rel"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 10
       },
       "source": {
         "fieldPath": "household.members[].relationship"
@@ -2506,6 +2754,10 @@
         "type": "text",
         "name": "r12_ssn"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 10
+      },
       "source": {
         "fieldPath": "household.members[].ssn"
       },
@@ -2521,6 +2773,10 @@
       "target": {
         "type": "text",
         "name": "r12_dob"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 10
       },
       "source": {
         "fieldPath": "household.members[].date_of_birth"
@@ -2546,6 +2802,10 @@
       "target": {
         "type": "text",
         "name": "r12_sex"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 10
       },
       "source": {
         "fieldPath": "household.members[].sex"
@@ -2588,6 +2848,10 @@
         "type": "text",
         "name": "r12_citizen"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 10
+      },
       "source": {
         "fieldPath": "household.members[].is_us_citizen"
       },
@@ -2607,6 +2871,10 @@
         "type": "text",
         "name": "r13_name"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 11
+      },
       "source": {
         "fieldPath": "household.members[].first_name"
       },
@@ -2622,6 +2890,10 @@
       "target": {
         "type": "text",
         "name": "r13_rel"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 11
       },
       "source": {
         "fieldPath": "household.members[].relationship"
@@ -2653,6 +2925,10 @@
         "type": "text",
         "name": "r13_ssn"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 11
+      },
       "source": {
         "fieldPath": "household.members[].ssn"
       },
@@ -2668,6 +2944,10 @@
       "target": {
         "type": "text",
         "name": "r13_dob"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 11
       },
       "source": {
         "fieldPath": "household.members[].date_of_birth"
@@ -2693,6 +2973,10 @@
       "target": {
         "type": "text",
         "name": "r13_sex"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 11
       },
       "source": {
         "fieldPath": "household.members[].sex"
@@ -2735,6 +3019,10 @@
         "type": "text",
         "name": "r13_citizen"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 11
+      },
       "source": {
         "fieldPath": "household.members[].is_us_citizen"
       },
@@ -2754,6 +3042,10 @@
         "type": "text",
         "name": "r14_name"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 12
+      },
       "source": {
         "fieldPath": "household.members[].first_name"
       },
@@ -2769,6 +3061,10 @@
       "target": {
         "type": "text",
         "name": "r14_rel"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 12
       },
       "source": {
         "fieldPath": "household.members[].relationship"
@@ -2800,6 +3096,10 @@
         "type": "text",
         "name": "r14_ssn"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 12
+      },
       "source": {
         "fieldPath": "household.members[].ssn"
       },
@@ -2815,6 +3115,10 @@
       "target": {
         "type": "text",
         "name": "r14_dob"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 12
       },
       "source": {
         "fieldPath": "household.members[].date_of_birth"
@@ -2840,6 +3144,10 @@
       "target": {
         "type": "text",
         "name": "r14_sex"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 12
       },
       "source": {
         "fieldPath": "household.members[].sex"
@@ -2882,6 +3190,10 @@
         "type": "text",
         "name": "r14_citizen"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 12
+      },
       "source": {
         "fieldPath": "household.members[].is_us_citizen"
       },
@@ -2901,6 +3213,10 @@
         "type": "text",
         "name": "r15_name"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 13
+      },
       "source": {
         "fieldPath": "household.members[].first_name"
       },
@@ -2916,6 +3232,10 @@
       "target": {
         "type": "text",
         "name": "r15_rel"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 13
       },
       "source": {
         "fieldPath": "household.members[].relationship"
@@ -2947,6 +3267,10 @@
         "type": "text",
         "name": "r15_ssn"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 13
+      },
       "source": {
         "fieldPath": "household.members[].ssn"
       },
@@ -2962,6 +3286,10 @@
       "target": {
         "type": "text",
         "name": "r15_dob"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 13
       },
       "source": {
         "fieldPath": "household.members[].date_of_birth"
@@ -2987,6 +3315,10 @@
       "target": {
         "type": "text",
         "name": "r15_sex"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 13
       },
       "source": {
         "fieldPath": "household.members[].sex"
@@ -3029,6 +3361,10 @@
         "type": "text",
         "name": "r15_citizen"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 13
+      },
       "source": {
         "fieldPath": "household.members[].is_us_citizen"
       },
@@ -3048,6 +3384,10 @@
         "type": "text",
         "name": "r16_name"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 14
+      },
       "source": {
         "fieldPath": "household.members[].first_name"
       },
@@ -3063,6 +3403,10 @@
       "target": {
         "type": "text",
         "name": "r16_rel"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 14
       },
       "source": {
         "fieldPath": "household.members[].relationship"
@@ -3094,6 +3438,10 @@
         "type": "text",
         "name": "r16_ssn"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 14
+      },
       "source": {
         "fieldPath": "household.members[].ssn"
       },
@@ -3109,6 +3457,10 @@
       "target": {
         "type": "text",
         "name": "r16_dob"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 14
       },
       "source": {
         "fieldPath": "household.members[].date_of_birth"
@@ -3134,6 +3486,10 @@
       "target": {
         "type": "text",
         "name": "r16_sex"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 14
       },
       "source": {
         "fieldPath": "household.members[].sex"
@@ -3176,6 +3532,10 @@
         "type": "text",
         "name": "r16_citizen"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 14
+      },
       "source": {
         "fieldPath": "household.members[].is_us_citizen"
       },
@@ -3195,6 +3555,10 @@
         "type": "text",
         "name": "r17_name"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 15
+      },
       "source": {
         "fieldPath": "household.members[].first_name"
       },
@@ -3210,6 +3574,10 @@
       "target": {
         "type": "text",
         "name": "r17_rel"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 15
       },
       "source": {
         "fieldPath": "household.members[].relationship"
@@ -3241,6 +3609,10 @@
         "type": "text",
         "name": "r17_ssn"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 15
+      },
       "source": {
         "fieldPath": "household.members[].ssn"
       },
@@ -3256,6 +3628,10 @@
       "target": {
         "type": "text",
         "name": "r17_dob"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 15
       },
       "source": {
         "fieldPath": "household.members[].date_of_birth"
@@ -3281,6 +3657,10 @@
       "target": {
         "type": "text",
         "name": "r17_sex"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 15
       },
       "source": {
         "fieldPath": "household.members[].sex"
@@ -3323,6 +3703,10 @@
         "type": "text",
         "name": "r17_citizen"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 15
+      },
       "source": {
         "fieldPath": "household.members[].is_us_citizen"
       },
@@ -3342,6 +3726,10 @@
         "type": "text",
         "name": "r18_name"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 16
+      },
       "source": {
         "fieldPath": "household.members[].first_name"
       },
@@ -3357,6 +3745,10 @@
       "target": {
         "type": "text",
         "name": "r18_rel"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 16
       },
       "source": {
         "fieldPath": "household.members[].relationship"
@@ -3388,6 +3780,10 @@
         "type": "text",
         "name": "r18_ssn"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 16
+      },
       "source": {
         "fieldPath": "household.members[].ssn"
       },
@@ -3403,6 +3799,10 @@
       "target": {
         "type": "text",
         "name": "r18_dob"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 16
       },
       "source": {
         "fieldPath": "household.members[].date_of_birth"
@@ -3428,6 +3828,10 @@
       "target": {
         "type": "text",
         "name": "r18_sex"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 16
       },
       "source": {
         "fieldPath": "household.members[].sex"
@@ -3470,6 +3874,10 @@
         "type": "text",
         "name": "r18_citizen"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 16
+      },
       "source": {
         "fieldPath": "household.members[].is_us_citizen"
       },
@@ -3489,6 +3897,10 @@
         "type": "text",
         "name": "r19_name"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 17
+      },
       "source": {
         "fieldPath": "household.members[].first_name"
       },
@@ -3504,6 +3916,10 @@
       "target": {
         "type": "text",
         "name": "r19_rel"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 17
       },
       "source": {
         "fieldPath": "household.members[].relationship"
@@ -3535,6 +3951,10 @@
         "type": "text",
         "name": "r19_ssn"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 17
+      },
       "source": {
         "fieldPath": "household.members[].ssn"
       },
@@ -3550,6 +3970,10 @@
       "target": {
         "type": "text",
         "name": "r19_dob"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 17
       },
       "source": {
         "fieldPath": "household.members[].date_of_birth"
@@ -3575,6 +3999,10 @@
       "target": {
         "type": "text",
         "name": "r19_sex"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 17
       },
       "source": {
         "fieldPath": "household.members[].sex"
@@ -3617,6 +4045,10 @@
         "type": "text",
         "name": "r19_citizen"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 17
+      },
       "source": {
         "fieldPath": "household.members[].is_us_citizen"
       },
@@ -3636,6 +4068,10 @@
         "type": "text",
         "name": "r20_name"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 18
+      },
       "source": {
         "fieldPath": "household.members[].first_name"
       },
@@ -3651,6 +4087,10 @@
       "target": {
         "type": "text",
         "name": "r20_rel"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 18
       },
       "source": {
         "fieldPath": "household.members[].relationship"
@@ -3682,6 +4122,10 @@
         "type": "text",
         "name": "r20_ssn"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 18
+      },
       "source": {
         "fieldPath": "household.members[].ssn"
       },
@@ -3697,6 +4141,10 @@
       "target": {
         "type": "text",
         "name": "r20_dob"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 18
       },
       "source": {
         "fieldPath": "household.members[].date_of_birth"
@@ -3722,6 +4170,10 @@
       "target": {
         "type": "text",
         "name": "r20_sex"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 18
       },
       "source": {
         "fieldPath": "household.members[].sex"
@@ -3763,6 +4215,10 @@
       "target": {
         "type": "text",
         "name": "r20_citizen"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 18
       },
       "source": {
         "fieldPath": "household.members[].is_us_citizen"

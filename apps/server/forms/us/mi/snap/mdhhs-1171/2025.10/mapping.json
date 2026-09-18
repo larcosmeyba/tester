@@ -622,6 +622,10 @@
         "type": "text",
         "name": "hhm2_first"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 0
+      },
       "source": {
         "fieldPath": "household.members[].first_name"
       },
@@ -638,6 +642,10 @@
         "type": "text",
         "name": "hhm2_last"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 0
+      },
       "source": {
         "fieldPath": "household.members[].last_name"
       },
@@ -653,6 +661,10 @@
       "target": {
         "type": "checkbox",
         "name": "hhm2_sex_m"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 0
       },
       "source": {
         "fieldPath": "household.members[].sex"
@@ -671,6 +683,10 @@
         "type": "checkbox",
         "name": "hhm2_sex_f"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 0
+      },
       "source": {
         "fieldPath": "household.members[].sex"
       },
@@ -688,6 +704,10 @@
         "type": "text",
         "name": "hhm2_dob"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 0
+      },
       "source": {
         "fieldPath": "household.members[].date_of_birth"
       },
@@ -702,6 +722,10 @@
       "target": {
         "type": "text",
         "name": "hhm2_ssn"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 0
       },
       "source": {
         "fieldPath": "household.members[].ssn"
@@ -719,6 +743,10 @@
         "type": "checkbox",
         "name": "hhm2_citizen_y"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 0
+      },
       "source": {
         "fieldPath": "household.members[].is_us_citizen"
       },
@@ -733,6 +761,10 @@
       "target": {
         "type": "checkbox",
         "name": "hhm2_citizen_n"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 0
       },
       "source": {
         "fieldPath": "household.members[].is_us_citizen"
@@ -769,6 +801,10 @@
         "type": "text",
         "name": "hhm2_rel"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 0
+      },
       "source": {
         "fieldPath": "household.members[].relationship"
       },
@@ -800,6 +836,10 @@
         "type": "text",
         "name": "hhm3_first"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 1
+      },
       "source": {
         "fieldPath": "household.members[].first_name"
       },
@@ -816,6 +856,10 @@
         "type": "text",
         "name": "hhm3_last"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 1
+      },
       "source": {
         "fieldPath": "household.members[].last_name"
       },
@@ -831,6 +875,10 @@
       "target": {
         "type": "checkbox",
         "name": "hhm3_sex_m"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 1
       },
       "source": {
         "fieldPath": "household.members[].sex"
@@ -849,6 +897,10 @@
         "type": "checkbox",
         "name": "hhm3_sex_f"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 1
+      },
       "source": {
         "fieldPath": "household.members[].sex"
       },
@@ -866,6 +918,10 @@
         "type": "text",
         "name": "hhm3_dob"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 1
+      },
       "source": {
         "fieldPath": "household.members[].date_of_birth"
       },
@@ -880,6 +936,10 @@
       "target": {
         "type": "text",
         "name": "hhm3_ssn"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 1
       },
       "source": {
         "fieldPath": "household.members[].ssn"
@@ -897,6 +957,10 @@
         "type": "checkbox",
         "name": "hhm3_citizen_y"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 1
+      },
       "source": {
         "fieldPath": "household.members[].is_us_citizen"
       },
@@ -911,6 +975,10 @@
       "target": {
         "type": "checkbox",
         "name": "hhm3_citizen_n"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 1
       },
       "source": {
         "fieldPath": "household.members[].is_us_citizen"
@@ -947,6 +1015,10 @@
         "type": "text",
         "name": "hhm3_rel"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 1
+      },
       "source": {
         "fieldPath": "household.members[].relationship"
       },
@@ -978,6 +1050,10 @@
         "type": "text",
         "name": "hhm4_first"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 2
+      },
       "source": {
         "fieldPath": "household.members[].first_name"
       },
@@ -994,6 +1070,10 @@
         "type": "text",
         "name": "hhm4_last"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 2
+      },
       "source": {
         "fieldPath": "household.members[].last_name"
       },
@@ -1009,6 +1089,10 @@
       "target": {
         "type": "checkbox",
         "name": "hhm4_sex_m"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 2
       },
       "source": {
         "fieldPath": "household.members[].sex"
@@ -1027,6 +1111,10 @@
         "type": "checkbox",
         "name": "hhm4_sex_f"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 2
+      },
       "source": {
         "fieldPath": "household.members[].sex"
       },
@@ -1044,6 +1132,10 @@
         "type": "text",
         "name": "hhm4_dob"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 2
+      },
       "source": {
         "fieldPath": "household.members[].date_of_birth"
       },
@@ -1058,6 +1150,10 @@
       "target": {
         "type": "text",
         "name": "hhm4_ssn"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 2
       },
       "source": {
         "fieldPath": "household.members[].ssn"
@@ -1075,6 +1171,10 @@
         "type": "checkbox",
         "name": "hhm4_citizen_y"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 2
+      },
       "source": {
         "fieldPath": "household.members[].is_us_citizen"
       },
@@ -1089,6 +1189,10 @@
       "target": {
         "type": "checkbox",
         "name": "hhm4_citizen_n"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 2
       },
       "source": {
         "fieldPath": "household.members[].is_us_citizen"
@@ -1125,6 +1229,10 @@
         "type": "text",
         "name": "hhm4_rel"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 2
+      },
       "source": {
         "fieldPath": "household.members[].relationship"
       },
@@ -1156,6 +1264,10 @@
         "type": "text",
         "name": "hhm5_first"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 3
+      },
       "source": {
         "fieldPath": "household.members[].first_name"
       },
@@ -1172,6 +1284,10 @@
         "type": "text",
         "name": "hhm5_last"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 3
+      },
       "source": {
         "fieldPath": "household.members[].last_name"
       },
@@ -1187,6 +1303,10 @@
       "target": {
         "type": "checkbox",
         "name": "hhm5_sex_m"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 3
       },
       "source": {
         "fieldPath": "household.members[].sex"
@@ -1205,6 +1325,10 @@
         "type": "checkbox",
         "name": "hhm5_sex_f"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 3
+      },
       "source": {
         "fieldPath": "household.members[].sex"
       },
@@ -1222,6 +1346,10 @@
         "type": "text",
         "name": "hhm5_dob"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 3
+      },
       "source": {
         "fieldPath": "household.members[].date_of_birth"
       },
@@ -1236,6 +1364,10 @@
       "target": {
         "type": "text",
         "name": "hhm5_ssn"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 3
       },
       "source": {
         "fieldPath": "household.members[].ssn"
@@ -1253,6 +1385,10 @@
         "type": "checkbox",
         "name": "hhm5_citizen_y"
       },
+      "repeat": {
+        "over": "household.members",
+        "index": 3
+      },
       "source": {
         "fieldPath": "household.members[].is_us_citizen"
       },
@@ -1267,6 +1403,10 @@
       "target": {
         "type": "checkbox",
         "name": "hhm5_citizen_n"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 3
       },
       "source": {
         "fieldPath": "household.members[].is_us_citizen"
@@ -1302,6 +1442,10 @@
       "target": {
         "type": "text",
         "name": "hhm5_rel"
+      },
+      "repeat": {
+        "over": "household.members",
+        "index": 3
       },
       "source": {
         "fieldPath": "household.members[].relationship"
@@ -1550,6 +1694,10 @@
         "type": "text",
         "name": "acct0_type"
       },
+      "repeat": {
+        "over": "resources.accounts",
+        "index": 0
+      },
       "source": {
         "fieldPath": "resources.accounts[].kind"
       },
@@ -1574,6 +1722,10 @@
         "type": "text",
         "name": "acct0_bank"
       },
+      "repeat": {
+        "over": "resources.accounts",
+        "index": 0
+      },
       "source": {
         "fieldPath": "resources.accounts[].institution"
       },
@@ -1588,6 +1740,10 @@
       "target": {
         "type": "text",
         "name": "acct0_amount"
+      },
+      "repeat": {
+        "over": "resources.accounts",
+        "index": 0
       },
       "source": {
         "fieldPath": "resources.accounts[].balance"
@@ -1604,6 +1760,10 @@
       "target": {
         "type": "text",
         "name": "acct1_type"
+      },
+      "repeat": {
+        "over": "resources.accounts",
+        "index": 1
       },
       "source": {
         "fieldPath": "resources.accounts[].kind"
@@ -1629,6 +1789,10 @@
         "type": "text",
         "name": "acct1_bank"
       },
+      "repeat": {
+        "over": "resources.accounts",
+        "index": 1
+      },
       "source": {
         "fieldPath": "resources.accounts[].institution"
       },
@@ -1643,6 +1807,10 @@
       "target": {
         "type": "text",
         "name": "acct1_amount"
+      },
+      "repeat": {
+        "over": "resources.accounts",
+        "index": 1
       },
       "source": {
         "fieldPath": "resources.accounts[].balance"
@@ -1659,6 +1827,10 @@
       "target": {
         "type": "text",
         "name": "acct2_type"
+      },
+      "repeat": {
+        "over": "resources.accounts",
+        "index": 2
       },
       "source": {
         "fieldPath": "resources.accounts[].kind"
@@ -1684,6 +1856,10 @@
         "type": "text",
         "name": "acct2_bank"
       },
+      "repeat": {
+        "over": "resources.accounts",
+        "index": 2
+      },
       "source": {
         "fieldPath": "resources.accounts[].institution"
       },
@@ -1698,6 +1874,10 @@
       "target": {
         "type": "text",
         "name": "acct2_amount"
+      },
+      "repeat": {
+        "over": "resources.accounts",
+        "index": 2
       },
       "source": {
         "fieldPath": "resources.accounts[].balance"
@@ -1731,6 +1911,10 @@
         "type": "text",
         "name": "emp0_who"
       },
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 0
+      },
       "source": {
         "fieldPath": "employment.jobs[].member_ref"
       },
@@ -1746,6 +1930,10 @@
         "type": "text",
         "name": "emp0_employer"
       },
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 0
+      },
       "source": {
         "fieldPath": "employment.jobs[].employer_name"
       },
@@ -1760,6 +1948,10 @@
       "target": {
         "type": "text",
         "name": "emp0_freq"
+      },
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 0
       },
       "source": {
         "fieldPath": "employment.jobs[].pay_frequency"
@@ -1788,6 +1980,10 @@
         "type": "text",
         "name": "emp0_hrs"
       },
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 0
+      },
       "source": {
         "fieldPath": "employment.jobs[].hours_per_week"
       },
@@ -1802,6 +1998,10 @@
       "target": {
         "type": "text",
         "name": "emp0_wages"
+      },
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 0
       },
       "source": {
         "fieldPath": "employment.jobs[].pay_rate"
@@ -1819,6 +2019,10 @@
         "type": "text",
         "name": "emp1_who"
       },
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 1
+      },
       "source": {
         "fieldPath": "employment.jobs[].member_ref"
       },
@@ -1834,6 +2038,10 @@
         "type": "text",
         "name": "emp1_employer"
       },
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 1
+      },
       "source": {
         "fieldPath": "employment.jobs[].employer_name"
       },
@@ -1848,6 +2056,10 @@
       "target": {
         "type": "text",
         "name": "emp1_freq"
+      },
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 1
       },
       "source": {
         "fieldPath": "employment.jobs[].pay_frequency"
@@ -1876,6 +2088,10 @@
         "type": "text",
         "name": "emp1_hrs"
       },
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 1
+      },
       "source": {
         "fieldPath": "employment.jobs[].hours_per_week"
       },
@@ -1890,6 +2106,10 @@
       "target": {
         "type": "text",
         "name": "emp1_wages"
+      },
+      "repeat": {
+        "over": "employment.jobs",
+        "index": 1
       },
       "source": {
         "fieldPath": "employment.jobs[].pay_rate"
@@ -1954,6 +2174,10 @@
         "type": "text",
         "name": "addl0_who"
       },
+      "repeat": {
+        "over": "income.sources",
+        "index": 0
+      },
       "source": {
         "fieldPath": "income.sources[].member_ref"
       },
@@ -1968,6 +2192,10 @@
       "target": {
         "type": "text",
         "name": "addl0_type"
+      },
+      "repeat": {
+        "over": "income.sources",
+        "index": 0
       },
       "source": {
         "fieldPath": "income.sources[].kind"
@@ -2003,6 +2231,10 @@
         "type": "text",
         "name": "addl0_amount"
       },
+      "repeat": {
+        "over": "income.sources",
+        "index": 0
+      },
       "source": {
         "fieldPath": "income.sources[].gross_amount"
       },
@@ -2019,6 +2251,10 @@
         "type": "text",
         "name": "addl1_who"
       },
+      "repeat": {
+        "over": "income.sources",
+        "index": 1
+      },
       "source": {
         "fieldPath": "income.sources[].member_ref"
       },
@@ -2033,6 +2269,10 @@
       "target": {
         "type": "text",
         "name": "addl1_type"
+      },
+      "repeat": {
+        "over": "income.sources",
+        "index": 1
       },
       "source": {
         "fieldPath": "income.sources[].kind"
@@ -2068,6 +2308,10 @@
         "type": "text",
         "name": "addl1_amount"
       },
+      "repeat": {
+        "over": "income.sources",
+        "index": 1
+      },
       "source": {
         "fieldPath": "income.sources[].gross_amount"
       },
@@ -2094,6 +2338,10 @@
         "type": "text",
         "name": "dep0_whofor"
       },
+      "repeat": {
+        "over": "expenses.childcare",
+        "index": 0
+      },
       "source": {
         "fieldPath": "expenses.childcare[].member_ref"
       },
@@ -2108,6 +2356,10 @@
       "target": {
         "type": "text",
         "name": "dep0_amount"
+      },
+      "repeat": {
+        "over": "expenses.childcare",
+        "index": 0
       },
       "source": {
         "fieldPath": "expenses.childcare[].monthly_amount"
@@ -2125,6 +2377,10 @@
         "type": "text",
         "name": "dep1_whofor"
       },
+      "repeat": {
+        "over": "expenses.childcare",
+        "index": 1
+      },
       "source": {
         "fieldPath": "expenses.childcare[].member_ref"
       },
@@ -2139,6 +2395,10 @@
       "target": {
         "type": "text",
         "name": "dep1_amount"
+      },
+      "repeat": {
+        "over": "expenses.childcare",
+        "index": 1
       },
       "source": {
         "fieldPath": "expenses.childcare[].monthly_amount"
@@ -2166,6 +2426,10 @@
         "type": "text",
         "name": "med0_whopays"
       },
+      "repeat": {
+        "over": "expenses.medical",
+        "index": 0
+      },
       "source": {
         "fieldPath": "expenses.medical[].member_ref"
       },
@@ -2180,6 +2444,10 @@
       "target": {
         "type": "text",
         "name": "med0_type"
+      },
+      "repeat": {
+        "over": "expenses.medical",
+        "index": 0
       },
       "source": {
         "fieldPath": "expenses.medical[].kind"
@@ -2207,6 +2475,10 @@
         "type": "text",
         "name": "med0_amount"
       },
+      "repeat": {
+        "over": "expenses.medical",
+        "index": 0
+      },
       "source": {
         "fieldPath": "expenses.medical[].monthly_amount"
       },
@@ -2223,6 +2495,10 @@
         "type": "text",
         "name": "med1_whopays"
       },
+      "repeat": {
+        "over": "expenses.medical",
+        "index": 1
+      },
       "source": {
         "fieldPath": "expenses.medical[].member_ref"
       },
@@ -2237,6 +2513,10 @@
       "target": {
         "type": "text",
         "name": "med1_type"
+      },
+      "repeat": {
+        "over": "expenses.medical",
+        "index": 1
       },
       "source": {
         "fieldPath": "expenses.medical[].kind"
@@ -2263,6 +2543,10 @@
       "target": {
         "type": "text",
         "name": "med1_amount"
+      },
+      "repeat": {
+        "over": "expenses.medical",
+        "index": 1
       },
       "source": {
         "fieldPath": "expenses.medical[].monthly_amount"
