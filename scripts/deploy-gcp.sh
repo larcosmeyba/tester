@@ -112,6 +112,13 @@ elif [[ "$SERVICE_KIND" == "penny" ]]; then
 else
   CONFIG=cloudbuild.transcriber.yaml
   SUBSTITUTIONS="$COMMON_SUBSTITUTIONS,_SERVICE=$PREFIX-transcriber"
+  # cloudbuild.transcriber.yaml declares neither the Cloud SQL nor the scaling
+  # substitutions (the transcriber has no database; --min/--max-instances are
+  # hardcoded in the template), and Cloud Build rejects substitution keys the
+  # template does not declare — drop them for the transcriber build.
+  SUBSTITUTIONS="${SUBSTITUTIONS//,_INSTANCE_CONNECTION_NAME=$INSTANCE_CONNECTION_NAME/}"
+  SUBSTITUTIONS="${SUBSTITUTIONS//,_MIN_INSTANCES=$MIN_INSTANCES/}"
+  SUBSTITUTIONS="${SUBSTITUTIONS//,_MAX_INSTANCES=$MAX_INSTANCES/}"
   SUBSTITUTIONS="$SUBSTITUTIONS,_SERVICE_ACCOUNT=$PREFIX-transcriber-run@$PROJECT_ID.iam.gserviceaccount.com"
   SUBSTITUTIONS="$SUBSTITUTIONS,_AI_KEY_SECRET=$PREFIX-recipe-ai-api-key"
   SUBSTITUTIONS="$SUBSTITUTIONS,_SHARED_SECRET=$PREFIX-import-shared-secret"
