@@ -24,15 +24,22 @@ from penny.tools.gateway import ToolGateway
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    # TEMPORARY startup diagnostics for the Cloud Run probe failure.
+    # Plain prints with flush so nothing depends on the logging setup.
+    print("penny-diag: lifespan enter", flush=True)
     config = settings()
+    print("penny-diag: settings ok", flush=True)
     configure(config.log_level)
+    print("penny-diag: logging configured", flush=True)
 
     provider = build_provider(config)
+    print("penny-diag: provider built", flush=True)
     gateway = ToolGateway(
         base_url=config.backend_url,
         service_token=config.service_token,
         timeout=config.request_timeout_seconds,
     )
+    print("penny-diag: gateway built", flush=True)
 
     app.state.settings = config
     app.state.provider = provider
@@ -43,6 +50,7 @@ async def lifespan(app: FastAPI):
         max_tool_calls=config.max_tool_calls,
         max_tokens=config.max_output_tokens,
     )
+    print("penny-diag: graph built", flush=True)
 
     logger().info(
         "penny started",
