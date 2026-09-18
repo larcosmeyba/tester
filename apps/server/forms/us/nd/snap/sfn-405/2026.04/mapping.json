@@ -9565,9 +9565,6 @@
       },
       "transforms": [
         {
-          "op": "split"
-        },
-        {
           "op": "trim"
         }
       ]
