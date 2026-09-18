@@ -13,7 +13,10 @@ steps:
     args:
       - -ceu
       - |
-        cd apps/penny && pip install --no-cache-dir --quiet . pytest pytest-asyncio httpx
+        # The dev extra carries the test deps (pytest, pytest-asyncio, respx,
+        # httpx). Install it rather than a hand-maintained list so the build
+        # step and local `pip install -e ".[dev]"` never drift apart.
+        cd apps/penny && pip install --no-cache-dir --quiet ".[dev]"
         # Unit tests only. The evals/ suite needs a live provider key and is
         # run separately, not as part of the build.
         python -m pytest -q tests

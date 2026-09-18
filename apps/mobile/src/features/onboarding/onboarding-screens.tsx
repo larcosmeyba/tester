@@ -92,6 +92,7 @@ function OnboardingTopBar({
   total: number;
   onBack?: () => void;
 }) {
+  const auth = useAuth();
   const progress = Math.min(1, Math.max(0, current / total));
   return (
     <View style={styles.topBar}>
@@ -106,7 +107,16 @@ function OnboardingTopBar({
         <Text style={styles.topBarLabel}>
           STEP {current} OF {total}
         </Text>
-        <View style={styles.topBarSpacer} />
+        {/* Escape hatch: a signed-in user with a stale session can get stuck
+            here with no way back to login (e.g. QA testing fresh sign-up). */}
+        <Pressable
+          onPress={() => void auth.signOut()}
+          hitSlop={12}
+          accessibilityRole="button"
+          accessibilityLabel="Sign out"
+        >
+          <Text style={styles.topBarSignOut}>Sign out</Text>
+        </Pressable>
       </View>
       <View style={styles.progressTrack}>
         <View style={[styles.progressFill, { flex: progress }]} />
@@ -852,6 +862,13 @@ const styles = StyleSheet.create({
   },
   topBarSpacer: {
     width: 20,
+  },
+  topBarSignOut: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: HiveColors.textSecondary,
+    paddingVertical: 4,
+    paddingLeft: 8,
   },
   progressTrack: {
     flexDirection: 'row',
