@@ -130,21 +130,21 @@ Already covered: AK, ND, PA, CA, NV-TANF (mapped). No paper form: WI W-2, MA TAF
 
 | State | Form | Why missing / next step |
 |---|---|---|
-| AL | DHR-FSP-2116 general FA application | The held 2200 is an elderly-project leaflet |
+| AL | DHR-FSP-2116 general FA application | **ACQUIRED 2026-09-17** (Marcos upload; XMP title "FORM 2116 1942 COMBINED"; no printed rev, filed 2026.04) -> us/al/snap/dhr-fsp-2116/2026.04/template.pdf |
 | CT | W-1E Rev. 12/19 | Refetch produced no file (preview.ct.egov.com; verify it's DSS-official) |
 | DE | ASSIST Paper Application (2026/06) | The URL did not yield it; only Form 100 (04/2016) is on disk |
 | FL | CF-ES 2353 | Browser task |
-| ID | HW 2000 | Fetch produced no file |
+| ID | HW 2000 | **ACQUIRED 2026-09-17** (Marcos upload; stamped "HW 2000 | REV 2/9/2026") -> us/id/snap/hw-2000/2026.02/template.pdf |
 | KY | PA-100, as officially served | Held copy is a proposed-regulation markup |
-| MA | SNAPA-1 | Fetch produced no file |
+| MA | SNAPA-1 | **ACQUIRED 2026-09-17** (Marcos upload; stamped "SNAPA-1 (English) (Rev. 7/2026)") -> us/ma/snap/snapa-1/2026.07/template.pdf |
 | ME | GeneralApp.pdf (diff vs R10/04) | Browser task |
-| MI | MDHHS-1171 | Browser task |
-| MS | MDHS-EA-900 | Browser task |
+| MI | MDHHS-1171 | **ACQUIRED 2026-09-17** (Marcos upload; stamped "MDHHS-1171 (Rev. 10-25)") -> us/mi/snap/mdhhs-1171/2025.10/template.pdf |
+| MS | MDHS-EA-900 | **ACQUIRED 2026-09-17** (Marcos upload; "Revised 7-1-2026") -> us/ms/snap/ea-900/2026.07/template.pdf |
 | MT | HCS-250 English | Email request only |
 | NJ | HCS-290 | Fetch produced no file |
-| NV | 2920-EM | Fetch produced no file |
+| NV | 2920-EM | **RESCOPED 2026-09-17**: the on-disk 2905-EG "Application for Assistance" explicitly covers SNAP ("Programs You May Apply For: Food Assistance from SNAP ... TANF"), so NV SNAP is covered. Marcos uploaded a newer 2905-EG (03/2026, 23pp); NOT auto-filed — the active nv/tanf/2905-eg mapping is pinned to 2024.12. Re-pin/re-map only on his call |
 | OK | 08MP002E + 08MP003E | Companion forms to 001E |
-| TX | H1010 | Browser task |
+| TX | H1010 | **ACQUIRED 2026-09-17** (Marcos upload; "Your Texas Benefits", H1010 markers, 08/2026) -> us/tx/snap/h1010/2026.08/template.pdf |
 | WY | DFS 100 | Non-.gov host; verify on dfs.wyo.gov first |
 | NY | LDSS-4826 (optional SNAP-only) | Fetch produced no file |
 | federal | VA 10-10EZ | Fetch produced no file |
