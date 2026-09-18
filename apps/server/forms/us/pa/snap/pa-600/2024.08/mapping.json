@@ -10,7 +10,7 @@
   "formTitle": "Application for Benefits",
   "formVersion": "2024.08",
   "revision": 1,
-  "status": "draft",
+  "status": "active",
   "vocabularyVersion": 1,
   "agencyUrl": "https://www.dhs.pa.gov",
   "template": {
@@ -109,8 +109,8 @@
         "fieldPath": "applicant.is_us_citizen"
       },
       "valueMap": {
-        "true": "Yes",
-        "false": "No"
+        "true": "0",
+        "false": "1"
       }
     },
     {
@@ -123,8 +123,8 @@
         "fieldPath": "applicant.is_pregnant"
       },
       "valueMap": {
-        "true": "Yes",
-        "false": "No"
+        "true": "0",
+        "false": "1"
       }
     },
     {
@@ -137,8 +137,8 @@
         "fieldPath": "applicant.is_student"
       },
       "valueMap": {
-        "true": "Yes",
-        "false": "No"
+        "true": "0",
+        "false": "1"
       }
     },
     {
@@ -222,8 +222,8 @@
         "fieldPath": "household.members[].is_us_citizen"
       },
       "valueMap": {
-        "true": "Yes",
-        "false": "No"
+        "true": "0",
+        "false": "1"
       },
       "repeat": {
         "over": "household.members",
@@ -240,8 +240,8 @@
         "fieldPath": "household.members[].is_pregnant"
       },
       "valueMap": {
-        "true": "Yes",
-        "false": "No"
+        "true": "0",
+        "false": "1"
       },
       "repeat": {
         "over": "household.members",
@@ -258,8 +258,8 @@
         "fieldPath": "household.members[].is_applying"
       },
       "valueMap": {
-        "true": "Yes",
-        "false": "No"
+        "true": "0",
+        "false": "1"
       },
       "repeat": {
         "over": "household.members",
@@ -347,8 +347,8 @@
         "fieldPath": "household.members[].is_us_citizen"
       },
       "valueMap": {
-        "true": "Yes",
-        "false": "No"
+        "true": "0",
+        "false": "1"
       },
       "repeat": {
         "over": "household.members",
@@ -365,8 +365,8 @@
         "fieldPath": "household.members[].is_pregnant"
       },
       "valueMap": {
-        "true": "Yes",
-        "false": "No"
+        "true": "0",
+        "false": "1"
       },
       "repeat": {
         "over": "household.members",
@@ -383,8 +383,8 @@
         "fieldPath": "household.members[].is_applying"
       },
       "valueMap": {
-        "true": "Yes",
-        "false": "No"
+        "true": "0",
+        "false": "1"
       },
       "repeat": {
         "over": "household.members",
@@ -472,13 +472,14 @@
         "fieldPath": "household.members[].is_us_citizen"
       },
       "valueMap": {
-        "true": "Yes",
-        "false": "No"
+        "true": "1",
+        "false": "0"
       },
       "repeat": {
         "over": "household.members",
         "index": 2
-      }
+      },
+      "note": "Corrected 2026-09-17: form uses /1=Yes(left), /0=No(right) for persons 4-7 (verified by widget position + printed labels)."
     },
     {
       "id": "pa_p4_pregnant",
@@ -490,8 +491,8 @@
         "fieldPath": "household.members[].is_pregnant"
       },
       "valueMap": {
-        "true": "Yes",
-        "false": "No"
+        "true": "0",
+        "false": "1"
       },
       "repeat": {
         "over": "household.members",
@@ -508,8 +509,8 @@
         "fieldPath": "household.members[].is_applying"
       },
       "valueMap": {
-        "true": "Yes",
-        "false": "No"
+        "true": "0",
+        "false": "1"
       },
       "repeat": {
         "over": "household.members",
@@ -597,13 +598,14 @@
         "fieldPath": "household.members[].is_us_citizen"
       },
       "valueMap": {
-        "true": "Yes",
-        "false": "No"
+        "true": "1",
+        "false": "0"
       },
       "repeat": {
         "over": "household.members",
         "index": 3
-      }
+      },
+      "note": "Corrected 2026-09-17: form uses /1=Yes(left), /0=No(right) for persons 4-7 (verified by widget position + printed labels)."
     },
     {
       "id": "pa_p5_pregnant",
@@ -615,8 +617,8 @@
         "fieldPath": "household.members[].is_pregnant"
       },
       "valueMap": {
-        "true": "Yes",
-        "false": "No"
+        "true": "0",
+        "false": "1"
       },
       "repeat": {
         "over": "household.members",
@@ -633,8 +635,8 @@
         "fieldPath": "household.members[].is_applying"
       },
       "valueMap": {
-        "true": "Yes",
-        "false": "No"
+        "true": "0",
+        "false": "1"
       },
       "repeat": {
         "over": "household.members",
@@ -722,13 +724,14 @@
         "fieldPath": "household.members[].is_us_citizen"
       },
       "valueMap": {
-        "true": "Yes",
-        "false": "No"
+        "true": "1",
+        "false": "0"
       },
       "repeat": {
         "over": "household.members",
         "index": 4
-      }
+      },
+      "note": "Corrected 2026-09-17: form uses /1=Yes(left), /0=No(right) for persons 4-7 (verified by widget position + printed labels)."
     },
     {
       "id": "pa_p6_pregnant",
@@ -740,8 +743,8 @@
         "fieldPath": "household.members[].is_pregnant"
       },
       "valueMap": {
-        "true": "Yes",
-        "false": "No"
+        "true": "0",
+        "false": "1"
       },
       "repeat": {
         "over": "household.members",
@@ -758,8 +761,8 @@
         "fieldPath": "household.members[].is_applying"
       },
       "valueMap": {
-        "true": "Yes",
-        "false": "No"
+        "true": "0",
+        "false": "1"
       },
       "repeat": {
         "over": "household.members",
@@ -847,13 +850,14 @@
         "fieldPath": "household.members[].is_us_citizen"
       },
       "valueMap": {
-        "true": "Yes",
-        "false": "No"
+        "true": "1",
+        "false": "0"
       },
       "repeat": {
         "over": "household.members",
         "index": 5
-      }
+      },
+      "note": "Corrected 2026-09-17: form uses /1=Yes(left), /0=No(right) for persons 4-7 (verified by widget position + printed labels)."
     },
     {
       "id": "pa_p7_pregnant",
@@ -865,8 +869,8 @@
         "fieldPath": "household.members[].is_pregnant"
       },
       "valueMap": {
-        "true": "Yes",
-        "false": "No"
+        "true": "0",
+        "false": "1"
       },
       "repeat": {
         "over": "household.members",
@@ -883,8 +887,8 @@
         "fieldPath": "household.members[].is_applying"
       },
       "valueMap": {
-        "true": "Yes",
-        "false": "No"
+        "true": "0",
+        "false": "1"
       },
       "repeat": {
         "over": "household.members",
@@ -984,8 +988,8 @@
         "fieldPath": "contact.needs_interpreter"
       },
       "valueMap": {
-        "true": "Yes/Sí",
-        "false": "No"
+        "true": "0",
+        "false": "1"
       }
     },
     {
@@ -1225,8 +1229,8 @@
         "fieldPath": "utilities.pays_heating_cooling"
       },
       "valueMap": {
-        "true": "Yes",
-        "false": "No"
+        "true": "0",
+        "false": "1"
       }
     },
     {
@@ -1239,8 +1243,8 @@
         "fieldPath": "utilities.pays_phone"
       },
       "valueMap": {
-        "true": "Yes",
-        "false": "No"
+        "true": "0",
+        "false": "1"
       }
     },
     {
@@ -1603,6 +1607,5877 @@
       },
       "fillPolicy": "never",
       "note": "Office use; never filled by the app."
+    },
+    {
+      "id": "pa_ai_an_person_1_member_of_a_federally_recognized_tribe",
+      "target": {
+        "type": "radio",
+        "name": "AI/AN Person 1 Member of a federally recognized tribe?\r"
+      },
+      "fillPolicy": "never",
+      "note": "tribal membership detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_ai_an_person_1_name_first_name_middle_name_last_name",
+      "target": {
+        "type": "text",
+        "name": "AI/AN Person 1 Name (first name, middle name, last name):"
+      },
+      "fillPolicy": "never",
+      "note": "tribal membership detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_ai_an_person_1_how_much",
+      "target": {
+        "type": "text",
+        "name": "AI/AN Person 1 how much"
+      },
+      "fillPolicy": "never",
+      "note": "tribal membership detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_ai_an_person_1_how_often",
+      "target": {
+        "type": "text",
+        "name": "AI/AN Person 1 how often"
+      },
+      "fillPolicy": "never",
+      "note": "tribal membership detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_ai_an_person_1_if_no_is_person_eligible",
+      "target": {
+        "type": "radio",
+        "name": "AI/AN Person 1 if no, is person eligible"
+      },
+      "fillPolicy": "never",
+      "note": "tribal membership detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_ai_an_person_1_service_from_the_ihs",
+      "target": {
+        "type": "radio",
+        "name": "AI/AN Person 1 service from the IHS"
+      },
+      "fillPolicy": "never",
+      "note": "tribal membership detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_ai_an_person_2_member_of_a_federally_recognized_tribe",
+      "target": {
+        "type": "radio",
+        "name": "AI/AN Person 2 Member of a federally recognized tribe?\r"
+      },
+      "fillPolicy": "never",
+      "note": "tribal membership detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_ai_an_person_2_name_first_name_middle_name_last_name",
+      "target": {
+        "type": "text",
+        "name": "AI/AN Person 2 Name (first name, middle name, last name):"
+      },
+      "fillPolicy": "never",
+      "note": "tribal membership detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_ai_an_person_2_how_much",
+      "target": {
+        "type": "text",
+        "name": "AI/AN Person 2 how much"
+      },
+      "fillPolicy": "never",
+      "note": "tribal membership detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_ai_an_person_2_how_often",
+      "target": {
+        "type": "text",
+        "name": "AI/AN Person 2 how often"
+      },
+      "fillPolicy": "never",
+      "note": "tribal membership detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_ai_an_person_2_if_no_is_person_eligible",
+      "target": {
+        "type": "radio",
+        "name": "AI/AN Person 2 if no, is person eligible"
+      },
+      "fillPolicy": "never",
+      "note": "tribal membership detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_ai_an_person_2_service_from_the_ihs",
+      "target": {
+        "type": "radio",
+        "name": "AI/AN Person 2 service from the IHS"
+      },
+      "fillPolicy": "never",
+      "note": "tribal membership detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_any_benefit_decisions_under_appeal_for_person_1",
+      "target": {
+        "type": "text",
+        "name": "Any benefit decisions under appeal for person 1"
+      },
+      "fillPolicy": "never",
+      "note": "appeal status; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_any_benefit_decisions_under_appeal_for_person_2",
+      "target": {
+        "type": "text",
+        "name": "Any benefit decisions under appeal for person 2"
+      },
+      "fillPolicy": "never",
+      "note": "appeal status; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_any_benefit_decisions_under_appeal_for_person_3",
+      "target": {
+        "type": "text",
+        "name": "Any benefit decisions under appeal for person 3"
+      },
+      "fillPolicy": "never",
+      "note": "appeal status; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_appendix_b_does_the_employer_offer_a_health_plan_that_cove",
+      "target": {
+        "type": "radio",
+        "name": "Appendix b Does the employer offer a health plan that covers an employee’s spouse or dependent(s)?"
+      },
+      "fillPolicy": "never",
+      "note": "appendix B employer coverage detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_appendix_b_does_the_employer_offer_a_health_plan_that_meet",
+      "target": {
+        "type": "radio",
+        "name": "Appendix b Does the employer offer a health plan that meets the minimum value standard?"
+      },
+      "fillPolicy": "never",
+      "note": "appendix B employer coverage detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_appendix_b_is_the_employee_currently_eligible_for_coverage",
+      "target": {
+        "type": "radio",
+        "name": "Appendix b Is the employee currently eligible for coverage offered by this employer, or will the emp"
+      },
+      "fillPolicy": "never",
+      "note": "appendix B employer coverage detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_appendix_b_spouse",
+      "target": {
+        "type": "checkbox",
+        "name": "Appendix b Spouse"
+      },
+      "fillPolicy": "never",
+      "note": "appendix B employer coverage detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_appendix_b_what_change_will_the_employer_make_for_the_new_",
+      "target": {
+        "type": "radio",
+        "name": "Appendix b What change will the employer make for the new plan year?\r"
+      },
+      "fillPolicy": "never",
+      "note": "appendix B employer coverage detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_appendix_b_dependents",
+      "target": {
+        "type": "checkbox",
+        "name": "Appendix b dependents"
+      },
+      "fillPolicy": "never",
+      "note": "appendix B employer coverage detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_appendix_b_loweset_cost_plan_how_often_premiums_pay",
+      "target": {
+        "type": "radio",
+        "name": "Appendix b loweset cost plan how often premiums pay"
+      },
+      "fillPolicy": "never",
+      "note": "appendix B employer coverage detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_appendix_b_new_plan_year_how_often_premiums_pay",
+      "target": {
+        "type": "radio",
+        "name": "Appendix b new plan year how often premiums pay"
+      },
+      "fillPolicy": "never",
+      "note": "appendix B employer coverage detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_application_registration_number",
+      "target": {
+        "type": "text",
+        "name": "Application registration number"
+      },
+      "fillPolicy": "never",
+      "note": "county/agency use only",
+      "transforms": []
+    },
+    {
+      "id": "pa_are_you_interested_in_child_care",
+      "target": {
+        "type": "checkbox",
+        "name": "Are you interested in Child care?"
+      },
+      "fillPolicy": "never",
+      "note": "referral interest checkbox; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_are_you_interested_in_child_support_services",
+      "target": {
+        "type": "checkbox",
+        "name": "Are you interested in Child support services?"
+      },
+      "fillPolicy": "never",
+      "note": "referral interest checkbox; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_are_you_interested_in_employment_and_training",
+      "target": {
+        "type": "checkbox",
+        "name": "Are you interested in Employment and training?"
+      },
+      "fillPolicy": "never",
+      "note": "referral interest checkbox; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_are_you_interested_in_family_planning_birth_control",
+      "target": {
+        "type": "checkbox",
+        "name": "Are you interested in Family planning/birth control?"
+      },
+      "fillPolicy": "never",
+      "note": "referral interest checkbox; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_are_you_interested_in_food_banks",
+      "target": {
+        "type": "checkbox",
+        "name": "Are you interested in Food banks?"
+      },
+      "fillPolicy": "never",
+      "note": "referral interest checkbox; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_are_you_interested_in_head_start_for_children_ages_3_to_6",
+      "target": {
+        "type": "checkbox",
+        "name": "Are you interested in Head Start (for children ages 3 to 6)?"
+      },
+      "fillPolicy": "never",
+      "note": "referral interest checkbox; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_are_you_interested_in_home_and_community_based_services_wa",
+      "target": {
+        "type": "checkbox",
+        "name": "Are you interested in Home and Community Based Services (Waiver Services)?"
+      },
+      "fillPolicy": "never",
+      "note": "referral interest checkbox; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_are_you_interested_in_housing_assistance",
+      "target": {
+        "type": "checkbox",
+        "name": "Are you interested in Housing assistance?"
+      },
+      "fillPolicy": "never",
+      "note": "referral interest checkbox; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_are_you_interested_in_immunizations_shots",
+      "target": {
+        "type": "checkbox",
+        "name": "Are you interested in Immunizations (shots)?"
+      },
+      "fillPolicy": "never",
+      "note": "referral interest checkbox; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_are_you_interested_in_intellectual_disability_services",
+      "target": {
+        "type": "checkbox",
+        "name": "Are you interested in Intellectual disability services?"
+      },
+      "fillPolicy": "never",
+      "note": "referral interest checkbox; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_are_you_interested_in_liheap_energy_assistance",
+      "target": {
+        "type": "checkbox",
+        "name": "Are you interested in LIHEAP (energy assistance)?"
+      },
+      "fillPolicy": "never",
+      "note": "referral interest checkbox; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_are_you_interested_in_lifeline_reduced_cost_phone_service",
+      "target": {
+        "type": "checkbox",
+        "name": "Are you interested in Lifeline (reduced cost phone service)?"
+      },
+      "fillPolicy": "never",
+      "note": "referral interest checkbox; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_are_you_interested_in_long_term_care_nursing_home_care",
+      "target": {
+        "type": "checkbox",
+        "name": "Are you interested in Long Term Care (nursing home care)?"
+      },
+      "fillPolicy": "never",
+      "note": "referral interest checkbox; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_are_you_interested_in_school_meals_free_or_reduced_cost",
+      "target": {
+        "type": "checkbox",
+        "name": "Are you interested in School meals (free or reduced cost)?"
+      },
+      "fillPolicy": "never",
+      "note": "referral interest checkbox; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_are_you_interested_in_supplemental_security_income_ssi",
+      "target": {
+        "type": "checkbox",
+        "name": "Are you interested in Supplemental Security Income (SSI)\r?"
+      },
+      "fillPolicy": "never",
+      "note": "referral interest checkbox; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_are_you_interested_in_vocational_rehabilitation",
+      "target": {
+        "type": "checkbox",
+        "name": "Are you interested in Vocational rehabilitation?"
+      },
+      "fillPolicy": "never",
+      "note": "referral interest checkbox; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_are_you_interested_in_wic_women_infants_and_children",
+      "target": {
+        "type": "checkbox",
+        "name": "Are you interested in WIC (Women, Infants and Children)?"
+      },
+      "fillPolicy": "never",
+      "note": "referral interest checkbox; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_are_you_interested_in_well_baby_clinic",
+      "target": {
+        "type": "checkbox",
+        "name": "Are you interested in Well Baby Clinic?"
+      },
+      "fillPolicy": "never",
+      "note": "referral interest checkbox; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_are_you_interested_in_other",
+      "target": {
+        "type": "checkbox",
+        "name": "Are you interested in other?"
+      },
+      "fillPolicy": "never",
+      "note": "referral interest checkbox; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_are_you_interested_in_special_allowances_for_employment_an",
+      "target": {
+        "type": "checkbox",
+        "name": "Are you interested in special allowances for employment and training such as tools?"
+      },
+      "fillPolicy": "never",
+      "note": "referral interest checkbox; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_are_you_interested_in_veterans_services",
+      "target": {
+        "type": "checkbox",
+        "name": "Are you interested in veterans' services"
+      },
+      "fillPolicy": "never",
+      "note": "referral interest checkbox; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_are_you_or_anyone_you_are_applying_for_a_seasonal_or_migra",
+      "target": {
+        "type": "radio",
+        "name": "Are you, or anyone you are applying for, a seasonal or migrant farm worker?"
+      },
+      "fillPolicy": "never",
+      "note": "migrant farmworker screening; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_are_you_or_anyone_you_are_applying_for_getting_snap_now",
+      "target": {
+        "type": "radio",
+        "name": "Are you, or anyone you are applying for, getting SNAP now?"
+      },
+      "fillPolicy": "never",
+      "note": "current SNAP receipt screening; no boolean vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_caseload",
+      "target": {
+        "type": "text",
+        "name": "Caseload"
+      },
+      "fillPolicy": "never",
+      "note": "county/agency use only",
+      "transforms": []
+    },
+    {
+      "id": "pa_check_here_if_you_do_not_have_a_home_address_you_still_nee",
+      "target": {
+        "type": "checkbox",
+        "name": "Check here if you do not have a home address. \nYou still need to give a mailing address"
+      },
+      "source": {
+        "fieldPath": "address.residential.is_homeless"
+      },
+      "transforms": [],
+      "note": "no home address"
+    },
+    {
+      "id": "pa_criminal_history_who_convicted_sexual_offender",
+      "target": {
+        "type": "text",
+        "name": "Criminal history Who convicted sexual offender?"
+      },
+      "fillPolicy": "never",
+      "note": "criminal history question; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_criminal_history_who_not_complying_sexual_offender",
+      "target": {
+        "type": "text",
+        "name": "Criminal history Who not complying sexual offender"
+      },
+      "fillPolicy": "never",
+      "note": "criminal history question; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_criminal_history_who_owe_fines_costs_or_restitution",
+      "target": {
+        "type": "text",
+        "name": "Criminal history Who owe fines, costs or restitution "
+      },
+      "fillPolicy": "never",
+      "note": "criminal history question; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_criminal_history_who_probation_or_parole",
+      "target": {
+        "type": "text",
+        "name": "Criminal history Who probation or parole?"
+      },
+      "fillPolicy": "never",
+      "note": "criminal history question; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_criminal_history_who_summons_or_warrant",
+      "target": {
+        "type": "text",
+        "name": "Criminal history Who summons or warrant"
+      },
+      "fillPolicy": "never",
+      "note": "criminal history question; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_criminal_history_who_welfare_fraud",
+      "target": {
+        "type": "text",
+        "name": "Criminal history Who welfare fraud"
+      },
+      "fillPolicy": "never",
+      "note": "criminal history question; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_criminal_history_convicted_of_welfare_fraud",
+      "target": {
+        "type": "radio",
+        "name": "Criminal history convicted of welfare fraud"
+      },
+      "fillPolicy": "never",
+      "note": "criminal history question; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_criminal_history_fines_and_costs",
+      "target": {
+        "type": "text",
+        "name": "Criminal history fines and costs?"
+      },
+      "fillPolicy": "never",
+      "note": "criminal history question; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_criminal_history_fleeing_from_law",
+      "target": {
+        "type": "radio",
+        "name": "Criminal history fleeing from law"
+      },
+      "fillPolicy": "never",
+      "note": "criminal history question; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_criminal_history_is_on_probation_or_parole_not_complying",
+      "target": {
+        "type": "text",
+        "name": "Criminal history is on probation or parole not complying"
+      },
+      "fillPolicy": "never",
+      "note": "criminal history question; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_criminal_history_not_complying_sexual_offender",
+      "target": {
+        "type": "radio",
+        "name": "Criminal history not complying sexual offender"
+      },
+      "fillPolicy": "never",
+      "note": "criminal history question; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_criminal_history_owe_fines_costs",
+      "target": {
+        "type": "radio",
+        "name": "Criminal history owe fines costs"
+      },
+      "fillPolicy": "never",
+      "note": "criminal history question; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_criminal_history_payment_plan_for_fines",
+      "target": {
+        "type": "radio",
+        "name": "Criminal history payment plan for fines"
+      },
+      "fillPolicy": "never",
+      "note": "criminal history question; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_criminal_history_probation_or_parole",
+      "target": {
+        "type": "radio",
+        "name": "Criminal history probation or parole"
+      },
+      "fillPolicy": "never",
+      "note": "criminal history question; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_criminal_history_probation_or_parole_not_complying",
+      "target": {
+        "type": "radio",
+        "name": "Criminal history probation or parole not complying"
+      },
+      "fillPolicy": "never",
+      "note": "criminal history question; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_criminal_history_sexual_offender",
+      "target": {
+        "type": "radio",
+        "name": "Criminal history sexual offender?"
+      },
+      "fillPolicy": "never",
+      "note": "criminal history question; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_criminal_history_summons_or_warrant",
+      "target": {
+        "type": "radio",
+        "name": "Criminal history summons or warrant"
+      },
+      "fillPolicy": "never",
+      "note": "criminal history question; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_criminal_history_who_is_fleeing_from_law_enforcement",
+      "target": {
+        "type": "text",
+        "name": "Criminal history who is fleeing from law enforcement?"
+      },
+      "fillPolicy": "never",
+      "note": "criminal history question; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_date_stamp",
+      "target": {
+        "type": "text",
+        "name": "Date Stamp"
+      },
+      "fillPolicy": "never",
+      "note": "county/agency use only",
+      "transforms": []
+    },
+    {
+      "id": "pa_district",
+      "target": {
+        "type": "text",
+        "name": "District"
+      },
+      "fillPolicy": "never",
+      "note": "county/agency use only",
+      "transforms": []
+    },
+    {
+      "id": "pa_does_anyone_get_cash_assistance_medical_assistance_or_snap",
+      "target": {
+        "type": "radio",
+        "name": "Does anyone get cash assistance, Medical Assistance or SNAP in another state now?"
+      },
+      "fillPolicy": "never",
+      "note": "out-of-state benefits screening; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_does_anyone_have_a_burial_agreement_with_a_bank_or_funeral",
+      "target": {
+        "type": "radio",
+        "name": "Does anyone have a burial agreement with a bank or funeral home?"
+      },
+      "fillPolicy": "never",
+      "note": "burial asset screening; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_does_anyone_have_a_life_insurance_policy",
+      "target": {
+        "type": "radio",
+        "name": "Does anyone have a life insurance policy?"
+      },
+      "fillPolicy": "never",
+      "note": "life insurance screening; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_does_anyone_have_a_medical_condition_that_requires_health_",
+      "target": {
+        "type": "radio",
+        "name": "Does anyone have a medical condition that requires health sustaining medication?"
+      },
+      "fillPolicy": "never",
+      "note": "health condition screening; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_does_anyone_have_expenses_from_deductible_part_of_self_emp",
+      "target": {
+        "type": "checkbox",
+        "name": "Does anyone have expenses from Deductible part of self-employment tax"
+      },
+      "fillPolicy": "never",
+      "note": "deduction type checkbox; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_does_anyone_have_expenses_from_health_savings_account_dedu",
+      "target": {
+        "type": "checkbox",
+        "name": "Does anyone have expenses from Health savings account deduction"
+      },
+      "fillPolicy": "never",
+      "note": "deduction type checkbox; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_does_anyone_have_expenses_from_other_specify",
+      "target": {
+        "type": "checkbox",
+        "name": "Does anyone have expenses from Other (specify)"
+      },
+      "fillPolicy": "never",
+      "note": "deduction type checkbox; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_does_anyone_have_expenses_from_self_employed_health_insura",
+      "target": {
+        "type": "checkbox",
+        "name": "Does anyone have expenses from Self-employed health insurance deduction"
+      },
+      "fillPolicy": "never",
+      "note": "deduction type checkbox; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_does_anyone_have_expenses_from_student_loan_interest_deduc",
+      "target": {
+        "type": "checkbox",
+        "name": "Does anyone have expenses from Student loan interest deduction"
+      },
+      "fillPolicy": "never",
+      "note": "deduction type checkbox; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_does_anyone_have_paid_or_unpaid_medical_bills_this_month_o",
+      "target": {
+        "type": "radio",
+        "name": "Does anyone have paid or unpaid medical bills this month or the last three months?"
+      },
+      "fillPolicy": "never",
+      "note": "medical bills screening; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_does_anyone_in_your_home_get_housing_assistance",
+      "target": {
+        "type": "radio",
+        "name": "Does anyone in your home get housing assistance?\r"
+      },
+      "fillPolicy": "never",
+      "note": "housing assistance screening; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_does_anyone_in_your_home_pay_child_support_to_a_person_who",
+      "target": {
+        "type": "radio",
+        "name": "Does anyone in your home pay child support to a person who does not live with you?\r"
+      },
+      "fillPolicy": "never",
+      "note": "child support screening; vocabulary has monthly amount, not a boolean",
+      "transforms": []
+    },
+    {
+      "id": "pa_does_anyone_in_your_household_have_any_income",
+      "target": {
+        "type": "radio",
+        "name": "Does anyone in your household have any income?"
+      },
+      "fillPolicy": "never",
+      "note": "income screening; no boolean vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_does_anyone_live_in_a_medical_or_long_term_care_facility_o",
+      "target": {
+        "type": "radio",
+        "name": "Does anyone live in a medical or long term care facility or have a physical, mental or emotional hea"
+      },
+      "fillPolicy": "never",
+      "note": "facility residence screening; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_does_anyone_own_any_homes_or_property_that_they_don_t_live",
+      "target": {
+        "type": "radio",
+        "name": "Does anyone own any homes or property that they don’t live in?"
+      },
+      "fillPolicy": "never",
+      "note": "property screening; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_does_anyone_pay_for_childcare_or_the_care_of_an_adult_with",
+      "target": {
+        "type": "radio",
+        "name": "Does anyone pay for childcare or the care of an adult with a disability so he or she can go to work,"
+      },
+      "fillPolicy": "never",
+      "note": "childcare expense screening; vocabulary has monthly amount, not a boolean",
+      "transforms": []
+    },
+    {
+      "id": "pa_does_anyone_you_are_applying_for_have_health_insurance_cov",
+      "target": {
+        "type": "radio",
+        "name": "Does anyone you are applying for have health insurance coverage?\r"
+      },
+      "fillPolicy": "never",
+      "note": "health insurance screening; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_has_anyone_been_a_victim_of_domestic_abuse",
+      "target": {
+        "type": "radio",
+        "name": "Has anyone been a victim of domestic abuse?"
+      },
+      "fillPolicy": "never",
+      "note": "household screening question; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_has_anyone_ever_applied_for_any_benefits_using_a_different",
+      "target": {
+        "type": "radio",
+        "name": "Has anyone ever applied for any benefits using a different name or Social Security number?"
+      },
+      "fillPolicy": "never",
+      "note": "household screening question; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_has_anyone_had_work_hours_reduced_in_the_last_60_days",
+      "target": {
+        "type": "radio",
+        "name": "Has anyone had work hours reduced in the last 60 days?"
+      },
+      "fillPolicy": "never",
+      "note": "household screening question; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_has_anyone_received_social_security_in_the_past",
+      "target": {
+        "type": "radio",
+        "name": "Has anyone received Social Security in the past?"
+      },
+      "fillPolicy": "never",
+      "note": "household screening question; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_has_anyone_received_supplemental_security_income_in_the_pa",
+      "target": {
+        "type": "radio",
+        "name": "Has anyone received Supplemental Security Income in the past?"
+      },
+      "fillPolicy": "never",
+      "note": "household screening question; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_has_anyone_sold_given_away_or_transferred_a_home_land_pers",
+      "target": {
+        "type": "radio",
+        "name": "Has anyone sold, given away, or transferred a home, land, personal property, or any other resource"
+      },
+      "fillPolicy": "never",
+      "note": "household screening question; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_has_anyone_stopped_working_at_one_or_more_jobs_in_the_past",
+      "target": {
+        "type": "radio",
+        "name": "Has anyone stopped working at one or more jobs in the past 30 days?"
+      },
+      "fillPolicy": "never",
+      "note": "household screening question; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_has_anyone_worked_in_the_last_90_days",
+      "target": {
+        "type": "radio",
+        "name": "Has anyone worked in the last 90 days?"
+      },
+      "fillPolicy": "never",
+      "note": "household screening question; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_has_anyone_you_are_applying_for_had_health_insurance_cover",
+      "target": {
+        "type": "radio",
+        "name": "Has anyone you are applying for had health insurance coverage in the last 90 days?"
+      },
+      "fillPolicy": "never",
+      "note": "household screening question; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_how_much_does_the_person_outside_of_your_household_pay",
+      "target": {
+        "type": "text",
+        "name": "How much does the person outside of your household pay?"
+      },
+      "fillPolicy": "never",
+      "note": "amount/frequency row; cannot be matched positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_how_much_is_student_loan_interest_deduction_paid",
+      "target": {
+        "type": "text",
+        "name": "How much is student loan interest deduction paid"
+      },
+      "fillPolicy": "never",
+      "note": "amount/frequency row; cannot be matched positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_how_much_is_the_resource_of_person_1",
+      "target": {
+        "type": "text",
+        "name": "How much is the resource of person 1?"
+      },
+      "fillPolicy": "never",
+      "note": "amount/frequency row; cannot be matched positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_how_much_is_the_resource_of_person_1_1",
+      "target": {
+        "type": "text",
+        "name": "How much is the resource of person 1? 1"
+      },
+      "fillPolicy": "never",
+      "note": "amount/frequency row; cannot be matched positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_how_much_is_the_resource_of_person_1_2",
+      "target": {
+        "type": "text",
+        "name": "How much is the resource of person 1? 2"
+      },
+      "fillPolicy": "never",
+      "note": "amount/frequency row; cannot be matched positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_how_much_is_the_resource_of_person_1_3",
+      "target": {
+        "type": "text",
+        "name": "How much is the resource of person 1? 3"
+      },
+      "fillPolicy": "never",
+      "note": "amount/frequency row; cannot be matched positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_how_much_is_the_resource_of_person_1_4",
+      "target": {
+        "type": "text",
+        "name": "How much is the resource of person 1? 4"
+      },
+      "fillPolicy": "never",
+      "note": "amount/frequency row; cannot be matched positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_how_much_is_the_resource_of_person_1_5",
+      "target": {
+        "type": "text",
+        "name": "How much is the resource of person 1? 5"
+      },
+      "fillPolicy": "never",
+      "note": "amount/frequency row; cannot be matched positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_how_often_health_savings_account_deduction",
+      "target": {
+        "type": "text",
+        "name": "How often Health savings account deduction"
+      },
+      "fillPolicy": "never",
+      "note": "amount/frequency row; cannot be matched positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_how_often_does_the_person_outside_of_your_household_pay",
+      "target": {
+        "type": "text",
+        "name": "How often does the person outside of your household pay?"
+      },
+      "fillPolicy": "never",
+      "note": "amount/frequency row; cannot be matched positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_if_yes_person_1_tribe_name",
+      "target": {
+        "type": "text",
+        "name": "If yes, Person 1 tribe name"
+      },
+      "fillPolicy": "never",
+      "note": "conditional follow-up; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_if_yes_person_2_s_tribe_name",
+      "target": {
+        "type": "text",
+        "name": "If yes, Person 2's tribe name"
+      },
+      "fillPolicy": "never",
+      "note": "conditional follow-up; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_if_yes_do_you_get_a_utility_allowance",
+      "target": {
+        "type": "radio",
+        "name": "If yes, do you get a utility allowance?"
+      },
+      "fillPolicy": "never",
+      "note": "conditional follow-up; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_if_yes_is_it_court_ordered",
+      "target": {
+        "type": "radio",
+        "name": "If yes, is it court-ordered?"
+      },
+      "fillPolicy": "never",
+      "note": "conditional follow-up; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_if_yes_person_1_tribe_state",
+      "target": {
+        "type": "text",
+        "name": "If yes, person 1 tribe State"
+      },
+      "fillPolicy": "never",
+      "note": "conditional follow-up; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_if_yes_person_2_tribe_state",
+      "target": {
+        "type": "text",
+        "name": "If yes, person 2 tribe State"
+      },
+      "fillPolicy": "never",
+      "note": "conditional follow-up; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_if_yes_please_tell_us_the_name_and_social_security_number",
+      "target": {
+        "type": "text",
+        "name": "If yes, please tell us the name and Social Security number:"
+      },
+      "fillPolicy": "never",
+      "note": "conditional follow-up; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_if_yes_what_expenses_does_the_person_outside_of_your_house",
+      "target": {
+        "type": "text",
+        "name": "If yes, what expenses does the person outside of your household pay?"
+      },
+      "fillPolicy": "never",
+      "note": "conditional follow-up; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_if_yes_what_is_the_monthly_amount_someone_pays",
+      "target": {
+        "type": "text",
+        "name": "If yes, what is the monthly amount someone pays"
+      },
+      "fillPolicy": "never",
+      "note": "conditional follow-up; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_if_yes_what_is_their_disability",
+      "target": {
+        "type": "text",
+        "name": "If yes, what is their disability?"
+      },
+      "fillPolicy": "never",
+      "note": "conditional follow-up; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_if_yes_what_state_was_the_person_in_foster_care",
+      "target": {
+        "type": "text",
+        "name": "If yes, what state was the person in foster care?"
+      },
+      "fillPolicy": "never",
+      "note": "conditional follow-up; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_if_yes_which_utilities",
+      "target": {
+        "type": "text",
+        "name": "If yes, which utilities?"
+      },
+      "fillPolicy": "never",
+      "note": "conditional follow-up; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_if_yes_who_has_a_life_insurance_policy",
+      "target": {
+        "type": "text",
+        "name": "If yes, who has a life insurance policy"
+      },
+      "fillPolicy": "never",
+      "note": "conditional follow-up; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_if_yes_who_has_a_medical_condition_that_requires_health_su",
+      "target": {
+        "type": "text",
+        "name": "If yes, who has a medical condition that requires health sustaining medication?"
+      },
+      "fillPolicy": "never",
+      "note": "conditional follow-up; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_if_yes_who_is_disabled_seriously_ill_or_in_need_of_medical",
+      "target": {
+        "type": "text",
+        "name": "If yes, who is disabled, seriously ill, or in need of medical attention?"
+      },
+      "fillPolicy": "never",
+      "note": "conditional follow-up; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_if_yes_who_is_in_treatment_for_drug_or_alcohol_abuse",
+      "target": {
+        "type": "text",
+        "name": "If yes, who is in treatment for drug or alcohol abuse?"
+      },
+      "fillPolicy": "never",
+      "note": "conditional follow-up; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_if_yes_who_lost_coverage",
+      "target": {
+        "type": "text",
+        "name": "If yes, who lost coverage?"
+      },
+      "fillPolicy": "never",
+      "note": "conditional follow-up; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_if_yes_who_own_any_homes_or_property_that_they_don_t_live_",
+      "target": {
+        "type": "text",
+        "name": "If yes, who own any homes or property that they don’t live in?"
+      },
+      "fillPolicy": "never",
+      "note": "conditional follow-up; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_if_yes_who_was_in_foster_care_at_age_18_or_older",
+      "target": {
+        "type": "text",
+        "name": "If yes, who was in foster care at age 18 or older?"
+      },
+      "fillPolicy": "never",
+      "note": "conditional follow-up; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_income_from_commissions",
+      "target": {
+        "type": "checkbox",
+        "name": "Income from Commissions"
+      },
+      "fillPolicy": "never",
+      "note": "income type row; rows cannot be matched to the income source list positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_income_from_dividends",
+      "target": {
+        "type": "checkbox",
+        "name": "Income from Dividends"
+      },
+      "fillPolicy": "never",
+      "note": "income type row; rows cannot be matched to the income source list positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_income_from_gambling_lottery",
+      "target": {
+        "type": "checkbox",
+        "name": "Income from Gambling/Lottery"
+      },
+      "fillPolicy": "never",
+      "note": "income type row; rows cannot be matched to the income source list positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_income_from_guardian_fees",
+      "target": {
+        "type": "checkbox",
+        "name": "Income from Guardian Fees"
+      },
+      "fillPolicy": "never",
+      "note": "income type row; rows cannot be matched to the income source list positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_income_from_money_earned_from_babysitting",
+      "target": {
+        "type": "checkbox",
+        "name": "Income from Money Earned from Babysitting"
+      },
+      "fillPolicy": "never",
+      "note": "income type row; rows cannot be matched to the income source list positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_income_from_money_paid_to_you_for_loans",
+      "target": {
+        "type": "checkbox",
+        "name": "Income from Money Paid to You for Loans"
+      },
+      "fillPolicy": "never",
+      "note": "income type row; rows cannot be matched to the income source list positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_income_from_money_paid_to_you_for_rent",
+      "target": {
+        "type": "checkbox",
+        "name": "Income from Money Paid to You for Rent"
+      },
+      "fillPolicy": "never",
+      "note": "income type row; rows cannot be matched to the income source list positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_income_from_money_paid_to_you_for_room_or_board",
+      "target": {
+        "type": "checkbox",
+        "name": "Income from Money Paid to You for Room or Board"
+      },
+      "fillPolicy": "never",
+      "note": "income type row; rows cannot be matched to the income source list positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_income_from_money_for_training",
+      "target": {
+        "type": "checkbox",
+        "name": "Income from Money for Training"
+      },
+      "fillPolicy": "never",
+      "note": "income type row; rows cannot be matched to the income source list positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_income_from_pensions",
+      "target": {
+        "type": "checkbox",
+        "name": "Income from Pensions"
+      },
+      "fillPolicy": "never",
+      "note": "income type row; rows cannot be matched to the income source list positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_income_from_self_employment",
+      "target": {
+        "type": "checkbox",
+        "name": "Income from Self-Employment"
+      },
+      "fillPolicy": "never",
+      "note": "income type row; rows cannot be matched to the income source list positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_income_from_sick_benefits",
+      "target": {
+        "type": "checkbox",
+        "name": "Income from Sick Benefits"
+      },
+      "fillPolicy": "never",
+      "note": "income type row; rows cannot be matched to the income source list positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_income_from_social_security",
+      "target": {
+        "type": "checkbox",
+        "name": "Income from Social Security"
+      },
+      "fillPolicy": "never",
+      "note": "income type row; rows cannot be matched to the income source list positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_income_from_supplemental_security_income_ssi",
+      "target": {
+        "type": "checkbox",
+        "name": "Income from Supplemental Security Income (SSI)"
+      },
+      "fillPolicy": "never",
+      "note": "income type row; rows cannot be matched to the income source list positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_income_from_support",
+      "target": {
+        "type": "checkbox",
+        "name": "Income from Support"
+      },
+      "fillPolicy": "never",
+      "note": "income type row; rows cannot be matched to the income source list positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_income_from_unemployment",
+      "target": {
+        "type": "checkbox",
+        "name": "Income from Unemployment"
+      },
+      "fillPolicy": "never",
+      "note": "income type row; rows cannot be matched to the income source list positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_income_from_union_pay",
+      "target": {
+        "type": "checkbox",
+        "name": "Income from Union Pay"
+      },
+      "fillPolicy": "never",
+      "note": "income type row; rows cannot be matched to the income source list positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_income_from_veteran_benefit",
+      "target": {
+        "type": "checkbox",
+        "name": "Income from Veteran Benefit"
+      },
+      "fillPolicy": "never",
+      "note": "income type row; rows cannot be matched to the income source list positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_income_from_wages_from_employment",
+      "target": {
+        "type": "checkbox",
+        "name": "Income from Wages from Employment"
+      },
+      "fillPolicy": "never",
+      "note": "income type row; rows cannot be matched to the income source list positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_income_from_workers_compensation",
+      "target": {
+        "type": "checkbox",
+        "name": "Income from Workers’ Compensation"
+      },
+      "fillPolicy": "never",
+      "note": "income type row; rows cannot be matched to the income source list positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_income_from_other",
+      "target": {
+        "type": "checkbox",
+        "name": "Income from other"
+      },
+      "fillPolicy": "never",
+      "note": "income type row; rows cannot be matched to the income source list positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_is_anyone_a_widow_spouse_or_child_under_age_18_of_anyone_i",
+      "target": {
+        "type": "radio",
+        "name": "Is anyone a widow, spouse, or child (under age 18) of anyone in the U.S. military, or anyone who has"
+      },
+      "fillPolicy": "never",
+      "note": "household screening question; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_is_anyone_disabled_seriously_ill_or_in_need_of_medical_att",
+      "target": {
+        "type": "radio",
+        "name": "Is anyone disabled, seriously ill, or in need of medical attention?"
+      },
+      "fillPolicy": "never",
+      "note": "household screening question; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_is_anyone_in_the_u_s_military_or_has_anyone_been_in_the_u_",
+      "target": {
+        "type": "radio",
+        "name": "Is anyone in the U.S. military, or has anyone been in the U.S. military?"
+      },
+      "fillPolicy": "never",
+      "note": "household screening question; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_is_anyone_in_treatment_for_drug_or_alcohol_abuse",
+      "target": {
+        "type": "radio",
+        "name": "Is anyone in treatment for drug or alcohol abuse?"
+      },
+      "fillPolicy": "never",
+      "note": "household screening question; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_is_anyone_in_your_home_expecting_money",
+      "target": {
+        "type": "radio",
+        "name": "Is anyone in your home expecting money"
+      },
+      "fillPolicy": "never",
+      "note": "household screening question; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_is_anyone_on_strike",
+      "target": {
+        "type": "radio",
+        "name": "Is anyone on strike?"
+      },
+      "fillPolicy": "never",
+      "note": "household screening question; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_is_anyone_you_are_applying_for_offered_health_insurance_fr",
+      "target": {
+        "type": "radio",
+        "name": "Is anyone you are applying for offered health insurance from a job?\r Check yes even if the coverage"
+      },
+      "fillPolicy": "never",
+      "note": "job-offered insurance screening; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_is_person_2_in_school",
+      "target": {
+        "type": "radio",
+        "name": "Is person 2 in school?"
+      },
+      "source": {
+        "fieldPath": "household.members[].is_student"
+      },
+      "valueMap": {
+        "true": "0",
+        "false": "1"
+      },
+      "transforms": [],
+      "note": "in school On-states verified: /0=Yes, /1=No."
+    },
+    {
+      "id": "pa_is_person_3_in_school",
+      "target": {
+        "type": "radio",
+        "name": "Is person 3 in school?"
+      },
+      "source": {
+        "fieldPath": "household.members[].is_student"
+      },
+      "valueMap": {
+        "true": "0",
+        "false": "1"
+      },
+      "transforms": [],
+      "note": "in school On-states verified: /0=Yes, /1=No."
+    },
+    {
+      "id": "pa_is_person_4_in_school",
+      "target": {
+        "type": "radio",
+        "name": "Is person 4 in school?"
+      },
+      "source": {
+        "fieldPath": "household.members[].is_student"
+      },
+      "valueMap": {
+        "true": "0",
+        "false": "1"
+      },
+      "transforms": [],
+      "note": "in school On-states verified: /0=Yes, /1=No."
+    },
+    {
+      "id": "pa_is_person_5_in_school",
+      "target": {
+        "type": "radio",
+        "name": "Is person 5 in school?"
+      },
+      "source": {
+        "fieldPath": "household.members[].is_student"
+      },
+      "valueMap": {
+        "true": "0",
+        "false": "1"
+      },
+      "transforms": [],
+      "note": "in school On-states verified: /0=Yes, /1=No."
+    },
+    {
+      "id": "pa_is_person_6_in_school",
+      "target": {
+        "type": "radio",
+        "name": "Is person 6 in school?"
+      },
+      "source": {
+        "fieldPath": "household.members[].is_student"
+      },
+      "valueMap": {
+        "true": "0",
+        "false": "1"
+      },
+      "transforms": [],
+      "note": "in school On-states verified: /0=Yes, /1=No."
+    },
+    {
+      "id": "pa_is_person_7_in_school",
+      "target": {
+        "type": "radio",
+        "name": "Is person 7 in school?"
+      },
+      "source": {
+        "fieldPath": "household.members[].is_student"
+      },
+      "valueMap": {
+        "true": "0",
+        "false": "1"
+      },
+      "transforms": [],
+      "note": "in school On-states verified: /0=Yes, /1=No."
+    },
+    {
+      "id": "pa_kind_of_resource_of_person_1",
+      "target": {
+        "type": "text",
+        "name": "Kind of resource of person 1:"
+      },
+      "fillPolicy": "never",
+      "note": "typed row; cannot be matched positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_kind_of_resource_of_person_1_1",
+      "target": {
+        "type": "text",
+        "name": "Kind of resource of person 1: 1"
+      },
+      "fillPolicy": "never",
+      "note": "typed row; cannot be matched positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_kind_of_resource_of_person_1_2",
+      "target": {
+        "type": "text",
+        "name": "Kind of resource of person 1: 2"
+      },
+      "fillPolicy": "never",
+      "note": "typed row; cannot be matched positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_kind_of_resource_of_person_1_3",
+      "target": {
+        "type": "text",
+        "name": "Kind of resource of person 1: 3"
+      },
+      "fillPolicy": "never",
+      "note": "typed row; cannot be matched positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_kind_of_resource_of_person_1_4",
+      "target": {
+        "type": "text",
+        "name": "Kind of resource of person 1: 4"
+      },
+      "fillPolicy": "never",
+      "note": "typed row; cannot be matched positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_kind_of_resource_of_person_1_5",
+      "target": {
+        "type": "text",
+        "name": "Kind of resource of person 1: 5"
+      },
+      "fillPolicy": "never",
+      "note": "typed row; cannot be matched positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_medical_expenses_dental_bills",
+      "target": {
+        "type": "checkbox",
+        "name": "Medical expenses: Dental Bills"
+      },
+      "fillPolicy": "never",
+      "note": "medical expense row; rows cannot be matched to the expense list positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_medical_expenses_doctor_bills",
+      "target": {
+        "type": "checkbox",
+        "name": "Medical expenses: Doctor bills"
+      },
+      "fillPolicy": "never",
+      "note": "medical expense row; rows cannot be matched to the expense list positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_medical_expenses_health_aides_people_in_your_home_to_help_",
+      "target": {
+        "type": "checkbox",
+        "name": "Medical expenses: Health aides (people in your home to help with medical treatments)"
+      },
+      "fillPolicy": "never",
+      "note": "medical expense row; rows cannot be matched to the expense list positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_medical_expenses_health_insurance_or_medicare_premiums",
+      "target": {
+        "type": "checkbox",
+        "name": "Medical expenses: Health insurance or Medicare premiums\r"
+      },
+      "fillPolicy": "never",
+      "note": "medical expense row; rows cannot be matched to the expense list positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_medical_expenses_hospital_bills",
+      "target": {
+        "type": "checkbox",
+        "name": "Medical expenses: Hospital bills"
+      },
+      "fillPolicy": "never",
+      "note": "medical expense row; rows cannot be matched to the expense list positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_medical_expenses_medical_equipment",
+      "target": {
+        "type": "checkbox",
+        "name": "Medical expenses: Medical equipment"
+      },
+      "fillPolicy": "never",
+      "note": "medical expense row; rows cannot be matched to the expense list positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_medical_expenses_prescription_medicines",
+      "target": {
+        "type": "checkbox",
+        "name": "Medical expenses: Prescription medicines"
+      },
+      "fillPolicy": "never",
+      "note": "medical expense row; rows cannot be matched to the expense list positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_medical_expenses_other",
+      "target": {
+        "type": "checkbox",
+        "name": "Medical expenses: other"
+      },
+      "fillPolicy": "never",
+      "note": "medical expense row; rows cannot be matched to the expense list positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_medical_expenses_health_related_supplies_such_as_eyeglasse",
+      "target": {
+        "type": "checkbox",
+        "name": "Medical expenses:Health related supplies (such as eyeglasses, hearing aids, adult diapers)"
+      },
+      "fillPolicy": "never",
+      "note": "medical expense row; rows cannot be matched to the expense list positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_name_of_person_1_who_applied_for_or_awaiting_a_decision_fo",
+      "target": {
+        "type": "text",
+        "name": "Name of Person 1 who applied for or awaiting a decision for the benefits listed above"
+      },
+      "fillPolicy": "never",
+      "note": "named row; rows cannot be matched positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_name_of_person_1_with_pre_tax_deductions_taken_out_of_the_",
+      "target": {
+        "type": "text",
+        "name": "Name of Person 1 with pre-tax deductions taken out of the gross income"
+      },
+      "fillPolicy": "never",
+      "note": "named row; rows cannot be matched positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_name_of_person_2_who_applied_for_or_awaiting_a_decision_fo",
+      "target": {
+        "type": "text",
+        "name": "Name of Person 2 who applied for or awaiting a decision for the benefits listed above 1"
+      },
+      "fillPolicy": "never",
+      "note": "named row; rows cannot be matched positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_name_of_person_2_with_pre_tax_deductions_taken_out_of_the_",
+      "target": {
+        "type": "text",
+        "name": "Name of Person 2 with pre-tax deductions taken out of the gross income"
+      },
+      "fillPolicy": "never",
+      "note": "named row; rows cannot be matched positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_name_of_person_3_who_applied_for_or_awaiting_a_decision_fo",
+      "target": {
+        "type": "text",
+        "name": "Name of Person 3 who applied for or awaiting a decision for the benefits listed above"
+      },
+      "fillPolicy": "never",
+      "note": "named row; rows cannot be matched positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_name_of_person_3_with_pre_tax_deductions_taken_out_of_the_",
+      "target": {
+        "type": "text",
+        "name": "Name of Person 3 with pre-tax deductions taken out of the gross income"
+      },
+      "fillPolicy": "never",
+      "note": "named row; rows cannot be matched positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_name_of_dependent_of_tax_payer_1",
+      "target": {
+        "type": "text",
+        "name": "Name of dependent of tax payer 1"
+      },
+      "fillPolicy": "never",
+      "note": "named row; rows cannot be matched positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_name_of_dependent_of_tax_payer_2",
+      "target": {
+        "type": "text",
+        "name": "Name of dependent of tax payer 2"
+      },
+      "fillPolicy": "never",
+      "note": "named row; rows cannot be matched positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_name_of_dependent_of_tax_payer_26",
+      "target": {
+        "type": "text",
+        "name": "Name of dependent of tax payer 26"
+      },
+      "fillPolicy": "never",
+      "note": "named row; rows cannot be matched positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_name_of_dependent_of_tax_payer_3",
+      "target": {
+        "type": "text",
+        "name": "Name of dependent of tax payer 3"
+      },
+      "fillPolicy": "never",
+      "note": "named row; rows cannot be matched positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_name_of_person_1_listed_on_the_application_who_will_claim_",
+      "target": {
+        "type": "text",
+        "name": "Name of person 1 listed on the application who will claim any dependents on their tax return\r\r\r"
+      },
+      "fillPolicy": "never",
+      "note": "named row; rows cannot be matched positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_name_of_person_1_with_an_absent_relative",
+      "target": {
+        "type": "text",
+        "name": "Name of person 1 with an absent relative:"
+      },
+      "fillPolicy": "never",
+      "note": "named row; rows cannot be matched positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_name_of_person_1_with_an_absent_relative_1",
+      "target": {
+        "type": "text",
+        "name": "Name of person 1 with an absent relative: 1"
+      },
+      "fillPolicy": "never",
+      "note": "named row; rows cannot be matched positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_name_of_person_1_with_an_absent_relative_2",
+      "target": {
+        "type": "text",
+        "name": "Name of person 1 with an absent relative: 2"
+      },
+      "fillPolicy": "never",
+      "note": "named row; rows cannot be matched positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_name_of_person_1_with_an_absent_relative_3",
+      "target": {
+        "type": "text",
+        "name": "Name of person 1 with an absent relative: 3"
+      },
+      "fillPolicy": "never",
+      "note": "named row; rows cannot be matched positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_name_of_person_1_with_an_absent_relative_4",
+      "target": {
+        "type": "text",
+        "name": "Name of person 1 with an absent relative: 4"
+      },
+      "fillPolicy": "never",
+      "note": "named row; rows cannot be matched positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_name_of_person_1_with_an_absent_relative_5",
+      "target": {
+        "type": "text",
+        "name": "Name of person 1 with an absent relative: 5"
+      },
+      "fillPolicy": "never",
+      "note": "named row; rows cannot be matched positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_name_of_person_1_with_income",
+      "target": {
+        "type": "text",
+        "name": "Name of person 1 with income:"
+      },
+      "fillPolicy": "never",
+      "note": "named row; rows cannot be matched positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_name_of_person_1_with_the_resource",
+      "target": {
+        "type": "text",
+        "name": "Name of person 1 with the resource:"
+      },
+      "fillPolicy": "never",
+      "note": "named row; rows cannot be matched positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_name_of_person_1_with_the_resource_1",
+      "target": {
+        "type": "text",
+        "name": "Name of person 1 with the resource: 1"
+      },
+      "fillPolicy": "never",
+      "note": "named row; rows cannot be matched positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_name_of_person_1_with_the_resource_2",
+      "target": {
+        "type": "text",
+        "name": "Name of person 1 with the resource: 2"
+      },
+      "fillPolicy": "never",
+      "note": "named row; rows cannot be matched positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_name_of_person_1_with_the_resource_3",
+      "target": {
+        "type": "text",
+        "name": "Name of person 1 with the resource: 3"
+      },
+      "fillPolicy": "never",
+      "note": "named row; rows cannot be matched positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_name_of_person_1_with_the_resource_4",
+      "target": {
+        "type": "text",
+        "name": "Name of person 1 with the resource: 4"
+      },
+      "fillPolicy": "never",
+      "note": "named row; rows cannot be matched positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_name_of_person_1_with_the_resource_5",
+      "target": {
+        "type": "text",
+        "name": "Name of person 1 with the resource: 5"
+      },
+      "fillPolicy": "never",
+      "note": "named row; rows cannot be matched positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_name_of_person_1_s_absent_relative",
+      "target": {
+        "type": "text",
+        "name": "Name of person 1's absent relative"
+      },
+      "fillPolicy": "never",
+      "note": "named row; rows cannot be matched positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_name_of_person_1_s_absent_relative_1",
+      "target": {
+        "type": "text",
+        "name": "Name of person 1's absent relative 1"
+      },
+      "fillPolicy": "never",
+      "note": "named row; rows cannot be matched positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_name_of_person_1_s_absent_relative_2",
+      "target": {
+        "type": "text",
+        "name": "Name of person 1's absent relative 2"
+      },
+      "fillPolicy": "never",
+      "note": "named row; rows cannot be matched positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_name_of_person_1_s_absent_relative_3",
+      "target": {
+        "type": "text",
+        "name": "Name of person 1's absent relative 3"
+      },
+      "fillPolicy": "never",
+      "note": "named row; rows cannot be matched positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_name_of_person_1_s_absent_relative_4",
+      "target": {
+        "type": "text",
+        "name": "Name of person 1's absent relative 4"
+      },
+      "fillPolicy": "never",
+      "note": "named row; rows cannot be matched positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_name_of_person_1_s_absent_relative_5",
+      "target": {
+        "type": "text",
+        "name": "Name of person 1's absent relative 5"
+      },
+      "fillPolicy": "never",
+      "note": "named row; rows cannot be matched positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_name_of_person_2_listed_on_the_application_who_will_claim_",
+      "target": {
+        "type": "text",
+        "name": "Name of person 2 listed on the application who will claim any dependents on their tax return\r\r\r"
+      },
+      "fillPolicy": "never",
+      "note": "named row; rows cannot be matched positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_name_of_person_2_with_income",
+      "target": {
+        "type": "text",
+        "name": "Name of person 2 with income:"
+      },
+      "fillPolicy": "never",
+      "note": "named row; rows cannot be matched positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_name_of_person_3_listed_on_the_application_who_will_claim_",
+      "target": {
+        "type": "text",
+        "name": "Name of person 3 listed on the application who will claim any dependents on their tax return\r\r\r"
+      },
+      "fillPolicy": "never",
+      "note": "named row; rows cannot be matched positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_name_of_person_3_with_income",
+      "target": {
+        "type": "text",
+        "name": "Name of person 3 with income:"
+      },
+      "fillPolicy": "never",
+      "note": "named row; rows cannot be matched positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_name_of_person_4_with_income",
+      "target": {
+        "type": "text",
+        "name": "Name of person 4 with income:"
+      },
+      "fillPolicy": "never",
+      "note": "named row; rows cannot be matched positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_name_of_tax_filer_1",
+      "target": {
+        "type": "text",
+        "name": "Name of tax filer 1"
+      },
+      "fillPolicy": "never",
+      "note": "named row; rows cannot be matched positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_name_of_tax_filer_2",
+      "target": {
+        "type": "text",
+        "name": "Name of tax filer 2"
+      },
+      "fillPolicy": "never",
+      "note": "named row; rows cannot be matched positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_name_of_tax_filer_3",
+      "target": {
+        "type": "text",
+        "name": "Name of tax filer 3"
+      },
+      "fillPolicy": "never",
+      "note": "named row; rows cannot be matched positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_1_are_you_applying_for_yourself",
+      "target": {
+        "type": "radio",
+        "name": "Person 1 Are you applying for yourself?"
+      },
+      "fillPolicy": "never",
+      "note": "applicant is the filer; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_1_do_you_have_a_sponsor",
+      "target": {
+        "type": "radio",
+        "name": "Person 1 Do you have a sponsor?"
+      },
+      "fillPolicy": "never",
+      "note": "sponsor detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_1_elibigle_immigration_status",
+      "target": {
+        "type": "checkbox",
+        "name": "Person 1 Elibigle Immigration Status"
+      },
+      "note": "Eligible-status checkbox; vocabulary has only free-text immigration_status, no boolean equivalent.",
+      "fillPolicy": "never"
+    },
+    {
+      "id": "pa_person_1_ethnicity",
+      "target": {
+        "type": "radio",
+        "name": "Person 1 Ethnicity"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_1_family_planning_services",
+      "target": {
+        "type": "radio",
+        "name": "Person 1 Family Planning Services"
+      },
+      "fillPolicy": "never",
+      "note": "family planning; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_1_have_you_lived_in_the_u_s_since_1996",
+      "target": {
+        "type": "radio",
+        "name": "Person 1 Have you lived in the U.S. since 1996?"
+      },
+      "fillPolicy": "never",
+      "note": "residency history screening; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_1_how_many_babies_are_expected",
+      "target": {
+        "type": "text",
+        "name": "Person 1 How many babies are expected?"
+      },
+      "fillPolicy": "never",
+      "note": "pregnancy detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_1_marital_status",
+      "target": {
+        "type": "radio",
+        "name": "Person 1 Marital Status"
+      },
+      "source": {
+        "fieldPath": "applicant.marital_status"
+      },
+      "valueMap": {
+        "single": "0",
+        "separated": "1",
+        "married": "2",
+        "divorced": "3",
+        "widowed": "4"
+      },
+      "transforms": [],
+      "note": "marital status | Corrected 2026-09-17: visual check shows Single/Separated/Married on row 1, Divorced/Widowed on row 2 (was married<->separated)."
+    },
+    {
+      "id": "pa_person_1_race_american_indian_or_alaska_native",
+      "target": {
+        "type": "checkbox",
+        "name": "Person 1 Race American Indian or Alaska Native"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_1_race_asian",
+      "target": {
+        "type": "checkbox",
+        "name": "Person 1 Race Asian"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_1_race_black",
+      "target": {
+        "type": "checkbox",
+        "name": "Person 1 Race Black"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_1_race_native_hawaiian_or_pacific_islander",
+      "target": {
+        "type": "checkbox",
+        "name": "Person 1 Race Native Hawaiian or Pacific Islander"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_1_race_other",
+      "target": {
+        "type": "checkbox",
+        "name": "Person 1 Race Other"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_1_race_other_entry",
+      "target": {
+        "type": "text",
+        "name": "Person 1 Race Other Entry"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_1_race_white",
+      "target": {
+        "type": "checkbox",
+        "name": "Person 1 Race White"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_1_sex",
+      "target": {
+        "type": "radio",
+        "name": "Person 1 Sex"
+      },
+      "source": {
+        "fieldPath": "applicant.sex"
+      },
+      "valueMap": {
+        "male": "0",
+        "female": "1"
+      },
+      "transforms": [],
+      "note": "sex"
+    },
+    {
+      "id": "pa_person_1_type_source_of_income_name_of_employer",
+      "target": {
+        "type": "text",
+        "name": "Person 1 Type/Source of income/Name of employer:"
+      },
+      "fillPolicy": "never",
+      "note": "income row; rows cannot be matched to the job list positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_1_you_are_in_school_what_grade",
+      "target": {
+        "type": "text",
+        "name": "Person 1 You are in school, what grade?"
+      },
+      "fillPolicy": "never",
+      "note": "school detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_1_you_are_in_school_what_is_the_name_of_your_school",
+      "target": {
+        "type": "text",
+        "name": "Person 1 You are in school, what is the name of your school?"
+      },
+      "fillPolicy": "never",
+      "note": "school detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_1_absent_relative",
+      "target": {
+        "type": "radio",
+        "name": "Person 1 absent relative"
+      },
+      "fillPolicy": "never",
+      "note": "absent parent detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_1_afraid_family_planning_info_cause_harm",
+      "target": {
+        "type": "radio",
+        "name": "Person 1 afraid family planning info cause harm"
+      },
+      "fillPolicy": "never",
+      "note": "family planning safety; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_1_document_id_number",
+      "target": {
+        "type": "text",
+        "name": "Person 1 document id number"
+      },
+      "fillPolicy": "never",
+      "note": "identity document detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_1_document_type",
+      "target": {
+        "type": "text",
+        "name": "Person 1 document type"
+      },
+      "fillPolicy": "never",
+      "note": "identity document detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_1_driver_s_license_or_state_id",
+      "target": {
+        "type": "text",
+        "name": "Person 1 driver's license or state ID"
+      },
+      "fillPolicy": "never",
+      "note": "identity document detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_1_due_date",
+      "target": {
+        "type": "text",
+        "name": "Person 1 due date"
+      },
+      "fillPolicy": "never",
+      "note": "pregnancy due date; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_1_fulltime_student",
+      "target": {
+        "type": "radio",
+        "name": "Person 1 fulltime student"
+      },
+      "source": {
+        "fieldPath": "applicant.is_student"
+      },
+      "valueMap": {
+        "true": "0",
+        "false": "1"
+      },
+      "transforms": [],
+      "note": "full-time student On-states verified: /0=Yes, /1=No."
+    },
+    {
+      "id": "pa_person_1_name_of_dependents",
+      "target": {
+        "type": "text",
+        "name": "Person 1 name of dependents"
+      },
+      "fillPolicy": "never",
+      "note": "dependent detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_1_under_21_medical_assistance_coverage",
+      "target": {
+        "type": "radio",
+        "name": "Person 1 under 21 medical assistance coverage"
+      },
+      "fillPolicy": "never",
+      "note": "medical assistance detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_2_do_you_have_a_sponsor",
+      "target": {
+        "type": "radio",
+        "name": "Person 2 Do you have a sponsor?"
+      },
+      "fillPolicy": "never",
+      "note": "sponsor detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_2_elibigle_immigration_status",
+      "target": {
+        "type": "checkbox",
+        "name": "Person 2 Elibigle Immigration Status"
+      },
+      "note": "Eligible-status checkbox; vocabulary has only free-text immigration_status, no boolean equivalent.",
+      "fillPolicy": "never"
+    },
+    {
+      "id": "pa_person_2_ethnicity",
+      "target": {
+        "type": "radio",
+        "name": "Person 2 Ethnicity"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_2_family_planning_services",
+      "target": {
+        "type": "radio",
+        "name": "Person 2 Family Planning Services"
+      },
+      "fillPolicy": "never",
+      "note": "family planning; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_2_have_you_lived_in_the_u_s_since_1996",
+      "target": {
+        "type": "radio",
+        "name": "Person 2 Have you lived in the U.S. since 1996?"
+      },
+      "fillPolicy": "never",
+      "note": "residency history screening; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_2_how_many_babies_are_expected",
+      "target": {
+        "type": "text",
+        "name": "Person 2 How many babies are expected?"
+      },
+      "fillPolicy": "never",
+      "note": "pregnancy detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_2_marital_status",
+      "target": {
+        "type": "radio",
+        "name": "Person 2 Marital Status"
+      },
+      "fillPolicy": "never",
+      "note": "marital status; no household-member marital status in vocabulary",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_2_race_american_indian_or_alaska_native",
+      "target": {
+        "type": "checkbox",
+        "name": "Person 2 Race American Indian or Alaska Native"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_2_race_asian",
+      "target": {
+        "type": "checkbox",
+        "name": "Person 2 Race Asian"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_2_race_black",
+      "target": {
+        "type": "checkbox",
+        "name": "Person 2 Race Black"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_2_race_native_hawaiian_or_pacific_islander",
+      "target": {
+        "type": "checkbox",
+        "name": "Person 2 Race Native Hawaiian or Pacific Islander"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_2_race_other",
+      "target": {
+        "type": "checkbox",
+        "name": "Person 2 Race Other"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_2_race_other_entry",
+      "target": {
+        "type": "text",
+        "name": "Person 2 Race Other Entry"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_2_race_white",
+      "target": {
+        "type": "checkbox",
+        "name": "Person 2 Race White"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_2_sex",
+      "target": {
+        "type": "radio",
+        "name": "Person 2 Sex"
+      },
+      "source": {
+        "fieldPath": "household.members[].sex"
+      },
+      "valueMap": {
+        "male": "0",
+        "female": "1"
+      },
+      "transforms": [],
+      "note": "sex"
+    },
+    {
+      "id": "pa_person_2_type_source_of_income_name_of_employer",
+      "target": {
+        "type": "text",
+        "name": "Person 2 Type/Source of income/Name of employer:"
+      },
+      "fillPolicy": "never",
+      "note": "income row; rows cannot be matched to the job list positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_2_you_are_in_school_what_is_the_name_of_your_school",
+      "target": {
+        "type": "text",
+        "name": "Person 2 You are in school, what is the name of your school?"
+      },
+      "fillPolicy": "never",
+      "note": "school detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_2_afraid_family_planning_info_cause_harm",
+      "target": {
+        "type": "radio",
+        "name": "Person 2 afraid family planning info cause harm"
+      },
+      "fillPolicy": "never",
+      "note": "family planning safety; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_2_document_id_number",
+      "target": {
+        "type": "text",
+        "name": "Person 2 document id number"
+      },
+      "fillPolicy": "never",
+      "note": "identity document detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_2_document_type",
+      "target": {
+        "type": "text",
+        "name": "Person 2 document type"
+      },
+      "fillPolicy": "never",
+      "note": "identity document detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_2_driver_s_license_or_state_id",
+      "target": {
+        "type": "text",
+        "name": "Person 2 driver's license or state ID"
+      },
+      "fillPolicy": "never",
+      "note": "identity document detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_2_due_date",
+      "target": {
+        "type": "text",
+        "name": "Person 2 due date"
+      },
+      "fillPolicy": "never",
+      "note": "pregnancy due date; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_2_fulltime_student",
+      "target": {
+        "type": "radio",
+        "name": "Person 2 fulltime student"
+      },
+      "source": {
+        "fieldPath": "household.members[].is_student"
+      },
+      "valueMap": {
+        "true": "0",
+        "false": "1"
+      },
+      "transforms": [],
+      "note": "full-time student On-states verified: /0=Yes, /1=No."
+    },
+    {
+      "id": "pa_person_2_if_in_school_what_grade",
+      "target": {
+        "type": "text",
+        "name": "Person 2 if in school, what grade?"
+      },
+      "fillPolicy": "never",
+      "note": "school detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_2_name_of_dependents",
+      "target": {
+        "type": "text",
+        "name": "Person 2 name of dependents"
+      },
+      "fillPolicy": "never",
+      "note": "dependent detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_2_under_21_medical_assistance_coverage",
+      "target": {
+        "type": "radio",
+        "name": "Person 2 under 21 medical assistance coverage"
+      },
+      "fillPolicy": "never",
+      "note": "medical assistance detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_3_do_you_have_a_sponsor",
+      "target": {
+        "type": "radio",
+        "name": "Person 3 Do you have a sponsor?"
+      },
+      "fillPolicy": "never",
+      "note": "sponsor detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_3_ethnicity",
+      "target": {
+        "type": "radio",
+        "name": "Person 3 Ethnicity"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_3_family_planning_services",
+      "target": {
+        "type": "radio",
+        "name": "Person 3 Family Planning Services"
+      },
+      "fillPolicy": "never",
+      "note": "family planning; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_3_have_you_lived_in_the_u_s_since_1996",
+      "target": {
+        "type": "checkbox",
+        "name": "Person 3 Have you lived in the U.S. since 1996?"
+      },
+      "fillPolicy": "never",
+      "note": "residency history screening; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_3_how_many_babies_are_expected",
+      "target": {
+        "type": "text",
+        "name": "Person 3 How many babies are expected?"
+      },
+      "fillPolicy": "never",
+      "note": "pregnancy detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_3_marital_status",
+      "target": {
+        "type": "radio",
+        "name": "Person 3 Marital Status"
+      },
+      "fillPolicy": "never",
+      "note": "marital status; no household-member marital status in vocabulary",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_3_race_american_indian_or_alaska_native",
+      "target": {
+        "type": "checkbox",
+        "name": "Person 3 Race American Indian or Alaska Native"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_3_race_asian",
+      "target": {
+        "type": "checkbox",
+        "name": "Person 3 Race Asian"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_3_race_black",
+      "target": {
+        "type": "checkbox",
+        "name": "Person 3 Race Black"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_3_race_native_hawaiian_or_pacific_islander",
+      "target": {
+        "type": "checkbox",
+        "name": "Person 3 Race Native Hawaiian or Pacific Islander"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_3_race_other",
+      "target": {
+        "type": "checkbox",
+        "name": "Person 3 Race Other"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_3_race_other_entry",
+      "target": {
+        "type": "text",
+        "name": "Person 3 Race Other Entry"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_3_race_white",
+      "target": {
+        "type": "checkbox",
+        "name": "Person 3 Race White"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_3_sex",
+      "target": {
+        "type": "radio",
+        "name": "Person 3 Sex"
+      },
+      "source": {
+        "fieldPath": "household.members[].sex"
+      },
+      "valueMap": {
+        "male": "0",
+        "female": "1"
+      },
+      "transforms": [],
+      "note": "sex"
+    },
+    {
+      "id": "pa_person_3_type_source_of_income_name_of_employer",
+      "target": {
+        "type": "text",
+        "name": "Person 3 Type/Source of income/Name of employer:"
+      },
+      "fillPolicy": "never",
+      "note": "income row; rows cannot be matched to the job list positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_3_you_are_in_school_what_is_the_name_of_your_school",
+      "target": {
+        "type": "text",
+        "name": "Person 3 You are in school, what is the name of your school?"
+      },
+      "fillPolicy": "never",
+      "note": "school detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_3_afraid_family_planning_info_cause_harm",
+      "target": {
+        "type": "radio",
+        "name": "Person 3 afraid family planning info cause harm"
+      },
+      "fillPolicy": "never",
+      "note": "family planning safety; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_3_document_id_number",
+      "target": {
+        "type": "text",
+        "name": "Person 3 document id number"
+      },
+      "fillPolicy": "never",
+      "note": "identity document detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_3_document_type",
+      "target": {
+        "type": "text",
+        "name": "Person 3 document type"
+      },
+      "fillPolicy": "never",
+      "note": "identity document detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_3_driver_s_license_or_state_id",
+      "target": {
+        "type": "text",
+        "name": "Person 3 driver's license or state ID"
+      },
+      "fillPolicy": "never",
+      "note": "identity document detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_3_due_date",
+      "target": {
+        "type": "text",
+        "name": "Person 3 due date"
+      },
+      "fillPolicy": "never",
+      "note": "pregnancy due date; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_3_fulltime_student",
+      "target": {
+        "type": "radio",
+        "name": "Person 3 fulltime student"
+      },
+      "source": {
+        "fieldPath": "household.members[].is_student"
+      },
+      "valueMap": {
+        "true": "0",
+        "false": "1"
+      },
+      "transforms": [],
+      "note": "full-time student On-states verified: /0=Yes, /1=No."
+    },
+    {
+      "id": "pa_person_3_if_in_school_what_grade",
+      "target": {
+        "type": "text",
+        "name": "Person 3 if in school, what grade?"
+      },
+      "fillPolicy": "never",
+      "note": "school detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_3_name_of_dependents",
+      "target": {
+        "type": "text",
+        "name": "Person 3 name of dependents"
+      },
+      "fillPolicy": "never",
+      "note": "dependent detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_3_under_21_medical_assistance_coverage",
+      "target": {
+        "type": "radio",
+        "name": "Person 3 under 21 medical assistance coverage"
+      },
+      "fillPolicy": "never",
+      "note": "medical assistance detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_4_do_you_have_a_sponsor",
+      "target": {
+        "type": "radio",
+        "name": "Person 4 Do you have a sponsor?"
+      },
+      "fillPolicy": "never",
+      "note": "sponsor detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_4_elibigle_immigration_status",
+      "target": {
+        "type": "checkbox",
+        "name": "Person 4 Elibigle Immigration Status"
+      },
+      "note": "Eligible-status checkbox; vocabulary has only free-text immigration_status, no boolean equivalent.",
+      "fillPolicy": "never"
+    },
+    {
+      "id": "pa_person_4_ethnicity",
+      "target": {
+        "type": "radio",
+        "name": "Person 4 Ethnicity"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_4_family_planning_services",
+      "target": {
+        "type": "radio",
+        "name": "Person 4 Family Planning Services"
+      },
+      "fillPolicy": "never",
+      "note": "family planning; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_4_have_you_lived_in_the_u_s_since_1996",
+      "target": {
+        "type": "radio",
+        "name": "Person 4 Have you lived in the U.S. since 1996?"
+      },
+      "fillPolicy": "never",
+      "note": "residency history screening; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_4_how_many_babies_are_expected",
+      "target": {
+        "type": "text",
+        "name": "Person 4 How many babies are expected?"
+      },
+      "fillPolicy": "never",
+      "note": "pregnancy detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_4_marital_status",
+      "target": {
+        "type": "radio",
+        "name": "Person 4 Marital Status"
+      },
+      "fillPolicy": "never",
+      "note": "marital status; no household-member marital status in vocabulary",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_4_race_american_indian_or_alaska_native",
+      "target": {
+        "type": "checkbox",
+        "name": "Person 4 Race American Indian or Alaska Native"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_4_race_asian",
+      "target": {
+        "type": "checkbox",
+        "name": "Person 4 Race Asian"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_4_race_black",
+      "target": {
+        "type": "checkbox",
+        "name": "Person 4 Race Black"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_4_race_native_hawaiian_or_pacific_islander",
+      "target": {
+        "type": "checkbox",
+        "name": "Person 4 Race Native Hawaiian or Pacific Islander"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_4_race_other",
+      "target": {
+        "type": "checkbox",
+        "name": "Person 4 Race Other"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_4_race_other_entry",
+      "target": {
+        "type": "text",
+        "name": "Person 4 Race Other Entry"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_4_race_white",
+      "target": {
+        "type": "checkbox",
+        "name": "Person 4 Race White"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_4_sex",
+      "target": {
+        "type": "radio",
+        "name": "Person 4 Sex"
+      },
+      "source": {
+        "fieldPath": "household.members[].sex"
+      },
+      "valueMap": {
+        "male": "0",
+        "female": "1"
+      },
+      "transforms": [],
+      "note": "sex"
+    },
+    {
+      "id": "pa_person_4_type_source_of_income_name_of_employer",
+      "target": {
+        "type": "text",
+        "name": "Person 4 Type/Source of income/Name of employer:"
+      },
+      "fillPolicy": "never",
+      "note": "income row; rows cannot be matched to the job list positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_4_you_are_in_school_what_is_the_name_of_your_school",
+      "target": {
+        "type": "text",
+        "name": "Person 4 You are in school, what is the name of your school?"
+      },
+      "fillPolicy": "never",
+      "note": "school detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_4_afraid_family_planning_info_cause_harm",
+      "target": {
+        "type": "radio",
+        "name": "Person 4 afraid family planning info cause harm"
+      },
+      "fillPolicy": "never",
+      "note": "family planning safety; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_4_document_id_number",
+      "target": {
+        "type": "text",
+        "name": "Person 4 document id number"
+      },
+      "fillPolicy": "never",
+      "note": "identity document detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_4_document_type",
+      "target": {
+        "type": "text",
+        "name": "Person 4 document type"
+      },
+      "fillPolicy": "never",
+      "note": "identity document detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_4_driver_s_license_or_state_id",
+      "target": {
+        "type": "text",
+        "name": "Person 4 driver's license or state ID"
+      },
+      "fillPolicy": "never",
+      "note": "identity document detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_4_due_date",
+      "target": {
+        "type": "text",
+        "name": "Person 4 due date"
+      },
+      "fillPolicy": "never",
+      "note": "pregnancy due date; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_4_fulltime_student",
+      "target": {
+        "type": "radio",
+        "name": "Person 4 fulltime student"
+      },
+      "source": {
+        "fieldPath": "household.members[].is_student"
+      },
+      "valueMap": {
+        "true": "0",
+        "false": "1"
+      },
+      "transforms": [],
+      "note": "full-time student On-states verified: /0=Yes, /1=No."
+    },
+    {
+      "id": "pa_person_4_if_in_school_what_grade",
+      "target": {
+        "type": "text",
+        "name": "Person 4 if in school, what grade?"
+      },
+      "fillPolicy": "never",
+      "note": "school detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_4_under_21_medical_assistance_coverage",
+      "target": {
+        "type": "radio",
+        "name": "Person 4 under 21 medical assistance coverage"
+      },
+      "fillPolicy": "never",
+      "note": "medical assistance detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_5_do_you_have_a_sponsor",
+      "target": {
+        "type": "radio",
+        "name": "Person 5 Do you have a sponsor?"
+      },
+      "fillPolicy": "never",
+      "note": "sponsor detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_5_elibigle_immigration_status",
+      "target": {
+        "type": "checkbox",
+        "name": "Person 5 Elibigle Immigration Status"
+      },
+      "note": "Eligible-status checkbox; vocabulary has only free-text immigration_status, no boolean equivalent.",
+      "fillPolicy": "never"
+    },
+    {
+      "id": "pa_person_5_ethnicity",
+      "target": {
+        "type": "radio",
+        "name": "Person 5 Ethnicity"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_5_family_planning_services",
+      "target": {
+        "type": "radio",
+        "name": "Person 5 Family Planning Services"
+      },
+      "fillPolicy": "never",
+      "note": "family planning; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_5_have_you_lived_in_the_u_s_since_1996",
+      "target": {
+        "type": "radio",
+        "name": "Person 5 Have you lived in the U.S. since 1996?"
+      },
+      "fillPolicy": "never",
+      "note": "residency history screening; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_5_how_many_babies_are_expected",
+      "target": {
+        "type": "text",
+        "name": "Person 5 How many babies are expected?"
+      },
+      "fillPolicy": "never",
+      "note": "pregnancy detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_5_marital_status",
+      "target": {
+        "type": "radio",
+        "name": "Person 5 Marital Status"
+      },
+      "fillPolicy": "never",
+      "note": "marital status; no household-member marital status in vocabulary",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_5_race_american_indian_or_alaska_native",
+      "target": {
+        "type": "checkbox",
+        "name": "Person 5 Race American Indian or Alaska Native"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_5_race_asian",
+      "target": {
+        "type": "checkbox",
+        "name": "Person 5 Race Asian"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_5_race_blac",
+      "target": {
+        "type": "checkbox",
+        "name": "Person 5 Race Blac"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_5_race_native_hawaiian_or_pacific_islander",
+      "target": {
+        "type": "checkbox",
+        "name": "Person 5 Race Native Hawaiian or Pacific Islander"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_5_race_other",
+      "target": {
+        "type": "checkbox",
+        "name": "Person 5 Race Other"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_5_race_other_entry",
+      "target": {
+        "type": "text",
+        "name": "Person 5 Race Other Entry"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_5_race_white",
+      "target": {
+        "type": "checkbox",
+        "name": "Person 5 Race White"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_5_sex",
+      "target": {
+        "type": "radio",
+        "name": "Person 5 Sex"
+      },
+      "source": {
+        "fieldPath": "household.members[].sex"
+      },
+      "valueMap": {
+        "male": "0",
+        "female": "1"
+      },
+      "transforms": [],
+      "note": "sex"
+    },
+    {
+      "id": "pa_person_5_you_are_in_school_what_is_the_name_of_your_school",
+      "target": {
+        "type": "text",
+        "name": "Person 5 You are in school, what is the name of your school?"
+      },
+      "fillPolicy": "never",
+      "note": "school detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_5_afraid_family_planning_info_cause_harm",
+      "target": {
+        "type": "radio",
+        "name": "Person 5 afraid family planning info cause harm"
+      },
+      "fillPolicy": "never",
+      "note": "family planning safety; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_5_document_id_number",
+      "target": {
+        "type": "text",
+        "name": "Person 5 document id number"
+      },
+      "fillPolicy": "never",
+      "note": "identity document detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_5_document_type",
+      "target": {
+        "type": "text",
+        "name": "Person 5 document type"
+      },
+      "fillPolicy": "never",
+      "note": "identity document detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_5_driver_s_license_or_state_id",
+      "target": {
+        "type": "text",
+        "name": "Person 5 driver's license or state ID"
+      },
+      "fillPolicy": "never",
+      "note": "identity document detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_5_due_date",
+      "target": {
+        "type": "text",
+        "name": "Person 5 due date"
+      },
+      "fillPolicy": "never",
+      "note": "pregnancy due date; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_5_fulltime_student",
+      "target": {
+        "type": "radio",
+        "name": "Person 5 fulltime student"
+      },
+      "source": {
+        "fieldPath": "household.members[].is_student"
+      },
+      "valueMap": {
+        "true": "0",
+        "false": "1"
+      },
+      "transforms": [],
+      "note": "full-time student On-states verified: /0=Yes, /1=No."
+    },
+    {
+      "id": "pa_person_5_if_in_school_what_grade",
+      "target": {
+        "type": "text",
+        "name": "Person 5 if in school, what grade?"
+      },
+      "fillPolicy": "never",
+      "note": "school detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_5_under_21_medical_assistance_coverage",
+      "target": {
+        "type": "radio",
+        "name": "Person 5 under 21 medical assistance coverage"
+      },
+      "fillPolicy": "never",
+      "note": "medical assistance detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_6_do_you_have_a_sponsor",
+      "target": {
+        "type": "radio",
+        "name": "Person 6 Do you have a sponsor?"
+      },
+      "fillPolicy": "never",
+      "note": "sponsor detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_6_elibigle_immigration_status",
+      "target": {
+        "type": "checkbox",
+        "name": "Person 6 Elibigle Immigration Status"
+      },
+      "note": "Eligible-status checkbox; vocabulary has only free-text immigration_status, no boolean equivalent.",
+      "fillPolicy": "never"
+    },
+    {
+      "id": "pa_person_6_ethnicity",
+      "target": {
+        "type": "radio",
+        "name": "Person 6 Ethnicity"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_6_family_planning_services",
+      "target": {
+        "type": "radio",
+        "name": "Person 6 Family Planning Services"
+      },
+      "fillPolicy": "never",
+      "note": "family planning; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_6_have_you_lived_in_the_u_s_since_1996",
+      "target": {
+        "type": "radio",
+        "name": "Person 6 Have you lived in the U.S. since 1996?"
+      },
+      "fillPolicy": "never",
+      "note": "residency history screening; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_6_how_many_babies_are_expected",
+      "target": {
+        "type": "text",
+        "name": "Person 6 How many babies are expected?"
+      },
+      "fillPolicy": "never",
+      "note": "pregnancy detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_6_marital_status",
+      "target": {
+        "type": "radio",
+        "name": "Person 6 Marital Status"
+      },
+      "fillPolicy": "never",
+      "note": "marital status; no household-member marital status in vocabulary",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_6_race_american_indian_or_alaska_native",
+      "target": {
+        "type": "checkbox",
+        "name": "Person 6 Race American Indian or Alaska Native"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_6_race_asian",
+      "target": {
+        "type": "checkbox",
+        "name": "Person 6 Race Asian"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_6_race_black",
+      "target": {
+        "type": "checkbox",
+        "name": "Person 6 Race Black"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_6_race_native_hawaiian_or_pacific_islander",
+      "target": {
+        "type": "checkbox",
+        "name": "Person 6 Race Native Hawaiian or Pacific Islander"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_6_race_other",
+      "target": {
+        "type": "checkbox",
+        "name": "Person 6 Race Other"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_6_race_other_entry",
+      "target": {
+        "type": "text",
+        "name": "Person 6 Race Other Entry"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_6_race_white",
+      "target": {
+        "type": "checkbox",
+        "name": "Person 6 Race White"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_6_sex",
+      "target": {
+        "type": "radio",
+        "name": "Person 6 Sex"
+      },
+      "source": {
+        "fieldPath": "household.members[].sex"
+      },
+      "valueMap": {
+        "male": "0",
+        "female": "1"
+      },
+      "transforms": [],
+      "note": "sex"
+    },
+    {
+      "id": "pa_person_6_you_are_in_school_what_is_the_name_of_your_school",
+      "target": {
+        "type": "text",
+        "name": "Person 6 You are in school, what is the name of your school?"
+      },
+      "fillPolicy": "never",
+      "note": "school detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_6_afraid_family_planning_info_cause_harm",
+      "target": {
+        "type": "radio",
+        "name": "Person 6 afraid family planning info cause harm"
+      },
+      "fillPolicy": "never",
+      "note": "family planning safety; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_6_document_id_number",
+      "target": {
+        "type": "text",
+        "name": "Person 6 document id number"
+      },
+      "fillPolicy": "never",
+      "note": "identity document detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_6_document_type",
+      "target": {
+        "type": "text",
+        "name": "Person 6 document type"
+      },
+      "fillPolicy": "never",
+      "note": "identity document detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_6_driver_s_license_or_state_id",
+      "target": {
+        "type": "text",
+        "name": "Person 6 driver's license or state ID"
+      },
+      "fillPolicy": "never",
+      "note": "identity document detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_6_due_date",
+      "target": {
+        "type": "text",
+        "name": "Person 6 due date"
+      },
+      "fillPolicy": "never",
+      "note": "pregnancy due date; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_6_fulltime_student",
+      "target": {
+        "type": "radio",
+        "name": "Person 6 fulltime student"
+      },
+      "source": {
+        "fieldPath": "household.members[].is_student"
+      },
+      "valueMap": {
+        "true": "0",
+        "false": "1"
+      },
+      "transforms": [],
+      "note": "full-time student On-states verified: /0=Yes, /1=No."
+    },
+    {
+      "id": "pa_person_6_if_in_school_what_grade",
+      "target": {
+        "type": "text",
+        "name": "Person 6 if in school, what grade?"
+      },
+      "fillPolicy": "never",
+      "note": "school detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_6_under_21_medical_assistance_coverage",
+      "target": {
+        "type": "radio",
+        "name": "Person 6 under 21 medical assistance coverage"
+      },
+      "fillPolicy": "never",
+      "note": "medical assistance detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_7_do_you_have_a_sponsor",
+      "target": {
+        "type": "radio",
+        "name": "Person 7 Do you have a sponsor?"
+      },
+      "fillPolicy": "never",
+      "note": "sponsor detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_7_elibigle_immigration_status",
+      "target": {
+        "type": "checkbox",
+        "name": "Person 7 Elibigle Immigration Status"
+      },
+      "note": "Eligible-status checkbox; vocabulary has only free-text immigration_status, no boolean equivalent.",
+      "fillPolicy": "never"
+    },
+    {
+      "id": "pa_person_7_ethnicity",
+      "target": {
+        "type": "checkbox",
+        "name": "Person 7 Ethnicity"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_7_family_planning_services",
+      "target": {
+        "type": "radio",
+        "name": "Person 7 Family Planning Services"
+      },
+      "fillPolicy": "never",
+      "note": "family planning; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_7_have_you_lived_in_the_u_s_since_1996",
+      "target": {
+        "type": "radio",
+        "name": "Person 7 Have you lived in the U.S. since 1996?"
+      },
+      "fillPolicy": "never",
+      "note": "residency history screening; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_7_how_many_babies_are_expected",
+      "target": {
+        "type": "text",
+        "name": "Person 7 How many babies are expected?"
+      },
+      "fillPolicy": "never",
+      "note": "pregnancy detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_7_marital_status",
+      "target": {
+        "type": "radio",
+        "name": "Person 7 Marital Status"
+      },
+      "fillPolicy": "never",
+      "note": "marital status; no household-member marital status in vocabulary",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_7_race_american_indian_or_alaska_native",
+      "target": {
+        "type": "checkbox",
+        "name": "Person 7 Race American Indian or Alaska Native"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_7_race_asian",
+      "target": {
+        "type": "checkbox",
+        "name": "Person 7 Race Asian"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_7_race_black",
+      "target": {
+        "type": "checkbox",
+        "name": "Person 7 Race Black"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_7_race_native_hawaiian_or_pacific_islander",
+      "target": {
+        "type": "checkbox",
+        "name": "Person 7 Race Native Hawaiian or Pacific Islander"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_7_race_other",
+      "target": {
+        "type": "checkbox",
+        "name": "Person 7 Race Other"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_7_race_other_entry",
+      "target": {
+        "type": "text",
+        "name": "Person 7 Race Other Entry"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_7_race_white",
+      "target": {
+        "type": "checkbox",
+        "name": "Person 7 Race White"
+      },
+      "fillPolicy": "never",
+      "note": "race/ethnicity; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_7_sex",
+      "target": {
+        "type": "radio",
+        "name": "Person 7 Sex"
+      },
+      "source": {
+        "fieldPath": "household.members[].sex"
+      },
+      "valueMap": {
+        "male": "0",
+        "female": "1"
+      },
+      "transforms": [],
+      "note": "sex"
+    },
+    {
+      "id": "pa_person_7_you_are_in_school_what_is_the_name_of_your_school",
+      "target": {
+        "type": "text",
+        "name": "Person 7 You are in school, what is the name of your school?"
+      },
+      "fillPolicy": "never",
+      "note": "school detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_7_afraid_family_planning_info_cause_harm",
+      "target": {
+        "type": "radio",
+        "name": "Person 7 afraid family planning info cause harm"
+      },
+      "fillPolicy": "never",
+      "note": "family planning safety; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_7_document_id_number",
+      "target": {
+        "type": "text",
+        "name": "Person 7 document id number"
+      },
+      "fillPolicy": "never",
+      "note": "identity document detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_7_document_type",
+      "target": {
+        "type": "text",
+        "name": "Person 7 document type"
+      },
+      "fillPolicy": "never",
+      "note": "identity document detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_7_driver_s_license_or_state_id",
+      "target": {
+        "type": "text",
+        "name": "Person 7 driver's license or state ID"
+      },
+      "fillPolicy": "never",
+      "note": "identity document detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_7_due_date",
+      "target": {
+        "type": "text",
+        "name": "Person 7 due date"
+      },
+      "fillPolicy": "never",
+      "note": "pregnancy due date; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_7_fulltime_student",
+      "target": {
+        "type": "radio",
+        "name": "Person 7 fulltime student"
+      },
+      "source": {
+        "fieldPath": "household.members[].is_student"
+      },
+      "valueMap": {
+        "true": "0",
+        "false": "1"
+      },
+      "transforms": [],
+      "note": "full-time student On-states verified: /0=Yes, /1=No."
+    },
+    {
+      "id": "pa_person_7_if_in_school_what_grade",
+      "target": {
+        "type": "text",
+        "name": "Person 7 if in school, what grade?"
+      },
+      "fillPolicy": "never",
+      "note": "school detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_person_7_under_21_medical_assistance_coverage",
+      "target": {
+        "type": "radio",
+        "name": "Person 7 under 21 medical assistance coverage"
+      },
+      "fillPolicy": "never",
+      "note": "medical assistance detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_type_of_health_care_coverage_employer_insurance",
+      "target": {
+        "type": "checkbox",
+        "name": "Type of health care coverage Employer Insurance"
+      },
+      "fillPolicy": "never",
+      "note": "typed row; cannot be matched positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_type_of_health_care_coverage_individual_plan",
+      "target": {
+        "type": "checkbox",
+        "name": "Type of health care coverage Individual Plan"
+      },
+      "fillPolicy": "never",
+      "note": "typed row; cannot be matched positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_type_of_health_care_coverage_medicare",
+      "target": {
+        "type": "checkbox",
+        "name": "Type of health care coverage Medicare"
+      },
+      "fillPolicy": "never",
+      "note": "typed row; cannot be matched positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_type_of_health_care_coverage_other",
+      "target": {
+        "type": "checkbox",
+        "name": "Type of health care coverage Other"
+      },
+      "fillPolicy": "never",
+      "note": "typed row; cannot be matched positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_type_of_health_care_coverage_peace_corps",
+      "target": {
+        "type": "checkbox",
+        "name": "Type of health care coverage Peace Corps"
+      },
+      "fillPolicy": "never",
+      "note": "typed row; cannot be matched positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_type_of_health_care_coverage_tricare",
+      "target": {
+        "type": "checkbox",
+        "name": "Type of health care coverage TRICARE"
+      },
+      "fillPolicy": "never",
+      "note": "typed row; cannot be matched positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_voter_registration_declined_not_interested",
+      "target": {
+        "type": "checkbox",
+        "name": "Voter Registration: Declined not interested"
+      },
+      "fillPolicy": "never",
+      "note": "voter registration; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_voter_registration_declined_already_registered",
+      "target": {
+        "type": "checkbox",
+        "name": "Voter Registration: Declined, already registered"
+      },
+      "fillPolicy": "never",
+      "note": "voter registration; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_voter_registration_declined_already_registered_dd",
+      "target": {
+        "type": "text",
+        "name": "Voter Registration: Declined, already registered DD"
+      },
+      "fillPolicy": "never",
+      "note": "voter registration; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_voter_registration_declined_already_registered_mm",
+      "target": {
+        "type": "text",
+        "name": "Voter Registration: Declined, already registered MM"
+      },
+      "fillPolicy": "never",
+      "note": "voter registration; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_voter_registration_declined_already_registered_yy",
+      "target": {
+        "type": "text",
+        "name": "Voter Registration: Declined, already registered YY"
+      },
+      "fillPolicy": "never",
+      "note": "voter registration; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_voter_registration_declined_not_interested_dd",
+      "target": {
+        "type": "text",
+        "name": "Voter Registration: Declined, not interested DD"
+      },
+      "fillPolicy": "never",
+      "note": "voter registration; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_voter_registration_declined_not_interested_mm",
+      "target": {
+        "type": "text",
+        "name": "Voter Registration: Declined, not interested MM"
+      },
+      "fillPolicy": "never",
+      "note": "voter registration; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_voter_registration_declined_not_interested_yy",
+      "target": {
+        "type": "text",
+        "name": "Voter Registration: Declined, not interested. YY"
+      },
+      "fillPolicy": "never",
+      "note": "voter registration; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_voter_registration_given_to_client",
+      "target": {
+        "type": "checkbox",
+        "name": "Voter Registration: Given to Client"
+      },
+      "fillPolicy": "never",
+      "note": "voter registration; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_voter_registration_given_to_client_dd",
+      "target": {
+        "type": "text",
+        "name": "Voter Registration: Given to client DD"
+      },
+      "fillPolicy": "never",
+      "note": "voter registration; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_voter_registration_given_to_client_mm",
+      "target": {
+        "type": "text",
+        "name": "Voter Registration: Given to client MM"
+      },
+      "fillPolicy": "never",
+      "note": "voter registration; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_voter_registration_given_to_client_yy",
+      "target": {
+        "type": "text",
+        "name": "Voter Registration: Given to client YY"
+      },
+      "fillPolicy": "never",
+      "note": "voter registration; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_voter_registration_mailed_to_client",
+      "target": {
+        "type": "checkbox",
+        "name": "Voter Registration: Mailed to Client"
+      },
+      "fillPolicy": "never",
+      "note": "voter registration; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_voter_registration_mailed_to_client_dd",
+      "target": {
+        "type": "text",
+        "name": "Voter Registration: Mailed to Client DD"
+      },
+      "fillPolicy": "never",
+      "note": "voter registration; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_voter_registration_mailed_to_client_mm",
+      "target": {
+        "type": "text",
+        "name": "Voter Registration: Mailed to Client MM"
+      },
+      "fillPolicy": "never",
+      "note": "voter registration; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_voter_registration_mailed_to_client_yy",
+      "target": {
+        "type": "text",
+        "name": "Voter Registration: Mailed to Client YY"
+      },
+      "fillPolicy": "never",
+      "note": "voter registration; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_voter_registration_not_a_u_s_citizen",
+      "target": {
+        "type": "checkbox",
+        "name": "Voter Registration: Not a U.S. citizen"
+      },
+      "fillPolicy": "never",
+      "note": "voter registration; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_voter_registration_not_a_u_s_citizen_dd",
+      "target": {
+        "type": "text",
+        "name": "Voter Registration: Not a U.S. citizen DD"
+      },
+      "fillPolicy": "never",
+      "note": "voter registration; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_voter_registration_not_a_u_s_citizen_mm",
+      "target": {
+        "type": "text",
+        "name": "Voter Registration: Not a U.S. citizen MM"
+      },
+      "fillPolicy": "never",
+      "note": "voter registration; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_voter_registration_not_a_u_s_citizen_yy",
+      "target": {
+        "type": "text",
+        "name": "Voter Registration: Not a U.S. citizen YY"
+      },
+      "fillPolicy": "never",
+      "note": "voter registration; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_voter_registration_sent_to_voter_registration",
+      "target": {
+        "type": "checkbox",
+        "name": "Voter Registration: Sent to voter registration"
+      },
+      "fillPolicy": "never",
+      "note": "voter registration; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_voter_registration_sent_to_voter_registration_dd",
+      "target": {
+        "type": "text",
+        "name": "Voter Registration: Sent to voter registration DD"
+      },
+      "fillPolicy": "never",
+      "note": "voter registration; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_voter_registration_sent_to_voter_registration_mm",
+      "target": {
+        "type": "text",
+        "name": "Voter Registration: Sent to voter registration MM"
+      },
+      "fillPolicy": "never",
+      "note": "voter registration; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_voter_registration_sent_to_voter_registration_yy",
+      "target": {
+        "type": "text",
+        "name": "Voter Registration: Sent to voter registration YY"
+      },
+      "fillPolicy": "never",
+      "note": "voter registration; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_appendix_b_email_address",
+      "target": {
+        "type": "text",
+        "name": "appendix b Email address:"
+      },
+      "fillPolicy": "never",
+      "note": "appendix B employer coverage detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_appendix_b_employee_name",
+      "target": {
+        "type": "text",
+        "name": "appendix b Employee name"
+      },
+      "fillPolicy": "never",
+      "note": "appendix B employer coverage detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_appendix_b_employer_address_include_street_number_city_sta",
+      "target": {
+        "type": "text",
+        "name": "appendix b Employer address (include street, number, city, state & ZIP code +4):"
+      },
+      "fillPolicy": "never",
+      "note": "appendix B employer coverage detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_appendix_b_employer_identification_number_ein",
+      "target": {
+        "type": "text",
+        "name": "appendix b Employer identification number (EIN)"
+      },
+      "fillPolicy": "never",
+      "note": "appendix B employer coverage detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_appendix_b_employer_name",
+      "target": {
+        "type": "text",
+        "name": "appendix b Employer name:"
+      },
+      "fillPolicy": "never",
+      "note": "appendix B employer coverage detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_appendix_b_employer_phone_number",
+      "target": {
+        "type": "text",
+        "name": "appendix b Employer phone number:\r"
+      },
+      "fillPolicy": "never",
+      "note": "appendix B employer coverage detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_appendix_b_if_the_employee_is_not_eligible_today_including",
+      "target": {
+        "type": "text",
+        "name": "appendix b If the employee is not eligible today, including as a result of a waiting or probationary"
+      },
+      "fillPolicy": "never",
+      "note": "appendix B employer coverage detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_appendix_b_phone_number_if_different_from_above_xxx_xxx_xx",
+      "target": {
+        "type": "text",
+        "name": "appendix b Phone number (if different from above): XXX-XXX-XXXX\r"
+      },
+      "fillPolicy": "never",
+      "note": "appendix B employer coverage detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_appendix_b_social_security_number",
+      "target": {
+        "type": "text",
+        "name": "appendix b Social Security number:"
+      },
+      "fillPolicy": "never",
+      "note": "appendix B employer coverage detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_appendix_b_who_can_we_contact_about_employee_health_covera",
+      "target": {
+        "type": "text",
+        "name": "appendix b Who can we contact about employee health coverage at this job?"
+      },
+      "fillPolicy": "never",
+      "note": "appendix B employer coverage detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_appendix_b_lowest_cost_plan_how_much_would_the_employee_ha",
+      "target": {
+        "type": "text",
+        "name": "appendix b lowest cost plan How much would the employee have to pay in premiums for this plan?"
+      },
+      "fillPolicy": "never",
+      "note": "appendix B employer coverage detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_appendix_b_new_plan_year_how_much_would_the_employee_have_",
+      "target": {
+        "type": "text",
+        "name": "appendix b new plan year How much would the employee have to pay in premiums for this plan? 2"
+      },
+      "fillPolicy": "never",
+      "note": "appendix B employer coverage detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_appendix_b_new_plan_year_date",
+      "target": {
+        "type": "text",
+        "name": "appendix b new plan year date"
+      },
+      "fillPolicy": "never",
+      "note": "appendix B employer coverage detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_awaiting_decision_for_social_security",
+      "target": {
+        "type": "checkbox",
+        "name": "awaiting decision for Social Security"
+      },
+      "fillPolicy": "never",
+      "note": "pending application detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_awaiting_decision_for_unemployment_compensation",
+      "target": {
+        "type": "checkbox",
+        "name": "awaiting decision for Unemployment Compensation"
+      },
+      "fillPolicy": "never",
+      "note": "pending application detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_awaiting_decision_for_veterans_benefits",
+      "target": {
+        "type": "checkbox",
+        "name": "awaiting decision for Veterans Benefits"
+      },
+      "fillPolicy": "never",
+      "note": "pending application detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_awaiting_decision_for_workers_compensation",
+      "target": {
+        "type": "checkbox",
+        "name": "awaiting decision for Workers’ Compensation"
+      },
+      "fillPolicy": "never",
+      "note": "pending application detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_awaiting_decision_for_other",
+      "target": {
+        "type": "checkbox",
+        "name": "awaiting decision for other"
+      },
+      "fillPolicy": "never",
+      "note": "pending application detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_awaiting_decisions_for_supplemental_security_income_ssi",
+      "target": {
+        "type": "checkbox",
+        "name": "awaiting decisions for Supplemental Security Income (SSI)"
+      },
+      "fillPolicy": "never",
+      "note": "pending application detail; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_how_much_deductible_part_of_self_employment_tax",
+      "target": {
+        "type": "text",
+        "name": "how much Deductible part of self-employment tax"
+      },
+      "fillPolicy": "never",
+      "note": "amount/frequency row; cannot be matched positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_how_much_health_savings_account_deduction",
+      "target": {
+        "type": "text",
+        "name": "how much Health savings account deduction"
+      },
+      "fillPolicy": "never",
+      "note": "amount/frequency row; cannot be matched positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_how_much_other_specify",
+      "target": {
+        "type": "text",
+        "name": "how much Other (specify)"
+      },
+      "fillPolicy": "never",
+      "note": "amount/frequency row; cannot be matched positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_how_much_self_employed_health_insurance_deduction",
+      "target": {
+        "type": "text",
+        "name": "how much Self-employed health insurance deduction"
+      },
+      "fillPolicy": "never",
+      "note": "amount/frequency row; cannot be matched positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_how_often_deductible_part_of_self_employment_tax",
+      "target": {
+        "type": "text",
+        "name": "how often Deductible part of self-employment tax"
+      },
+      "fillPolicy": "never",
+      "note": "amount/frequency row; cannot be matched positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_how_often_is_self_employed_health_insurance_deduction",
+      "target": {
+        "type": "text",
+        "name": "how often is Self-employed health insurance deduction"
+      },
+      "fillPolicy": "never",
+      "note": "amount/frequency row; cannot be matched positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_how_often_is_the_student_loan_interest_deduction_paid",
+      "target": {
+        "type": "text",
+        "name": "how often is the student loan interest deduction paid"
+      },
+      "fillPolicy": "never",
+      "note": "amount/frequency row; cannot be matched positionally",
+      "transforms": []
+    },
+    {
+      "id": "pa_if_yes_what_kind_of_hasing_assistance",
+      "target": {
+        "type": "text",
+        "name": "if yes, what kind of hasing assistance?"
+      },
+      "fillPolicy": "never",
+      "note": "conditional follow-up; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_if_yes_who_is_in_your_home_sold",
+      "target": {
+        "type": "text",
+        "name": "if yes, who is in your home sold"
+      },
+      "fillPolicy": "never",
+      "note": "conditional follow-up; no vocabulary equivalent",
+      "transforms": []
+    },
+    {
+      "id": "pa_emeregency",
+      "target": {
+        "type": "checkbox",
+        "name": "Emeregency"
+      },
+      "fillPolicy": "never",
+      "note": "County/agency use only or unlabeled field; no vocabulary equivalent"
+    },
+    {
+      "id": "pa_emergency_information",
+      "target": {
+        "type": "text",
+        "name": "Emergency Information"
+      },
+      "fillPolicy": "never",
+      "note": "County/agency use only or unlabeled field; no vocabulary equivalent"
+    },
+    {
+      "id": "pa_provider_name",
+      "target": {
+        "type": "text",
+        "name": "PROVIDER NAME"
+      },
+      "fillPolicy": "never",
+      "note": "County/agency use only or unlabeled field; no vocabulary equivalent"
+    },
+    {
+      "id": "pa_provider_number",
+      "target": {
+        "type": "text",
+        "name": "PROVIDER NUMBER"
+      },
+      "fillPolicy": "never",
+      "note": "County/agency use only or unlabeled field; no vocabulary equivalent"
+    },
+    {
+      "id": "pa_record_number",
+      "target": {
+        "type": "text",
+        "name": "Record Number"
+      },
+      "fillPolicy": "never",
+      "note": "County/agency use only or unlabeled field; no vocabulary equivalent"
+    },
+    {
+      "id": "pa_text_field_50",
+      "target": {
+        "type": "text",
+        "name": "Text Field 50"
+      },
+      "fillPolicy": "never",
+      "note": "County/agency use only or unlabeled field; no vocabulary equivalent"
+    },
+    {
+      "id": "pa_do_any_of_the_persons_listed_on_the_application_",
+      "target": {
+        "type": "radio",
+        "name": "Do any of the persons listed on the application plan to file a federal income tax return NEXT YEAR?"
+      },
+      "fillPolicy": "never",
+      "note": "Tax filing detail; no vocabulary equivalent"
+    },
+    {
+      "id": "pa_next_year_name_of_tax_filer_1",
+      "target": {
+        "type": "text",
+        "name": "Next year name of tax filer 1"
+      },
+      "fillPolicy": "never",
+      "note": "Tax filing detail; no vocabulary equivalent"
+    },
+    {
+      "id": "pa_next_year_name_of_tax_filer_2",
+      "target": {
+        "type": "text",
+        "name": "Next year name of tax filer 2"
+      },
+      "fillPolicy": "never",
+      "note": "Tax filing detail; no vocabulary equivalent"
+    },
+    {
+      "id": "pa_next_year_name_of_tax_filer_3",
+      "target": {
+        "type": "text",
+        "name": "Next year name of tax filer 3"
+      },
+      "fillPolicy": "never",
+      "note": "Tax filing detail; no vocabulary equivalent"
+    },
+    {
+      "id": "pa_if_filing_jointly_what_is_the_name_of_tax_filer_",
+      "target": {
+        "type": "text",
+        "name": "If filing jointly, what is the name of tax filer 1's spouse"
+      },
+      "fillPolicy": "never",
+      "note": "Tax filing detail; no vocabulary equivalent"
+    },
+    {
+      "id": "pa_if_filing_jointly_what_is_the_name_of_tax_filer__2",
+      "target": {
+        "type": "text",
+        "name": "If filing jointly, what is the name of tax filer 2's spouse"
+      },
+      "fillPolicy": "never",
+      "note": "Tax filing detail; no vocabulary equivalent"
+    },
+    {
+      "id": "pa_if_filing_jointly_what_is_the_name_of_tax_filer__3",
+      "target": {
+        "type": "text",
+        "name": "If filing jointly, what is the name of tax filer 3's spouse"
+      },
+      "fillPolicy": "never",
+      "note": "Tax filing detail; no vocabulary equivalent"
+    },
+    {
+      "id": "pa_relationship_to_tax_filer_1",
+      "target": {
+        "type": "text",
+        "name": "Relationship to tax filer 1"
+      },
+      "fillPolicy": "never",
+      "note": "Tax filing detail; no vocabulary equivalent"
+    },
+    {
+      "id": "pa_relationship_to_tax_filer_2",
+      "target": {
+        "type": "text",
+        "name": "Relationship to tax filer 2"
+      },
+      "fillPolicy": "never",
+      "note": "Tax filing detail; no vocabulary equivalent"
+    },
+    {
+      "id": "pa_relationship_to_tax_filer_3",
+      "target": {
+        "type": "text",
+        "name": "Relationship to tax filer 3"
+      },
+      "fillPolicy": "never",
+      "note": "Tax filing detail; no vocabulary equivalent"
+    },
+    {
+      "id": "pa_will_any_of_the_persons_listed_on_the_applicatio",
+      "target": {
+        "type": "radio",
+        "name": "Will any of the persons listed on the application be claimed as a dependent on someone’s tax return?"
+      },
+      "fillPolicy": "never",
+      "note": "Tax filing detail; no vocabulary equivalent"
+    },
+    {
+      "id": "pa_will_any_of_the_persons_listed_on_the_applicatio_2",
+      "target": {
+        "type": "radio",
+        "name": "Will any of the persons listed on the application claim any dependents on their tax return?\r"
+      },
+      "fillPolicy": "never",
+      "note": "Tax filing detail; no vocabulary equivalent"
+    },
+    {
+      "id": "pa_whose_expense_is_specificed_other",
+      "target": {
+        "type": "text",
+        "name": "Whose expense is \"specificed other\""
+      },
+      "fillPolicy": "never",
+      "note": "Tax filing detail; no vocabulary equivalent"
+    },
+    {
+      "id": "pa_whose_expense_is_deductible_part_of_self_employm",
+      "target": {
+        "type": "text",
+        "name": "Whose expense is deductible part of self-employment tax"
+      },
+      "fillPolicy": "never",
+      "note": "Tax filing detail; no vocabulary equivalent"
+    },
+    {
+      "id": "pa_whose_expense_is_health_savings_account_deductio",
+      "target": {
+        "type": "text",
+        "name": "Whose expense is health savings account deduction"
+      },
+      "fillPolicy": "never",
+      "note": "Tax filing detail; no vocabulary equivalent"
+    },
+    {
+      "id": "pa_whose_expense_is_self_employed_health_insurance_",
+      "target": {
+        "type": "text",
+        "name": "Whose expense is self-employed health insurance deduction"
+      },
+      "fillPolicy": "never",
+      "note": "Tax filing detail; no vocabulary equivalent"
+    },
+    {
+      "id": "pa_other_expense_from",
+      "target": {
+        "type": "text",
+        "name": "other expense from"
+      },
+      "fillPolicy": "never",
+      "note": "Tax filing detail; no vocabulary equivalent"
+    },
+    {
+      "id": "pa_is_or_was_hospital_care_covered",
+      "target": {
+        "type": "checkbox",
+        "name": "Is or was Hospital care covered?"
+      },
+      "fillPolicy": "never",
+      "note": "Health insurance detail (appendix B); no vocabulary equivalent"
+    },
+    {
+      "id": "pa_is_or_was_dental_covered",
+      "target": {
+        "type": "checkbox",
+        "name": "Is or was dental covered?"
+      },
+      "fillPolicy": "never",
+      "note": "Health insurance detail (appendix B); no vocabulary equivalent"
+    },
+    {
+      "id": "pa_is_or_was_doctor_visits_covered",
+      "target": {
+        "type": "checkbox",
+        "name": "Is or was doctor visits covered?"
+      },
+      "fillPolicy": "never",
+      "note": "Health insurance detail (appendix B); no vocabulary equivalent"
+    },
+    {
+      "id": "pa_is_or_was_eye_care_covered",
+      "target": {
+        "type": "checkbox",
+        "name": "Is or was eye care covered?"
+      },
+      "fillPolicy": "never",
+      "note": "Health insurance detail (appendix B); no vocabulary equivalent"
+    },
+    {
+      "id": "pa_is_or_was_perscriptions_covered",
+      "target": {
+        "type": "checkbox",
+        "name": "Is or was perscriptions covered?"
+      },
+      "fillPolicy": "never",
+      "note": "Health insurance detail (appendix B); no vocabulary equivalent"
+    },
+    {
+      "id": "pa_is_or_was_this_a_limited_benefit_plan_like_a_sch",
+      "target": {
+        "type": "radio",
+        "name": "Is (or was) this a limited-benefit plan (like a school accident policy)?"
+      },
+      "fillPolicy": "never",
+      "note": "Health insurance detail (appendix B); no vocabulary equivalent"
+    },
+    {
+      "id": "pa_is_this_cobra_coverage",
+      "target": {
+        "type": "radio",
+        "name": "Is this COBRA coverage?"
+      },
+      "fillPolicy": "never",
+      "note": "Health insurance detail (appendix B); no vocabulary equivalent"
+    },
+    {
+      "id": "pa_is_this_a_retiree_health_plan",
+      "target": {
+        "type": "radio",
+        "name": "Is this a retiree health plan?"
+      },
+      "fillPolicy": "never",
+      "note": "Health insurance detail (appendix B); no vocabulary equivalent"
+    },
+    {
+      "id": "pa_is_this_a_state_employee_benefit_plan",
+      "target": {
+        "type": "radio",
+        "name": "Is this a state employee benefit plan?"
+      },
+      "fillPolicy": "never",
+      "note": "Health insurance detail (appendix B); no vocabulary equivalent"
+    },
+    {
+      "id": "pa_first_name_of_person_1_of_who_is_or_was_covered",
+      "target": {
+        "type": "text",
+        "name": "First name of person 1 of who is (or was) covered"
+      },
+      "fillPolicy": "never",
+      "note": "Health insurance detail (appendix B); no vocabulary equivalent"
+    },
+    {
+      "id": "pa_first_name_of_person_1_of_who_is_or_was_covered_",
+      "target": {
+        "type": "text",
+        "name": "First name of person 1 of who is (or was) covered 1"
+      },
+      "fillPolicy": "never",
+      "note": "Health insurance detail (appendix B); no vocabulary equivalent"
+    },
+    {
+      "id": "pa_first_name_of_person_3_of_who_is_or_was_covered_",
+      "target": {
+        "type": "text",
+        "name": "First name of person 3 of who is (or was) covered 2"
+      },
+      "fillPolicy": "never",
+      "note": "Health insurance detail (appendix B); no vocabulary equivalent"
+    },
+    {
+      "id": "pa_first_name_of_person_4_of_who_is_or_was_covered_",
+      "target": {
+        "type": "text",
+        "name": "First name of person 4 of who is (or was) covered 3"
+      },
+      "fillPolicy": "never",
+      "note": "Health insurance detail (appendix B); no vocabulary equivalent"
+    },
+    {
+      "id": "pa_last_name_of_person_1_of_who_is_or_was_covered_1",
+      "target": {
+        "type": "text",
+        "name": "Last name of person 1 of who is (or was) covered 1"
+      },
+      "fillPolicy": "never",
+      "note": "Health insurance detail (appendix B); no vocabulary equivalent"
+    },
+    {
+      "id": "pa_last_name_of_person_2_of_who_is_or_was_covered_2",
+      "target": {
+        "type": "text",
+        "name": "Last name of person 2 of who is (or was) covered 2"
+      },
+      "fillPolicy": "never",
+      "note": "Health insurance detail (appendix B); no vocabulary equivalent"
+    },
+    {
+      "id": "pa_last_name_of_person_3_of_who_is_or_was_covered_3",
+      "target": {
+        "type": "text",
+        "name": "Last name of person 3 of who is (or was) covered 3"
+      },
+      "fillPolicy": "never",
+      "note": "Health insurance detail (appendix B); no vocabulary equivalent"
+    },
+    {
+      "id": "pa_last_name_of_person_4_of_who_is_or_was_covered_4",
+      "target": {
+        "type": "text",
+        "name": "Last name of person 4 of who is (or was) covered 4"
+      },
+      "fillPolicy": "never",
+      "note": "Health insurance detail (appendix B); no vocabulary equivalent"
+    },
+    {
+      "id": "pa_group_name_number",
+      "target": {
+        "type": "text",
+        "name": "Group name/number:"
+      },
+      "fillPolicy": "never",
+      "note": "Health insurance detail (appendix B); no vocabulary equivalent"
+    },
+    {
+      "id": "pa_policy_number",
+      "target": {
+        "type": "text",
+        "name": "Policy number:"
+      },
+      "fillPolicy": "never",
+      "note": "Health insurance detail (appendix B); no vocabulary equivalent"
+    },
+    {
+      "id": "pa_policy_holder_name",
+      "target": {
+        "type": "text",
+        "name": "Policy holder name:"
+      },
+      "fillPolicy": "never",
+      "note": "Health insurance detail (appendix B); no vocabulary equivalent"
+    },
+    {
+      "id": "pa_insurance_company_name",
+      "target": {
+        "type": "text",
+        "name": "Insurance company name:"
+      },
+      "fillPolicy": "never",
+      "note": "Health insurance detail (appendix B); no vocabulary equivalent"
+    },
+    {
+      "id": "pa_what_is_the_cost_for_family_coverage_through_you",
+      "target": {
+        "type": "text",
+        "name": "What is the cost for family coverage through your employer’s group health plan?"
+      },
+      "fillPolicy": "never",
+      "note": "Health insurance detail (appendix B); no vocabulary equivalent"
+    },
+    {
+      "id": "pa_what_is_the_cost_to_cover_your_child_ren_through",
+      "target": {
+        "type": "text",
+        "name": "What is the cost to cover your child(ren) through your employer’s health plan?"
+      },
+      "fillPolicy": "never",
+      "note": "Health insurance detail (appendix B); no vocabulary equivalent"
+    },
+    {
+      "id": "pa_when_did_or_will_this_insurance_stop_leave_blank",
+      "target": {
+        "type": "text",
+        "name": "When did (or will) this insurance stop? (Leave blank if you are still covered.)"
+      },
+      "fillPolicy": "never",
+      "note": "Health insurance detail (appendix B); no vocabulary equivalent"
+    },
+    {
+      "id": "pa_when_did_this_insurance_start",
+      "target": {
+        "type": "text",
+        "name": "When did this insurance start?"
+      },
+      "fillPolicy": "never",
+      "note": "Health insurance detail (appendix B); no vocabulary equivalent"
+    },
+    {
+      "id": "pa_did_or_will_any_children_lose_health_insurance_b",
+      "target": {
+        "type": "radio",
+        "name": "Did (or will) any children lose health insurance because the employer stopped offering coverage?"
+      },
+      "fillPolicy": "never",
+      "note": "Health insurance detail (appendix B); no vocabulary equivalent"
+    },
+    {
+      "id": "pa_did_or_will_this_health_insurance_end_because_th",
+      "target": {
+        "type": "radio",
+        "name": "Did (or will) this health insurance end because the policy holder lost employment (laid off, termina"
+      },
+      "fillPolicy": "never",
+      "note": "Health insurance detail (appendix B); no vocabulary equivalent"
+    },
+    {
+      "id": "pa_do_or_would_you_have_to_pay_for_your_child_ren_s",
+      "target": {
+        "type": "radio",
+        "name": "Do (or would) you have to pay for your child(ren)’s coverage?"
+      },
+      "fillPolicy": "never",
+      "note": "Health insurance detail (appendix B); no vocabulary equivalent"
+    },
+    {
+      "id": "pa_if_you_are_offered_health_coverage_from_your_job",
+      "target": {
+        "type": "radio",
+        "name": "If you are offered health coverage from your job, do (or would) you have to pay for your coverage?"
+      },
+      "fillPolicy": "never",
+      "note": "Health insurance detail (appendix B); no vocabulary equivalent"
+    },
+    {
+      "id": "pa_specify_other_type_of_health_care_coverage",
+      "target": {
+        "type": "text",
+        "name": "Specify other type of health care coverage"
+      },
+      "fillPolicy": "never",
+      "note": "Health insurance detail (appendix B); no vocabulary equivalent"
+    },
+    {
+      "id": "pa_benefit_person_1_applied_for",
+      "target": {
+        "type": "text",
+        "name": "Benefit Person 1 applied for"
+      },
+      "fillPolicy": "never",
+      "note": "Income table row/screening field; rows cannot be matched positionally"
+    },
+    {
+      "id": "pa_benefit_person_2_applied_for",
+      "target": {
+        "type": "text",
+        "name": "Benefit Person 2 applied for"
+      },
+      "fillPolicy": "never",
+      "note": "Income table row/screening field; rows cannot be matched positionally"
+    },
+    {
+      "id": "pa_benefit_person_3_applied_for",
+      "target": {
+        "type": "text",
+        "name": "Benefit Person 3 applied for"
+      },
+      "fillPolicy": "never",
+      "note": "Income table row/screening field; rows cannot be matched positionally"
+    },
+    {
+      "id": "pa_date_of_benefit_person_1_s_application",
+      "target": {
+        "type": "text",
+        "name": "Date of benefit Person 1's application"
+      },
+      "fillPolicy": "never",
+      "note": "Income table row/screening field; rows cannot be matched positionally"
+    },
+    {
+      "id": "pa_date_of_benefit_person_2_s_application",
+      "target": {
+        "type": "text",
+        "name": "Date of benefit Person 2's application"
+      },
+      "fillPolicy": "never",
+      "note": "Income table row/screening field; rows cannot be matched positionally"
+    },
+    {
+      "id": "pa_date_of_benefit_person_3_s_application",
+      "target": {
+        "type": "text",
+        "name": "Date of benefit Person 3's application"
+      },
+      "fillPolicy": "never",
+      "note": "Income table row/screening field; rows cannot be matched positionally"
+    },
+    {
+      "id": "pa_what_is_the_monthly_amount_of_pre_tax_deductions",
+      "target": {
+        "type": "text",
+        "name": "What is the monthly amount of pre-tax deductions taken out for person 1?"
+      },
+      "fillPolicy": "never",
+      "note": "Income table row/screening field; rows cannot be matched positionally"
+    },
+    {
+      "id": "pa_what_is_the_monthly_amount_of_pre_tax_deductions_2",
+      "target": {
+        "type": "text",
+        "name": "What is the monthly amount of pre-tax deductions taken out for person 2?"
+      },
+      "fillPolicy": "never",
+      "note": "Income table row/screening field; rows cannot be matched positionally"
+    },
+    {
+      "id": "pa_what_is_the_monthly_amount_of_pre_tax_deductions_3",
+      "target": {
+        "type": "text",
+        "name": "What is the monthly amount of pre-tax deductions taken out for person 3?"
+      },
+      "fillPolicy": "never",
+      "note": "Income table row/screening field; rows cannot be matched positionally"
+    },
+    {
+      "id": "pa_what_type_of_pre_tax_deduction_is_taken_out_for_",
+      "target": {
+        "type": "text",
+        "name": "What type of pre-tax deduction is taken out for person 1?"
+      },
+      "fillPolicy": "never",
+      "note": "Income table row/screening field; rows cannot be matched positionally"
+    },
+    {
+      "id": "pa_what_type_of_pre_tax_deduction_is_taken_out_for__2",
+      "target": {
+        "type": "text",
+        "name": "What type of pre-tax deduction is taken out for person 2?"
+      },
+      "fillPolicy": "never",
+      "note": "Income table row/screening field; rows cannot be matched positionally"
+    },
+    {
+      "id": "pa_what_type_of_pre_tax_deduction_is_taken_out_for__3",
+      "target": {
+        "type": "text",
+        "name": "What type of pre-tax deduction is taken out for person 3?"
+      },
+      "fillPolicy": "never",
+      "note": "Income table row/screening field; rows cannot be matched positionally"
+    },
+    {
+      "id": "pa_income_has_anyone_had_work_hours_reduced_in_the_",
+      "target": {
+        "type": "text",
+        "name": "income-Has anyone had work hours reduced in the last 60 days?"
+      },
+      "fillPolicy": "never",
+      "note": "Income table row/screening field; rows cannot be matched positionally"
+    },
+    {
+      "id": "pa_income_has_anyone_received_supplemental_security",
+      "target": {
+        "type": "text",
+        "name": "income-Has anyone received Supplemental Security Income in the past?"
+      },
+      "fillPolicy": "never",
+      "note": "Income table row/screening field; rows cannot be matched positionally"
+    },
+    {
+      "id": "pa_income_has_anyone_stopped_working_at_one_or_more",
+      "target": {
+        "type": "text",
+        "name": "income-Has anyone stopped working at one or more jobs in the past 30 days?"
+      },
+      "fillPolicy": "never",
+      "note": "Income table row/screening field; rows cannot be matched positionally"
+    },
+    {
+      "id": "pa_income_has_anyone_worked_in_the_last_90_days",
+      "target": {
+        "type": "text",
+        "name": "income-Has anyone worked in the last 90 days?"
+      },
+      "fillPolicy": "never",
+      "note": "Income table row/screening field; rows cannot be matched positionally"
+    },
+    {
+      "id": "pa_income_has_anyone_worked_in_the_last_90_days_4",
+      "target": {
+        "type": "text",
+        "name": "income-Has anyone worked in the last 90 days? 4"
+      },
+      "fillPolicy": "never",
+      "note": "Income table row/screening field; rows cannot be matched positionally"
+    },
+    {
+      "id": "pa_income_is_anyone_on_strike",
+      "target": {
+        "type": "text",
+        "name": "income-Is anyone on strike?"
+      },
+      "fillPolicy": "never",
+      "note": "Income table row/screening field; rows cannot be matched positionally"
+    },
+    {
+      "id": "pa_does_it_cost_anyone_anything_to_get_the_income_l",
+      "target": {
+        "type": "radio",
+        "name": "Does it cost anyone anything to get the income listed above? (Such as transportation costs, court fe"
+      },
+      "fillPolicy": "never",
+      "note": "Income table row/screening field; rows cannot be matched positionally"
+    },
+    {
+      "id": "pa_if_other_enter_the_source_of_income",
+      "target": {
+        "type": "text",
+        "name": "If other, enter the source of income"
+      },
+      "fillPolicy": "never",
+      "note": "Income table row/screening field; rows cannot be matched positionally"
+    },
+    {
+      "id": "pa_person_1_date_of_most_recent_payment",
+      "target": {
+        "type": "text",
+        "name": "Person 1 Date of most \rrecent payment:"
+      },
+      "fillPolicy": "never",
+      "note": "Income table row/screening field; rows cannot be matched positionally"
+    },
+    {
+      "id": "pa_person_2_date_of_most_recent_payment",
+      "target": {
+        "type": "text",
+        "name": "Person 2 Date of most \rrecent payment:"
+      },
+      "fillPolicy": "never",
+      "note": "Income table row/screening field; rows cannot be matched positionally"
+    },
+    {
+      "id": "pa_person_3_date_of_most_recent_payment",
+      "target": {
+        "type": "text",
+        "name": "Person 3 Date of most \rrecent payment:"
+      },
+      "fillPolicy": "never",
+      "note": "Income table row/screening field; rows cannot be matched positionally"
+    },
+    {
+      "id": "pa_person_4_date_of_most_recent_payment",
+      "target": {
+        "type": "text",
+        "name": "Person 4 Date of most \rrecent payment:"
+      },
+      "fillPolicy": "never",
+      "note": "Income table row/screening field; rows cannot be matched positionally"
+    },
+    {
+      "id": "pa_specify_what_someone_applied_for_or_is_awaiting_",
+      "target": {
+        "type": "text",
+        "name": "Specify what someone applied for or is awaiting a decision for"
+      },
+      "fillPolicy": "never",
+      "note": "Income table row/screening field; rows cannot be matched positionally"
+    },
+    {
+      "id": "pa_where_is_this_resource_located_account_number_fo",
+      "target": {
+        "type": "text",
+        "name": "Where is this resource located/account number for person 1?"
+      },
+      "fillPolicy": "never",
+      "note": "Resource/expense table row; rows cannot be matched positionally"
+    },
+    {
+      "id": "pa_where_is_this_resource_located_account_number_fo_2",
+      "target": {
+        "type": "text",
+        "name": "Where is this resource located/account number for person 1? 1"
+      },
+      "fillPolicy": "never",
+      "note": "Resource/expense table row; rows cannot be matched positionally"
+    },
+    {
+      "id": "pa_where_is_this_resource_located_account_number_fo_3",
+      "target": {
+        "type": "text",
+        "name": "Where is this resource located/account number for person 1? 2"
+      },
+      "fillPolicy": "never",
+      "note": "Resource/expense table row; rows cannot be matched positionally"
+    },
+    {
+      "id": "pa_where_is_this_resource_located_account_number_fo_4",
+      "target": {
+        "type": "text",
+        "name": "Where is this resource located/account number for person 1? 3"
+      },
+      "fillPolicy": "never",
+      "note": "Resource/expense table row; rows cannot be matched positionally"
+    },
+    {
+      "id": "pa_where_is_this_resource_located_account_number_fo_5",
+      "target": {
+        "type": "text",
+        "name": "Where is this resource located/account number for person 1? 4"
+      },
+      "fillPolicy": "never",
+      "note": "Resource/expense table row; rows cannot be matched positionally"
+    },
+    {
+      "id": "pa_where_is_this_resource_located_account_number_fo_6",
+      "target": {
+        "type": "text",
+        "name": "Where is this resource located/account number for person 1? 5"
+      },
+      "fillPolicy": "never",
+      "note": "Resource/expense table row; rows cannot be matched positionally"
+    },
+    {
+      "id": "pa_how_many_burial_plots_do_the_people_in_your_home",
+      "target": {
+        "type": "text",
+        "name": "How many burial plots do the people in your home own?"
+      },
+      "fillPolicy": "never",
+      "note": "Resource/expense table row; rows cannot be matched positionally"
+    },
+    {
+      "id": "pa_how_many_vehicles_do_the_people_in_your_home_own",
+      "target": {
+        "type": "text",
+        "name": "How many vehicles do the people in your home own?"
+      },
+      "fillPolicy": "never",
+      "note": "Resource/expense table row; rows cannot be matched positionally"
+    },
+    {
+      "id": "pa_expecting_money_how_much_is_expected",
+      "target": {
+        "type": "text",
+        "name": "Expecting money how much is expected?"
+      },
+      "fillPolicy": "never",
+      "note": "Resource/expense table row; rows cannot be matched positionally"
+    },
+    {
+      "id": "pa_expecting_monday_when_is_it_expected",
+      "target": {
+        "type": "text",
+        "name": "expecting monday when is it expected?"
+      },
+      "fillPolicy": "never",
+      "note": "Resource/expense table row; rows cannot be matched positionally"
+    },
+    {
+      "id": "pa_sold_how_much_is_expected",
+      "target": {
+        "type": "text",
+        "name": "sold how much is expected"
+      },
+      "fillPolicy": "never",
+      "note": "Resource/expense table row; rows cannot be matched positionally"
+    },
+    {
+      "id": "pa_sold_when_is_it_expected",
+      "target": {
+        "type": "text",
+        "name": "sold when is it expected"
+      },
+      "fillPolicy": "never",
+      "note": "Resource/expense table row; rows cannot be matched positionally"
+    },
+    {
+      "id": "pa_who_receives_care",
+      "target": {
+        "type": "text",
+        "name": "Who receives care?"
+      },
+      "fillPolicy": "never",
+      "note": "Resource/expense table row; rows cannot be matched positionally"
+    },
+    {
+      "id": "pa_are_meals_included_in_your_rent",
+      "target": {
+        "type": "radio",
+        "name": "Are meals included in your rent?"
+      },
+      "fillPolicy": "never",
+      "note": "Meals-in-rent detail; no vocabulary equivalent"
+    },
+    {
+      "id": "pa_do_you_pay_for_utilities_other_than_telephone",
+      "target": {
+        "type": "radio",
+        "name": "Do you pay for utilities other than telephone?"
+      },
+      "fillPolicy": "never",
+      "note": "General utility screening; no vocabulary equivalent"
+    },
+    {
+      "id": "pa_do_you_or_anyone_you_are_applying_for_live_in_a_",
+      "target": {
+        "type": "radio",
+        "name": "Do you, or anyone you are applying for, live in a shelter for abused or battered women and children?"
+      },
+      "fillPolicy": "never",
+      "note": "Shelter screening; no vocabulary equivalent"
+    },
+    {
+      "id": "pa_was_anyone_in_foster_care_at_age_18_or_older",
+      "target": {
+        "type": "radio",
+        "name": "Was anyone in foster care at age 18 or older?"
+      },
+      "fillPolicy": "never",
+      "note": "Foster care history; no vocabulary equivalent"
+    },
+    {
+      "id": "pa_have_you_or_anyone_in_your_household_been_disqua",
+      "target": {
+        "type": "radio",
+        "name": "Have you or anyone in your household been disqualified or agreed to be disqualified for food stamps "
+      },
+      "fillPolicy": "never",
+      "note": "Disqualification history; no vocabulary equivalent"
+    },
+    {
+      "id": "pa_in_what_state_and_county_does_somoene_get_cash_a",
+      "target": {
+        "type": "text",
+        "name": "In what state and county does somoene get cash assistance, Medical Assistance or SNAP?"
+      },
+      "fillPolicy": "never",
+      "note": "Out-of-state benefit detail; no vocabulary equivalent"
+    },
+    {
+      "id": "pa_in_what_state_and_county_does_somoene_in_your_ho",
+      "target": {
+        "type": "text",
+        "name": "In what state and county does somoene in your household been disqualified or agreed to be disqualifi"
+      },
+      "fillPolicy": "never",
+      "note": "Disqualification detail; no vocabulary equivalent"
+    },
+    {
+      "id": "pa_if_anyone_is_applying_for_a_child_who_has_parent",
+      "target": {
+        "type": "checkbox",
+        "name": "If anyone is applying for a child who has parents not living in your home or if anyone applying has "
+      },
+      "fillPolicy": "never",
+      "note": "Adoption/good-cause checkbox; no vocabulary equivalent"
+    },
+    {
+      "id": "pa_other_services_of_interests",
+      "target": {
+        "type": "text",
+        "name": "Other services of interests"
+      },
+      "fillPolicy": "never",
+      "note": "Other program interest; no vocabulary equivalent"
+    },
+    {
+      "id": "pa_specify_other_expenses_paid",
+      "target": {
+        "type": "text",
+        "name": "Specify other expenses paid"
+      },
+      "fillPolicy": "never",
+      "note": "Other expenses specify; no vocabulary equivalent"
+    },
+    {
+      "id": "pa_medical_expense_appointments",
+      "target": {
+        "type": "checkbox",
+        "name": "Medical expense: appointments"
+      },
+      "fillPolicy": "never",
+      "note": "Medical expense detail; no vocabulary equivalent"
+    },
+    {
+      "id": "pa_medical_expenses_specify_other",
+      "target": {
+        "type": "text",
+        "name": "Medical expenses Specify other"
+      },
+      "fillPolicy": "never",
+      "note": "Medical expense detail; no vocabulary equivalent"
+    },
+    {
+      "id": "pa_utility_installation_expenses",
+      "target": {
+        "type": "checkbox",
+        "name": "Utility installation expenses"
+      },
+      "fillPolicy": "never",
+      "note": "Utility installation expense; no vocabulary equivalent"
+    },
+    {
+      "id": "pa_other_expenses",
+      "target": {
+        "type": "checkbox",
+        "name": "Other expenses"
+      },
+      "fillPolicy": "never",
+      "note": "Other utility expense; no vocabulary equivalent"
+    },
+    {
+      "id": "pa_to_whom_does_the_person_outside_of_your_househol",
+      "target": {
+        "type": "text",
+        "name": "To whom does the person outside of your household pay?"
+      },
+      "fillPolicy": "never",
+      "note": "Third-party payment detail; no vocabulary equivalent"
+    },
+    {
+      "id": "pa_is_there_anyone_outside_of_your_household_who_pa",
+      "target": {
+        "type": "radio",
+        "name": "Is there anyone outside of your household who pays any of your expenses?\r"
+      },
+      "fillPolicy": "never",
+      "note": "Third-party payment screening; no vocabulary equivalent"
+    },
+    {
+      "id": "pa_voter_registration",
+      "target": {
+        "type": "radio",
+        "name": "Voter Registration"
+      },
+      "fillPolicy": "never",
+      "note": "Voter registration; not part of the benefits application data"
+    },
+    {
+      "id": "pa_what_do_you_want_to_apply_for",
+      "target": {
+        "type": "checkbox",
+        "name": "What do you want to apply for?"
+      },
+      "fillPolicy": "never",
+      "note": "Program selection; no vocabulary equivalent"
+    },
+    {
+      "id": "pa_apply_for_cash_assistance",
+      "target": {
+        "type": "checkbox",
+        "name": "apply for cash assistance"
+      },
+      "fillPolicy": "never",
+      "note": "Program selection; no vocabulary equivalent"
+    },
+    {
+      "id": "pa_apply_for_health_care_coverage",
+      "target": {
+        "type": "checkbox",
+        "name": "apply for health care coverage"
+      },
+      "fillPolicy": "never",
+      "note": "Program selection; no vocabulary equivalent"
+    },
+    {
+      "id": "pa_how_long_have_you_lived_at_this_address",
+      "target": {
+        "type": "text",
+        "name": "How long have you lived at this address?"
+      },
+      "fillPolicy": "never",
+      "note": "Residency duration; no vocabulary equivalent"
+    },
+    {
+      "id": "pa_school_district",
+      "target": {
+        "type": "text",
+        "name": "School District"
+      },
+      "fillPolicy": "never",
+      "note": "School district; no vocabulary equivalent"
+    },
+    {
+      "id": "pa_township_or_municipality",
+      "target": {
+        "type": "text",
+        "name": "Township or municipality"
+      },
+      "fillPolicy": "never",
+      "note": "Township; no vocabulary equivalent"
+    },
+    {
+      "id": "pa_specify_other_especifique_espeotro",
+      "target": {
+        "type": "text",
+        "name": "Specify Other/Especifique EspeOtro"
+      },
+      "fillPolicy": "never",
+      "note": "Other language specify; no vocabulary equivalent"
+    },
+    {
+      "id": "pa_do_you_pay_condo_fees",
+      "target": {
+        "type": "text",
+        "name": "do you pay condo fees"
+      },
+      "fillPolicy": "never",
+      "note": "Condo fee amount; no vocabulary equivalent"
+    },
+    {
+      "id": "pa_total_resources_resources_are_money_in_cash_chec",
+      "target": {
+        "type": "text",
+        "name": "Total resources (resources are money in cash, checking and savings accounts):"
+      },
+      "fillPolicy": "never",
+      "note": "Resource total; cannot be matched to the account list"
+    },
+    {
+      "id": "pa_page_15_address_of_authorized_representative",
+      "target": {
+        "type": "text",
+        "name": "page 15 Address of Authorized Representative"
+      },
+      "fillPolicy": "never",
+      "note": "Representative address; no vocabulary equivalent"
+    },
+    {
+      "id": "pa_page_15_yes_renew_my_eligibility_automatically_f",
+      "target": {
+        "type": "radio",
+        "name": "page 15 Yes, renew my eligibility automatically for the next:"
+      },
+      "fillPolicy": "never",
+      "note": "Renewal authorization; no vocabulary equivalent"
+    },
+    {
+      "id": "pa_page_22_clien_yes_renew_my_eligibility_automatic",
+      "target": {
+        "type": "radio",
+        "name": "page 22 clien Yes, renew my eligibility automatically for the next:"
+      },
+      "fillPolicy": "never",
+      "note": "Renewal authorization; no vocabulary equivalent"
+    },
+    {
+      "id": "pa_second_phone_type",
+      "target": {
+        "type": "radio",
+        "name": "Second Phone Type"
+      },
+      "fillPolicy": "never",
+      "note": "Second phone type; no vocabulary equivalent"
+    },
+    {
+      "id": "pa_phone_type",
+      "target": {
+        "type": "radio",
+        "name": "Phone Type"
+      },
+      "source": {
+        "fieldPath": "contact.phone_primary_type"
+      },
+      "valueMap": {
+        "home": "0",
+        "work": "1",
+        "mobile": "2"
+      },
+      "note": "Verified by position: /0=Home /1=Work /2=Cell. \"message\" has no box; skipped if selected."
+    },
+    {
+      "id": "pa_what_language_do_you_prefer_qu_idioma_prefiere_u",
+      "target": {
+        "type": "radio",
+        "name": "What language do you prefer? ¿Qué idioma prefiere usted?"
+      },
+      "source": {
+        "fieldPath": "applicant.preferred_language"
+      },
+      "valueMap": {
+        "English": "0",
+        "Spanish": "1"
+      },
+      "note": "Verified by position: /0=English/Inglés /1=Spanish/Español /2=Other. Other has no vocabulary equivalent; skipped if selected."
+    },
+    {
+      "id": "pa_do_you_pay_for_heat",
+      "target": {
+        "type": "radio",
+        "name": "Do you pay for heat?"
+      },
+      "source": {
+        "fieldPath": "utilities.pays_heating_cooling"
+      },
+      "valueMap": {
+        "true": "0",
+        "false": "1"
+      }
+    },
+    {
+      "id": "pa_do_you_pay_for_central_air_or_to_run_a_room_air_",
+      "target": {
+        "type": "radio",
+        "name": "Do you pay for central air or to run a room air conditioner(s)?"
+      },
+      "source": {
+        "fieldPath": "utilities.pays_heating_cooling"
+      },
+      "valueMap": {
+        "true": "0",
+        "false": "1"
+      }
+    },
+    {
+      "id": "pa_total_monthly_rent_or_mortgage_for_you_and_anyon",
+      "target": {
+        "type": "text",
+        "name": "Total monthly rent or mortgage for you and anyone who is applying:"
+      },
+      "source": {
+        "fieldPath": "housing.total_shelter_monthly"
+      },
+      "transforms": [
+        {
+          "op": "money",
+          "style": "plain"
+        }
+      ]
+    },
+    {
+      "id": "pa_page_15_name_of_authorized_representative",
+      "target": {
+        "type": "text",
+        "name": "page 15 Name of Authorized Representative"
+      },
+      "source": {
+        "fieldPath": "program.authorized_representative.name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        }
+      ]
+    },
+    {
+      "id": "pa_page_15_phone_number_of_representative",
+      "target": {
+        "type": "text",
+        "name": "page 15 Phone Number of Representative"
+      },
+      "source": {
+        "fieldPath": "program.authorized_representative.phone"
+      },
+      "transforms": [
+        {
+          "op": "phone",
+          "style": "dashed"
+        }
+      ]
+    },
+    {
+      "id": "pa_applicant_name",
+      "target": {
+        "type": "text",
+        "name": "Applicant Name"
+      },
+      "source": {
+        "fieldPath": "applicant.first_name"
+      },
+      "transforms": [
+        {
+          "op": "trim"
+        },
+        {
+          "op": "join",
+          "with": "applicant.middle_name",
+          "sep": " "
+        },
+        {
+          "op": "join",
+          "with": "applicant.last_name",
+          "sep": " "
+        },
+        {
+          "op": "trim"
+        }
+      ]
+    },
+    {
+      "id": "pa_oil_coal_wood_kerosene_expenses",
+      "target": {
+        "type": "checkbox",
+        "name": "Oil, coal, wood, kerosene expenses"
+      },
+      "source": {
+        "fieldPath": "utilities.pays_heating_cooling"
+      },
+      "valueMap": {
+        "true": "true",
+        "false": "false"
+      }
+    },
+    {
+      "id": "pa_propane_expenses",
+      "target": {
+        "type": "checkbox",
+        "name": "Propane expenses"
+      },
+      "source": {
+        "fieldPath": "utilities.pays_heating_cooling"
+      },
+      "valueMap": {
+        "true": "true",
+        "false": "false"
+      }
+    },
+    {
+      "id": "pa_p3_eligible_immigration_status",
+      "target": {
+        "type": "checkbox",
+        "name": "Person 3 Elibigle Immigration Status 1"
+      },
+      "note": "Eligible-status checkbox; vocabulary has only free-text immigration_status, no boolean equivalent.",
+      "fillPolicy": "never"
+    },
+    {
+      "id": "pa_sold_what_kind_is_expected",
+      "target": {
+        "type": "text",
+        "name": "sold, what kind is expected"
+      },
+      "fillPolicy": "never",
+      "note": "Resource table row; rows cannot be matched positionally"
+    },
+    {
+      "id": "pa_what_kind_is_expected",
+      "target": {
+        "type": "text",
+        "name": "what kind is expected"
+      },
+      "fillPolicy": "never",
+      "note": "Resource table row; rows cannot be matched positionally"
+    },
+    {
+      "id": "pa_who_is_in_your_home_expecting_money",
+      "target": {
+        "type": "text",
+        "name": "who is in your home expecting money"
+      },
+      "fillPolicy": "never",
+      "note": "Resource table row; rows cannot be matched positionally"
+    },
+    {
+      "id": "pa_who_s_expense_is_student_loan_interest_deduction",
+      "target": {
+        "type": "text",
+        "name": "who's expense is student loan interest deduction"
+      },
+      "fillPolicy": "never",
+      "note": "Tax filing detail; no vocabulary equivalent"
     }
   ],
   "provenanceNote": "PA 600 (8/24). Person 1 maps to the applicant; Persons 2-7 map to household.members[0..5]. The person section is marked for non-SNAP programs ('you do not need to answer these questions if you are applying only for SNAP'); fields still map for households that answer them. Income rows exist for Persons 1-4 only. Skipped as unsupported: race/ethnicity detail, sponsor and tax fields, insurance detail, criminal history, and signature/office-use blocks."
