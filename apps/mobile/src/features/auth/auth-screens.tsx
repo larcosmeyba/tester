@@ -65,7 +65,7 @@ function TermsCheckbox({ accepted, onToggle }: { accepted: boolean; onToggle: ()
       <Text style={styles.consentText}>
         I agree to Help The Hive{' '}
         <Text style={styles.consentLink} onPress={() => void Linking.openURL(TERMS_URL)}>
-          Terms &amp; Conditions
+          Terms of Service
         </Text>
         .
       </Text>
