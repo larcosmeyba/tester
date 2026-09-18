@@ -19,6 +19,7 @@ WORKDIR /app
 COPY --from=build --chown=nonroot:nonroot /out/server /app/server
 COPY --from=build --chown=nonroot:nonroot /out/migrate /app/migrate
 COPY --from=build --chown=nonroot:nonroot /src/migrations /app/migrations
+COPY --from=build --chown=nonroot:nonroot /src/forms /app/forms
 
 ENV HTTP_ADDR=:8080
 EXPOSE 8080
