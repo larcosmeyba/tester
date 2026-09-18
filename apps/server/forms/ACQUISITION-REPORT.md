@@ -133,7 +133,7 @@ Already covered: AK, ND, PA, CA, NV-TANF (mapped). No paper form: WI W-2, MA TAF
 | AL | DHR-FSP-2116 general FA application | **ACQUIRED 2026-09-17** (Marcos upload; XMP title "FORM 2116 1942 COMBINED"; no printed rev, filed 2026.04) -> us/al/snap/dhr-fsp-2116/2026.04/template.pdf |
 | CT | W-1E Rev. 12/19 | Refetch produced no file (preview.ct.egov.com; verify it's DSS-official) |
 | DE | ASSIST Paper Application (2026/06) | The URL did not yield it; only Form 100 (04/2016) is on disk |
-| FL | CF-ES 2353 | Browser task |
+| FL | CF-ES 2353 -> **CF-ES 2337** | **ACQUIRED 2026-09-17** via browser session. Correction: the paper form is CF-ES 2337 'ACCESS Florida Application' (Aug 2016), not 2353 (that was the old online-app number). Official site serves English as Word-only; filed template is a clean PDF conversion of the official docx. Covers Food Assistance (SNAP) + TCA + Medicaid. Translated PDFs (e.g. French-Canadian 2337F) are stamped PDF 07/2026. -> us/fl/snap/cf-es-2337/2016.08/template.pdf |
 | ID | HW 2000 | **ACQUIRED 2026-09-17** (Marcos upload; stamped "HW 2000 | REV 2/9/2026") -> us/id/snap/hw-2000/2026.02/template.pdf |
 | KY | PA-100, as officially served | Held copy is a proposed-regulation markup |
 | MA | SNAPA-1 | **ACQUIRED 2026-09-17** (Marcos upload; stamped "SNAPA-1 (English) (Rev. 7/2026)") -> us/ma/snap/snapa-1/2026.07/template.pdf |
